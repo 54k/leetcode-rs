@@ -35,9 +35,10 @@ impl TreeNode {
 }
 
 type R = Option<Rc<RefCell<TreeNode>>>;
+
 #[allow(dead_code)]
 pub fn flatten(root: &mut R) {
-    fn go<'a>(root: &'a mut R, pre: &'a mut R) -> R {
+    fn go(root: &mut R, pre: &mut R) -> R {
         if root.is_none() {
             return pre.clone();
         }
@@ -55,6 +56,18 @@ pub fn flatten(root: &mut R) {
     go(root, &mut None);
 }
 
+#[allow(dead_code)]
+pub fn print_postorder_reverse(root: &mut R) {
+    if root.is_none() {
+        return;
+    }
+
+    print_postorder_reverse(&mut root.clone().unwrap().borrow_mut().right);
+    print_postorder_reverse(&mut root.clone().unwrap().borrow_mut().left);
+
+    println!("{}", root.clone().unwrap().borrow_mut().val);
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_10::*;
@@ -66,7 +79,7 @@ mod test {
 
     #[test]
     fn test60() {
-        let mut tree = Some(Rc::new(RefCell::new(TreeNode {
+        let mut root = Some(Rc::new(RefCell::new(TreeNode {
             val: 1,
             left: Some(Rc::new(RefCell::new(TreeNode {
                 left: Some(Rc::new(RefCell::new(TreeNode::new(3)))),
@@ -79,7 +92,8 @@ mod test {
                 val: 5,
             }))),
         })));
-        flatten(&mut tree);
-        println!("{:?}", tree);
+        flatten(&mut root);
+        println!("{:?}", root);
+        print_postorder_reverse(&mut root);
     }
 }
