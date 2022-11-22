@@ -46,6 +46,9 @@ pub fn flatten(root: &mut R) {
         let mut pre = go(&mut root.clone().unwrap().borrow_mut().right, pre);
         let mut pre = go(&mut root.clone().unwrap().borrow_mut().left, &mut pre);
 
+        println!("root {:?}", root);
+        println!("pre {:?}", pre);
+
         root.clone().unwrap().borrow_mut().right = pre.clone();
         root.clone().unwrap().borrow_mut().left.take();
 
