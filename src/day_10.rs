@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 #[allow(dead_code)]
 pub fn num_squares(n: i32) -> i32 {
     let mut dp = vec![0; (n + 1) as usize];
@@ -13,6 +16,45 @@ pub fn num_squares(n: i32) -> i32 {
     dp[n as usize]
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+type R = Option<Rc<RefCell<TreeNode>>>;
+#[allow(dead_code)]
+pub fn flatten(root: &mut R) {
+    fn go<'a>(root: &'a mut R, pre: &'a mut R) -> R {
+        if root.is_none() {
+            return pre.clone();
+        }
+
+        let mut pre = go(&mut root.clone().unwrap().borrow_mut().right, pre);
+        let mut pre = go(&mut root.clone().unwrap().borrow_mut().left, &mut pre);
+
+        root.clone().unwrap().borrow_mut().right = pre.clone();
+        root.clone().unwrap().borrow_mut().left.take();
+
+        pre = root.clone();
+        pre
+    }
+
+    go(root, &mut None);
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_10::*;
@@ -20,5 +62,24 @@ mod test {
     #[test]
     fn test59() {
         println!("{}", num_squares(12));
+    }
+
+    #[test]
+    fn test60() {
+        let mut tree = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(3)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode::new(6)))),
+                val: 5,
+            }))),
+        })));
+        flatten(&mut tree);
+        println!("{:?}", tree);
     }
 }
