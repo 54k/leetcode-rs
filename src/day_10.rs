@@ -68,6 +68,52 @@ pub fn print_postorder_reverse(root: &mut R) {
     println!("{}", root.clone().unwrap().borrow_mut().val);
 }
 
+#[allow(dead_code)]
+pub fn length_of_last_word(s: String) -> i32 {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut ans = 0;
+    for i in (0..s.len()).rev() {
+        if s[i] != ' ' {
+            ans += 1;
+        } else if ans > 0 {
+            break;
+        }
+    }
+    ans
+}
+
+#[allow(dead_code)]
+pub fn are_numbers_ascending(s: String) -> bool {
+    let s = s.chars().collect::<Vec<_>>();
+
+    let mut last = 0;
+    let mut i = 0;
+
+    while i < s.len() {
+        match s[i] {
+            ch if ch.is_ascii_digit() => {
+                let mut num = 0;
+
+                while i < s.len() && s[i].is_ascii_digit() {
+                    num *= 10;
+                    num += s[i] as i32 - 48;
+                    i += 1;
+                }
+
+                if num > last {
+                    last = num;
+                } else {
+                    return false;
+                }
+            }
+            _ => {
+                i += 1;
+            }
+        }
+    }
+    true
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_10::*;
@@ -95,5 +141,21 @@ mod test {
         flatten(&mut root);
         println!("{:?}", root);
         print_postorder_reverse(&mut root);
+    }
+
+    #[test]
+    fn test61() {
+        println!("{}", length_of_last_word("Hello  world   ".to_owned()));
+        println!("{}", length_of_last_word("  Hello   ".to_owned()));
+        println!("{}", length_of_last_word("".to_owned()));
+    }
+
+    #[test]
+    fn test62() {
+        println!(
+            "{}",
+            are_numbers_ascending("1 Hello 12 world 13  ".to_owned())
+        );
+        println!("{}", are_numbers_ascending(" 2 Hello  1 ".to_owned()));
     }
 }
