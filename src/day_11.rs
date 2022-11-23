@@ -20,13 +20,13 @@ pub fn is_valid_sudoku(board: Vec<Vec<char>>) -> bool {
 #[allow(dead_code)]
 pub fn rotate(matrix: &mut Vec<Vec<i32>>) {
     let len = matrix.len();
-    for i in 0..(len + 1) / 2 {
-        for j in 0..len / 2 {
-            let temp = matrix[len - 1 - j][i];
-            matrix[len - 1 - j][i] = matrix[len - 1 - i][len - j - 1];
-            matrix[len - 1 - i][len - j - 1] = matrix[j][len - 1 - i];
-            matrix[j][len - 1 - i] = matrix[i][j];
-            matrix[i][j] = temp;
+    for row in 0..(len + 1) / 2 {
+        for col in 0..len / 2 {
+            let temp = matrix[len - 1 - col][row];
+            matrix[len - 1 - col][row] = matrix[len - 1 - row][len - col - 1];
+            matrix[len - 1 - row][len - col - 1] = matrix[col][len - 1 - row];
+            matrix[col][len - 1 - row] = matrix[row][col];
+            matrix[row][col] = temp;
         }
     }
 }
