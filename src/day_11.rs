@@ -60,6 +60,35 @@ pub fn rotate(matrix: &mut Vec<Vec<i32>>) {
     }
 }
 
+// Definition for singly-linked list.
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+
+//https://leetcode.com/problems/reverse-nodes-in-k-group/discuss/1346312/Rust-simple-solution
+pub fn reverse_k_group(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
+    let mut next = &mut head;
+    for _ in 0..k {
+        if let Some(n) = next {
+            next = &mut n.next;
+        } else {
+            return head;
+        }
+    }
+
+    let mut ret = reverse_k_group(next.take(), k);
+    while let Some(h) = head {
+        ret = Some(Box::new(ListNode {
+            val: h.val,
+            next: ret,
+        }));
+        head = h.next;
+    }
+    ret
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_11::*;
