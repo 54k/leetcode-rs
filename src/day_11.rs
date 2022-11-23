@@ -38,7 +38,6 @@ pub struct ListNode {
     pub next: Option<Box<ListNode>>,
 }
 
-//https://leetcode.com/problems/reverse-nodes-in-k-group/discuss/1346312/Rust-simple-solution
 pub fn reverse_k_group(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
     let mut next = &mut head;
     for _ in 0..k {
@@ -50,7 +49,7 @@ pub fn reverse_k_group(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<Li
     }
 
     let mut ret = reverse_k_group(next.take(), k);
-    while let Some(h) = head {
+    while let Some(h) = head.take() {
         ret = Some(Box::new(ListNode {
             val: h.val,
             next: ret,
@@ -115,7 +114,7 @@ mod test {
                         })),
                     })),
                 })),
-                3,
+                2,
             )
         );
     }
