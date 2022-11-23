@@ -117,6 +117,25 @@ pub fn are_numbers_ascending(s: String) -> bool {
     true
 }
 
+#[allow(clippy::needless_range_loop)]
+#[allow(dead_code)]
+fn password_cracker(len: usize) {
+    fn crack(buf: &mut String, len: usize, alphabet: &String) {
+        if buf.len() == len {
+            println!("{:?}", buf);
+            return;
+        }
+        let a = alphabet.chars().collect::<Vec<_>>();
+        for i in 0..a.len() {
+            buf.push(a[i]);
+            crack(buf, len, alphabet);
+            buf.pop();
+        }
+    }
+
+    crack(&mut String::new(), len, &"1234567890".to_owned());
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_10::*;
@@ -160,5 +179,10 @@ mod test {
             are_numbers_ascending("1 Hello 12 world 13  ".to_owned())
         );
         println!("{}", are_numbers_ascending(" 2 Hello  1 ".to_owned()));
+    }
+
+    #[test]
+    fn test63() {
+        password_cracker(4);
     }
 }
