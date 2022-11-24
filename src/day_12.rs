@@ -131,6 +131,7 @@ impl TreeNode {
     }
 }
 
+// https://www.geeksforgeeks.org/sorted-linked-list-to-balanced-bst/
 // public TreeNode sortedListToBST(ListNode head) {
 //     if(null == head){
 //     return null;
@@ -166,14 +167,11 @@ pub fn sorted_list_to_bst(mut head: Option<Box<ListNode>>) -> Option<Rc<RefCell<
         }
 
         let left = inorder(len / 2, list);
-        if let Some(head) = list {
-            let mut node = TreeNode::new(head.val);
-
-            *list = head.next.take();
+        if let Some(h) = list {
+            let mut node = TreeNode::new(h.val);
+            *list = h.next.take();
             node.left = left;
-
             let right = inorder(len - len / 2 - 1, list);
-
             node.right = right;
             Some(Rc::new(RefCell::new(node)))
         } else {
