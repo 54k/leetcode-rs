@@ -73,6 +73,43 @@ pub fn partition(mut head: Option<Box<ListNode>>, x: i32) -> Option<Box<ListNode
     before_head.next
 }
 
+#[allow(dead_code)]
+pub fn exist(mut board: Vec<Vec<char>>, word: String) -> bool {
+    fn dfs(board: &mut Vec<Vec<char>>, word: &Vec<char>, pos: usize, i: i32, j: i32) -> bool {
+        if pos == word.len() {
+            return true;
+        }
+        if i < 0 || i == board.len() as i32 || j < 0 || j == board[i as usize].len() as i32 {
+            return false;
+        }
+        if board[i as usize][j as usize] != word[pos] {
+            return false;
+        }
+
+        let ch = board[i as usize][j as usize];
+        board[i as usize][j as usize] = '.'; // mark visited
+
+        let res = dfs(board, word, pos + 1, i + 1, j)
+            || dfs(board, word, pos + 1, i - 1, j)
+            || dfs(board, word, pos + 1, i, j + 1)
+            || dfs(board, word, pos + 1, i, j - 1);
+
+        board[i as usize][j as usize] = ch; // mark unvisited
+        res
+    }
+
+    let word = word.chars().collect::<Vec<_>>();
+    for i in 0..board.len() {
+        for j in 0..board[i].len() {
+            if dfs(&mut board, &word, 0, i as i32, j as i32) {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_12::*;
@@ -128,6 +165,32 @@ mod test {
         println!(
             "{:?}",
             delete_middle(Some(Box::new(ListNode { val: 1, next: None })))
+        );
+    }
+
+    #[test]
+    fn test72() {
+        println!(
+            "{:?}",
+            exist(
+                vec![
+                    vec!['A', 'B', 'C', 'E'],
+                    vec!['S', 'F', 'C', 'S'],
+                    vec!['A', 'D', 'E', 'E']
+                ],
+                "ABCCED".to_owned()
+            )
+        );
+        println!(
+            "{:?}",
+            exist(
+                vec![
+                    vec!['A', 'B', 'C', 'E'],
+                    vec!['S', 'F', 'C', 'S'],
+                    vec!['A', 'D', 'E', 'E']
+                ],
+                "SEE".to_owned()
+            )
         );
     }
 }
