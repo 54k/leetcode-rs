@@ -59,6 +59,29 @@ pub fn reverse_k_group(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<Li
     ret
 }
 
+//noinspection ALL
+#[allow(dead_code)]
+pub fn swap_pairs(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    let mut node = &mut head;
+    for _ in 0..2 {
+        if let Some(n) = node {
+            node = &mut n.next;
+        } else {
+            return head;
+        }
+    }
+
+    let mut ret = swap_pairs(node.take());
+    while let Some(h) = head.take() {
+        ret = Some(Box::new(ListNode {
+            val: h.val,
+            next: ret,
+        }));
+        head = h.next;
+    }
+    ret
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_11::*;
@@ -116,6 +139,46 @@ mod test {
                 })),
                 2,
             )
+        );
+    }
+
+    #[test]
+    fn test67() {
+        println!(
+            "{:?}",
+            swap_pairs(Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode {
+                    val: 4,
+                    next: Some(Box::new(ListNode {
+                        val: 5,
+                        next: Some(Box::new(ListNode {
+                            val: 6,
+                            next: Some(Box::new(ListNode { val: 7, next: None }))
+                        })),
+                    })),
+                })),
+            })),)
+        );
+    }
+
+    #[test]
+    fn test68() {
+        println!(
+            "{:?}",
+            swap_pairs(Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode {
+                    val: 4,
+                    next: Some(Box::new(ListNode {
+                        val: 5,
+                        next: Some(Box::new(ListNode {
+                            val: 6,
+                            next: Some(Box::new(ListNode { val: 7, next: None }))
+                        })),
+                    })),
+                })),
+            })),)
         );
     }
 }
