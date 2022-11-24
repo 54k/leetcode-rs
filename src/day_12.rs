@@ -10,7 +10,7 @@ pub struct ListNode {
 
 // Maintain two pointers and update one with a delay of n steps.
 #[allow(dead_code)]
-pub fn remove_nth_from_end(mut head: Option<Box<ListNode>>, n: i32) -> Option<Box<ListNode>> {
+pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<ListNode>> {
     fn rec(head: Option<Box<ListNode>>, n: i32) -> (Option<Box<ListNode>>, i32) {
         match head {
             None => (None, 1),
@@ -189,6 +189,80 @@ pub fn sorted_list_to_bst(mut head: Option<Box<ListNode>>) -> Option<Rc<RefCell<
     inorder(len, &mut head)
 }
 
+#[allow(dead_code)]
+pub fn search_range(nums: Vec<i32>, target: i32) -> Vec<i32> {
+    fn o_n(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        if nums.is_empty() {
+            return vec![-1, -1];
+        }
+
+        let mut lo = 0;
+        let mut hi = nums.len() as i32 - 1;
+
+        while lo <= hi {
+            let mid = lo + (hi - lo) / 2;
+            match nums[mid as usize].cmp(&target) {
+                std::cmp::Ordering::Less => lo = mid + 1,
+                std::cmp::Ordering::Greater => hi = mid - 1,
+                std::cmp::Ordering::Equal => {
+                    let mut start = mid as i32;
+                    let mut end = start;
+                    while start >= 0 && nums[start as usize] == target {
+                        start -= 1;
+                    }
+                    while end < nums.len() as i32 && nums[end as usize] == target {
+                        end += 1;
+                    }
+                    return vec![start + 1, end - 1];
+                }
+            }
+        }
+        vec![-1, -1]
+    }
+
+    fn log_n(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        fn search_1(nums: &Vec<i32>, target: i32) -> i32 {
+            let mut res = -1;
+            let mut lo = 0;
+            let mut hi = nums.len() as i32 - 1;
+            while lo <= hi {
+                let mid = lo + (hi - lo) / 2;
+                if nums[mid as usize] >= target {
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+                if nums[mid as usize] == target {
+                    res = mid as i32;
+                }
+            }
+            res
+        }
+
+        fn search_2(nums: &Vec<i32>, target: i32) -> i32 {
+            let mut res = -1;
+            let mut lo = 0;
+            let mut hi = nums.len() as i32 - 1;
+            while lo <= hi {
+                let mid = lo + (hi - lo) / 2;
+                if nums[mid as usize] <= target {
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+                if nums[mid as usize] == target {
+                    res = mid as i32;
+                }
+            }
+            res
+        }
+
+        vec![search_1(&nums, target), search_2(&nums, target)]
+    }
+
+    log_n(nums, target)
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_12::*;
@@ -301,5 +375,10 @@ mod test {
                 })),
             })))
         );
+    }
+
+    #[test]
+    fn test74() {
+        println!("{:?}", search_range(vec![2, 2, 2], 2));
     }
 }
