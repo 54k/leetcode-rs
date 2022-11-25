@@ -295,39 +295,39 @@ mod test {
 
     #[test]
     fn test77() {
-        // println!(
-        //     "{:?}",
-        //     find_substring(
-        //         "barfoothefoobarman".to_owned(),
-        //         vec!["foo".to_owned(), "bar".to_owned()]
-        //     )
-        // ); //[0,9]
-        //
-        // println!(
-        //     "{:?}",
-        //     find_substring(
-        //         "wordgoodgoodgoodbestword".to_owned(),
-        //         vec![
-        //             "word".to_owned(),
-        //             "good".to_owned(),
-        //             "best".to_owned(),
-        //             "word".to_owned()
-        //         ]
-        //     )
-        // ); //[]
-        //
-        // println!(
-        //     "{:?}",
-        //     find_substring(
-        //         "wordgoodgoodgoodbestword".to_owned(),
-        //         vec![
-        //             "word".to_owned(),
-        //             "good".to_owned(),
-        //             "best".to_owned(),
-        //             "good".to_owned()
-        //         ]
-        //     )
-        // ); //[8]
+        println!(
+            "{:?}",
+            find_substring(
+                "barfoothefoobarman".to_owned(),
+                vec!["foo".to_owned(), "bar".to_owned()]
+            )
+        ); //[0,9]
+
+        println!(
+            "{:?}",
+            find_substring(
+                "wordgoodgoodgoodbestword".to_owned(),
+                vec![
+                    "word".to_owned(),
+                    "good".to_owned(),
+                    "best".to_owned(),
+                    "word".to_owned()
+                ]
+            )
+        ); //[]
+
+        println!(
+            "{:?}",
+            find_substring(
+                "wordgoodgoodgoodbestword".to_owned(),
+                vec![
+                    "word".to_owned(),
+                    "good".to_owned(),
+                    "best".to_owned(),
+                    "good".to_owned()
+                ]
+            )
+        ); //[8]
 
         println!(
             "{:?}",
