@@ -42,7 +42,25 @@ pub fn climb_stairs(n: i32) -> i32 {
         dp[n]
     }
 
-    climb_stairs_rec(n, &mut vec![-1; n as usize + 1])
+    fn climb_stairs_fib(n: i32, dp: &mut [i32]) -> i32 {
+        if n < 0 {
+            return 0;
+        }
+        if n == 1 {
+            return 1;
+        }
+
+        for i in 2..=n as usize {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        dp[n as usize]
+    }
+
+    let mut fib = vec![0; n as usize + 1];
+    fib[0] = 1;
+    fib[1] = 1;
+
+    climb_stairs_fib(n, &mut vec![-1; n as usize + 1])
 }
 
 #[cfg(test)]
