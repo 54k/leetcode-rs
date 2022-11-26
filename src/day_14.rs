@@ -25,6 +25,26 @@ pub fn job_scheduling(start_time: Vec<i32>, end_time: Vec<i32>, profit: Vec<i32>
     dfs(0, &jobs, &mut dp)
 }
 
+#[allow(dead_code)]
+pub fn climb_stairs(n: i32) -> i32 {
+    fn climb_stairs_rec(n: i32, dp: &mut [i32]) -> i32 {
+        if n < 0 {
+            return 0;
+        }
+        if n == 0 {
+            return 1;
+        }
+        let n = n as usize;
+        if dp[n] >= 0 {
+            return dp[n];
+        }
+        dp[n] = climb_stairs_rec(n as i32 - 1, dp) + climb_stairs_rec(n as i32 - 2, dp);
+        dp[n]
+    }
+
+    climb_stairs_rec(n, &mut vec![-1; n as usize + 1])
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_14::*;
@@ -34,5 +54,10 @@ mod test {
         println!("{}", job_scheduling(vec![1, 2, 3, 3],
                                       vec![3, 4, 5, 6],
                                       vec![50, 10, 40, 70])); // 120
+    }
+
+    #[test]
+    fn test79() {
+        println!("{}", climb_stairs(3)); //3
     }
 }
