@@ -16,9 +16,7 @@ pub fn job_scheduling(start_time: Vec<i32>, end_time: Vec<i32>, profit: Vec<i32>
         }
 
         let k = jobs.partition_point(|&job| job.0 < jobs[i].1);
-        dp[i] = dfs(i + 1, jobs, dp).max(
-            jobs[i].2 + dfs(k, jobs, dp)
-        );
+        dp[i] = dfs(i + 1, jobs, dp).max(jobs[i].2 + dfs(k, jobs, dp));
         dp[i]
     }
 
@@ -69,9 +67,10 @@ mod test {
 
     #[test]
     fn test78() {
-        println!("{}", job_scheduling(vec![1, 2, 3, 3],
-                                      vec![3, 4, 5, 6],
-                                      vec![50, 10, 40, 70])); // 120
+        println!(
+            "{}",
+            job_scheduling(vec![1, 2, 3, 3], vec![3, 4, 5, 6], vec![50, 10, 40, 70])
+        ); // 120
     }
 
     #[test]

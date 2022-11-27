@@ -12,11 +12,10 @@ pub fn is_match(s: String, p: String) -> bool {
         let first_match = !s.is_empty() && (s[0] == p[0] || p[0] == '.');
 
         if p.len() >= 2 && p[1] == '*' {
-            return match_rec(s.iter().collect(), p.iter().skip(2).collect()) ||
-                first_match && match_rec(s.iter().skip(1).collect(), p.iter().collect());
+            return match_rec(s.iter().collect(), p.iter().skip(2).collect())
+                || first_match && match_rec(s.iter().skip(1).collect(), p.iter().collect());
         }
-        return first_match && match_rec(s.iter().skip(1).collect(),
-                                        p.iter().skip(1).collect());
+        return first_match && match_rec(s.iter().skip(1).collect(), p.iter().skip(1).collect());
     }
     match_rec(s, p)
 }
@@ -61,7 +60,7 @@ pub fn is_match_dp(s: String, p: String) -> bool {
 
 #[allow(dead_code)]
 pub fn merge(mut intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-    use std::cmp::{min, max};
+    use std::cmp::{max, min};
     fn is_overlap(i1: &[i32], i2: &[i32]) -> bool {
         i1[1] >= i2[0]
     }
@@ -106,14 +105,14 @@ pub fn count_nodes(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         fn count_left(root: &Option<Rc<RefCell<TreeNode>>>) -> i32 {
             match root {
                 Some(x) => 1 + count_left(&x.borrow().left),
-                None => 0
+                None => 0,
             }
         }
 
         fn count_right(root: &Option<Rc<RefCell<TreeNode>>>) -> i32 {
             match root {
                 Some(x) => 1 + count_right(&x.borrow().right),
-                None => 0
+                None => 0,
             }
         }
 
@@ -229,17 +228,19 @@ pub fn is_valid_bst(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
                 true
             };
 
-            return is_left_smaller && is_right_greater &&
-                is_bst(left, min, n.val as i64) &&
-                is_bst(right, n.val as i64, max);
+            return is_left_smaller
+                && is_right_greater
+                && is_bst(left, min, n.val as i64)
+                && is_bst(right, n.val as i64, max);
         }
         true
     }
 
     return if let Some(n) = &root {
         n.borrow().left.is_none() && n.borrow().right.is_none()
-    } else { true }
-        || is_bst(&root, i64::MIN, i64::MAX);
+    } else {
+        true
+    } || is_bst(&root, i64::MIN, i64::MAX);
 }
 
 #[cfg(test)]
@@ -258,7 +259,10 @@ mod test {
 
     #[test]
     fn test_26() {
-        println!("{:?}", merge(vec![vec![1, 3], vec![2, 6], vec![8, 10], vec![15, 18]]));
+        println!(
+            "{:?}",
+            merge(vec![vec![1, 3], vec![2, 6], vec![8, 10], vec![15, 18]])
+        );
         println!("{:?}", merge(vec![vec![1, 4], vec![4, 5]]));
         println!("{:?}", merge(vec![vec![1, 4], vec![0, 0]]));
         println!("{:?}", merge(vec![vec![1, 4], vec![0, 2], vec![3, 5]]));
@@ -266,166 +270,109 @@ mod test {
 
     #[test]
     fn test_27() {
-        println!("{:?}", count_nodes(
-            Some(
-                Rc::new(
-                    RefCell::new(
-                        TreeNode {
-                            val: 0,
-                            left: Some(
-                                Rc::new(
-                                    RefCell::new(
-                                        TreeNode {
-                                            val: 2,
-                                            left: None,
-                                            right: None,
-                                        }))),
-                            right: None,
-                        }
-                    )
-                )
-            )
-        ));
+        println!(
+            "{:?}",
+            count_nodes(Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))))
+        );
     }
 
     #[test]
     fn test_28() {
-        println!("{:?}", count_nodes_loops(
-            Some(
-                Rc::new(
-                    RefCell::new(
-                        TreeNode {
-                            val: 0,
-                            left: Some(
-                                Rc::new(
-                                    RefCell::new(
-                                        TreeNode {
-                                            val: 2,
-                                            left: None,
-                                            right: None,
-                                        }))),
-                            right: None,
-                        }
-                    )
-                )
-            )
-        ));
+        println!(
+            "{:?}",
+            count_nodes_loops(Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))))
+        );
     }
 
     #[test]
     fn test_29() {
-        println!("{:?}", inorder_traversal(
-            Some(
-                Rc::new(
-                    RefCell::new(
-                        TreeNode {
-                            val: 0,
-                            left: Some(
-                                Rc::new(
-                                    RefCell::new(
-                                        TreeNode {
-                                            val: 2,
-                                            left: None,
-                                            right: None,
-                                        }))),
-                            right: None,
-                        }
-                    )
-                )
-            )
-        ));
+        println!(
+            "{:?}",
+            inorder_traversal(Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))))
+        );
     }
 
     #[test]
     fn test_30() {
-        println!("{:?}", preorder_traversal(
-            Some(
-                Rc::new(
-                    RefCell::new(
-                        TreeNode {
-                            val: 0,
-                            left: Some(
-                                Rc::new(
-                                    RefCell::new(
-                                        TreeNode {
-                                            val: 2,
-                                            left: None,
-                                            right: None,
-                                        }))),
-                            right: None,
-                        }
-                    )
-                )
-            )
-        ));
+        println!(
+            "{:?}",
+            preorder_traversal(Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))))
+        );
     }
 
     #[test]
     fn test_31() {
-        println!("{:?}", postorder_traversal(
-            Some(
-                Rc::new(
-                    RefCell::new(
-                        TreeNode {
-                            val: 0,
-                            left: Some(
-                                Rc::new(
-                                    RefCell::new(
-                                        TreeNode {
-                                            val: 2,
-                                            left: None,
-                                            right: None,
-                                        }))),
-                            right: None,
-                        }
-                    )
-                )
-            )
-        ));
+        println!(
+            "{:?}",
+            postorder_traversal(Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))))
+        );
     }
 
     #[test]
     fn test_32() {
-        println!("{:?}", is_valid_bst(
-            Some(
-                Rc::new(
-                    RefCell::new(
-                        TreeNode {
-                            val: 0,
-                            left: None,
-                            right: Some(
-                                Rc::new(
-                                    RefCell::new(
-                                        TreeNode {
-                                            val: 2,
-                                            left: None,
-                                            right: None,
-                                        }))),
-                        }
-                    )
-                )
-            )
-        ));
-        println!("{:?}", is_valid_bst(
-            Some(
-                Rc::new(
-                    RefCell::new(
-                        TreeNode {
-                            val: i32::MIN,
-                            left: None,
-                            right: Some(
-                                Rc::new(
-                                    RefCell::new(
-                                        TreeNode {
-                                            val: i32::MAX,
-                                            left: None,
-                                            right: None,
-                                        }))),
-                        }
-                    )
-                )
-            )
-        ));
+        println!(
+            "{:?}",
+            is_valid_bst(Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+            }))))
+        );
+        println!(
+            "{:?}",
+            is_valid_bst(Some(Rc::new(RefCell::new(TreeNode {
+                val: i32::MIN,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: i32::MAX,
+                    left: None,
+                    right: None,
+                }))),
+            }))))
+        );
     }
 }
-

@@ -299,7 +299,7 @@ mod test {
             "{:?}",
             find_substring(
                 "barfoothefoobarman".to_owned(),
-                vec!["foo".to_owned(), "bar".to_owned()]
+                vec!["foo".to_owned(), "bar".to_owned()],
             )
         ); //[0,9]
 
@@ -311,8 +311,8 @@ mod test {
                     "word".to_owned(),
                     "good".to_owned(),
                     "best".to_owned(),
-                    "word".to_owned()
-                ]
+                    "word".to_owned(),
+                ],
             )
         ); //[]
 
@@ -324,8 +324,8 @@ mod test {
                     "word".to_owned(),
                     "good".to_owned(),
                     "best".to_owned(),
-                    "good".to_owned()
-                ]
+                    "good".to_owned(),
+                ],
             )
         ); //[8]
 

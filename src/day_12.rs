@@ -280,12 +280,12 @@ mod test {
                             val: 5,
                             next: Some(Box::new(ListNode {
                                 val: 6,
-                                next: Some(Box::new(ListNode { val: 7, next: None }))
+                                next: Some(Box::new(ListNode { val: 7, next: None })),
                             })),
                         })),
                     })),
                 })),
-                2
+                2,
             )
         );
     }
@@ -303,12 +303,12 @@ mod test {
                             val: 4,
                             next: Some(Box::new(ListNode {
                                 val: 2,
-                                next: Some(Box::new(ListNode { val: 5, next: None }))
+                                next: Some(Box::new(ListNode { val: 5, next: None })),
                             })),
                         })),
                     })),
                 })),
-                3
+                3,
             )
         );
     }
@@ -329,9 +329,9 @@ mod test {
                 vec![
                     vec!['A', 'B', 'C', 'E'],
                     vec!['S', 'F', 'C', 'S'],
-                    vec!['A', 'D', 'E', 'E']
+                    vec!['A', 'D', 'E', 'E'],
                 ],
-                "ABCCED".to_owned()
+                "ABCCED".to_owned(),
             )
         );
         println!(
@@ -340,9 +340,9 @@ mod test {
                 vec![
                     vec!['A', 'B', 'C', 'E'],
                     vec!['S', 'F', 'C', 'S'],
-                    vec!['A', 'D', 'E', 'E']
+                    vec!['A', 'D', 'E', 'E'],
                 ],
-                "SEE".to_owned()
+                "SEE".to_owned(),
             )
         );
     }
@@ -369,7 +369,7 @@ mod test {
                         val: 3,
                         next: Some(Box::new(ListNode {
                             val: 4,
-                            next: Some(Box::new(ListNode { val: 5, next: None }))
+                            next: Some(Box::new(ListNode { val: 5, next: None })),
                         })),
                     })),
                 })),

@@ -228,7 +228,7 @@ pub fn is_valid(s: String) -> bool {
  * Forward declaration of guess API
  * @param  num   your gues
  * @return 	     -1 if num is higher than the picked numbe
- *			      1 if num is lower than the picked number
+ *    		      1 if num is lower than the picked number
  *               otherwise return 0
  * unsafe fn guess(num: i32) -> i32 {}
  */

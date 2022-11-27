@@ -116,6 +116,7 @@ pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
 }
 
 type Node = Option<Box<ListNode>>;
+
 #[allow(dead_code)]
 pub fn rotate_right(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
     fn rot(mut head: Node) -> Node {
@@ -171,7 +172,7 @@ mod test {
                                     val: 5,
                                     next: Some(Box::new(ListNode {
                                         val: 6,
-                                        next: Some(Box::new(ListNode { val: 7, next: None }))
+                                        next: Some(Box::new(ListNode { val: 7, next: None })),
                                     })),
                                 })),
                             })),
@@ -179,7 +180,7 @@ mod test {
                     })),
                 })),
                 3,
-                5
+                5,
             )
         );
     }
@@ -221,7 +222,7 @@ mod test {
                         })),
                     })),
                 })),
-                2
+                2,
             )
         );
     }

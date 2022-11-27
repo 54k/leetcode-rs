@@ -72,7 +72,9 @@ impl TreeNode {
         }
     }
 }
+
 type TN = Option<Rc<RefCell<TreeNode>>>;
+
 #[allow(dead_code)]
 pub fn is_symmetric(root: TN) -> bool {
     fn is_sym(left: TN, right: TN) -> bool {

@@ -437,7 +437,7 @@ mod test {
                     val: 4,
                     next: Some(Box::new(ListNode { val: 5, next: None })),
                 })),
-            })),)
+            })), )
         );
     }
 

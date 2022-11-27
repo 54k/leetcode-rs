@@ -1,0 +1,63 @@
+// Constraints:
+//
+// 1 <= matches.length <= 105
+// matches[i].length == 2
+// 1 <= winneri, loseri <= 105
+// winneri != loseri
+// All matches[i] are unique.
+#[allow(dead_code)]
+pub fn find_winners(matches: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    let mut losses_count = vec![-1; (10i32.pow(5) + 1) as usize];
+
+    for m in matches.iter() {
+        let (w, l) = (m[0] as usize, m[1] as usize);
+        if losses_count[w] == -1 {
+            losses_count[w] = 0;
+        }
+
+        if losses_count[l] == -1 {
+            losses_count[l] = 1;
+        } else {
+            losses_count[l] += 1;
+        }
+    }
+
+    let mut ans = vec![vec![]; 2];
+
+    for (i, v) in losses_count.into_iter().enumerate() {
+        if (0..=1).contains(&v) {
+            ans[v as usize].push(i as i32);
+        }
+    }
+
+    ans
+}
+
+#[cfg(test)]
+mod test {
+    use crate::day_16::*;
+
+    #[test]
+    fn test83() {
+        println!(
+            "{:?}",
+            find_winners(vec![
+                vec![1, 3],
+                vec![2, 3],
+                vec![3, 6],
+                vec![5, 6],
+                vec![5, 7],
+                vec![4, 5],
+                vec![4, 8],
+                vec![4, 9],
+                vec![10, 4],
+                vec![10, 9],
+            ])
+        ); // [[1,2,10],[4,5,7,8]]
+
+        println!(
+            "{:?}",
+            find_winners(vec![vec![2, 3], vec![1, 3], vec![5, 4], vec![6, 4]])
+        ); // [[1,2,10],[4,5,7,8]]
+    }
+}
