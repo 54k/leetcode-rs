@@ -34,8 +34,8 @@ pub fn number_of_arithmetic_slices(nums: Vec<i32>) -> i32 {
                     continue;
                 }
                 let diff = delta as i32;
-                let sum = *dp[j].get(&diff).or_else(|| Some(&0)).unwrap();
-                let origin = *dp[i].get(&diff).or_else(|| Some(&0)).unwrap();
+                let sum = *dp[j].get(&diff).unwrap_or(&0);
+                let origin = *dp[i].get(&diff).unwrap_or(&0);
                 dp[i].insert(diff, origin + sum + 1);
                 ans += sum;
             }
@@ -48,7 +48,7 @@ pub fn number_of_arithmetic_slices(nums: Vec<i32>) -> i32 {
             if buf.len() < 3 {
                 return false;
             }
-            let mut diff = buf[0] - buf[1];
+            let diff = buf[0] - buf[1];
             for i in 2..buf.len() {
                 if (buf[i - 1] - buf[i]) != diff {
                     return false;
@@ -76,7 +76,6 @@ pub fn number_of_arithmetic_slices(nums: Vec<i32>) -> i32 {
     number_of_arithmetic_slices_dp(nums)
 }
 
-//[7, 1, 5, 3, 6, 4]
 #[allow(dead_code)]
 pub fn max_profit(prices: Vec<i32>) -> i32 {
     fn max_profit_brute(prices: Vec<i32>) -> i32 {
@@ -102,6 +101,25 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
     max_profit_dp(prices)
 }
 
+#[allow(dead_code)]
+pub fn max_profit2(prices: Vec<i32>) -> i32 {
+    // Buy very first stock
+    let mut buy = prices[0];
+    let mut profit = 0;
+    for p in prices.iter().skip(1) {
+        // If you find stock less than what you bought, take that instead
+        if *p < buy {
+            buy = *p;
+            // If you find stock greater than what you bought, sell that
+            // Also buy it as you want to sell if you see greater stock in future
+        } else {
+            profit += *p - buy;
+            buy = *p;
+        }
+    }
+    profit
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_15::*;
@@ -114,5 +132,10 @@ mod test {
     #[test]
     fn test81() {
         println!("{}", max_profit(vec![7, 1, 5, 3, 6, 4])); // 5
+    }
+
+    #[test]
+    fn test82() {
+        println!("{}", max_profit2(vec![7, 1, 5, 3, 6, 4])); // 7
     }
 }
