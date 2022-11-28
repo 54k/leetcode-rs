@@ -33,6 +33,38 @@ pub fn find_winners(matches: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     ans
 }
 
+#[allow(dead_code)]
+pub fn check_if_pangram(sentence: String) -> bool {
+    fn check_if_pangram_count(sentence: String) -> bool {
+        if sentence.len() < 26 {
+            return false;
+        }
+        let mut set = [0; 26];
+        for ch in sentence.chars() {
+            set[ch as usize - 'a' as usize] += 1;
+        }
+        for i in set {
+            if i == 0 {
+                return false;
+            }
+        }
+        true
+    }
+
+    fn check_if_pangram_bits(sentence: String) -> bool {
+        let mut seen = 0;
+
+        for ch in sentence.chars() {
+            let i = ch as i32 - 'a' as i32;
+            seen |= 1 << i;
+        }
+
+        seen == (1 << 26) - 1
+    }
+
+    check_if_pangram_bits(sentence)
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_16::*;
@@ -59,5 +91,13 @@ mod test {
             "{:?}",
             find_winners(vec![vec![2, 3], vec![1, 3], vec![5, 4], vec![6, 4]])
         ); // [[1,2,10],[4,5,7,8]]
+    }
+
+    #[test]
+    fn test84() {
+        println!(
+            "{}",
+            check_if_pangram("thequickbrownfoxjumpsoverthelazydog".to_owned())
+        );
     }
 }
