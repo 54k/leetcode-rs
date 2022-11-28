@@ -65,6 +65,33 @@ pub fn check_if_pangram(sentence: String) -> bool {
     check_if_pangram_bits(sentence)
 }
 
+//https://www.nayuki.io/page/next-lexicographical-permutation-algorithm
+#[allow(dead_code)]
+pub fn next_permutation(nums: &mut Vec<i32>) {
+    let mut pivot = -1;
+    let len = nums.len();
+    for i in (1..len).rev() {
+        if nums[i - 1] < nums[i] {
+            pivot = (i - 1) as i32;
+            break;
+        }
+    }
+
+    if pivot == -1 {
+        nums.reverse();
+        return;
+    }
+
+    let pivot = pivot as usize;
+    for j in (pivot + 1..len).rev() {
+        if nums[j] > nums[pivot] {
+            nums.swap(pivot, j);
+            nums[pivot + 1..len].reverse();
+            break;
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_16::*;
@@ -99,5 +126,16 @@ mod test {
             "{}",
             check_if_pangram("thequickbrownfoxjumpsoverthelazydog".to_owned())
         );
+    }
+
+    #[test]
+    fn test85() {
+        let mut v = vec![1, 2, 3];
+        next_permutation(&mut v);
+        println!("{:?}", v); // 1 3 2
+
+        let mut v = vec![3, 2, 1];
+        next_permutation(&mut v);
+        println!("{:?}", v); // 1 2 3
     }
 }
