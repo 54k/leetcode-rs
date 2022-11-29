@@ -38,7 +38,6 @@ pub fn num_enclaves(mut grid: Vec<Vec<i32>>) -> i32 {
             || c == grid[0].len() as i32
             || grid[r as usize][c as usize] == 0
         {
-            println!("skip r{}-c{}", r, c);
             return;
         }
 
