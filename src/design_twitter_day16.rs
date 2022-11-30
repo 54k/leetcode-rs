@@ -70,8 +70,8 @@ impl Twitter {
     }
 
     fn register(&mut self, user_id: i32) {
-        if let None = self.users.get(&user_id) {
-            let mut u = User::new(user_id);
+        if self.users.get(&user_id).is_none() {
+            let u = User::new(user_id);
             self.users.insert(u.id, u);
         }
     }
