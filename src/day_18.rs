@@ -77,4 +77,13 @@ mod test {
     fn test90() {
         println!("{}", count_subarrays(vec![7, 1, 3, 4, 2, 5, 6], 4)); // 5
     }
+
+    #[test]
+    fn diploma_mid() {
+        let v = "5453533354543333545444434433435544454";
+        let v = v.chars().map(|ch| ch as i32 - 48).collect::<Vec<_>>();
+        let len = v.len() as f32;
+        let mid = v.into_iter().sum::<i32>();
+        println!("{}", mid as f32 / len); // 3.94 ffs
+    }
 }
