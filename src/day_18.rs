@@ -64,6 +64,36 @@ pub fn count_subarrays(nums: Vec<i32>, k: i32) -> i32 {
     res
 }
 
+#[allow(dead_code)]
+pub fn search(nums: Vec<i32>, target: i32) -> i32 {
+    let mut lo = 0;
+    let mut hi = nums.len() - 1;
+
+    while lo <= hi {
+        let mid = lo + (hi - lo) / 2;
+
+        let n_0 = nums[0];
+        let mut n_m = nums[mid];
+
+        if (n_m < n_0) != (target < n_0) {
+            if target < n_0 {
+                n_m = i32::MIN;
+            } else {
+                n_m = i32::MAX;
+            }
+        }
+
+        if n_m < target {
+            lo = mid + 1;
+        } else if n_m > target {
+            hi = mid - 1;
+        } else {
+            return mid as i32;
+        }
+    }
+    -1
+}
+
 #[cfg(test)]
 mod test {
     use crate::day_18::*;
@@ -76,6 +106,12 @@ mod test {
     #[test]
     fn test90() {
         println!("{}", count_subarrays(vec![7, 1, 3, 4, 2, 5, 6], 4)); // 5
+    }
+
+    #[test]
+    fn test91() {
+        println!("{}", search(vec![4, 5, 6, 7, 0, 1, 2], 0)); // 4
+        println!("{}", search(vec![4, 5, 6, 7, 0, 1, 2], 3)); // -1
     }
 
     #[test]
