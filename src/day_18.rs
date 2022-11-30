@@ -31,33 +31,34 @@ pub fn count_subarrays(nums: Vec<i32>, k: i32) -> i32 {
     }
 
     let mut balances = HashMap::new();
-    let mut bal = 0;
 
     // right side, tracking balance
+    let mut right_bal = 0;
     for i in p..nums.len() {
         if i == p {
-            bal += 0;
+            right_bal += 0;
         } else if nums[i] < nums[p] {
-            bal -= 1;
+            right_bal -= 1;
         } else {
-            bal += 1;
+            right_bal += 1;
         }
-
-        balances.entry(bal).or_insert(0);
-        *balances.get_mut(&bal).unwrap() += 1;
+        balances.entry(right_bal).or_insert(0);
+        *balances.get_mut(&right_bal).unwrap() += 1;
     }
 
     // left side, tracking balance
-    let mut bal = 0;
+    let mut left_bal = 0;
     for i in (0..=p).rev() {
         if i == p {
-            bal += 0;
+            left_bal += 0;
         } else if nums[i] < nums[p] {
-            bal -= 1;
+            left_bal -= 1;
         } else {
-            bal += 1;
+            left_bal += 1;
         }
-        res += *balances.get(&-bal).unwrap_or(&0) + balances.get(&(-bal + 1)).unwrap_or(&0);
+        // find complementary right balance, balance == 0 for even sub-arrays, balance == 1 for odd sub-arrays
+        res +=
+            *balances.get(&-left_bal).unwrap_or(&0) + balances.get(&(-left_bal + 1)).unwrap_or(&0);
     }
 
     res
