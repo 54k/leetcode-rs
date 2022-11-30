@@ -89,6 +89,7 @@ mod test {
         println!("{}", my_sqrt(3)); // 1
         println!("{}", my_sqrt(1)); // 1
     }
+
     #[test]
     fn test88() {
         println!(
