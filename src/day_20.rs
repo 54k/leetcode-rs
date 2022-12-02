@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 #[allow(dead_code)]
 pub fn close_strings(word1: String, word2: String) -> bool {
     use std::collections::hash_map::Entry;
@@ -18,16 +16,16 @@ pub fn close_strings(word1: String, word2: String) -> bool {
     }
 
     let f1 = build_frequencies(word1);
-    let mut freq1 = f1.values().map(|i| *i).collect::<Vec<_>>();
+    let mut freq1 = f1.values().copied().collect::<Vec<_>>();
 
     let f2 = build_frequencies(word2);
-    let mut freq2 = f2.values().map(|i| *i).collect::<Vec<_>>();
+    let mut freq2 = f2.values().copied().collect::<Vec<_>>();
 
     freq1.sort();
     freq2.sort();
 
-    let mut ch1 = f1.keys().map(|ch| *ch).collect::<Vec<_>>();
-    let mut ch2 = f2.keys().map(|ch| *ch).collect::<Vec<_>>();
+    let mut ch1 = f1.keys().copied().collect::<Vec<_>>();
+    let mut ch2 = f2.keys().copied().collect::<Vec<_>>();
 
     ch1.sort();
     ch2.sort();
