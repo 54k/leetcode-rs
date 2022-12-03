@@ -220,7 +220,7 @@ mod test {
                     left: None,
                     right: None,
                 }))),
-            }))), )
+            }))),)
         );
     }
 

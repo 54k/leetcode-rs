@@ -7,8 +7,8 @@ pub fn is_valid_sudoku(board: Vec<Vec<char>>) -> bool {
             let ch = board[r][c];
             if ch != '.'
                 && (!cache.insert(format!("{} in row {}", ch, r))
-                || !cache.insert(format!("{} in col {}", ch, c))
-                || !cache.insert(format!("{} in sub-square {} {}", ch, r / 3, c / 3)))
+                    || !cache.insert(format!("{} in col {}", ch, c))
+                    || !cache.insert(format!("{} in sub-square {} {}", ch, r / 3, c / 3)))
             {
                 return false;
             }
@@ -158,7 +158,7 @@ mod test {
                         })),
                     })),
                 })),
-            })), )
+            })),)
         );
     }
 
@@ -178,7 +178,7 @@ mod test {
                         })),
                     })),
                 })),
-            })), )
+            })),)
         );
     }
 }
