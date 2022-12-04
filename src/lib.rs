@@ -12,6 +12,7 @@ pub mod day_19;
 pub mod day_2;
 pub mod day_20;
 pub mod day_21;
+pub mod day_22;
 pub mod day_3;
 pub mod day_4;
 pub mod day_5;
@@ -19,7 +20,6 @@ pub mod day_6;
 pub mod day_7;
 pub mod day_8;
 pub mod day_9;
-
 pub mod design_twitter_day16;
 pub mod insert_delete_get_random_day17;
 pub mod linked_lists;
