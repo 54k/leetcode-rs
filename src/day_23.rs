@@ -81,6 +81,7 @@ pub fn lowest_common_ancestor(
     }
 }
 
+#[allow(dead_code)]
 pub fn lowest_common_ancestor2(
     root: Option<Rc<RefCell<TreeNode>>>,
     p: Option<Rc<RefCell<TreeNode>>>,
