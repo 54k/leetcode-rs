@@ -81,6 +81,27 @@ pub fn lowest_common_ancestor(
     }
 }
 
+pub fn lowest_common_ancestor2(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    p: Option<Rc<RefCell<TreeNode>>>,
+    q: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    if root.is_none() || root == p || root == q {
+        return root;
+    }
+    let left = lowest_common_ancestor2(root.clone()?.borrow().left.clone(), p.clone(), q.clone());
+    let right = lowest_common_ancestor2(root.clone()?.borrow().right.clone(), p, q);
+    if left.is_some() && right.is_some() {
+        return root;
+    }
+
+    if left.is_some() {
+        left
+    } else {
+        right
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -121,5 +142,26 @@ mod test {
         })));
 
         println!("{:?}", lowest_common_ancestor(root, p.clone(), q.clone()));
+    }
+
+    #[test]
+    fn test98() {
+        let p = Some(Rc::new(RefCell::new(TreeNode::new(4))));
+        let q = Some(Rc::new(RefCell::new(TreeNode::new(3))));
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(3)))),
+                right: p.clone(),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: q.clone(),
+                val: 2,
+            }))),
+        })));
+
+        println!("{:?}", lowest_common_ancestor2(root, p.clone(), q.clone()));
     }
 }
