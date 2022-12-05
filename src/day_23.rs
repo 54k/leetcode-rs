@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode {
     pub val: i32,
@@ -31,6 +34,53 @@ pub fn middle_node(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     un_safe(head)
 }
 
+// Definition for a binary tree node.
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+#[allow(dead_code)]
+pub fn lowest_common_ancestor(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    p: Option<Rc<RefCell<TreeNode>>>,
+    q: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    if root.is_none() || root == p || root == q {
+        return root;
+    }
+
+    let left = lowest_common_ancestor(
+        root.clone().unwrap().borrow().left.clone(),
+        p.clone(),
+        q.clone(),
+    );
+    let right = lowest_common_ancestor(root.clone().unwrap().borrow().right.clone(), p, q);
+
+    if left.is_some() && right.is_some() {
+        return root;
+    }
+
+    if left.is_some() {
+        left
+    } else {
+        right
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -50,5 +100,26 @@ mod test {
                 }))
             })))
         );
+    }
+
+    #[test]
+    fn test97() {
+        let p = Some(Rc::new(RefCell::new(TreeNode::new(4))));
+        let q = Some(Rc::new(RefCell::new(TreeNode::new(3))));
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(3)))),
+                right: p.clone(),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: q.clone(),
+                val: 2,
+            }))),
+        })));
+
+        println!("{:?}", lowest_common_ancestor(root, p.clone(), q.clone()));
     }
 }
