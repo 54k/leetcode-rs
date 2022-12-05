@@ -102,6 +102,26 @@ pub fn lowest_common_ancestor2(
     }
 }
 
+#[allow(dead_code)]
+pub fn sorted_array_to_bst(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+    fn helper(nums: &Vec<i32>, left: i32, right: i32) -> Option<Rc<RefCell<TreeNode>>> {
+        if left > right {
+            return None;
+        }
+        let mid = (left + right) / 2;
+        let mut root = TreeNode {
+            val: nums[mid as usize],
+            left: None,
+            right: None,
+        };
+        root.left = helper(&nums, left, mid - 1);
+        root.right = helper(&nums, mid + 1, right);
+        Some(Rc::new(RefCell::new(root)))
+    }
+
+    helper(&nums, 0, (nums.len() - 1) as i32)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -163,5 +183,10 @@ mod test {
         })));
 
         println!("{:?}", lowest_common_ancestor2(root, p.clone(), q.clone()));
+    }
+
+    #[test]
+    fn test99() {
+        println!("{:?}", sorted_array_to_bst(vec![-10, -3, 0, 5, 9]));
     }
 }
