@@ -18,14 +18,12 @@ pub fn middle_node(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 
     fn un_safe(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
         unsafe {
-            let mut s = Box::into_raw(head.unwrap());
+            let mut s = Box::into_raw(head?);
             let mut f = s.as_ref();
-
             while f.is_some() && f.unwrap().next.is_some() {
-                f = f.unwrap().next.as_ref().unwrap().next.as_deref();
-                s = Box::into_raw((*s).next.take().unwrap());
+                f = f?.next.as_ref()?.next.as_deref();
+                s = Box::into_raw((*s).next.take()?);
             }
-
             Some(Box::from_raw(s))
         }
     }
@@ -47,7 +45,7 @@ mod test {
                     val: 2,
                     next: Some(Box::new(ListNode {
                         val: 3,
-                        next: None //Some(Box::new(ListNode { val: 4, next: None }))
+                        next: Some(Box::new(ListNode { val: 4, next: None }))
                     }))
                 }))
             })))
