@@ -76,6 +76,7 @@ pub fn max_path_sum(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
 
         (root.val + left).max(root.val + right)
     }
+
     let mut max = i32::MIN;
     dfs(root, &mut max);
     max
@@ -164,4 +165,33 @@ pub fn path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> Vec<Vec
     dfs(root.clone(), target_sum, &mut vec![], &mut res);
     assert_eq!(bfs(root, target_sum), res);
     res
+}
+
+#[allow(dead_code)]
+pub fn path_sum_iii(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> i32 {
+    fn solve(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> i32 {
+        if root.is_none() {
+            return 0;
+        }
+
+        fn dfs(root: Option<Rc<RefCell<TreeNode>>>, mut pre: i64, target_sum: i64) -> i32 {
+            if root.is_none() {
+                return 0;
+            }
+
+            let root = root.unwrap();
+            let root = root.borrow();
+            pre += root.val as i64;
+
+            return (pre == target_sum) as i32
+                + dfs(root.left.clone(), pre, target_sum)
+                + dfs(root.right.clone(), pre, target_sum);
+        }
+
+        return dfs(root.clone(), 0, target_sum as i64)
+            + solve(root.clone().unwrap().borrow().left.clone(), target_sum)
+            + solve(root.clone().unwrap().borrow().right.clone(), target_sum);
+    }
+
+    solve(root, target_sum)
 }
