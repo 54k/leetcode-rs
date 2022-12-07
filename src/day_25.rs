@@ -57,3 +57,26 @@ pub fn is_same_tree(p: Option<Rc<RefCell<TreeNode>>>, q: Option<Rc<RefCell<TreeN
     }
     dfs(p.clone(), q.clone()) && lol(p, q)
 }
+
+#[allow(dead_code)]
+pub fn max_path_sum(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>, max_sum: &mut i32) -> i32 {
+        if root.is_none() {
+            return 0;
+        }
+
+        let root = root.clone().unwrap();
+        let root = root.borrow();
+
+        let left = dfs(root.left.clone(), max_sum).max(0);
+        let right = dfs(root.right.clone(), max_sum).max(0);
+        let total = root.val + left + right;
+
+        *max_sum = (*max_sum).max(total);
+
+        (root.val + left).max(root.val + right)
+    }
+    let mut max = i32::MIN;
+    dfs(root, &mut max);
+    max
+}
