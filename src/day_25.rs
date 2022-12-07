@@ -105,34 +105,63 @@ pub fn has_path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> boo
 
 #[allow(dead_code)]
 pub fn path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> Vec<Vec<i32>> {
-    use std::collections::VecDeque;
-    let mut ans = vec![];
-    let mut q = VecDeque::new();
-    q.push_back((root, vec![], target_sum));
+    fn bfs(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> Vec<Vec<i32>> {
+        use std::collections::VecDeque;
+        let mut ans = vec![];
+        let mut q = VecDeque::new();
+        q.push_back((root, vec![], target_sum));
 
-    while !q.is_empty() {
-        let (e, mut p, t_sum) = q.pop_front().unwrap();
+        while !q.is_empty() {
+            let (e, mut p, t_sum) = q.pop_front().unwrap();
 
-        if e.is_none() {
-            continue;
+            if e.is_none() {
+                continue;
+            }
+
+            let e = e.unwrap();
+            let e = e.borrow();
+
+            p.push(e.val);
+
+            if e.left.is_none() && e.right.is_none() && t_sum - e.val == 0 {
+                ans.push(p.clone());
+            }
+
+            if e.left.is_some() {
+                q.push_back((e.left.clone(), p.clone(), t_sum - e.val));
+            }
+            if e.right.is_some() {
+                q.push_back((e.right.clone(), p.clone(), t_sum - e.val));
+            }
         }
 
-        let e = e.unwrap();
-        let e = e.borrow();
-
-        p.push(e.val);
-
-        if e.left.is_none() && e.right.is_none() && t_sum - e.val == 0 {
-            ans.push(p.clone());
-        }
-
-        if e.left.is_some() {
-            q.push_back((e.left.clone(), p.clone(), t_sum - e.val));
-        }
-        if e.right.is_some() {
-            q.push_back((e.right.clone(), p.clone(), t_sum - e.val));
-        }
+        ans
     }
 
-    ans
+    fn dfs(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        target_sum: i32,
+        path: &mut Vec<i32>,
+        ans: &mut Vec<Vec<i32>>,
+    ) {
+        if root.is_none() {
+            return;
+        }
+        let root = root.unwrap();
+        let root = root.borrow();
+        path.push(root.val);
+
+        if root.left.is_none() && root.right.is_none() && target_sum - root.val == 0 {
+            ans.push(path.clone());
+        }
+
+        dfs(root.left.clone(), target_sum - root.val, path, ans);
+        dfs(root.right.clone(), target_sum - root.val, path, ans);
+        path.pop();
+    }
+
+    let mut res = vec![];
+    dfs(root.clone(), target_sum, &mut vec![], &mut res);
+    assert_eq!(bfs(root, target_sum), res);
+    res
 }
