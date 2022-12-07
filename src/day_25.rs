@@ -80,3 +80,25 @@ pub fn max_path_sum(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     dfs(root, &mut max);
     max
 }
+
+#[allow(dead_code)]
+pub fn has_path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> bool {
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> bool {
+        if root.is_none() {
+            return false;
+        }
+
+        let root = root.clone().unwrap();
+        let root = root.borrow();
+
+        let t_sum = target_sum - root.val;
+
+        if root.left.is_none() && root.right.is_none() {
+            return t_sum == 0;
+        }
+
+        dfs(root.left.clone(), t_sum) || dfs(root.right.clone(), t_sum)
+    }
+
+    dfs(root, target_sum)
+}
