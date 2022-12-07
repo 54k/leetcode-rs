@@ -102,3 +102,37 @@ pub fn has_path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> boo
 
     dfs(root, target_sum)
 }
+
+#[allow(dead_code)]
+pub fn path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> Vec<Vec<i32>> {
+    use std::collections::VecDeque;
+    let mut ans = vec![];
+    let mut q = VecDeque::new();
+    q.push_back((root, vec![], target_sum));
+
+    while !q.is_empty() {
+        let (e, mut p, t_sum) = q.pop_front().unwrap();
+
+        if e.is_none() {
+            continue;
+        }
+
+        let e = e.unwrap();
+        let e = e.borrow();
+
+        p.push(e.val);
+
+        if e.left.is_none() && e.right.is_none() && t_sum - e.val == 0 {
+            ans.push(p.clone());
+        }
+
+        if e.left.is_some() {
+            q.push_back((e.left.clone(), p.clone(), t_sum - e.val));
+        }
+        if e.right.is_some() {
+            q.push_back((e.right.clone(), p.clone(), t_sum - e.val));
+        }
+    }
+
+    ans
+}
