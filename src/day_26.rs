@@ -80,15 +80,69 @@ pub fn build_tree(preorder: Vec<i32>, inorder: Vec<i32>) -> Option<Rc<RefCell<Tr
     )
 }
 
+#[allow(dead_code)]
+pub fn build_tree_ii(inorder: Vec<i32>, postorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+    use std::collections::HashMap;
+
+    let inorder_map = inorder
+        .into_iter()
+        .enumerate()
+        .map(|x| (x.1, x.0 as i32))
+        .collect::<HashMap<i32, i32>>();
+
+    fn arr_to_tree(
+        postorder: &[i32],
+        i: &mut usize,
+        left: i32,
+        right: i32,
+        m: &HashMap<i32, i32>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if left > right {
+            return None;
+        }
+
+        let mut root = TreeNode {
+            val: postorder[*i],
+            left: None,
+            right: None,
+        };
+
+        if *i > 0 {
+            *i -= 1;
+        }
+
+        root.right = arr_to_tree(postorder, i, m.get(&root.val).unwrap() + 1, right, m);
+        root.left = arr_to_tree(postorder, i, left, m.get(&root.val).unwrap() - 1, m);
+
+        Some(Rc::new(RefCell::new(root)))
+    }
+
+    arr_to_tree(
+        &postorder[..],
+        &mut (postorder.len() - 1),
+        0,
+        postorder.len() as i32 - 1,
+        &inorder_map,
+    )
+}
+
 #[cfg(test)]
 mod test {
-    use crate::day_26::build_tree;
+    use crate::day_26::*;
 
     #[test]
     fn test102() {
         println!(
             "{:?}",
             build_tree(vec![3, 9, 20, 15, 7], vec![9, 3, 15, 20, 7])
+        );
+    }
+
+    #[test]
+    fn test103() {
+        println!(
+            "{:?}",
+            build_tree_ii(vec![9, 3, 15, 20, 7], vec![9, 15, 7, 20, 3])
         );
     }
 }
