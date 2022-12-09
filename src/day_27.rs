@@ -122,6 +122,45 @@ pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
     two_pointers(nums, k)
 }
 
+#[allow(dead_code)]
+pub fn can_jump(nums: Vec<i32>) -> bool {
+    fn noob(nums: Vec<i32>) -> bool {
+        // state: dp[i] stores max next idx
+        // formulae: dp[i] = dp[i - 1] >= i ? (nums[i] + i).max(dp[i - 1]) : 0;
+        let mut prev = nums[0];
+        let mut cur = prev;
+        for i in 1..nums.len() {
+            cur = if prev >= i as i32 {
+                (nums[i] + i as i32).max(prev)
+            } else {
+                return false;
+            };
+            prev = cur;
+        }
+        cur >= (nums.len() - 1) as i32
+    }
+
+    fn pro(nums: Vec<i32>) -> bool {
+        let mut n = 1;
+        for i in (0..nums.len() - 1).rev() {
+            n = if nums[i] < n { n + 1 } else { 1 };
+        }
+        n == 1
+    }
+
+    fn pro2(nums: Vec<i32>) -> bool {
+        let mut goal = nums.len() - 1;
+        for i in (0..nums.len()).rev() {
+            if i + nums[i] as usize >= goal {
+                goal = i
+            }
+        }
+        goal == 0
+    }
+
+    noob(nums)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -137,5 +176,12 @@ mod test {
     fn test105() {
         println!("{}", subarrays_with_k_distinct(vec![1, 2, 1, 2, 3], 2)); // 7
         println!("{}", subarrays_with_k_distinct(vec![1, 2, 1, 3, 4], 3)); // 3
+    }
+
+    #[test]
+    fn test106() {
+        println!("{}", can_jump(vec![2, 0, 0])); // true
+        println!("{}", can_jump(vec![2, 3, 1, 1, 4])); // true
+        println!("{}", can_jump(vec![3, 2, 1, 0, 4])); // false
     }
 }
