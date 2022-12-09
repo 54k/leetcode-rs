@@ -59,13 +59,88 @@ pub fn count_distinct(nums: Vec<i32>, k: i32, p: i32) -> i32 {
     return set.len() as i32;
 }
 
+#[allow(dead_code)]
+pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
+    fn brute(nums: Vec<i32>, k: i32) -> i32 {
+        use std::collections::HashSet;
+        let k = k as usize;
+        let mut ans = 0;
+        for i in 0..nums.len() {
+            for j in i..nums.len() {
+                let sa = &nums[i..=j];
+                let set = sa.iter().copied().collect::<HashSet<i32>>();
+                if set.len() == k {
+                    ans += 1;
+                }
+            }
+        }
+        ans
+    }
+
+    //https://leetcode.com/problems/subarrays-with-k-different-integers/solutions/234542/python-two-pointer-one-sliding-window-o-n-solution/?orderBy=most_relevant
+    fn two_pointers(nums: Vec<i32>, k: i32) -> i32 {
+        // The idea is to keep the invariant that the sliding window contains K different integers,
+        // shrink the sliding window form left as much as we can, and keep track of the number of subarrays ending at each position.
+        // The time complexity is O(N), and the space complexity is O(K).
+        // Thank @h11129 for pointing out the redundancy in my original version! The modified version is as follows.
+        use std::collections::hash_map::Entry;
+        use std::collections::HashMap;
+
+        let k = k as usize;
+        let mut ans = 0;
+        let mut dp = 0;
+        let mut map = HashMap::new();
+
+        let mut i = 0;
+        for n in nums.iter() {
+            if let Entry::Vacant(e) = map.entry(n) {
+                e.insert(1);
+            } else {
+                *map.get_mut(n).unwrap() += 1;
+            }
+
+            if map.len() < k {
+                continue;
+            } else if map.len() == k {
+                dp = 1.max(dp);
+            } else {
+                let g = map.get_mut(&nums[i]).unwrap();
+                *g -= 1;
+                if *g == 0 {
+                    map.remove(&nums[i]);
+                }
+                i += 1;
+                dp = 1;
+            }
+
+            while *map.get(&nums[i]).unwrap() != 1 {
+                dp += 1;
+                let g = map.get_mut(&nums[i]).unwrap();
+                *g -= 1;
+                i += 1;
+            }
+            ans += dp;
+        }
+        ans
+    }
+
+    two_pointers(nums, k)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+
     #[test]
     fn test104() {
         println!("{}", count_distinct(vec![2, 3, 3, 2, 2], 2, 2));
         println!("{}", count_distinct(vec![1, 2, 3, 4], 4, 1));
         println!("{}", count_distinct(vec![6, 20, 5, 18], 3, 14));
+    }
+
+    #[test]
+    fn test105() {
+        println!("{}", subarrays_with_k_distinct(vec![1, 2, 1, 2, 3], 2)); // 7
+        println!("{}", subarrays_with_k_distinct(vec![1, 2, 1, 3, 4], 3)); // 3
     }
 }
