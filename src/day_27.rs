@@ -83,7 +83,6 @@ pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
         // shrink the sliding window form left as much as we can, and keep track of the number of subarrays ending at each position.
         // The time complexity is O(N), and the space complexity is O(K).
         // Thank @h11129 for pointing out the redundancy in my original version! The modified version is as follows.
-        use std::collections::hash_map::Entry;
         use std::collections::HashMap;
 
         let k = k as usize;
@@ -93,11 +92,7 @@ pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
 
         let mut i = 0;
         for n in nums.iter() {
-            if let Entry::Vacant(e) = map.entry(n) {
-                e.insert(1);
-            } else {
-                *map.get_mut(n).unwrap() += 1;
-            }
+            *map.entry(n).or_insert(0) += 1;
 
             if map.len() < k {
                 continue;
