@@ -1,38 +1,25 @@
 #include <stdio.h>
 
-static int n, m;
+int mod(int a, int m) {
+    return ((a % m) + m) % m;
+}
 
-char *solve(const int arr[], int k) {
-    int l = 0;
-    int r = n - 1;
-    while (l <= r) {
-        int mid = l + (r - l) / 2;
-
-        if (arr[mid] < k) {
-            l = mid + 1;
-        } else if (arr[mid] > k) {
-            r = mid - 1;
-        } else {
-            return "YES";
-        }
-    }
-    return "NO";
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, mod(a, b));
 }
 
 int main() {
-    scanf("%d", &n);
-    scanf("%d", &m);
-
-    int arr[n];
-
-    for (int i = 0; i < n; ++i) {
+    int N;
+    scanf("%d", &N);
+    int arr[N];
+    for (int i = 0; i < N; ++i) {
         scanf("%d", &arr[i]);
     }
-
-    for (int i = 0; i < m; ++i) {
-        int k;
-        scanf("%d", &k);
-        printf("%s\n", solve(arr, k));
+    int prev = arr[0];
+    for (int i = 1; i < N; ++i) {
+        prev = gcd(prev, arr[i]);
     }
+    printf("%d", prev);
     return 0;
 }
