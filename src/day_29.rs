@@ -37,3 +37,36 @@ pub fn binary_tree_paths(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<String> {
     dfs(root, &mut result, &mut vec![]);
     result
 }
+
+#[allow(dead_code)]
+pub fn my_pow(x: f64, n: i32) -> f64 {
+    fn pow(x: f64, n: i32) -> f64 {
+        if n == 0 {
+            return 1.0;
+        }
+        let u = pow(x, n / 2);
+        if n % 2 == 0 {
+            u * u
+        } else {
+            x * u * u
+        }
+    }
+    let p = pow(x, n.abs());
+    if n < 0 {
+        1.0 / p
+    } else {
+        p
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::day_29::my_pow;
+
+    #[test]
+    fn test104() {
+        println!("{}", my_pow(2.0, 3));
+        println!("{}", my_pow(2.0, -2));
+        println!("{}", my_pow(34.00515, -3));
+    }
+}
