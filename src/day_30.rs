@@ -112,6 +112,76 @@ pub fn num_islands(mut grid: Vec<Vec<char>>) -> i32 {
     ans
 }
 
+#[allow(dead_code)]
+pub fn insert(mut intervals: Vec<Vec<i32>>, new_interval: Vec<i32>) -> Vec<Vec<i32>> {
+    let mut res = vec![];
+    intervals.push(new_interval);
+    intervals.sort_by(|i, j| i[0].cmp(&j[0]));
+
+    let mut start = intervals[0][0];
+    let mut end = intervals[0][1];
+
+    for i in 1..intervals.len() {
+        let interval = &intervals[i];
+
+        if end >= interval[0] {
+            end = end.max(interval[1]);
+        } else {
+            res.push(vec![start, end]);
+            start = interval[0];
+            end = interval[1];
+        }
+    }
+    res.push(vec![start, end]);
+    res
+}
+
+#[allow(dead_code)]
+pub fn interval_intersection(
+    first_list: Vec<Vec<i32>>,
+    second_list: Vec<Vec<i32>>,
+) -> Vec<Vec<i32>> {
+    let mut ans = vec![];
+    let mut i = 0;
+    let mut j = 0;
+
+    while i < first_list.len() && j < second_list.len() {
+        let lo = first_list[i][0].max(second_list[j][0]);
+        let hi = first_list[i][1].min(second_list[j][1]);
+
+        if lo <= hi {
+            ans.push(vec![lo, hi]);
+        }
+
+        if first_list[i][1] < second_list[j][1] {
+            i += 1;
+        } else {
+            j += 1;
+        }
+    }
+
+    ans
+}
+
+#[allow(dead_code)]
+pub fn match_players_and_trainers(mut players: Vec<i32>, mut trainers: Vec<i32>) -> i32 {
+    let mut ans = 0;
+    let mut i = 0;
+    let mut j = 0;
+
+    players.sort();
+    trainers.sort();
+
+    while i < players.len() && j < trainers.len() {
+        if players[i] <= trainers[j] {
+            ans += 1;
+            i += 1;
+        }
+        j += 1;
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -146,5 +216,34 @@ mod test {
                 vec!['0', '0', '0', '0', '0'],
             ])
         ); // 1
+    }
+
+    #[test]
+    fn test108() {
+        println!("{:?}", insert(vec![vec![1, 3], vec![6, 9]], vec![2, 5]));
+    }
+
+    #[test]
+    fn test109() {
+        println!(
+            "{:?}",
+            interval_intersection(
+                vec![vec![0, 2], vec![5, 10], vec![13, 23], vec![24, 25]],
+                vec![vec![1, 5], vec![8, 12], vec![15, 24], vec![25, 26]]
+            )
+        ); // [[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]
+    }
+
+    #[test]
+    fn test110() {
+        println!(
+            "{:?}",
+            match_players_and_trainers(vec![4, 7, 9], vec![8, 2, 5, 8])
+        ); // 2
+        println!("{:?}", match_players_and_trainers(vec![1, 1, 1], vec![10])); // 1
+        println!(
+            "{:?}",
+            match_players_and_trainers(vec![2, 2, 1], vec![10, 1])
+        ); // 2
     }
 }
