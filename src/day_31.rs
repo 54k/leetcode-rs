@@ -117,6 +117,80 @@ pub fn longest_ones(nums: Vec<i32>, k: i32) -> i32 {
     res.max(nums.len() - start) as i32
 }
 
+#[allow(dead_code)]
+pub fn length_of_longest_substring(s: String) -> i32 {
+    use std::collections::HashSet;
+
+    let s = s.chars().collect::<Vec<char>>();
+    let mut seen = HashSet::new();
+    let mut ans = 0;
+    let mut start = 0;
+    for end in 0..s.len() {
+        while seen.contains(&s[end]) {
+            seen.remove(&s[start]);
+            start += 1;
+        }
+        seen.insert(s[end]);
+        ans = ans.max(end - start + 1);
+    }
+
+    ans.max(s.len() - start) as i32
+}
+
+#[allow(dead_code)]
+pub fn min_window(s: String, t: String) -> String {
+    use std::collections::HashMap;
+    const INF: usize = 1000000007;
+
+    let s = s.chars().collect::<Vec<char>>();
+    let mut t = t.chars().fold(HashMap::<char, i32>::new(), |mut acc, c| {
+        *acc.entry(c).or_insert(0) += 1;
+        acc
+    });
+
+    let desired = t.len();
+
+    let mut formed = 0;
+    let mut cur_cnt = HashMap::new();
+
+    let mut start = 0;
+    let mut end = 0;
+
+    let mut ans = (INF, 0, 0);
+
+    while end < s.len() {
+        let ch = s[end];
+
+        *cur_cnt.entry(ch).or_insert(0) += 1;
+        if t.contains_key(&ch) && t.get(&ch) == cur_cnt.get(&ch) {
+            formed += 1;
+        }
+
+        while start <= end && desired == formed {
+            let ch = s[start];
+
+            if ans.0 > end - start + 1 {
+                ans = (end - start + 1, start, end);
+            }
+
+            cur_cnt.entry(ch).and_modify(|c| *c -= 1);
+
+            if t.contains_key(&ch) && t.get(&ch) > cur_cnt.get(&ch) {
+                formed -= 1;
+            }
+            start += 1;
+        }
+
+        end += 1;
+    }
+
+    if ans.0 == INF {
+        "".to_string()
+    } else {
+        s[ans.1..=ans.2].into_iter().collect::<String>()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -124,5 +198,22 @@ mod test {
     #[test]
     fn test111() {
         println!("{}", longest_ones(vec![1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0], 2)); // 6
+    }
+
+    #[test]
+    fn test112() {
+        println!("{}", length_of_longest_substring("abcabcbb".to_string())); // 3
+        println!("{}", length_of_longest_substring("bbbbb".to_string())); // 1
+        println!("{}", length_of_longest_substring("pwwkew".to_string())); // 3
+        println!("{}", length_of_longest_substring("dvdf".to_string())); // 3
+    }
+
+    #[test]
+    fn test113() {
+        println!(
+            "{}",
+            min_window("ADOBECODEBANC".to_string(), "ABC".to_string())
+        ); // BANC
+        println!("{}", min_window("a".to_string(), "a".to_string())); // a
     }
 }
