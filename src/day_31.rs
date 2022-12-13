@@ -191,6 +191,40 @@ pub fn min_window(s: String, t: String) -> String {
     }
 }
 
+#[allow(dead_code)]
+fn shrink_string(s: String) -> String {
+    if s.is_empty() {
+        return "".to_string();
+    }
+
+    let mut res = String::new();
+    let mut s = s.chars().collect::<Vec<_>>();
+    let mut cnt = 1;
+    let mut prev = s[0];
+
+    for ch in &s[1..] {
+        if *ch != prev {
+            if cnt > 1 {
+                res.push_str(&format!("{}{}", cnt, prev));
+            } else {
+                res.push(prev);
+            }
+            prev = *ch;
+            cnt = 1;
+        } else {
+            cnt += 1;
+        }
+    }
+
+    if cnt > 1 {
+        res.push_str(&format!("{}{}", cnt, prev));
+    } else {
+        res.push(prev);
+    }
+
+    res
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -215,5 +249,12 @@ mod test {
             min_window("ADOBECODEBANC".to_string(), "ABC".to_string())
         ); // BANC
         println!("{}", min_window("a".to_string(), "a".to_string())); // a
+    }
+
+    #[test]
+    fn test114() {
+        println!("{}", shrink_string("aaaabbcabfffff".to_string())); // 4a2bcab5f
+        println!("{}", shrink_string("daddy".to_string())); // da2dy
+        println!("{}", shrink_string("".to_string())); // ""
     }
 }
