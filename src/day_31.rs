@@ -257,6 +257,7 @@ mod test {
         println!("{}", shrink_string("daddy".to_string())); // da2dy
         println!("{}", shrink_string("rdd  ".to_string())); // r2d2
         println!("{}", shrink_string("cpppo".to_string())); // c3po
+        println!("{}", shrink_string("\0\0\0\0  ".to_string())); // 4<null>2
         println!("{}", shrink_string("".to_string())); // ""
     }
 }
