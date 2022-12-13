@@ -1,7 +1,7 @@
 pub fn frequency_sort(s: String) -> String {
     use std::collections::{BinaryHeap, HashMap};
     let mut hm = HashMap::new();
-    for c in s.chars().into_iter() {
+    for c in s.chars() {
         if let std::collections::hash_map::Entry::Vacant(e) = hm.entry(c) {
             e.insert(1);
         } else {

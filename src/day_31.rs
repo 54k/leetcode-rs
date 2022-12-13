@@ -143,7 +143,7 @@ pub fn min_window(s: String, t: String) -> String {
     const INF: usize = 1000000007;
 
     let s = s.chars().collect::<Vec<char>>();
-    let mut t = t.chars().fold(HashMap::<char, i32>::new(), |mut acc, c| {
+    let t = t.chars().fold(HashMap::<char, i32>::new(), |mut acc, c| {
         *acc.entry(c).or_insert(0) += 1;
         acc
     });
@@ -187,7 +187,7 @@ pub fn min_window(s: String, t: String) -> String {
     if ans.0 == INF {
         "".to_string()
     } else {
-        s[ans.1..=ans.2].into_iter().collect::<String>()
+        s[ans.1..=ans.2].iter().collect::<String>()
     }
 }
 
@@ -198,7 +198,7 @@ fn shrink_string(s: String) -> String {
     }
 
     let mut res = String::new();
-    let mut s = s.chars().collect::<Vec<_>>();
+    let s = s.chars().collect::<Vec<_>>();
     let mut cnt = 1;
     let mut prev = s[0];
 

@@ -115,8 +115,8 @@ pub fn sorted_array_to_bst(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
             left: None,
             right: None,
         };
-        root.left = helper(&nums, left, mid - 1);
-        root.right = helper(&nums, mid + 1, right);
+        root.left = helper(nums, left, mid - 1);
+        root.right = helper(nums, mid + 1, right);
         Some(Rc::new(RefCell::new(root)))
     }
 
@@ -162,7 +162,7 @@ mod test {
             }))),
         })));
 
-        println!("{:?}", lowest_common_ancestor(root, p.clone(), q.clone()));
+        println!("{:?}", lowest_common_ancestor(root, p, q));
     }
 
     #[test]
@@ -183,7 +183,7 @@ mod test {
             }))),
         })));
 
-        println!("{:?}", lowest_common_ancestor2(root, p.clone(), q.clone()));
+        println!("{:?}", lowest_common_ancestor2(root, p, q));
     }
 
     #[test]

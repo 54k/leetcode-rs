@@ -65,7 +65,7 @@ pub fn max_path_sum(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
             return 0;
         }
 
-        let root = root.clone().unwrap();
+        let root = root.unwrap();
         let root = root.borrow();
 
         let left = dfs(root.left.clone(), max_sum).max(0);
@@ -89,7 +89,7 @@ pub fn has_path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> boo
             return false;
         }
 
-        let root = root.clone().unwrap();
+        let root = root.unwrap();
         let root = root.borrow();
 
         let t_sum = target_sum - root.val;
@@ -183,14 +183,14 @@ pub fn path_sum_iii(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> i32
             let root = root.borrow();
             pre += root.val as i64;
 
-            return (pre == target_sum) as i32
+            (pre == target_sum) as i32
                 + dfs(root.left.clone(), pre, target_sum)
-                + dfs(root.right.clone(), pre, target_sum);
+                + dfs(root.right.clone(), pre, target_sum)
         }
 
         return dfs(root.clone(), 0, target_sum as i64)
             + solve(root.clone().unwrap().borrow().left.clone(), target_sum)
-            + solve(root.clone().unwrap().borrow().right.clone(), target_sum);
+            + solve(root.unwrap().borrow().right.clone(), target_sum);
     }
 
     solve(root, target_sum)

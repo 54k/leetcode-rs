@@ -5,7 +5,7 @@ pub fn jump(nums: Vec<i32>) -> i32 {
             return 0;
         }
 
-        let mut nums = nums.into_iter().map(|x| x as usize).collect::<Vec<usize>>();
+        let nums = nums.into_iter().map(|x| x as usize).collect::<Vec<usize>>();
         let mut jumps = 0;
         let mut i = 0;
 
@@ -35,9 +35,9 @@ pub fn jump(nums: Vec<i32>) -> i32 {
 }
 
 #[allow(dead_code)]
-pub fn next_greater_elements(mut nums: Vec<i32>) -> Vec<i32> {
+pub fn next_greater_elements(nums: Vec<i32>) -> Vec<i32> {
     fn brute(mut nums: Vec<i32>) -> Vec<i32> {
-        nums.extend(nums.iter().copied().collect::<Vec<i32>>());
+        nums.extend(nums.to_vec());
 
         let mut result = vec![];
         let mut stack = vec![];
@@ -60,7 +60,7 @@ pub fn next_greater_elements(mut nums: Vec<i32>) -> Vec<i32> {
         result
     }
 
-    fn smart(mut nums: Vec<i32>) -> Vec<i32> {
+    fn smart(nums: Vec<i32>) -> Vec<i32> {
         let mut stack = vec![];
         let mut result = vec![-1; nums.len()];
         for i in (0..nums.len() * 2 - 1).rev() {

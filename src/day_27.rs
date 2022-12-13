@@ -14,7 +14,7 @@ pub fn max_ancestor_diff(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         if root.is_none() {
             return max - min;
         }
-        let root = root.clone().unwrap();
+        let root = root.unwrap();
         let root = root.borrow();
 
         min = min.min(root.val);
@@ -23,7 +23,7 @@ pub fn max_ancestor_diff(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         let left = dfs(root.left.clone(), min, max);
         let right = dfs(root.right.clone(), min, max);
 
-        return left.max(right);
+        left.max(right)
     }
 
     if root.is_none() {
@@ -56,7 +56,7 @@ pub fn count_distinct(nums: Vec<i32>, k: i32, p: i32) -> i32 {
         }
     }
 
-    return set.len() as i32;
+    set.len() as i32
 }
 
 #[allow(dead_code)]

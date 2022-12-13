@@ -5,12 +5,10 @@ pub struct ListNode {
 }
 
 #[allow(dead_code)]
-pub fn odd_even_list(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+pub fn odd_even_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     fn un_safe(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
         use std::ptr::*;
-        if head.is_none() {
-            return None;
-        }
+        head.as_ref()?;
         unsafe {
             let mut idx = 1;
             let mut odd_head: *mut ListNode = null_mut();
@@ -83,7 +81,7 @@ pub fn odd_even_list(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 }
 
 #[allow(dead_code)]
-pub fn split_list_to_parts(mut head: Option<Box<ListNode>>, k: i32) -> Vec<Option<Box<ListNode>>> {
+pub fn split_list_to_parts(head: Option<Box<ListNode>>, k: i32) -> Vec<Option<Box<ListNode>>> {
     fn long(mut head: Option<Box<ListNode>>, k: i32) -> Vec<Option<Box<ListNode>>> {
         fn list_size(head: &Option<Box<ListNode>>) -> usize {
             let mut res = 0;

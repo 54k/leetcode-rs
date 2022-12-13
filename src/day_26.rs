@@ -17,7 +17,7 @@ pub fn leaf_similar(
         if root.is_none() {
             return;
         }
-        let root = root.clone().unwrap();
+        let root = root.unwrap();
         let root = root.borrow();
 
         if root.left.is_none() && root.right.is_none() {
