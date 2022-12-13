@@ -94,3 +94,35 @@ pub fn min_falling_path_sum(matrix: Vec<Vec<i32>>) -> i32 {
 
     turn(matrix)
 }
+
+#[allow(dead_code)]
+pub fn longest_ones(nums: Vec<i32>, k: i32) -> i32 {
+    let mut res = 0;
+    let mut start = 0;
+    let mut zeros_count = 0;
+
+    for end in 0..nums.len() {
+        if nums[end] == 0 {
+            zeros_count += 1;
+        }
+        if zeros_count > k {
+            res = res.max(end - start);
+            while nums[start] == 1 {
+                start += 1;
+            }
+            start += 1;
+            zeros_count -= 1;
+        }
+    }
+    res.max(nums.len() - start) as i32
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test111() {
+        println!("{}", longest_ones(vec![1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0], 2)); // 6
+    }
+}
