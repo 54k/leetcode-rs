@@ -103,6 +103,47 @@ pub fn longest_palindrome_subseq(s: String) -> i32 {
     bottom_up(s)
 }
 
+#[allow(dead_code)]
+pub fn find_order(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> Vec<i32> {
+    let num_courses = num_courses as usize;
+
+    fn dfs(e: usize, adj: &Vec<Vec<usize>>, s: &mut Vec<i32>, v: &mut Vec<usize>, c: &mut bool) {
+        if v[e] == 1 {
+            *c = true;
+            return;
+        }
+        v[e] = 1;
+        for n in &adj[e] {
+            if v[*n] != 2 {
+                dfs(*n, adj, s, v, c);
+            }
+        }
+        v[e] = 2;
+        s.push(e as i32);
+    }
+
+    let mut adj = vec![vec![]; num_courses];
+    for c in &prerequisites {
+        adj[c[1] as usize].push(c[0] as usize);
+    }
+
+    let mut ans = vec![];
+    let mut v = vec![0; num_courses];
+    let mut cycle_found = false;
+
+    for p in 0..num_courses {
+        if v[p] == 0 {
+            dfs(p, &adj, &mut ans, &mut v, &mut cycle_found);
+        }
+    }
+
+    if cycle_found {
+        return vec![];
+    }
+    ans.reverse();
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
