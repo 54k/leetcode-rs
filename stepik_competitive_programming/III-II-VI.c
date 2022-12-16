@@ -9,12 +9,14 @@ int main() {
         printf("1");
         return 0;
     }
-    ll dp[n + 1];
-    dp[0] = 1;
-    dp[1] = 2;
-    for (int i = 2; i <= n; ++i) {
-        dp[i] = dp[i - 1] + dp[i - 2];
+    ll a = 1;
+    ll b = 1;
+    ll c;
+    for (int i = 1; i <= n; ++i) {
+        c = a + b;
+        a = b;
+        b = c;
     }
-    printf("%lld", dp[n]);
+    printf("%lld", c);
     return 0;
 }
