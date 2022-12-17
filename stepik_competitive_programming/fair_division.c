@@ -16,11 +16,11 @@ int cmpval(const void *a, const void *b) {
     if (an->val != bn->val) {
         return an->val - bn->val;
     }
-    return an->idx - bn->idx;
+    return an->idx < bn->idx;
 }
 
 int cmpidx(const void *a, const void *b) {
-    return ((struct Node *) a)->idx - ((struct Node *) b)->idx;
+    return ((struct Node *) a)->idx > ((struct Node *) b)->idx;
 }
 
 void solve(int cost, int n) {
