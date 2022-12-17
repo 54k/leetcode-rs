@@ -11,7 +11,12 @@ struct Node {
 } q[101];
 
 int cmpval(const void *a, const void *b) {
-    return ((struct Node *) a)->val - ((struct Node *) b)->val;
+    struct Node *an = ((struct Node *) a);
+    struct Node *bn = ((struct Node *) b);
+    if (an->val != bn->val) {
+        return an->val - bn->val;
+    }
+    return an->idx - bn->idx;
 }
 
 int cmpidx(const void *a, const void *b) {
