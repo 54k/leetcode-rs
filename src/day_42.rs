@@ -1,3 +1,5 @@
+// http://oeis.org/A052980
+// https://cs.stackexchange.com/questions/66658/domino-and-tromino-combined-tiling
 #[allow(dead_code)]
 pub fn num_tilings(n: i32) -> i32 {
     fn dfs(n: i32, c: &mut Vec<i32>) -> i32 {
