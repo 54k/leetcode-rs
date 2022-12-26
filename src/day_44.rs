@@ -40,8 +40,8 @@ pub fn count_and_say(n: i32) -> String {
         let result = result.chars().collect::<Vec<_>>();
 
         let mut res = String::new();
-        let mut p = 0;
 
+        let mut p = 0;
         while p < result.len() {
             let val = result[p];
             let mut count = 0;
@@ -82,6 +82,6 @@ mod test {
 
     #[test]
     fn test129() {
-        println!("{}", count_and_say(4));
+        println!("{}", count_and_say(4)); // 1 2 1 1
     }
 }
