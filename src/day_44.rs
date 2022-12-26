@@ -33,13 +33,55 @@ pub fn multiply(num1: String, num2: String) -> String {
     ans.into_iter().rev().collect()
 }
 
+// https://leetcode.com/problems/count-and-say/solutions/15995/examples-of-nth-sequence/?orderBy=most_relevant
+#[allow(dead_code)]
+pub fn count_and_say(n: i32) -> String {
+    fn build(result: String) -> String {
+        let result = result.chars().collect::<Vec<_>>();
+
+        let mut res = String::new();
+        let mut p = 0;
+
+        while p < result.len() {
+            let val = result[p];
+            let mut count = 0;
+
+            while p < result.len() && result[p] == val {
+                p += 1;
+                count += 1;
+            }
+
+            res.push_str(&count.to_string());
+            res.push_str(&val.to_string());
+        }
+
+        res
+    }
+
+    if n <= 0 {
+        return "-1".to_string();
+    }
+
+    let mut result = "1".to_string();
+    for _ in 1..n {
+        result = build(result);
+    }
+
+    result
+}
+
 #[cfg(test)]
 mod test {
-    use crate::day_44::multiply;
+    use crate::day_44::*;
 
     #[test]
     fn test128() {
         println!("{}", multiply("123".to_string(), "456".to_string())); // 56088
         println!("{}", multiply("123".to_string(), "0".to_string())); // 0
+    }
+
+    #[test]
+    fn test129() {
+        println!("{}", count_and_say(4));
     }
 }
