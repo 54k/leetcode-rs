@@ -1,10 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 500001
+#define N 500000
 
 static long dp[N];
 static int p[N];
+
+//static int q[N];
+//
+//static int q_size;
+//static int q_front;
+//static int q_back;
+//
+//void push_min(int i) {
+//    while (q_size && dp[q[q_back]] > dp[i]) {
+//        q_back = (q_back - 1) % N;
+//        --q_size;
+//    }
+//    if (!q_size) q_back = q_front = 0;
+//    else q[++q_back] = i;
+//    ++q_size;
+//}
+//
+//void pop_front() {
+//    if (q_size) {
+//        q_front = (q_front + 1) % N;
+//        if (!--q_size) q_back = q_front = 0;
+//    }
+//}
 
 ///
 /// Stack
@@ -127,17 +150,14 @@ int main() {
     }
 
     long ans = dp[n - 1];
-    int j = 0;
-    int x = n - 1;
-    while (x != -1) {
-        dp[j] = x + 1;
+    int ans_length = 0;
+    for (int x = n - 1; x != -1; ++ans_length) {
+        dp[ans_length] = x + 1;
         x = p[x];
-        j++;
     }
-    printf("%ld %d\n", ans, j);
-    while (--j >= 0) {
-        printf("%ld ", dp[j]);
+    printf("%ld %d\n", ans, ans_length);
+    while (--ans_length >= 0) {
+        printf("%ld ", dp[ans_length]);
     }
-
     return 0;
 }
