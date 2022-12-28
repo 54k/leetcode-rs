@@ -6,29 +6,6 @@
 static long dp[N];
 static int p[N];
 
-//static int q[N];
-//
-//static int q_size;
-//static int q_front;
-//static int q_back;
-//
-//void push_min(int i) {
-//    while (q_size && dp[q[q_back]] > dp[i]) {
-//        q_back = (q_back - 1) % N;
-//        --q_size;
-//    }
-//    if (!q_size) q_back = q_front = 0;
-//    else q[++q_back] = i;
-//    ++q_size;
-//}
-//
-//void pop_front() {
-//    if (q_size) {
-//        q_front = (q_front + 1) % N;
-//        if (!--q_size) q_back = q_front = 0;
-//    }
-//}
-
 ///
 /// Stack
 ///
