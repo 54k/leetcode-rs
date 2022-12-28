@@ -42,7 +42,7 @@ typedef struct t_stack {
     t_node *head;
 } t_stack;
 
-void s_spush(t_stack *self, long val, int idx) {
+void s_push(t_stack *self, long val, int idx) {
     t_node *node = (t_node *) malloc(sizeof(t_node));
     node->val = val;
     node->idx = idx;
@@ -81,7 +81,7 @@ void drain(t_stack *to, t_stack *from) {
     if (s_is_empty(to)) {
         while (!s_is_empty(from)) {
             t_node *pop = s_pop(from);
-            s_spush(to, pop->val, pop->idx);
+            s_push(to, pop->val, pop->idx);
         }
     }
 }
@@ -107,7 +107,7 @@ t_node *d_top_front(struct t_deque *self) {
 
 void d_push_back(struct t_deque *self, long val, int idx) {
     self->size++;
-    s_spush(self->right, val, idx);
+    s_push(self->right, val, idx);
 }
 
 t_node *d_pop_back(struct t_deque *self) {
