@@ -37,33 +37,25 @@ pub fn all_paths_source_target(graph: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
             return vec![];
         }
         let mut res = vec![];
-        let mut vis = vec![false; graph.len()];
-
         let mut q = vec![];
         q.push((0, vec![]));
 
         while !q.is_empty() {
             let (e, mut path) = q.pop().unwrap();
-            vis[e as usize] = true;
             path.push(e);
 
             if e as usize == graph.len() - 1 {
                 res.push(path.clone());
-                for p in &path {
-                    vis[*p as usize] = false;
-                }
             } else {
                 for v in graph[e as usize].iter() {
-                    if !vis[*v as usize] {
-                        q.push((*v, path.clone()));
-                    }
+                    q.push((*v, path.clone()));
                 }
             }
         }
         res
     }
 
-    dfs(graph)
+    bfs(graph)
 }
 
 #[cfg(test)]
@@ -84,5 +76,14 @@ mod test {
             "{:?}",
             all_paths_source_target(vec![vec![1, 2], vec![3], vec![3], vec![1, 2, 0]])
         ); // [[0, 1, 3], [0, 2, 3]]
+           // println!(
+           //     "{:?}",
+           //     all_paths_source_target(vec![
+           //         vec![1, 2],
+           //         vec![3, 2, 0],
+           //         vec![3, 1, 0],
+           //         vec![1, 2, 0]
+           //     ])
+           // ); // [[0, 1, 3], [0, 2, 3], [0, 1, 2, 3], [0, 2, 1, 3]]
     }
 }
