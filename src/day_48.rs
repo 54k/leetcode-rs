@@ -33,32 +33,37 @@ pub fn all_paths_source_target(graph: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     }
 
     fn bfs(graph: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-        use std::collections::VecDeque;
         if graph.is_empty() {
             return vec![];
         }
         let mut res = vec![];
         let mut vis = vec![false; graph.len()];
-        let mut q = VecDeque::new();
-        q.push_back((0, vec![]));
+
+        let mut q = vec![];
+        q.push((0, vec![]));
+
         while !q.is_empty() {
-            let (e, mut path) = q.pop_front().unwrap();
+            let (e, mut path) = q.pop().unwrap();
             vis[e as usize] = true;
             path.push(e);
+
             if e as usize == graph.len() - 1 {
                 res.push(path.clone());
-            }
-            for v in graph[e as usize].iter() {
-                if !vis[*v as usize] {
-                    q.push_back((*v, path.clone()));
+                for p in &path {
+                    vis[*p as usize] = false;
+                }
+            } else {
+                for v in graph[e as usize].iter() {
+                    if !vis[*v as usize] {
+                        q.push((*v, path.clone()));
+                    }
                 }
             }
-            vis[e as usize] = false;
         }
         res
     }
 
-    bfs(graph)
+    dfs(graph)
 }
 
 #[cfg(test)]
@@ -75,5 +80,9 @@ mod test {
             "{:?}",
             all_paths_source_target(vec![vec![4, 3, 1], vec![3, 2, 4], vec![3], vec![4], vec![]])
         ); // [[0, 4], [0, 3, 4], [0, 1, 3, 4], [0, 1, 2, 3, 4], [0, 1, 4]]
+        println!(
+            "{:?}",
+            all_paths_source_target(vec![vec![1, 2], vec![3], vec![3], vec![1, 2, 0]])
+        ); // [[0, 1, 3], [0, 2, 3]]
     }
 }
