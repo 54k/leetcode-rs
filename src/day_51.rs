@@ -82,6 +82,36 @@ pub fn find_min_height_trees(mut n: i32, edges: Vec<Vec<i32>>) -> Vec<i32> {
     leaves.into_iter().map(|i| i as _).collect()
 }
 
+#[allow(dead_code)]
+pub fn can_finish(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> bool {
+    use std::collections::VecDeque;
+    let mut in_degree = vec![0; num_courses as usize];
+    let mut adj = vec![vec![]; num_courses as usize];
+    for prerequisite in prerequisites {
+        adj[prerequisite[1] as usize].push(prerequisite[0] as usize);
+        in_degree[prerequisite[0] as usize] += 1;
+    }
+
+    let mut q = VecDeque::new();
+    for e in 0..num_courses as usize {
+        if in_degree[e] == 0 {
+            q.push_back(e);
+        }
+    }
+    let mut size = 0;
+    while !q.is_empty() {
+        let v = q.pop_front().unwrap();
+        size += 1;
+        for &u in &adj[v] {
+            in_degree[u] -= 1;
+            if in_degree[u] == 0 {
+                q.push_back(u);
+            }
+        }
+    }
+    size == num_courses
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -129,5 +159,11 @@ mod test {
             )
         ); // 3
         println!("{:?}", find_min_height_trees(1, vec![])); // 0
+    }
+
+    #[test]
+    fn test141() {
+        println!("{}", can_finish(2, vec![vec![1, 0]])); // true
+        println!("{}", can_finish(1, vec![])); // true
     }
 }
