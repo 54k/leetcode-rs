@@ -50,6 +50,38 @@ pub fn to_lower_case(s: String) -> String {
         .collect()
 }
 
+#[allow(dead_code)]
+pub fn find_min_height_trees(mut n: i32, edges: Vec<Vec<i32>>) -> Vec<i32> {
+    use std::collections::HashSet;
+    let mut adj = vec![HashSet::new(); n as usize];
+
+    for edge in edges {
+        adj[edge[0] as usize].insert(edge[1] as usize);
+        adj[edge[1] as usize].insert(edge[0] as usize);
+    }
+
+    let mut leaves = vec![];
+    for (i, v) in adj.iter().enumerate() {
+        if v.len() < 2 {
+            leaves.push(i);
+        }
+    }
+
+    while n > 2 {
+        n -= leaves.len() as i32;
+        let mut new_leaves = vec![];
+        for leaf in leaves {
+            let neighbor = *adj[leaf].iter().next().unwrap();
+            adj[neighbor].remove(&leaf);
+            if adj[neighbor].len() == 1 {
+                new_leaves.push(neighbor);
+            }
+        }
+        leaves = new_leaves;
+    }
+    leaves.into_iter().map(|i| i as _).collect()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -65,6 +97,7 @@ mod test {
             detect_capital_use("FFFFFFFFFFFFFFFFFFFFf".to_string())
         );
     }
+
     #[test]
     fn test139() {
         println!("{}", capitalize_title("capiTalIze tHe titLe".to_string()));
@@ -73,5 +106,28 @@ mod test {
             capitalize_title("First leTTeR of EACH Word".to_string())
         );
         println!("{}", capitalize_title("i lOve leetcode".to_string()));
+    }
+
+    #[test]
+    fn test140() {
+        println!(
+            "{:?}",
+            find_min_height_trees(4, vec![vec![1, 0], vec![1, 2], vec![1, 3]])
+        ); // 1
+        println!(
+            "{:?}",
+            find_min_height_trees(
+                6,
+                vec![vec![3, 0], vec![3, 1], vec![3, 2], vec![3, 4], vec![5, 4]]
+            )
+        ); // 3 4
+        println!(
+            "{:?}",
+            find_min_height_trees(
+                6,
+                vec![vec![0, 1], vec![0, 2], vec![0, 3], vec![3, 4], vec![4, 5]]
+            )
+        ); // 3
+        println!("{:?}", find_min_height_trees(1, vec![])); // 0
     }
 }
