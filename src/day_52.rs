@@ -52,6 +52,7 @@ pub fn find_diagonal_order(mat: Vec<Vec<i32>>) -> Vec<i32> {
     res
 }
 
+#[allow(dead_code)]
 // https://leetcode.com/problems/decode-the-slanted-ciphertext/solutions/1576914/jump-columns-1/
 pub fn decode_ciphertext(encoded_text: String, rows: i32) -> String {
     let encoded_text = encoded_text.chars().collect::<Vec<_>>();
@@ -65,6 +66,25 @@ pub fn decode_ciphertext(encoded_text: String, rows: i32) -> String {
         }
     }
     ans.trim_end().to_string()
+}
+
+// The third question is about matrix diagonal traversal,
+// asking you to traverse every diagonal in a matrix cyclically to collect a list of n elements,
+// where n is the dimension of the matrix. So for example the diagonal in the lower left corner (n-1, 0)
+// will repeat itself n times to form a list of n elements.
+#[allow(dead_code)]
+pub fn cyclic_diagonal_traversal(mat: Vec<Vec<i32>>) -> Vec<i32> {
+    let mut ans = vec![];
+    let n = mat.len() as i32;
+    let m = mat[0].len() as i32;
+    for d in 1..=n + m - 1 {
+        let start_col = 0.max(d - n);
+        let count = d.min(m - start_col).min(m);
+        for j in 0..n {
+            ans.push(mat[(n.min(d) - j % count - 1) as usize][(start_col + j % count) as usize]);
+        }
+    }
+    ans
 }
 
 #[cfg(test)]
@@ -102,5 +122,13 @@ mod test {
     #[test]
     fn test144() {
         println!("{}", decode_ciphertext("ch   ie   pr".to_string(), 3));
+    }
+
+    #[test]
+    fn test145() {
+        println!(
+            "{:?}",
+            cyclic_diagonal_traversal(vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]])
+        ); // [1, 1, 1, 4, 2, 4, 7, 5, 3, 8, 6, 8, 9, 9, 9]
     }
 }
