@@ -16,6 +16,7 @@ pub fn min_deletion_size(strs: Vec<String>) -> i32 {
     ans
 }
 
+// https://www.geeksforgeeks.org/zigzag-or-diagonal-traversal-of-matrix/
 // https://leetcode.com/problems/diagonal-traverse/solutions/459889/diagonal-traverse/?orderBy=most_relevant
 #[allow(dead_code)]
 pub fn find_diagonal_order(mat: Vec<Vec<i32>>) -> Vec<i32> {
@@ -51,6 +52,21 @@ pub fn find_diagonal_order(mat: Vec<Vec<i32>>) -> Vec<i32> {
     res
 }
 
+// https://leetcode.com/problems/decode-the-slanted-ciphertext/solutions/1576914/jump-columns-1/
+pub fn decode_ciphertext(encoded_text: String, rows: i32) -> String {
+    let encoded_text = encoded_text.chars().collect::<Vec<_>>();
+    let mut ans = String::new();
+    let cols = encoded_text.len() as i32 / rows;
+    for i in 0..cols {
+        let mut j = i;
+        while j < encoded_text.len() as i32 {
+            ans.push(encoded_text[j as usize]);
+            j += cols + 1;
+        }
+    }
+    ans.trim_end().to_string()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -81,5 +97,10 @@ mod test {
             "{:?}",
             find_diagonal_order(vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]])
         ); // [1,2,4,7,5,3,6,8,9]
+    }
+
+    #[test]
+    fn test144() {
+        println!("{}", decode_ciphertext("ch   ie   pr".to_string(), 3));
     }
 }
