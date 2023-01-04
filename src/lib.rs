@@ -1,3 +1,4 @@
+pub mod codesignal;
 pub mod day_1;
 pub mod day_10;
 pub mod day_11;
@@ -46,6 +47,7 @@ pub mod day_5;
 pub mod day_50;
 pub mod day_51;
 pub mod day_52;
+pub mod day_53;
 pub mod day_6;
 pub mod day_7;
 pub mod day_8;
