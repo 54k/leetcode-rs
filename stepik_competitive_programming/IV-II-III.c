@@ -30,3 +30,14 @@ int main() {
     printf("%d\n", m + 1);
     return 0;
 }
+
+//#include <stdio.h>
+//
+//int n, m;
+//
+//int main() {
+//    int u, v;
+//    scanf("%d %d", &n, &m);
+//    printf("%d\n", m - (n - 1));
+//    return 0;
+//}
