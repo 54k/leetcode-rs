@@ -1,8 +1,9 @@
 #include <stdio.h>
+
 #define min(x, y) (x < y ? x : y)
 
 int main() {
-    int n,m;
+    int n, m;
     scanf("%d", &n);
     scanf("%d", &m);
 
