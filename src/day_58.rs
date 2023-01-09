@@ -42,7 +42,27 @@
 // return res;
 // }
 // }
-
+// class Solution {
+// public List<List<Integer>> levelOrder(Node root) {
+// return dfs(root, null, 0, new ArrayList<>());
+// }
+//
+// List<List<Integer>> dfs(Node v, Node p, int depth, List<List<Integer>> res) {
+// if (res.size() == depth) {
+// res.add(new ArrayList<>());
+// }
+// for (var ch : v.children) {
+// if (ch != p) {
+// dfs(ch, v, depth + 1, res);
+// }
+// }
+// if (depth == 0) {
+// return res;
+// }
+// res.get(depth).add(v.val);
+// return res;
+// }
+// }
 #[allow(dead_code)]
 pub fn minimum_fuel_cost(roads: Vec<Vec<i32>>, seats: i32) -> i64 {
     fn dfs(
@@ -74,6 +94,67 @@ pub fn minimum_fuel_cost(roads: Vec<Vec<i32>>, seats: i32) -> i64 {
     dfs(0, 0, 0, seats, &adj, &mut 0)
 }
 
+// Definition for a binary tree node.
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
+
+#[allow(dead_code)]
+pub fn generate_trees(n: i32) -> Vec<Option<Rc<RefCell<TreeNode>>>> {
+    use std::collections::HashMap;
+    let mut cache = HashMap::new();
+    fn gen(
+        first: i32,
+        last: i32,
+        cache: &mut HashMap<(i32, i32), Vec<Option<Rc<RefCell<TreeNode>>>>>,
+    ) -> Vec<Option<Rc<RefCell<TreeNode>>>> {
+        if cache.contains_key(&(first, last)) {
+            return cache.get(&(first, last)).unwrap().clone();
+        }
+        if first >= last {
+            return if first == last {
+                vec![Some(Rc::new(RefCell::new(TreeNode {
+                    val: first,
+                    left: None,
+                    right: None,
+                })))]
+            } else {
+                vec![None]
+            };
+        }
+
+        let mut trees = vec![];
+        for root in first..=last {
+            let left_tree = gen(first, root - 1, cache);
+            let right_tree = gen(root + 1, last, cache);
+            for left in &left_tree {
+                for right in &right_tree {
+                    let tree = TreeNode {
+                        val: root,
+                        left: left.clone(),
+                        right: right.clone(),
+                    };
+                    trees.push(Some(Rc::new(RefCell::new(tree))));
+                }
+            }
+        }
+        if trees.is_empty() {
+            vec![None]
+        } else {
+            cache.entry((first, last)).or_insert_with(|| trees.clone());
+            trees
+        }
+    }
+
+    gen(1, n, &mut cache)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -93,5 +174,12 @@ mod test {
                 2
             )
         ); //7
+    }
+
+    #[test]
+    fn test151() {
+        let trees = generate_trees(3);
+        println!("trees {:?}", trees.len());
+        println!("{:?}", trees);
     }
 }
