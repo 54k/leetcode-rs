@@ -155,6 +155,19 @@ pub fn generate_trees(n: i32) -> Vec<Option<Rc<RefCell<TreeNode>>>> {
     gen(1, n, &mut cache)
 }
 
+// https://leetcode.com/problems/unique-binary-search-trees/solutions/31666/dp-solution-in-6-lines-with-explanation-f-i-n-g-i-1-g-n-i/?orderBy=most_relevant
+pub fn num_trees(n: i32) -> i32 {
+    let mut g = vec![0; n as usize + 1];
+    g[0] = 1;
+    g[1] = 1;
+    for i in 2..=n as usize {
+        for j in 1..=i {
+            g[i] += g[j - 1] * g[i - j];
+        }
+    }
+    g[n as usize]
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -178,8 +191,13 @@ mod test {
 
     #[test]
     fn test151() {
-        let trees = generate_trees(3);
-        println!("trees {:?}", trees.len());
+        let trees = generate_trees(5);
+        println!("trees {:?}", trees.len()); // 5
         println!("{:?}", trees);
+    }
+
+    #[test]
+    fn test152() {
+        println!("{}", num_trees(5)); // 5
     }
 }
