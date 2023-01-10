@@ -43,3 +43,34 @@ pub fn is_balanced(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
     }
     h(root) > -1
 }
+
+// https://leetcode.com/problems/subtree-of-another-tree/solutions/2645723/subtree-of-another-tree/
+pub fn is_subtree(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    sub_root: Option<Rc<RefCell<TreeNode>>>,
+) -> bool {
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>, sub_root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        if root.is_none() {
+            return false;
+        }
+        if is_same(root.clone(), sub_root.clone()) {
+            return true;
+        }
+        dfs(
+            root.clone().unwrap().borrow().left.clone(),
+            sub_root.clone(),
+        ) || dfs(root.unwrap().borrow().right.clone(), sub_root)
+    }
+    fn is_same(l: Option<Rc<RefCell<TreeNode>>>, r: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        if l.is_none() && r.is_none() {
+            return true;
+        }
+        if let (Some(l), Some(r)) = (l, r) {
+            return l.borrow().val == r.borrow().val
+                && is_same(l.borrow().left.clone(), r.borrow().left.clone())
+                && is_same(l.borrow().right.clone(), r.borrow().right.clone());
+        }
+        false
+    }
+    dfs(root, sub_root)
+}
