@@ -168,6 +168,36 @@ pub fn num_trees(n: i32) -> i32 {
     g[n as usize]
 }
 
+type T = Option<Rc<RefCell<TreeNode>>>;
+#[allow(dead_code)]
+pub fn recover_tree(root: &mut Option<Rc<RefCell<TreeNode>>>) {
+    fn dfs(root: &mut T, prev: &mut T, first: &mut T, second: &mut T) {
+        if root.is_none() {
+            return;
+        }
+
+        let r = root.clone().unwrap();
+
+        dfs(&mut r.borrow().left.clone(), prev, first, second);
+        if prev.is_some() && prev.clone().unwrap().borrow().val > r.borrow().val {
+            if first.is_none() {
+                *first = prev.clone();
+            }
+            *second = root.clone();
+        }
+        *prev = root.clone();
+        dfs(&mut r.borrow().right.clone(), prev, first, second);
+    }
+
+    let mut first = None;
+    let mut second = None;
+    dfs(root, &mut None, &mut first, &mut second);
+    std::mem::swap(
+        &mut first.unwrap().borrow_mut().val,
+        &mut second.unwrap().borrow_mut().val,
+    );
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
