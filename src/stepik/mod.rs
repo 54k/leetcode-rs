@@ -1,1 +1,2 @@
 mod algorithms_theory_and_practice;
+mod competitive_programming;
