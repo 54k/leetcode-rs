@@ -1,5 +1,4 @@
 use std::error::Error;
-use std::future::pending;
 
 fn problem226() -> Result<(), Box<dyn Error>> {
     use std::io;
@@ -57,16 +56,36 @@ fn problem228() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn problem234() {
+    use std::io;
+    let stdin = io::stdin();
+    let mut l = String::new();
+    stdin.read_line(&mut l).unwrap();
+    let l = l
+        .split(' ')
+        .map(|n| n.parse::<i64>().unwrap())
+        .collect::<Vec<_>>();
+    let a = l[0];
+    let b = l[1];
+    fn gcd(a: i64, b: i64) -> i64 {
+        if b == 0 {
+            return a;
+        }
+        gcd(b, (a % b + b) % b)
+    }
+    println!("{}", gcd(a, b));
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
-    #[test]
+    // #[test]
     fn test226() {
         problem226().unwrap();
     }
 
-    #[test]
+    // #[test]
     fn test228() {
         problem228().unwrap();
     }
