@@ -152,6 +152,7 @@ fn problem6(n: i32) {
 }
 
 fn problem7(n: i32) {
+    // catalan numbers
     fn fff(n: i32) -> Vec<String> {
         let mut res = vec![];
         if n == 0 {
