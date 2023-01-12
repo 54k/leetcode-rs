@@ -84,6 +84,94 @@ fn problem4() {
     rec(n, 1, 0, &mut used, &mut p, &a, &mut ans_v);
     println!("{}", ans_v[0]);
     ans_v.into_iter().skip(1).for_each(|f| print!("{} ", f));
+    println!();
+}
+
+fn problem5() {
+    fn valid(str: &str) -> bool {
+        let mut s = vec![];
+        for ch in str.chars() {
+            match ch {
+                '(' | '[' => {
+                    s.push(ch);
+                }
+                ')' if !s.is_empty() && s[s.len() - 1] == '(' => {
+                    s.pop();
+                }
+                ']' if !s.is_empty() && s[s.len() - 1] == '[' => {
+                    s.pop();
+                }
+                _ => return false,
+            };
+        }
+        s.is_empty()
+    }
+    let mut lines = include_str!("brackets.in").lines();
+    println!("{:?}", lines.map(|f| valid(f) as i32).collect::<Vec<_>>());
+}
+
+fn problem6(n: i32) {
+    fn rec(n: i32, len: i32, buf: &mut String, ans: &mut Vec<String>) {
+        //noinspection ALL
+        fn valid(str: &str) -> bool {
+            let mut s = vec![];
+            for ch in str.chars() {
+                match ch {
+                    '(' | '[' => {
+                        s.push(ch);
+                    }
+                    ')' if !s.is_empty() && s[s.len() - 1] == '(' => {
+                        s.pop();
+                    }
+                    ']' if !s.is_empty() && s[s.len() - 1] == '[' => {
+                        s.pop();
+                    }
+                    _ => return false,
+                };
+            }
+            s.is_empty()
+        }
+        if n * 2 == len {
+            if valid(buf) {
+                ans.push(buf.clone());
+            }
+            return;
+        }
+
+        for ch in ['(', ')', '[', ']'] {
+            buf.push(ch);
+            rec(n, len + 1, buf, ans);
+            buf.pop();
+        }
+    }
+
+    let mut ans = vec![];
+    rec(n, 0, &mut String::new(), &mut ans);
+    println!("{:?}", ans.len());
+    println!("{:?}", &ans[19]);
+}
+
+fn problem7(n: i32) {
+    fn fff(n: i32) -> Vec<String> {
+        let mut res = vec![];
+        if n == 0 {
+            res.push("".to_string());
+            return res;
+        }
+        for c in 0..n {
+            for first in fff(c) {
+                for last in fff(n - 1 - c) {
+                    res.push(format!("({}){}", first, last));
+                    res.push(format!("[{}]{}", first, last));
+                }
+            }
+        }
+        res
+    }
+    let mut ans = fff(n);
+    ans.sort();
+    println!("{}", ans.len());
+    println!("{:?}", &ans[8232]);
 }
 
 #[cfg(test)]
@@ -103,5 +191,20 @@ mod test {
     #[test]
     fn test4() {
         problem4()
+    }
+
+    #[test]
+    fn test5() {
+        problem5()
+    }
+
+    #[test]
+    fn test6() {
+        problem6(3);
+    }
+
+    #[test]
+    fn test7() {
+        problem7(7);
     }
 }
