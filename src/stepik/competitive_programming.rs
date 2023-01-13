@@ -1,5 +1,4 @@
 use std::cmp::{Ordering, Reverse};
-use std::collections::{BTreeMap, VecDeque};
 
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
@@ -271,6 +270,40 @@ fn problem3_6() {
     // println!("{}", rooms.len());
 }
 
+fn problem_3_7() {
+    use std::collections::BinaryHeap;
+    let mut lines = include_str!("contest.in").lines();
+    let mut t = lines
+        .next()
+        .unwrap()
+        .split(' ')
+        .map(|n| n.parse::<usize>().unwrap())
+        .skip(1)
+        .collect::<Vec<_>>()[0];
+
+    let mut tasks = BinaryHeap::new();
+    lines
+        .next()
+        .unwrap()
+        .split(' ')
+        .map(|x| x.parse::<usize>().unwrap())
+        .for_each(|task| tasks.push(Reverse(task)));
+
+    let mut prev_penalty = 0;
+    let mut total_penalty = 0;
+    let mut count = 0;
+    while let Some(Reverse(task)) = tasks.pop() {
+        if task < t {
+            t -= task;
+            count += 1;
+            let penalty = prev_penalty + task;
+            prev_penalty = penalty;
+            total_penalty += prev_penalty;
+        }
+    }
+    println!("{} {}", count, total_penalty);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -313,5 +346,10 @@ mod test {
     #[test]
     fn test3_6() {
         problem3_6();
+    }
+
+    #[test]
+    fn test3_7() {
+        problem_3_7();
     }
 }
