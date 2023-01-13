@@ -1,4 +1,5 @@
-use std::cmp::Ordering;
+use std::cmp::{Ordering, Reverse};
+use std::collections::{BTreeMap, VecDeque};
 
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
@@ -222,6 +223,54 @@ fn problem3_4_and_5() {
     println!("{}", ans);
 }
 
+fn problem3_6() {
+    let mut lines = include_str!("request2.in").lines();
+
+    let n = lines
+        .next()
+        .unwrap()
+        .split(' ')
+        .map(|f| f.parse::<usize>().unwrap())
+        .take(1)
+        .last()
+        .unwrap();
+
+    let mut meetings = vec![vec![0; 2]; n];
+    for (i, line) in lines.enumerate() {
+        let a_b = line
+            .split(' ')
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
+        meetings[i][0] = a_b[0];
+        meetings[i][1] = a_b[1];
+    }
+    meetings.sort();
+
+    use std::collections::BinaryHeap;
+    let mut rooms = BinaryHeap::new();
+    rooms.push(Reverse(meetings[0][1]));
+    for m in meetings.into_iter().skip(1) {
+        if m[0] >= rooms.peek().unwrap().0 {
+            rooms.pop();
+        }
+        rooms.push(Reverse(m[1]));
+    }
+    println!("{:?}", rooms.len());
+
+    // let mut rooms = vec![];
+    // rooms.push(meetings[0][1]);
+    // 'outer: for m in meetings.into_iter().skip(1) {
+    //     for time_end in &mut rooms {
+    //         if m[0] >= *time_end {
+    //             *time_end = m[1];
+    //             continue 'outer;
+    //         }
+    //     }
+    //     rooms.push(m[1]);
+    // }
+    // println!("{}", rooms.len());
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -259,5 +308,10 @@ mod test {
     #[test]
     fn test3_4_and_5() {
         problem3_4_and_5();
+    }
+
+    #[test]
+    fn test3_6() {
+        problem3_6();
     }
 }
