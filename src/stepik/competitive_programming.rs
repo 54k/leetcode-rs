@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
         if n == i as i32 {
@@ -175,6 +177,51 @@ fn problem7(n: i32) {
     println!("{:?}", &ans[8232]);
 }
 
+fn problem3_4_and_5() {
+    let mut s = include_str!("cont.in").lines();
+    let n_w = s
+        .next()
+        .unwrap()
+        .split(' ')
+        .map(|n| n.parse::<usize>().unwrap())
+        .collect::<Vec<_>>();
+    let n = n_w[0];
+    let mut total = n_w[1];
+
+    let mut w = vec![(0, 0); n];
+
+    for (i, line) in s.enumerate() {
+        let w_c = line
+            .split(' ')
+            .map(|n| n.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
+        w[i] = (w_c[0], w_c[1]);
+    }
+
+    w.sort_by(|a, b| {
+        if a.1 == 0 {
+            return Ordering::Less;
+        }
+        if b.1 == 0 {
+            return Ordering::Greater;
+        }
+        (a.0 as f64 / a.1 as f64).total_cmp(&(b.0 as f64 / b.1 as f64))
+    });
+    let mut ans = 0;
+
+    for i in 0..n {
+        if w[i].0 < total {
+            total -= w[i].0;
+            ans += w[i].1;
+        } else {
+            let p = (w[i].1 / w[i].0) * total;
+            ans += p;
+            total = 0;
+        }
+    }
+    println!("{}", ans);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -207,5 +254,10 @@ mod test {
     #[test]
     fn test7() {
         problem7(7);
+    }
+
+    #[test]
+    fn test3_4_and_5() {
+        problem3_4_and_5();
     }
 }
