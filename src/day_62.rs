@@ -40,35 +40,83 @@ pub fn diameter_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
 
 // https://leetcode.com/problems/longest-path-with-different-adjacent-characters/description/
 pub fn longest_path(parent: Vec<i32>, s: String) -> i32 {
-    fn dfs(v: i32, parent: &Vec<Vec<i32>>, s: &Vec<char>, ans: &mut i32) -> i32 {
-        if parent[v as usize].is_empty() {
-            return 1;
-        }
-        let mut longest_chain = 0;
-        let mut second_longest_chain = 0;
-        for &u in &parent[v as usize] {
-            let longest_start_from_child = dfs(u, parent, s, ans);
-            if s[v as usize] == s[u as usize] {
-                continue;
+    fn dfs(parent: Vec<i32>, s: String) -> i32 {
+        fn dfs(v: i32, parent: &Vec<Vec<i32>>, s: &Vec<char>, ans: &mut i32) -> i32 {
+            if parent[v as usize].is_empty() {
+                return 1;
             }
-            if longest_start_from_child > longest_chain {
-                second_longest_chain = longest_chain;
-                longest_chain = longest_start_from_child;
-            } else if longest_start_from_child > second_longest_chain {
-                second_longest_chain = longest_start_from_child;
+            let mut longest_chain = 0;
+            let mut second_longest_chain = 0;
+            for &u in &parent[v as usize] {
+                let longest_start_from_child = dfs(u, parent, s, ans);
+                if s[v as usize] == s[u as usize] {
+                    continue;
+                }
+                if longest_start_from_child > longest_chain {
+                    second_longest_chain = longest_chain;
+                    longest_chain = longest_start_from_child;
+                } else if longest_start_from_child > second_longest_chain {
+                    second_longest_chain = longest_start_from_child;
+                }
             }
+            *ans = *ans.max(&mut (longest_chain + second_longest_chain + 1));
+            longest_chain + 1
         }
-        *ans = *ans.max(&mut (longest_chain + second_longest_chain + 1));
-        longest_chain + 1
+
+        let mut longest_path = 1;
+        let mut adj = vec![vec![]; s.len()];
+        for (i, p) in parent.into_iter().enumerate().skip(1) {
+            adj[p as usize].push(i as i32);
+        }
+        dfs(0, &adj, &s.chars().collect(), &mut longest_path);
+        longest_path
     }
 
-    let mut longest_path = 1;
-    let mut adj = vec![vec![]; s.len()];
-    for (i, p) in parent.into_iter().enumerate().skip(1) {
-        adj[p as usize].push(i as i32);
+    fn bfs(parent: Vec<i32>, s: String) -> i32 {
+        use std::collections::VecDeque;
+        let s = s.chars().collect::<Vec<_>>();
+        let n = parent.len();
+
+        let mut children_count = vec![0; n];
+        for i in 1..n {
+            children_count[parent[i] as usize] += 1;
+        }
+
+        let mut longest_path = 1;
+        let mut longest_chains = vec![vec![0; 2]; n];
+        let mut queue = VecDeque::new();
+
+        for i in 1..n {
+            if children_count[i] == 0 {
+                queue.push_back(i);
+                longest_chains[i][0] = 1;
+            }
+        }
+
+        while let Some(v) = queue.pop_front() {
+            let p = parent[v] as usize;
+
+            let longest_chain_from_current_node = longest_chains[v][0];
+
+            if s[v] != s[p] {
+                if longest_chain_from_current_node > longest_chains[p][0] {
+                    longest_chains[p][1] = longest_chains[p][0];
+                    longest_chains[p][0] = longest_chain_from_current_node;
+                } else if longest_chain_from_current_node > longest_chains[v][1] {
+                    longest_chains[p][1] = longest_chain_from_current_node;
+                }
+            }
+
+            longest_path = longest_path.max(longest_chains[p][0] + longest_chains[p][1] + 1);
+            children_count[p] -= 1;
+            if children_count[p] == 0 && p != 0 {
+                longest_chains[p][0] += 1;
+                queue.push_back(p);
+            }
+        }
+        longest_path
     }
-    dfs(0, &adj, &s.chars().collect(), &mut longest_path);
-    longest_path
+    bfs(parent, s)
 }
 
 // https://leetcode.com/problems/longest-univalue-path/
@@ -152,9 +200,10 @@ mod test {
         println!(
             "{}",
             longest_path(vec![-1, 0, 0, 1, 1, 2], "abacbe".to_string())
-        );
+        ); // 3
+        println!("{}", longest_path(vec![-1, 0, 0, 0], "aabc".to_string())); // 3
 
-        println!("{}", longest_path(vec![-1], "z".to_string()));
+        println!("{}", longest_path(vec![-1], "z".to_string())); // 1
     }
 
     #[test]
