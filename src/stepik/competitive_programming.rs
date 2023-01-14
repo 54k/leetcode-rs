@@ -304,6 +304,22 @@ fn problem_3_7() {
     println!("{} {}", count, total_penalty);
 }
 
+fn problem_3_8() {
+    use std::collections::HashSet;
+    let lines = include_str!("ice2.in").lines();
+    let v = lines.skip(1).collect::<Vec<_>>();
+    let mut s = HashSet::new();
+    let mut ans = 1;
+    for str in v {
+        if s.contains(str) {
+            ans += 1;
+            s.clear();
+        }
+        s.insert(str);
+    }
+    println!("{}", ans);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -351,5 +367,10 @@ mod test {
     #[test]
     fn test3_7() {
         problem_3_7();
+    }
+
+    #[test]
+    fn test3_8() {
+        problem_3_8();
     }
 }
