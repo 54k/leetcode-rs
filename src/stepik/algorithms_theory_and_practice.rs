@@ -148,7 +148,7 @@ fn problem_pq_max() {
     }
 }
 
-// https://gist.github.com/54k/b474dff6727ad2d3bc73c7c8dd6c30be thanks, past me
+// https://gist.github.com/54k/b474dff6727ad2d3bc73c7c8dd6c30be thanks, past myself
 fn huffman_encode() {
     use std::cmp::*;
     use std::collections::*;
