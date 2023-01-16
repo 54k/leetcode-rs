@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::hash::Hash;
 use std::io::BufRead;
+use std::sync::atomic::Ordering;
 
 fn problem226() -> Result<(), Box<dyn Error>> {
     use std::io;
@@ -294,6 +295,61 @@ fn huffman_decode() {
     }
 }
 
+fn knapsack_solve(mut w: i32, mut knapsack: Vec<(i32, i32)>) -> f64 {
+    use std::cmp::*;
+    knapsack.sort_by(|a, b| {
+        if a.1 == 0 {
+            return Ordering::Less;
+        }
+        if b.1 == 0 {
+            return Ordering::Greater;
+        }
+        let ac = a.0 as f64 / a.1 as f64;
+        let bc = b.0 as f64 / b.1 as f64;
+        ac.partial_cmp(&bc).unwrap()
+    });
+    let mut ans = 0f64;
+    for i in knapsack.into_iter().rev() {
+        if w >= i.1 {
+            w -= i.1;
+            ans += i.0 as f64;
+        } else {
+            let c = (i.0 as f64 / i.1 as f64) * w as f64;
+            w = 0;
+            ans += c;
+        }
+    }
+    ans
+}
+
+fn knapsack() {
+    let mut input = String::new();
+
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut input).unwrap();
+
+    let x = input
+        .split_whitespace()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    input.clear();
+
+    let (n, w) = (x[0], x[1]);
+    let mut knapsack = vec![];
+    for _ in 0..n {
+        stdin.read_line(&mut input).unwrap();
+        let x = input
+            .split_whitespace()
+            .map(|x| x.parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+        let (c, w) = (x[0], x[1]);
+        knapsack.push((c, w));
+        input.clear();
+    }
+
+    println!("{:.3}", knapsack_solve(w, knapsack));
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -335,5 +391,12 @@ mod test {
     fn test_huffman() {
         // huffman_encode();
         huffman_decode();
+    }
+    #[test]
+    fn test_knapsack() {
+        println!(
+            "{:.3}",
+            knapsack_solve(50, vec![(60, 20), (100, 50), (120, 30)])
+        );
     }
 }
