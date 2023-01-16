@@ -392,15 +392,13 @@ fn intersections() {
 
 fn solve_terms(mut k: i32) -> Vec<i32> {
     let mut ans = vec![];
-    let mut i = 0;
-    while k > 0 {
-        i += 1;
-        if k - i < 0 {
-            k += ans.pop().unwrap();
-        }
+    let mut i = 1;
+    while k - i > i {
         ans.push(i);
         k -= i;
+        i += 1;
     }
+    ans.push(k);
     ans
 }
 
