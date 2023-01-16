@@ -1,8 +1,4 @@
-use std::collections::HashMap;
 use std::error::Error;
-use std::hash::Hash;
-use std::io::BufRead;
-use std::sync::atomic::Ordering;
 
 fn problem226() -> Result<(), Box<dyn Error>> {
     use std::io;
@@ -394,6 +390,37 @@ fn intersections() {
     );
 }
 
+fn solve_terms(mut k: i32) -> Vec<i32> {
+    let mut ans = vec![];
+    let mut i = 0;
+    while k > 0 {
+        i += 1;
+        if k - i < 0 {
+            k += ans.pop().unwrap();
+        }
+        ans.push(i);
+        k -= i;
+    }
+    ans
+}
+
+fn terms() {
+    let mut input = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut input).unwrap();
+
+    let k = input.trim().parse::<i32>().unwrap();
+    input.clear();
+    let ans = solve_terms(k);
+    println!("{}", ans.len());
+    println!(
+        "{}",
+        ans.into_iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+}
 #[cfg(test)]
 mod test {
     use super::*;
@@ -451,5 +478,10 @@ mod test {
             "{:?}",
             intersections_solve(vec![(4, 7), (1, 3), (2, 5), (5, 6)])
         );
+    }
+
+    #[test]
+    fn test_terms() {
+        println!("{:?}", solve_terms(12));
     }
 }
