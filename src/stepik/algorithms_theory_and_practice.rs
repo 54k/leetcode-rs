@@ -350,6 +350,50 @@ fn knapsack() {
     println!("{:.3}", knapsack_solve(w, knapsack));
 }
 
+fn intersections_solve(mut intervals: Vec<(i32, i32)>) -> Vec<i32> {
+    intervals.sort_by(|a, b| a.1.cmp(&b.1));
+    let mut points = vec![];
+    points.push(intervals[0].1);
+    for i in intervals.into_iter().skip(1) {
+        let last_point = *points.last().unwrap();
+        if last_point >= i.0 && last_point <= i.1 {
+            continue;
+        }
+        points.push(i.1);
+    }
+    points
+}
+
+fn intersections() {
+    let mut input = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut input).unwrap();
+
+    let n = input.trim().parse::<i32>().unwrap();
+    input.clear();
+
+    let mut intervals = vec![];
+    for _ in 0..n {
+        stdin.read_line(&mut input).unwrap();
+        let x = input
+            .split_whitespace()
+            .map(|x| x.parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+        let (s, e) = (x[0], x[1]);
+        intervals.push((s, e));
+        input.clear();
+    }
+    let ans = intersections_solve(intervals);
+    println!("{:?}", ans.len());
+    println!(
+        "{:?}",
+        ans.into_iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -392,11 +436,20 @@ mod test {
         // huffman_encode();
         huffman_decode();
     }
+
     #[test]
     fn test_knapsack() {
         println!(
             "{:.3}",
             knapsack_solve(50, vec![(60, 20), (100, 50), (120, 30)])
+        );
+    }
+
+    #[test]
+    fn test_intersections() {
+        println!(
+            "{:?}",
+            intersections_solve(vec![(4, 7), (1, 3), (2, 5), (5, 6)])
         );
     }
 }
