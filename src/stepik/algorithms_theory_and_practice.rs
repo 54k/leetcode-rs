@@ -76,6 +76,74 @@ fn problem234() {
     println!("{}", gcd(a, b));
 }
 
+struct MaxQueue(Vec<i32>);
+impl MaxQueue {
+    fn new() -> Self {
+        Self(vec![0])
+    }
+    fn insert(&mut self, val: i32) {
+        self.0.push(val);
+        self.sift_up();
+    }
+    fn extract_max(&mut self) -> i32 {
+        let last = self.0.len() - 1;
+        let res = self.0[1];
+        self.0.swap(1, last);
+        self.0.pop();
+        self.sift_down();
+        res
+    }
+    fn sift_up(&mut self) {
+        let mut k = self.0.len() - 1;
+        while k / 2 >= 1 && self.0[k] > self.0[k / 2] {
+            self.0.swap(k, k / 2);
+            k /= 2;
+        }
+    }
+    fn sift_down(&mut self) {
+        let mut k = 1;
+        let n = self.0.len() - 1;
+        while k * 2 <= n {
+            let mut j = k * 2;
+            if j < n && self.0[j] < self.0[j + 1] {
+                j += 1;
+            }
+            if self.0[k] >= self.0[j] {
+                break;
+            }
+            self.0.swap(k, j);
+            k = j;
+        }
+    }
+}
+
+fn problem_pq_max() {
+    use std::io;
+
+    macro_rules! parse_line {
+    ($($t: ty),+) => ({
+        let mut a_str = String::new();
+        io::stdin().read_line(&mut a_str).expect("read error");
+        let mut a_iter = a_str.split_whitespace();
+        (
+            $(
+            a_iter.next().unwrap().parse::<$t>().ok().unwrap_or_default(),
+            )+
+        )
+    })
+}
+    let mut max_queue = MaxQueue::new();
+    let (n,) = parse_line!(usize);
+    for _ in 0..n {
+        let (s, val) = parse_line!(String, i32);
+        match s.as_str() {
+            "Insert" => max_queue.insert(val),
+            "ExtractMax" => println!("{}", max_queue.extract_max()),
+            _ => panic!(""),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -88,5 +156,28 @@ mod test {
     // #[test]
     fn test228() {
         problem228().unwrap();
+    }
+
+    #[test]
+    fn test229() {
+        // problem_pq_max();
+
+        let mut max_queue = MaxQueue::new();
+        max_queue.insert(2);
+        max_queue.insert(3);
+        max_queue.insert(18);
+        max_queue.insert(15);
+        max_queue.insert(18);
+        max_queue.insert(12);
+        max_queue.insert(12);
+        max_queue.insert(2);
+        println!("{}", max_queue.extract_max());
+        println!("{}", max_queue.extract_max());
+        println!("{}", max_queue.extract_max());
+        println!("{}", max_queue.extract_max());
+        println!("{}", max_queue.extract_max());
+        println!("{}", max_queue.extract_max());
+        println!("{}", max_queue.extract_max());
+        println!("{}", max_queue.extract_max());
     }
 }
