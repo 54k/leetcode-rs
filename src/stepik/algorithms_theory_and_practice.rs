@@ -144,6 +144,98 @@ fn problem_pq_max() {
     }
 }
 
+pub(self) mod huffman {
+    use std::cmp::*;
+    use std::collections::*;
+
+    pub fn encode(input: &str) -> HashMap<char, String> {
+        #[derive(PartialEq, Eq)]
+        struct CharSetFreq {
+            char_set: String,
+            freq: i32,
+        }
+        impl PartialOrd<Self> for CharSetFreq {
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                Some(self.freq.cmp(&other.freq))
+            }
+        }
+        impl Ord for CharSetFreq {
+            fn cmp(&self, other: &Self) -> Ordering {
+                self.freq.cmp(&other.freq)
+            }
+        }
+        let mut freq = HashMap::new();
+        for ch in input.chars() {
+            *freq.entry(ch).or_insert(0) += 1;
+        }
+        let mut freq_set = vec![];
+        for (ch, freq) in freq {
+            freq_set.push(Reverse(CharSetFreq {
+                char_set: ch.to_string(),
+                freq,
+            }));
+        }
+        let mut queue = BinaryHeap::from(freq_set);
+        let mut codes = HashMap::<char, String>::new();
+        if queue.len() == 1 {
+            codes
+                .entry(
+                    queue
+                        .peek()
+                        .unwrap()
+                        .0
+                        .char_set
+                        .chars()
+                        .take(1)
+                        .collect::<Vec<_>>()[0],
+                )
+                .or_insert(String::new())
+                .push('0');
+        }
+        while queue.len() > 1 {
+            let left = queue.pop().unwrap().0;
+            let right = queue.pop().unwrap().0;
+
+            for ref ch in left.char_set.chars() {
+                let x = codes.entry(*ch).or_insert_with(|| "".to_string());
+                *x = format!("0{}", x.clone());
+            }
+            for ref ch in right.char_set.chars() {
+                let x = codes.entry(*ch).or_insert_with(|| "".to_string());
+                *x = format!("1{}", x.clone());
+            }
+
+            let c = CharSetFreq {
+                char_set: format!("{}{}", left.char_set, right.char_set),
+                freq: left.freq + right.freq,
+            };
+            queue.push(Reverse(c));
+        }
+        codes
+    }
+
+    fn solve_encode() {
+        let mut input = String::new();
+        let stdin = std::io::stdin();
+        stdin.read_line(&mut input).unwrap();
+        let input = input.trim();
+        let codes = encode(input);
+
+        let mut s = String::new();
+        for ch in input.chars() {
+            s.push_str(&codes[&ch]);
+        }
+        println!("{} {}", codes.len(), s.len());
+        codes
+            .iter()
+            .map(|(k, v)| format!("{}: {}", k, v))
+            .for_each(|x| println!("{}", x));
+        println!("{}", s);
+    }
+
+    pub fn decode() {}
+}
+
 // https://gist.github.com/54k/b474dff6727ad2d3bc73c7c8dd6c30be thanks, past myself
 fn huffman_encode() {
     use std::cmp::*;
@@ -419,6 +511,57 @@ fn terms() {
             .join(" ")
     );
 }
+
+fn solve_bin_search(arr: Vec<i32>, queries: Vec<i32>) -> Vec<i32> {
+    queries
+        .into_iter()
+        .map(|query| -> i32 {
+            let mut start = 0;
+            let mut end = arr.len() as i32 - 1;
+
+            while start <= end {
+                let mid = start + (end - start) / 2;
+                if arr[mid as usize] == query {
+                    return mid as i32 + 1;
+                } else if arr[mid as usize] < query {
+                    start = mid + 1;
+                } else {
+                    end = mid - 1;
+                }
+            }
+
+            return -1;
+        })
+        .collect::<Vec<_>>()
+}
+
+fn bin_search() {
+    let mut input = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut input).unwrap();
+    let arr = input
+        .split_whitespace()
+        .skip(1)
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    input.clear();
+    stdin.read_line(&mut input).unwrap();
+    let queries = input
+        .split_whitespace()
+        .skip(1)
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    input.clear();
+    println!(
+        "{}",
+        solve_bin_search(arr, queries)
+            .into_iter()
+            .map(|f| f.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -461,7 +604,10 @@ mod test {
         // huffman_encode();
         huffman_decode();
     }
-
+    #[test]
+    fn test_huffman_mod() {
+        println!("{:?}", huffman::encode(""));
+    }
     #[test]
     fn test_knapsack() {
         println!(
@@ -481,5 +627,13 @@ mod test {
     #[test]
     fn test_terms() {
         println!("{:?}", solve_terms(12));
+    }
+
+    #[test]
+    fn test_binsearch() {
+        println!(
+            "{:?}",
+            solve_bin_search(vec![1, 5, 8, 12, 13], vec![8, 1, 23, 1, 11])
+        );
     }
 }
