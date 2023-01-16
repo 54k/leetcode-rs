@@ -1,4 +1,7 @@
+use std::collections::HashMap;
 use std::error::Error;
+use std::hash::Hash;
+use std::io::BufRead;
 
 fn problem226() -> Result<(), Box<dyn Error>> {
     use std::io;
@@ -144,6 +147,153 @@ fn problem_pq_max() {
     }
 }
 
+// https://gist.github.com/54k/b474dff6727ad2d3bc73c7c8dd6c30be thanks, past me
+fn huffman_encode() {
+    use std::cmp::*;
+    use std::collections::*;
+
+    struct TreeNode {
+        w: i32,
+        val: Option<char>,
+        left: Option<Box<TreeNode>>,
+        right: Option<Box<TreeNode>>,
+    }
+    impl Eq for TreeNode {}
+    impl PartialEq<Self> for TreeNode {
+        fn eq(&self, other: &Self) -> bool {
+            self.w == other.w
+        }
+    }
+    impl PartialOrd<Self> for TreeNode {
+        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+            Some(self.w.cmp(&other.w))
+        }
+    }
+    impl Ord for TreeNode {
+        fn cmp(&self, other: &Self) -> Ordering {
+            self.w.cmp(&other.w)
+        }
+    }
+
+    let mut input = String::new();
+    // std::io::stdin().read_line(&mut input).unwrap();
+    input.push_str(
+        "adassadasdsadsadsaddasdasdasdasdsdasdsdasdasdsadsdasdasasasssddsaasdsadsdasdasdsd",
+    );
+
+    let input = input.trim().chars().collect::<Vec<_>>();
+
+    let mut freq = HashMap::new();
+    for &ch in &input {
+        *freq.entry(ch).or_insert(0) += 1;
+    }
+
+    let mut heap = BinaryHeap::new();
+    for (&i, &freq) in &freq {
+        heap.push(Reverse(Box::new(TreeNode {
+            w: freq,
+            val: Some(i),
+            left: None,
+            right: None,
+        })));
+    }
+
+    while heap.len() > 1 {
+        let i = heap.pop().unwrap().0;
+        let j = heap.pop().unwrap().0;
+        let k = Box::new(TreeNode {
+            w: i.w + j.w,
+            val: None,
+            left: Some(i),
+            right: Some(j),
+        });
+        heap.push(Reverse(k));
+    }
+
+    let root = heap.pop().unwrap().0;
+    let mut symbol_codes = BTreeMap::new();
+
+    fn fill_symbol_codes(
+        root: Box<TreeNode>,
+        symbol_codes: &mut BTreeMap<char, String>,
+        code: &mut String,
+    ) {
+        match root.val {
+            Some(v) => {
+                if code.is_empty() {
+                    symbol_codes.insert(v, "0".to_string());
+                } else {
+                    symbol_codes.insert(v, code.to_string());
+                }
+            }
+            None => {
+                fill_symbol_codes(
+                    root.left.unwrap(),
+                    symbol_codes,
+                    &mut format!("{}{}", code, 0),
+                );
+                fill_symbol_codes(
+                    root.right.unwrap(),
+                    symbol_codes,
+                    &mut format!("{}{}", code, 1),
+                );
+            }
+        }
+    }
+
+    fill_symbol_codes(root, &mut symbol_codes, &mut "".to_string());
+
+    let mut ans = String::new();
+    for ch in input {
+        ans.push_str(symbol_codes.get(&ch).unwrap())
+    }
+    println!("{} {}", symbol_codes.len(), ans.len());
+    for (k, v) in &symbol_codes {
+        println!("{}: {}", k, v);
+    }
+    println!("{}", ans);
+}
+
+fn huffman_decode() {
+    use std::collections::*;
+    let mut input = String::new();
+
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut input).unwrap();
+
+    let x = input
+        .split_whitespace()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    input.clear();
+
+    let (n, _len) = (x[0], x[1]);
+    let mut codes = HashMap::new();
+
+    for _ in 0..n {
+        stdin.read_line(&mut input).unwrap();
+        let x = input.split(':').map(|x| x.trim()).collect::<Vec<_>>();
+        let (ch, code) = (
+            x[0].chars().take(1).collect::<Vec<_>>().pop().unwrap(),
+            x[1],
+        );
+        codes.insert(code.to_string(), ch);
+        input.clear();
+    }
+
+    stdin.read_line(&mut input).unwrap();
+    let input = input.trim().chars().collect::<Vec<_>>();
+
+    let mut cur = String::new();
+    for ch in input {
+        cur.push(ch);
+        if codes.contains_key(&cur) {
+            print!("{:?}", codes.get(&cur).unwrap());
+            cur.clear();
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -179,5 +329,11 @@ mod test {
         println!("{}", max_queue.extract_max());
         println!("{}", max_queue.extract_max());
         println!("{}", max_queue.extract_max());
+    }
+
+    #[test]
+    fn test_huffman() {
+        // huffman_encode();
+        huffman_decode();
     }
 }
