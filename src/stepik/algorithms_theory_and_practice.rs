@@ -604,10 +604,12 @@ mod test {
         // huffman_encode();
         huffman_decode();
     }
+
     #[test]
     fn test_huffman_mod() {
-        println!("{:?}", huffman::encode(""));
+        println!("{:?}", huffman::encode("adsads"));
     }
+
     #[test]
     fn test_knapsack() {
         println!(
