@@ -164,10 +164,12 @@ pub(self) mod huffman {
                 self.freq.cmp(&other.freq)
             }
         }
+
         let mut freq = HashMap::new();
         for ch in input.chars() {
             *freq.entry(ch).or_insert(0) += 1;
         }
+
         let mut freq_set = vec![];
         for (ch, freq) in freq {
             freq_set.push(Reverse(CharSetFreq {
@@ -175,10 +177,12 @@ pub(self) mod huffman {
                 freq,
             }));
         }
+
         let mut queue = BinaryHeap::from(freq_set);
-        let mut codes = HashMap::<char, String>::new();
+        let mut paths = HashMap::<char, String>::new();
+
         if queue.len() == 1 {
-            codes
+            paths
                 .entry(
                     queue
                         .peek()
@@ -192,17 +196,14 @@ pub(self) mod huffman {
                 .or_insert(String::new())
                 .push('0');
         }
+
         while queue.len() > 1 {
             let left = queue.pop().unwrap().0;
             let right = queue.pop().unwrap().0;
 
-            for ref ch in left.char_set.chars() {
-                let x = codes.entry(*ch).or_insert_with(|| "".to_string());
-                *x = format!("0{}", x.clone());
-            }
-            for ref ch in right.char_set.chars() {
-                let x = codes.entry(*ch).or_insert_with(|| "".to_string());
-                *x = format!("1{}", x.clone());
+            for (lch, rch) in left.char_set.chars().zip(right.char_set.chars()) {
+                paths.entry(lch).or_insert(String::new()).push('0');
+                paths.entry(rch).or_insert(String::new()).push('1');
             }
 
             let c = CharSetFreq {
@@ -211,7 +212,14 @@ pub(self) mod huffman {
             };
             queue.push(Reverse(c));
         }
-        codes
+
+        paths
+            .into_iter()
+            .map(|(k, v)| {
+                let v = v.chars().rev().collect::<_>();
+                (k, v)
+            })
+            .collect::<HashMap<_, _>>()
     }
 
     fn solve_encode() {
@@ -607,6 +615,7 @@ mod test {
 
     #[test]
     fn test_huffman_mod() {
+        println!("{:?}", huffman::encode("a"));
         println!("{:?}", huffman::encode("adsads"));
     }
 
