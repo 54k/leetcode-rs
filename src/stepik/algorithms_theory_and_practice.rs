@@ -652,6 +652,79 @@ fn merge_sort() {
     solve_merge_sort(&mut arr);
 }
 
+fn solve_quick_sort(mut intervals: Vec<Vec<i32>>, points: Vec<i32>) -> Vec<i32> {
+    fn bin_search1(intervals: &Vec<Vec<i32>>, el: i32) -> i32 {
+        let mut start = 0i32;
+        let mut end = intervals.len() as i32 - 1;
+        while start <= end {
+            let mid = (start + end) / 2;
+            if intervals[mid as usize][0] <= el {
+                start = mid + 1;
+            } else if intervals[mid as usize][0] > el {
+                end = mid - 1;
+            }
+        }
+        start
+    }
+    fn bin_search2(intervals: &Vec<Vec<i32>>, el: i32) -> i32 {
+        let mut start = 0i32;
+        let mut end = intervals.len() as i32 - 1;
+        while start <= end {
+            let mid = (start + end) / 2;
+            if intervals[mid as usize][1] < el {
+                start = mid + 1;
+            } else if intervals[mid as usize][1] >= el {
+                end = mid - 1;
+            }
+        }
+        start
+    }
+    intervals.sort_by(|a, b| a[0].cmp(&b[0]));
+    let mut intervals2 = intervals.clone();
+    intervals2.sort_by(|a, b| a[1].cmp(&b[1]));
+    let mut ans = vec![];
+    for point in points {
+        let starts_before_point = bin_search1(&intervals, point);
+        let ends_before_point = bin_search2(&intervals2, point);
+        ans.push(starts_before_point - ends_before_point.abs());
+    }
+    ans
+}
+
+fn quick_sort() {
+    let mut line = String::new();
+    std::io::stdin().read_line(&mut line).unwrap();
+    let v = line
+        .split_whitespace()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    let (n, _) = (v[0], v[1]);
+    line.clear();
+    let mut intervals = vec![];
+    for _ in 0..n {
+        std::io::stdin().read_line(&mut line).unwrap();
+        intervals.push(
+            line.split_whitespace()
+                .map(|x| x.parse::<i32>().unwrap())
+                .collect::<Vec<_>>(),
+        );
+        line.clear();
+    }
+    std::io::stdin().read_line(&mut line).unwrap();
+    let points = line
+        .split_whitespace()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    println!(
+        "{}",
+        solve_quick_sort(intervals, points)
+            .into_iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -729,9 +802,41 @@ mod test {
             solve_bin_search(vec![1, 5, 8, 12, 13], vec![8, 1, 23, 1, 11])
         );
     }
+
     #[test]
     fn test_merge_sort() {
         solve_merge_sort(&mut vec![2, 3, 9, 2, 9]);
         solve_merge_sort(&mut vec![5, 4, 3, 2, 1]);
+    }
+
+    #[test]
+    fn test_quick_sort() {
+        // println!(
+        //     "{}",
+        //     solve_quick_sort(vec![vec![0, 5], vec![7, 10]], vec![1, 6, 11])
+        //         .into_iter()
+        //         .map(|x| x.to_string())
+        //         .collect::<Vec<_>>()
+        //         .join(" ")
+        // );
+
+        println!(
+            "{}",
+            solve_quick_sort(
+                vec![
+                    vec![0, 3],
+                    vec![1, 3],
+                    vec![2, 3],
+                    vec![3, 4],
+                    vec![3, 5],
+                    vec![3, 6],
+                ],
+                vec![1, 2, 3, 4, 5, 6]
+            )
+            .into_iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+        ); // 2 3 6 3 2 1
     }
 }
