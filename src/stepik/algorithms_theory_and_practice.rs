@@ -570,6 +570,88 @@ fn bin_search() {
     );
 }
 
+fn counting_sort() {
+    let mut line = String::new();
+    std::io::stdin().read_line(&mut line).unwrap();
+    line.clear();
+    std::io::stdin().read_line(&mut line).unwrap();
+    let mut vv = vec![0usize; 11];
+    line.split_whitespace()
+        .map(|x| x.parse::<usize>().unwrap())
+        .for_each(|x| vv[x] += 1);
+    for i in 1..=10 {
+        while vv[i] > 0 {
+            print!("{} ", i);
+            vv[i] -= 1;
+        }
+    }
+    println!();
+}
+
+fn solve_merge_sort(arr: &mut [i32]) {
+    fn merge(
+        arr: &mut [i32],
+        tmp: &mut [i32],
+        left: usize,
+        mid: usize,
+        right: usize,
+        count: &mut usize,
+    ) {
+        println!("sorting {} {} {}", left, mid, right);
+        let mut i = left;
+        let mut j = mid;
+
+        for k in left..right {
+            if j == right || (i < mid && arr[i] <= arr[j]) {
+                tmp[k] = arr[i];
+                i += 1;
+            } else {
+                *count += mid - i;
+                tmp[k] = arr[j];
+                j += 1;
+            }
+        }
+        arr[left..right].copy_from_slice(&tmp[left..right]);
+    }
+
+    fn merge_sort_rec(arr: &mut [i32], tmp: &mut [i32], start: i32, end: i32, count: &mut usize) {
+        if end <= start + 1 {
+            println!("Exit");
+            return;
+        }
+        let mid = (start + end) / 2;
+
+        merge_sort_rec(arr, tmp, start, mid, count);
+        merge_sort_rec(arr, tmp, mid, end, count);
+
+        merge(arr, tmp, start as usize, mid as usize, end as usize, count);
+    }
+
+    fn merge_sort(arr: &mut [i32]) -> usize {
+        let mut tmp = vec![0; arr.len()];
+        let mut count = 0;
+        merge_sort_rec(arr, &mut tmp, 0, arr.len() as i32, &mut count);
+        count
+    }
+    println!("{}", merge_sort(arr));
+}
+
+fn merge_sort() {
+    let mut line = String::new();
+
+    let input = std::io::stdin();
+    input.read_line(&mut line).unwrap();
+    let _ = line.trim().parse::<usize>().unwrap();
+    line.clear();
+    input.read_line(&mut line).unwrap();
+    let mut arr = line
+        .split_whitespace()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+
+    solve_merge_sort(&mut arr);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -646,5 +728,10 @@ mod test {
             "{:?}",
             solve_bin_search(vec![1, 5, 8, 12, 13], vec![8, 1, 23, 1, 11])
         );
+    }
+    #[test]
+    fn test_merge_sort() {
+        solve_merge_sort(&mut vec![2, 3, 9, 2, 9]);
+        solve_merge_sort(&mut vec![5, 4, 3, 2, 1]);
     }
 }
