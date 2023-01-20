@@ -320,6 +320,55 @@ fn problem_3_8() {
     println!("{}", ans);
 }
 
+fn problem_dominos(n: usize) {
+    let mut fib = vec![0u128; n + 1];
+    fib[1] = 1;
+    fib[2] = 1;
+    fib[3] = 2;
+    for i in 4..=n {
+        fib[i] = fib[i - 1] + fib[i - 3];
+    }
+    println!("{}", fib[n]);
+}
+
+fn problem_bug(a: &mut [&mut [i32]]) {
+    let n = a.len();
+    let m = a[0].len();
+    let mut dp = vec![vec![0; m]; n];
+    let mut path = vec![vec![0; m]; n];
+    for i in 0..n {
+        for j in 0..m {
+            dp[i][j] = a[i][j];
+            if i > 0 && dp[i][j] < dp[i - 1][j] + a[i][j] {
+                dp[i][j] = dp[i - 1][j] + a[i][j];
+            }
+            if j > 0 && dp[i][j] < dp[i][j - 1] + a[i][j] {
+                dp[i][j] = dp[i][j - 1] + a[i][j];
+                path[i][j] = 1;
+            }
+        }
+    }
+
+    fn path_rec(path: &[Vec<i32>], i: usize, j: usize) {
+        if i == 0 && j == 0 {
+            return;
+        }
+        if path[i][j] == 1 {
+            path_rec(path, i, j - 1);
+            print!("R");
+        } else {
+            path_rec(path, i - 1, j);
+            print!("D");
+        }
+    }
+
+    path_rec(&path, n - 1, m - 1);
+    println!();
+    dp.into_iter().for_each(|d| {
+        println!("{:?}", d);
+    })
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -372,5 +421,20 @@ mod test {
     #[test]
     fn test3_8() {
         problem_3_8();
+    }
+
+    #[test]
+    fn test_dominos() {
+        problem_dominos(94);
+    }
+
+    #[test]
+    fn test_bugs() {
+        problem_bug(&mut [
+            &mut [1, 4, 1, 2, 3],
+            &mut [2, 3, 2, 1, 4],
+            &mut [1, 1, 1, 2, 4],
+            &mut [2, 5, 1, 7, 1],
+        ])
     }
 }
