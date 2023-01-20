@@ -27,9 +27,8 @@ pub fn solve_sudoku(board: &mut Vec<Vec<char>>) {
         board: &mut Vec<Vec<char>>,
         mut i: usize,
         mut j: usize,
-        solved: &mut bool,
         cache: &mut HashSet<String>,
-    ) {
+    ) -> bool {
         let mut is_full = true;
         for r in 0..board.len() {
             for c in 0..board.len() {
@@ -39,8 +38,7 @@ pub fn solve_sudoku(board: &mut Vec<Vec<char>>) {
             }
         }
         if is_full {
-            *solved = true;
-            return;
+            return true;
         }
 
         while board[i][j] != '.' {
@@ -71,15 +69,16 @@ pub fn solve_sudoku(board: &mut Vec<Vec<char>>) {
             cache.insert(sub_square_key.clone());
 
             board[i][j] = ch;
-            backtrack(board, i, j, solved, cache);
-
-            if !*solved {
-                cache.remove(&row_key);
-                cache.remove(&col_key);
-                cache.remove(&sub_square_key);
-                board[i][j] = '.';
+            let solved = backtrack(board, i, j, cache);
+            if solved {
+                return true;
             }
+            cache.remove(&row_key);
+            cache.remove(&col_key);
+            cache.remove(&sub_square_key);
+            board[i][j] = '.';
         }
+        false
     }
 
     let mut cache = HashSet::new();
@@ -93,7 +92,7 @@ pub fn solve_sudoku(board: &mut Vec<Vec<char>>) {
             }
         }
     }
-    backtrack(board, 0, 0, &mut false, &mut cache);
+    backtrack(board, 0, 0, &mut cache);
 }
 
 #[cfg(test)]
