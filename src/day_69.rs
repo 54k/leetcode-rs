@@ -1,6 +1,3 @@
-use std::hash::Hash;
-use std::io::Write;
-
 // https://leetcode.com/problems/non-decreasing-subsequences/solutions/2910678/increasing-subsequences/?orderBy=most_relevant
 pub fn find_subsequences(nums: Vec<i32>) -> Vec<Vec<i32>> {
     use std::collections::*;
@@ -23,6 +20,7 @@ pub fn find_subsequences(nums: Vec<i32>) -> Vec<Vec<i32>> {
     res.into_iter().collect()
 }
 
+// https://leetcode.com/problems/sudoku-solver/description/
 pub fn solve_sudoku(board: &mut Vec<Vec<char>>) {
     use std::collections::*;
     fn backtrack(
