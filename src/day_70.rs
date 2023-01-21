@@ -16,7 +16,7 @@ pub fn restore_ip_addresses(mut s: String) -> Vec<String> {
             return;
         }
 
-        if dots > 3 {
+        if dots >= 3 {
             return;
         }
 
