@@ -1,4 +1,5 @@
 use std::cmp::{Ordering, Reverse};
+use std::collections::HashSet;
 
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
@@ -369,6 +370,67 @@ fn problem_bug(a: &mut [&mut [i32]]) {
     })
 }
 
+fn problem_knapsack(n: usize, w: usize, weights: &[i32], values: &[i32]) {
+    fn print_path(dp: &Vec<Vec<i32>>, weights: &[i32], i: usize, j: usize) {
+        if i == 0 {
+            return;
+        }
+        if i > 0 && dp[i][j] == dp[i - 1][j] {
+            print_path(dp, weights, i - 1, j);
+        } else {
+            print_path(dp, weights, i - 1, j - weights[i] as usize);
+            print!("{} ", i);
+        }
+    }
+    let mut dp = vec![vec![0; w + 1]; n + 1];
+    for i in 1..=n {
+        for j in 0..=w {
+            dp[i][j] = dp[i - 1][j];
+            if (j as i32 - weights[i]) >= 0
+                && dp[i - 1][j - weights[i] as usize] + values[i] >= dp[i][j]
+            {
+                dp[i][j] = dp[i - 1][j - weights[i] as usize] + values[i];
+            }
+        }
+    }
+    let mut ans = 0;
+    let mut ans_j = 0;
+    for j in (0..=w).rev() {
+        if dp[n][j] > ans {
+            ans = dp[n][j];
+            ans_j = j;
+        }
+    }
+    println!("{}", ans);
+    print_path(&dp, weights, n, ans_j);
+}
+
+fn knapsack_solver() {
+    let mut lines = include_str!("rucksack.in").lines();
+    let (n, w) = {
+        let v = lines
+            .next()
+            .unwrap()
+            .split_whitespace()
+            .map(|c| c.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
+        (v[0], v[1])
+    };
+    let mut weights = vec![0; n + 1];
+    let mut values = vec![0; n + 1];
+    for i in 1..=n {
+        let v = lines
+            .next()
+            .unwrap()
+            .split_whitespace()
+            .map(|c| c.parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+        weights[i] = v[0];
+        values[i] = v[1];
+    }
+    problem_knapsack(n, w, &weights, &values);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -436,5 +498,11 @@ mod test {
             &mut [1, 1, 1, 2, 4],
             &mut [2, 5, 1, 7, 1],
         ])
+    }
+
+    #[test]
+    fn test_knapsack() {
+        knapsack_solver();
+        // problem_knapsack(3, 12, &[2, 5, 10], &[10, 20, 30]);
     }
 }
