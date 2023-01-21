@@ -44,5 +44,6 @@ mod test {
         println!("{:?}", restore_ip_addresses("25525511135".to_string()));
         println!("{:?}", restore_ip_addresses("0000".to_string()));
         println!("{:?}", restore_ip_addresses("101023".to_string()));
+        println!("{:?}", restore_ip_addresses("127001".to_string()));
     }
 }
