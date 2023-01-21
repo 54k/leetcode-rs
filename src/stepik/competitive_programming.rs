@@ -431,6 +431,79 @@ fn knapsack_solver() {
     problem_knapsack(n, w, &weights, &values);
 }
 
+fn problem_lcs(a: &[i32], b: &[i32]) {
+    let n = a.len();
+    let m = b.len();
+    let mut dp = vec![vec![0; m + 1]; n + 1];
+    for i in 1..=n {
+        for j in 1..=m {
+            dp[i][j] = dp[i - 1][j].max(dp[i][j - 1]);
+            if a[i - 1] == b[j - 1] {
+                dp[i][j] = (dp[i - 1][j - 1] + 1).max(dp[i][j]);
+            }
+        }
+    }
+
+    println!("{}", dp[n][m]);
+
+    let mut i = n;
+    let mut j = m;
+    let mut ans = vec![];
+    while i > 0 && j > 0 {
+        if a[i - 1] == b[j - 1] {
+            ans.push(a[i - 1]);
+            i -= 1;
+            j -= 1;
+        } else if dp[i - 1][j] == dp[i][j] {
+            i -= 1;
+        } else if dp[i][j - 1] == dp[i][j] {
+            j -= 1;
+        }
+    }
+
+    println!(
+        "{}",
+        ans.into_iter()
+            .rev()
+            .map(|c| c.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+}
+
+fn solver_lcs() {
+    let mut lines = include_str!("seq2.in").lines();
+    lines.next().unwrap();
+    let mut a = lines
+        .next()
+        .unwrap()
+        .split_whitespace()
+        .map(|c| c.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    lines.next().unwrap();
+    let mut b = lines
+        .next()
+        .unwrap()
+        .split_whitespace()
+        .map(|c| c.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    problem_lcs(&a, &b);
+}
+
+fn problem_binom(n: usize, k: usize) {
+    let mut dp = vec![vec![0u128; n + 1]; n + 1];
+    for i in 0..=n {
+        dp[0][i] = 1;
+        dp[i][i] = 1;
+    }
+    for i in 1..=k {
+        for j in 1..=n {
+            dp[i][j] = dp[i - 1][j - 1] + dp[i][j - 1];
+        }
+    }
+    println!("{}", dp[k][n]);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -504,5 +577,20 @@ mod test {
     fn test_knapsack() {
         knapsack_solver();
         // problem_knapsack(3, 12, &[2, 5, 10], &[10, 20, 30]);
+    }
+
+    #[test]
+    fn test_lcs() {
+        solver_lcs();
+        // problem_lcs(&[3, 2, 4, 2, 1, 7, 6], &[4, 2, 5, 3, 1, 6, 5, 2, 3]);
+    }
+
+    #[test]
+    fn test_binom() {
+        problem_binom(2, 1);
+        problem_binom(3, 2);
+        problem_binom(4, 3);
+        problem_binom(20, 17);
+        problem_binom(50, 20);
     }
 }
