@@ -504,6 +504,41 @@ fn problem_binom(n: usize, k: usize) {
     println!("{}", dp[k][n]);
 }
 
+fn problem_arithmetics(v: &mut [i32], sum: i32) {
+    fn backtrack(v: &mut [i32], sum: i32, i: usize, cur: i32, path: &mut String) {
+        if sum == cur && i == v.len() {
+            println!("{}", path);
+            return;
+        }
+        if i >= v.len() {
+            return;
+        }
+
+        backtrack(v, sum, i + 1, cur + v[i], &mut format!("{}+{}", path, v[i]));
+        backtrack(v, sum, i + 1, cur - v[i], &mut format!("{}-{}", path, v[i]));
+    }
+
+    backtrack(v, sum, 1, v[0], &mut format!("{}", v[0]));
+}
+
+fn solve_arithmetics() {
+    let mut lines = include_str!("arithm2.in").lines();
+    let mut sum = lines
+        .next()
+        .unwrap()
+        .split_whitespace()
+        .skip(1)
+        .map(|c| c.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    let mut a = lines
+        .next()
+        .unwrap()
+        .split_whitespace()
+        .map(|c| c.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    problem_arithmetics(&mut a, sum[0]);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -592,5 +627,11 @@ mod test {
         problem_binom(4, 3);
         problem_binom(20, 17);
         problem_binom(50, 20);
+    }
+
+    #[test]
+    fn test_arithmetic() {
+        // problem_arithmetics(&mut [1, 2, 3], 0);
+        solve_arithmetics();
     }
 }
