@@ -1,5 +1,7 @@
 use std::cmp::{Ordering, Reverse};
 use std::collections::HashSet;
+use std::io::Write;
+use std::process::exit;
 
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
@@ -521,6 +523,116 @@ fn problem_arithmetics(v: &mut [i32], sum: i32) {
     backtrack(v, sum, 1, v[0], &mut format!("{}", v[0]));
 }
 
+fn problem_arithmetics2(v: &mut [i32], sum: i32) {
+    fn dfs(k: usize, sum: i32, cur: i32, sign: &mut [i32], v: &mut [i32]) -> bool {
+        if k == v.len() && sum == cur {
+            for (i, v) in v.iter_mut().enumerate() {
+                if i >= 1 {
+                    print!("{}", if sign[i] == 0 { '-' } else { '+' });
+                }
+                print!("{}", v);
+            }
+            return true;
+        }
+        if k < v.len() {
+            sign[k] = 1;
+            if dfs(k + 1, sum, cur + v[k], sign, v) {
+                return true;
+            }
+            sign[k] = 0;
+            if dfs(k + 1, sum, cur - v[k], sign, v) {
+                return true;
+            }
+        }
+        false
+    }
+    let n = v.len();
+    let mut sign = vec![0; n];
+    dfs(0, sum, 0, &mut sign, v);
+}
+
+fn problem_arithmetics3(v: &mut [i32], sum: i32) {
+    fn fenwick_add(tree: &mut [i32], mut k: i32, num: i32) {
+        while k < tree.len() as i32 {
+            tree[k as usize] += num;
+            k += k & -k;
+        }
+    }
+    fn fenwick_query(tree: &mut [i32], mut k: i32) -> i32 {
+        let mut ans = 0;
+        while k > 0 {
+            ans += tree[k as usize];
+            k -= k & -k;
+        }
+        ans
+    }
+
+    fn dfs(v: &mut [i32], tree: &mut [i32], sum: i32, cur: i32, i: usize) -> bool {
+        if sum == cur {
+            for (k, &mut e) in v.iter_mut().enumerate() {
+                if e < 0 || k == 0 {
+                    print!("{}", e);
+                } else {
+                    print!("+{}", e);
+                }
+            }
+            return true;
+        }
+        for j in i..v.len() {
+            v[j] *= -1;
+            fenwick_add(tree, j as i32 + 1, v[j] * 2);
+            let next_cur = fenwick_query(tree, v.len() as i32);
+            if dfs(v, tree, sum, next_cur, j + 1) {
+                return true;
+            }
+            v[j] *= -1;
+            fenwick_add(tree, j as i32 + 1, v[j] * 2);
+        }
+        false
+    }
+
+    let n = v.len();
+    let mut tree = vec![0; n + 1];
+    for i in 1..=n {
+        fenwick_add(&mut tree, i as i32, v[i - 1]);
+    }
+    let cur = fenwick_query(&mut tree, n as i32);
+    dfs(v, &mut tree, sum, cur, 1);
+}
+
+fn problem_arithmetics4(v: &mut [i32], sum: i32) {
+    fn print_path(v: &mut [i32], p: &Vec<Vec<i32>>, sum: i32, i: usize) {
+        if i > 0 {
+            print_path(v, p, sum - p[i][sum as usize] * v[i], i - 1);
+            if p[i][sum as usize] < 0 {
+                print!("-");
+            } else {
+                print!("+");
+            }
+        }
+        print!("{}", v[i]);
+    }
+
+    const SMAX: usize = 10000;
+    let mut dp = vec![vec![0; SMAX * 2]; v.len()];
+    let mut p = vec![vec![0; SMAX * 2]; v.len()];
+    dp[0][(SMAX as i32 + v[0]) as usize] = 1;
+
+    for i in 0..v.len() - 1 {
+        for j in 0..SMAX * 2 {
+            if dp[i][j] == 0 {
+                continue;
+            }
+            dp[i + 1][j + v[i + 1] as usize] = dp[i][j];
+            p[i + 1][j + v[i + 1] as usize] = 1;
+            dp[i + 1][j - v[i + 1] as usize] = dp[i][j];
+            p[i + 1][j - v[i + 1] as usize] = -1;
+        }
+    }
+
+    print_path(v, &p, SMAX as i32 + sum, v.len() - 1);
+}
+
 fn solve_arithmetics() {
     let mut lines = include_str!("arithm2.in").lines();
     let mut sum = lines
@@ -536,7 +648,7 @@ fn solve_arithmetics() {
         .split_whitespace()
         .map(|c| c.parse::<i32>().unwrap())
         .collect::<Vec<_>>();
-    problem_arithmetics(&mut a, sum[0]);
+    problem_arithmetics4(&mut a, sum[0]);
 }
 
 #[cfg(test)]
@@ -631,7 +743,8 @@ mod test {
 
     #[test]
     fn test_arithmetic() {
-        // problem_arithmetics(&mut [1, 2, 3], 0);
-        solve_arithmetics();
+        problem_arithmetics4(&mut [1, 2, 3], 0); // 1 + 2 - 3
+        println!();
+        solve_arithmetics(); // 21-27+34+20-29-24+38+38-22-24
     }
 }
