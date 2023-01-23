@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::io;
 
 fn problem226() -> Result<(), Box<dyn Error>> {
     use std::io;
@@ -725,6 +726,88 @@ fn quick_sort() {
     );
 }
 
+fn solve_lis(arr: Vec<i32>) {
+    let mut d = vec![0; arr.len()];
+    for (i, &ai) in arr.iter().enumerate() {
+        d[i] = 1;
+        for j in 0..i {
+            if (ai % arr[j]) == 0 {
+                d[i] = d[i].max(d[j] + 1);
+            }
+        }
+    }
+
+    let max = d.iter().enumerate().map(|(a, b)| (b, a)).max().unwrap();
+    println!("{}", max.0);
+    let mut n = max.1;
+    print!("{} ", arr[n]);
+    'path: for i in (0..n).rev() {
+        if d[i] == d[n] - 1 && (arr[n] % arr[i]) == 0 {
+            print!("{} ", arr[i]);
+            n = i;
+            continue 'path;
+        }
+    }
+}
+
+fn solve_lis2(a: Vec<i32>) {
+    fn upper_bound(d: &[i32], k: i32) -> usize {
+        let mut start = 0;
+        let mut end = d.len() - 1;
+        while start <= end {
+            let mid = (start + end) / 2;
+            if d[mid] >= k {
+                start = mid + 1;
+            } else if d[mid] < k {
+                end = mid - 1;
+            }
+        }
+        start
+    }
+    const INF: i32 = 1000000007;
+    let mut d = vec![-INF; a.len() + 1];
+    let mut p = vec![0; a.len() + 1];
+    let mut pa = vec![0; a.len() + 1];
+    d[0] = INF;
+    for (i, &ai) in a.iter().enumerate() {
+        let j = upper_bound(&d, ai);
+        if d[j - 1] >= ai && ai > d[j] {
+            d[j] = ai;
+            pa[i] = p[j - 1];
+            p[j] = i;
+        }
+    }
+    let pos = d.into_iter().filter(|x| x.abs() != INF).count();
+    println!("{}", pos);
+    let mut i = p[pos];
+    let mut ans = vec![];
+    for _ in 0..pos {
+        ans.push(i);
+        i = pa[i];
+    }
+    ans.reverse();
+    for &x in ans.iter() {
+        print!("{} ", a[x]);
+    }
+    println!();
+    for x in ans {
+        print!("{} ", x + 1);
+    }
+    println!();
+}
+
+fn problem_lis() {
+    let mut line = String::new();
+    std::io::stdin().read_line(&mut line).unwrap();
+    line.clear();
+    std::io::stdin().read_line(&mut line).unwrap();
+    let arr = line
+        .split_whitespace()
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    solve_lis(arr);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -838,5 +921,18 @@ mod test {
             .collect::<Vec<_>>()
             .join(" ")
         ); // 2 3 6 3 2 1
+    }
+
+    #[test]
+    fn test_lis() {
+        solve_lis(vec![3, 6, 7, 12]);
+    }
+
+    #[test]
+    fn test_lis2() {
+        solve_lis2(vec![1, 2]);
+        solve_lis2(vec![2, 2, 2, 2, 2, 3, 6, 5, 4, 3, 2, 1, 0]);
+        solve_lis2(vec![5, 3, 4, 4, 2]);
+        solve_lis2(vec![1, 3, 4, 3, 4, 2, 3, 2, 1]);
     }
 }

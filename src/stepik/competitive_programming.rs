@@ -1,7 +1,4 @@
 use std::cmp::{Ordering, Reverse};
-use std::collections::HashSet;
-use std::io::Write;
-use std::process::exit;
 
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
@@ -651,6 +648,70 @@ fn solve_arithmetics() {
     problem_arithmetics4(&mut a, sum[0]);
 }
 
+fn problem_submatrix(matrix: &[Vec<i32>], queries: &[Vec<i32>]) {
+    let n = matrix.len();
+    let m = matrix[0].len();
+    let mut prefix = vec![vec![0i128; m + 1]; n + 1];
+    for i in 1..=n {
+        for j in 1..=m {
+            prefix[i][j] = prefix[i - 1][j] + prefix[i][j - 1] - prefix[i - 1][j - 1]
+                + matrix[i - 1][j - 1] as i128;
+        }
+    }
+
+    println!(
+        "{:?}",
+        queries
+            .iter()
+            .map(|q| (q[0] as usize, q[1] as usize, q[2] as usize, q[3] as usize))
+            .map(|(x1, x2, y1, y2)| {
+                prefix[x2][y2] - prefix[x1 - 1][y2] - prefix[x2][y1 - 1] + prefix[x1 - 1][y1 - 1]
+            })
+            .sum::<i128>()
+    );
+}
+
+fn solve_submatrix() {
+    let mut lines = include_str!("rectangle.in").lines();
+
+    let (n, _) = {
+        let v = lines
+            .next()
+            .unwrap()
+            .split_whitespace()
+            .map(|c| c.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
+        (v[0], v[1])
+    };
+
+    let mut matrix = vec![];
+    for _ in 0..n {
+        matrix.push(
+            lines
+                .next()
+                .unwrap()
+                .split_whitespace()
+                .map(|x| x.parse::<i32>().unwrap())
+                .collect(),
+        );
+    }
+
+    let q_num = lines.next().unwrap().parse::<i32>().unwrap();
+    let mut queries = vec![];
+    for _ in 0..q_num {
+        queries.push(
+            lines
+                .next()
+                .unwrap()
+                .split_whitespace()
+                .map(|x| x.parse::<i32>().unwrap())
+                .collect(),
+        );
+    }
+
+    problem_submatrix(&matrix, &queries);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -746,5 +807,21 @@ mod test {
         problem_arithmetics4(&mut [1, 2, 3], 0); // 1 + 2 - 3
         println!();
         solve_arithmetics(); // 21-27+34+20-29-24+38+38-22-24
+    }
+
+    #[test]
+    fn test_submatrix_sum() {
+        problem_submatrix(
+            &vec![
+                vec![1, 3, 7, -1, 7, 11],
+                vec![2, 6, 5, 1, 1, 3],
+                vec![-3, 0, 2, 0, 3, 8],
+                vec![5, 1, 3, 1, 4, 7],
+                vec![6, 1, -2, 2, 1, 0],
+            ],
+            &vec![vec![2, 3, 2, 3], vec![1, 1, 5, 6], vec![3, 5, 3, 6]],
+        );
+
+        solve_submatrix();
     }
 }
