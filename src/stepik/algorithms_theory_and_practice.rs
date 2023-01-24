@@ -1,5 +1,5 @@
+use std::char;
 use std::error::Error;
-use std::io;
 
 fn problem226() -> Result<(), Box<dyn Error>> {
     use std::io;
@@ -808,6 +808,77 @@ fn problem_lis() {
     solve_lis(arr);
 }
 
+fn solve_ed(a: String, b: String) {
+    const INF: i32 = 100000007;
+    let n = a.len();
+    let m = b.len();
+    let mut d = vec![vec![INF; m + 1]; n + 1];
+
+    let a = a.chars().collect::<Vec<_>>();
+    let b = b.chars().collect::<Vec<_>>();
+
+    d[0][0] = 0;
+    for i in 0..=n {
+        d[i][0] = i as i32;
+    }
+    for j in 0..=m {
+        d[0][j] = j as i32;
+    }
+
+    for i in 1..=n {
+        for j in 1..=m {
+            if a[i - 1] == b[j - 1] {
+                d[i][j] = d[i - 1][j - 1];
+            } else {
+                d[i][j] = d[i - 1][j].min(d[i][j - 1]).min(d[i - 1][j - 1]) + 1;
+            }
+        }
+    }
+    println!("{}", d[n][m]);
+}
+
+fn solve_ed_lazy(a: String, b: String) {
+    const INF: i32 = 100000007;
+    let n = a.len();
+    let m = b.len();
+    let mut d = vec![vec![INF; m + 1]; n + 1];
+
+    let a = a.chars().collect::<Vec<_>>();
+    let b = b.chars().collect::<Vec<_>>();
+
+    fn go(a: &Vec<char>, b: &Vec<char>, d: &mut [Vec<i32>], i: usize, j: usize) -> i32 {
+        if d[i][j] == INF {
+            match (i, j) {
+                (_, 0) => {
+                    d[i][0] = i as i32;
+                }
+                (0, _) => {
+                    d[0][j] = j as i32;
+                }
+                (i, j) => {
+                    let ins = go(a, b, d, i - 1, j) + 1;
+                    let del = go(a, b, d, i, j - 1) + 1;
+                    let sub = go(a, b, d, i - 1, j - 1)
+                        + (a[i - 1] as i32 - b[j - 1] as i32).abs().min(1);
+                    d[i][j] = (ins).min(del).min(sub)
+                }
+            };
+        }
+        d[i][j]
+    }
+
+    println!("{}", go(&a, &b, &mut d, n, m));
+}
+
+fn problem_ed() {
+    // put your Rust code here
+    let mut a = String::new();
+    std::io::stdin().read_line(&mut a).unwrap();
+    let mut b = String::new();
+    std::io::stdin().read_line(&mut b).unwrap();
+    solve_ed(a.trim().to_owned(), b.trim().to_owned());
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -934,5 +1005,15 @@ mod test {
         solve_lis2(vec![2, 2, 2, 2, 2, 3, 6, 5, 4, 3, 2, 1, 0]);
         solve_lis2(vec![5, 3, 4, 4, 2]);
         solve_lis2(vec![1, 3, 4, 3, 4, 2, 3, 2, 1]);
+    }
+
+    #[test]
+    fn test_ed() {
+        solve_ed("ab".to_string(), "ab".to_string()); // 0
+        solve_ed("short".to_string(), "ports".to_string()); // 3
+        solve_ed("horse".to_string(), "ros".to_string()); // 3
+        solve_ed_lazy("ab".to_string(), "ab".to_string()); // 0
+        solve_ed_lazy("short".to_string(), "ports".to_string()); // 3
+        solve_ed_lazy("horse".to_string(), "ros".to_string()); // 3
     }
 }
