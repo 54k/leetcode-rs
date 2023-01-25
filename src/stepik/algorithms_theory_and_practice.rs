@@ -804,7 +804,7 @@ fn problem_lis() {
     let arr = line
         .split_whitespace()
         .map(|x| x.parse::<i32>().unwrap())
-        .collect::<Vec<_>>();
+        .collect();
     solve_lis(arr);
 }
 
@@ -877,6 +877,39 @@ fn problem_ed() {
     let mut b = String::new();
     std::io::stdin().read_line(&mut b).unwrap();
     solve_ed(a.trim().to_owned(), b.trim().to_owned());
+}
+
+fn solve_knapsack(w: usize, wi: &Vec<usize>) {
+    let mut dp = vec![vec![0; w + 1]; wi.len() + 1];
+    for i in 1..=wi.len() {
+        for j in 0..=w {
+            dp[i][j] = dp[i - 1][j];
+            if j >= wi[i - 1] {
+                dp[i][j] = dp[i][j].max(dp[i - 1][j - wi[i - 1]] + wi[i - 1]);
+            }
+        }
+    }
+    println!("{:?}", dp[wi.len()][w]);
+}
+
+fn problem_knapsack() {
+    // put your Rust code here
+    let mut line = String::new();
+    std::io::stdin().read_line(&mut line).unwrap();
+    let mut w = line
+        .split_whitespace()
+        .take(1)
+        .last()
+        .unwrap()
+        .parse()
+        .unwrap();
+    line.clear();
+    std::io::stdin().read_line(&mut line).unwrap();
+    let wi = line
+        .split_whitespace()
+        .map(|f| f.parse().unwrap())
+        .collect();
+    solve_knapsack(w, &wi);
 }
 
 #[cfg(test)]
@@ -1015,5 +1048,10 @@ mod test {
         solve_ed_lazy("ab".to_string(), "ab".to_string()); // 0
         solve_ed_lazy("short".to_string(), "ports".to_string()); // 3
         solve_ed_lazy("horse".to_string(), "ros".to_string()); // 3
+    }
+
+    #[test]
+    fn test_knapsack_discrete() {
+        solve_knapsack(10, &vec![1, 3, 8]);
     }
 }
