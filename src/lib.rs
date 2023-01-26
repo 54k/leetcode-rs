@@ -71,6 +71,7 @@ pub mod day_71;
 pub mod day_72;
 pub mod day_73;
 pub mod day_74;
+pub mod day_75;
 pub mod day_8;
 pub mod day_9;
 pub mod design_twitter_day16;

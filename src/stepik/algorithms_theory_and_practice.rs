@@ -912,6 +912,72 @@ fn problem_knapsack() {
     solve_knapsack(w, &wi);
 }
 
+fn solve_ladder(n: usize, a: Vec<i32>) -> i32 {
+    let mut d = vec![0; n + 1];
+    d[1] = a[0];
+    for i in 2..=n {
+        d[i] = d[i - 1].max(d[i - 2]) + a[i - 1];
+    }
+    d[n]
+}
+
+fn problem_ladder() {
+    let mut n = String::new();
+    std::io::stdin().read_line(&mut n).unwrap();
+    let mut a = String::new();
+    std::io::stdin().read_line(&mut a).unwrap();
+    // put your Rust code here
+    let ans = solve_ladder(
+        n.trim().parse().unwrap(),
+        a.split_whitespace().map(|x| x.parse().unwrap()).collect(),
+    );
+    println!("{}", ans);
+}
+
+fn solve_calc(a: usize) {
+    const INF: i32 = 1000007;
+    let mut d = vec![INF; a + 1];
+    d[1] = 0;
+    for i in 1..a {
+        if i * 3 <= a {
+            d[i * 3] = d[i * 3].min(d[i] + 1);
+        }
+        if i * 2 <= a {
+            d[i * 2] = d[i * 2].min(d[i] + 1);
+        }
+        if i < a {
+            d[i + 1] = d[i + 1].min(d[i] + 1);
+        }
+    }
+
+    println!("{}", d[a]);
+    let mut p = vec![];
+    let mut i = a;
+    while i > 1 {
+        p.push(i);
+        if i % 3 == 0 && d[i / 3] + 1 == d[i] {
+            i /= 3;
+        } else if i % 2 == 0 && d[i / 2] + 1 == d[i] {
+            i /= 2;
+        } else if d[i - 1] + 1 == d[i] {
+            i -= 1;
+        }
+    }
+    p.push(1);
+    p.reverse();
+    p.iter().for_each(|e| print!("{} ", e));
+    println!();
+}
+
+fn problem_calc() {
+    // put your Rust code here
+    let mut a = String::new();
+    std::io::stdin().read_line(&mut a).unwrap();
+    // put your Rust code here
+    let a = a.trim().parse().unwrap();
+    solve_calc(a);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1053,5 +1119,15 @@ mod test {
     #[test]
     fn test_knapsack_discrete() {
         solve_knapsack(10, &vec![1, 3, 8]);
+    }
+
+    #[test]
+    fn test_ladder() {
+        println!("{}", solve_ladder(3, vec![-1, 2, 1]));
+    }
+
+    #[test]
+    fn test_calc() {
+        solve_calc(96234);
     }
 }
