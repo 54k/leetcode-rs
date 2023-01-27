@@ -1,4 +1,5 @@
 use std::cmp::{Ordering, Reverse};
+use std::io::Read;
 
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
@@ -712,6 +713,76 @@ fn solve_submatrix() {
     problem_submatrix(&matrix, &queries);
 }
 
+fn solve_fair1(arr: &mut [i64]) -> i64 {
+    fn rec(arr: &[i64], i: usize, s1: &mut Vec<i64>, s2: &mut Vec<i64>, ans: &mut i64) {
+        if i == arr.len() {
+            let mut sum = (s1.iter().sum::<i64>() - s2.iter().sum::<i64>()).abs();
+            *ans = *ans.min(&mut sum);
+            return;
+        }
+
+        s1.push(arr[i]);
+        rec(arr, i + 1, s1, s2, ans);
+        s1.pop();
+
+        s2.push(arr[i]);
+        rec(arr, i + 1, s1, s2, ans);
+        s2.pop();
+    }
+    let mut ans = 10000007;
+    rec(arr, 0, &mut vec![], &mut vec![], &mut ans);
+    ans
+}
+
+fn solve_fair2(arr: &mut [i64]) -> i64 {
+    let n = arr.len();
+    let m = arr.iter().sum::<i64>() as usize;
+    let mut d = vec![vec![false; m / 2 + 1]; n + 1];
+    for i in 0..n {
+        for j in 0..=(m / 2) {
+            if j == 0 {
+                d[i][j] = true;
+            }
+            d[i + 1][j] = d[i][j];
+            if arr[i] as usize <= j {
+                d[i + 1][j] |= d[i][j - arr[i] as usize];
+            }
+        }
+    }
+    let maxi = d[n]
+        .iter()
+        .enumerate()
+        .filter_map(|x| if !x.1 { None } else { Some(x.0) })
+        .max()
+        .unwrap();
+    (m - 2 * maxi) as i64
+}
+
+fn problem_fair_div() {
+    for (i, s) in [
+        include_str!("./gold.in"),
+        include_str!("./gold2.in"),
+        include_str!("./gold3.in"),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let mut input = s
+            .lines()
+            .skip(1)
+            .find(|_| true)
+            .unwrap()
+            .split_whitespace()
+            .map(|x| x.parse().unwrap())
+            .collect::<Vec<_>>();
+        if i < 2 {
+            println!("{}", solve_fair2(&mut input));
+        } else {
+            println!("{}", solve_fair1(&mut input));
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -823,5 +894,10 @@ mod test {
         );
 
         solve_submatrix();
+    }
+    #[test]
+    fn test_fair_division() {
+        println!("{}", solve_fair1(&mut vec![1, 2, 3, 4, 5]));
+        problem_fair_div();
     }
 }
