@@ -912,6 +912,75 @@ fn problem_friends2() {
     solve_friends2(n, adj);
 }
 
+fn solve_gossip(n: usize, masks: Vec<i32>) {
+    let mut ans = u32::MAX;
+    let mut ans_mask = 0;
+
+    // for mask in 1..1 << n {
+    //     let mut nmask = 0;
+    //     let mut cnt = 0;
+    //     for i in 0..n {
+    //         if 1 << i & mask > 0 {
+    //             nmask |= masks[i];
+    //             cnt += 1;
+    //         }
+    //     }
+    //     if nmask == (1 << n) - 1 && ans > cnt {
+    //         ans = cnt;
+    //         ans_mask = mask;
+    //     }
+    // }
+
+    'xx: for mask in 1..1 << n {
+        for i in 0..n {
+            if masks[i] & mask == 0 {
+                continue 'xx;
+            }
+        }
+        let ones = mask.count_ones();
+        if ans > ones {
+            ans = ones;
+            ans_mask = mask;
+        }
+    }
+
+    println!("{}", ans);
+    for i in 0..=20 {
+        if (1 << i) & ans_mask > 0 {
+            print!("{} ", i + 1);
+        }
+    }
+}
+
+fn problem_gossip() {
+    let mut lines = include_str!("new.in").lines();
+    let mut v = lines
+        .next()
+        .unwrap()
+        .split_whitespace()
+        .map(|n| n.parse().unwrap())
+        .collect::<Vec<_>>();
+    let n = v[0];
+    let m = v[1];
+    let mut adj = vec![0; n];
+
+    for i in 0..n {
+        adj[i] |= 1 << i;
+    }
+    for _ in 0..m {
+        let mut v = lines
+            .next()
+            .unwrap()
+            .split_whitespace()
+            .map(|n| n.parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+        adj[(v[0] - 1) as usize] |= 1 << (v[1] - 1);
+        adj[(v[1] - 1) as usize] |= 1 << (v[0] - 1);
+    }
+
+    solve_gossip(n, adj);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1047,5 +1116,10 @@ mod test {
     #[test]
     fn test_friends() {
         problem_friends2();
+    }
+
+    #[test]
+    fn test_gossip() {
+        problem_gossip();
     }
 }
