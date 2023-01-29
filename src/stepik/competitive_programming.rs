@@ -783,6 +783,80 @@ fn problem_fair_div() {
     }
 }
 
+fn solve_count_ones(mut n: i32) -> i32 {
+    let mut ans = 0;
+    for i in 0..=31 {
+        if 1 << i & n == 1 << i {
+            ans += 1;
+        }
+    }
+    ans
+}
+
+fn problem_count_ones() {
+    include_str!("ones.in")
+        .lines()
+        .skip(1)
+        .flat_map(|s| s.split_whitespace().map(|n| n.parse::<i32>().unwrap()))
+        .for_each(|x| {
+            print!("{} ", solve_count_ones(x));
+        });
+}
+
+fn solve_salesman_bit(n: usize, a: Vec<Vec<i32>>) {
+    let mut d = vec![vec![i32::MAX; n]; 1 << n];
+    let mut p = vec![vec![0; n]; 1 << n];
+    d[0][0] = 0;
+    for mask in 0..1 << n {
+        for i in 0..n {
+            if d[mask][i] == i32::MAX {
+                continue;
+            }
+            for j in 0..n {
+                if mask & 1 << j > 0 {
+                    continue;
+                }
+                if d[mask ^ (1 << j)][j] >= d[mask][i] + a[i][j] {
+                    d[mask ^ (1 << j)][j] = d[mask][i] + a[i][j];
+                    p[mask ^ (1 << j)][j] = i;
+                }
+            }
+        }
+    }
+    let ans = d[(1 << n) - 1][0];
+    println!("{}", ans);
+
+    fn print_path(mask: usize, j: usize, p: &Vec<Vec<usize>>) {
+        if mask == 0 && j == 0 {
+            return;
+        }
+        let i = p[mask][j];
+        print_path(mask ^ 1 << j, i, p);
+        print!("{} ", i);
+    }
+
+    print_path((1 << n) - 1, 0, &p);
+}
+
+fn problem_salesman_bit() {
+    let mut lines = include_str!("salesman2.in").lines();
+    let n = lines.next().unwrap().parse().unwrap();
+    let mut distances = vec![vec![0; n]; n];
+    for i in 0..n {
+        let d = lines
+            .next()
+            .unwrap()
+            .split_whitespace()
+            .map(|n| n.parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+
+        for j in 0..n {
+            distances[i][j] = d[j];
+        }
+    }
+    solve_salesman_bit(n, distances);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -895,9 +969,23 @@ mod test {
 
         solve_submatrix();
     }
+
     #[test]
     fn test_fair_division() {
         println!("{}", solve_fair1(&mut vec![1, 2, 3, 4, 5]));
         problem_fair_div();
+    }
+
+    #[test]
+    fn test_count_ones() {
+        // for x in [5, 13, 0] {
+        //     print!("{} ", solve_count_ones(x));
+        // }
+        problem_count_ones();
+    }
+
+    #[test]
+    fn test_salesman_bit() {
+        problem_salesman_bit();
     }
 }
