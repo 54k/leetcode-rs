@@ -1,5 +1,4 @@
 use std::cmp::{Ordering, Reverse};
-use std::io::Read;
 
 fn problem2(n: i32, m: i32) -> i32 {
     fn rec(n: i32, m: i32, i: usize, ans: &mut i32) {
@@ -857,6 +856,114 @@ fn problem_salesman_bit() {
     solve_salesman_bit(n, distances);
 }
 
+fn solve_friends(n: usize, adj: Vec<Vec<bool>>) {
+    let mut ans = 0;
+    let mut ans_set = vec![];
+    'go: for mask in 1..=(1 << n) {
+        let mut s = vec![];
+        for i in 1..=n {
+            if 1 << i & mask > 0 {
+                s.push(i);
+            }
+        }
+        for i in 1..s.len() {
+            for j in 1..i {
+                if !adj[s[i]][s[j]] {
+                    continue 'go;
+                }
+            }
+        }
+        if ans < s.len() {
+            ans = s.len();
+            ans_set = s;
+        }
+    }
+    println!("{}", ans);
+    println!("{:?}", ans_set);
+}
+
+fn problem_friends() {
+    let mut lines = include_str!("friends.in").lines();
+    let mut v = lines
+        .next()
+        .unwrap()
+        .split_whitespace()
+        .map(|n| n.parse().unwrap())
+        .collect::<Vec<_>>();
+    let n = v[0];
+    let m = v[1];
+    let mut adj = vec![vec![false; n + 1]; n + 1];
+
+    for _ in 0..m {
+        let mut v = lines
+            .next()
+            .unwrap()
+            .split_whitespace()
+            .map(|n| n.parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+        adj[v[0] as usize][v[1] as usize] = true;
+        adj[v[1] as usize][v[0] as usize] = true;
+    }
+
+    solve_friends(n, adj);
+}
+
+fn solve_friends2(n: usize, adj: Vec<i32>) {
+    let mut ans = 0;
+    let mut ans_mask = 0;
+    'outer: for mask in 1..1 << n {
+        for i in 0..n {
+            if 1 << i & mask == 0 {
+                continue;
+            }
+            if adj[i] & mask != mask {
+                continue 'outer;
+            }
+        }
+        let mask_ones = mask.count_ones();
+        if ans < mask_ones {
+            ans = mask_ones;
+            ans_mask = mask;
+        }
+    }
+
+    println!("{}", ans);
+    for i in 0..=20 {
+        if (1 << i) & ans_mask > 0 {
+            print!("{} ", i + 1);
+        }
+    }
+}
+
+fn problem_friends2() {
+    let mut lines = include_str!("friends2.in").lines();
+    let mut v = lines
+        .next()
+        .unwrap()
+        .split_whitespace()
+        .map(|n| n.parse().unwrap())
+        .collect::<Vec<_>>();
+    let n = v[0];
+    let m = v[1];
+    let mut adj = vec![0; n];
+
+    for i in 0..n {
+        adj[i] |= 1 << i;
+    }
+    for _ in 0..m {
+        let mut v = lines
+            .next()
+            .unwrap()
+            .split_whitespace()
+            .map(|n| n.parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+        adj[(v[0] - 1) as usize] |= 1 << (v[1] - 1);
+        adj[(v[1] - 1) as usize] |= 1 << (v[0] - 1);
+    }
+
+    solve_friends2(n, adj);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -987,5 +1094,10 @@ mod test {
     #[test]
     fn test_salesman_bit() {
         problem_salesman_bit();
+    }
+
+    #[test]
+    fn test_friends() {
+        problem_friends2();
     }
 }
