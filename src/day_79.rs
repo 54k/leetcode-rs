@@ -32,12 +32,8 @@ impl Node {
         unsafe {
             let prev = self.prev;
             let next = self.next;
-            if !prev.is_null() {
-                (*prev).next = next;
-            }
-            if !next.is_null() {
-                (*next).prev = prev;
-            }
+            (*prev).next = next;
+            (*next).prev = prev;
         }
     }
 }
