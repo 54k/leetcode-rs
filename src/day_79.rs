@@ -27,6 +27,121 @@ struct Node {
     next: *mut Node,
 }
 
+impl Node {
+    fn remove(&mut self) {
+        unsafe {
+            let prev = self.prev;
+            let next = self.next;
+            if !prev.is_null() {
+                (*prev).next = next;
+            }
+            if !next.is_null() {
+                (*next).prev = prev;
+            }
+        }
+    }
+}
+
+struct LinkedList {
+    head: *mut Node,
+    tail: *mut Node,
+}
+
+impl LinkedList {
+    fn new() -> Self {
+        unsafe {
+            let dummy_head = Box::into_raw(Box::new(Node {
+                key: i32::MIN,
+                val: i32::MIN,
+                prev: null_mut(),
+                next: null_mut(),
+            }));
+            let dummy_tail = Box::into_raw(Box::new(Node {
+                key: i32::MAX,
+                val: i32::MAX,
+                prev: null_mut(),
+                next: null_mut(),
+            }));
+            (*dummy_head).next = dummy_tail;
+            (*dummy_tail).prev = dummy_head;
+            Self {
+                head: dummy_head,
+                tail: dummy_tail,
+            }
+        }
+    }
+
+    fn push(&mut self, key: i32, val: i32) -> *mut Node {
+        unsafe {
+            let node = Box::into_raw(Box::new(Node {
+                key,
+                val,
+                prev: null_mut(),
+                next: null_mut(),
+            }));
+            let t = (*self.tail).prev;
+            (*t).next = node;
+            (*self.tail).prev = node;
+            (*node).next = self.tail;
+            (*node).prev = t;
+            node
+        }
+    }
+
+    fn pop(&mut self) -> Box<Node> {
+        unsafe {
+            let h = (*self.head).next;
+            let next = (*h).next;
+            (*self.head).next = next;
+            (*next).prev = self.head;
+            Box::from_raw(h)
+        }
+    }
+}
+
+struct LRUCache2 {
+    node_map: HashMap<i32, *mut Node>,
+    ll: LinkedList,
+    capacity: i32,
+}
+
+impl LRUCache2 {
+    fn new(capacity: i32) -> Self {
+        Self {
+            node_map: HashMap::new(),
+            ll: LinkedList::new(),
+            capacity,
+        }
+    }
+
+    fn get(&mut self, key: i32) -> i32 {
+        if !self.node_map.contains_key(&key) {
+            return -1;
+        }
+        unsafe {
+            let mut node = Box::from_raw(self.node_map.remove(&key).unwrap());
+            node.remove();
+            self.node_map.insert(key, self.ll.push(key, node.val));
+            node.val
+        }
+    }
+
+    fn put(&mut self, key: i32, value: i32) {
+        if !self.node_map.contains_key(&key) && self.capacity as usize == self.node_map.len() {
+            self.node_map.remove(&self.ll.pop().key).unwrap();
+        }
+        if let hash_map::Entry::Vacant(e) = self.node_map.entry(key) {
+            let node = self.ll.push(key, value);
+            e.insert(node);
+        } else {
+            unsafe {
+                (**self.node_map.get_mut(&key).unwrap()).val = value;
+            }
+            self.get(key);
+        }
+    }
+}
+
 struct Dll {
     head: *mut Node,
     tail: *mut Node,
@@ -178,7 +293,7 @@ mod test {
 
     #[test]
     fn test182() {
-        let mut cache = LRUCache::new(2);
+        let mut cache = LRUCache2::new(2);
         cache.put(1, 1);
         cache.put(2, 2);
         println!("{}", cache.get(1)); // 1
@@ -190,7 +305,7 @@ mod test {
         println!("{}", cache.get(4)); // 4
 
         println!("******************");
-        let mut cache = LRUCache::new(2);
+        let mut cache = LRUCache2::new(2);
         cache.put(2, 1);
         cache.put(2, 2);
         println!("{}", cache.get(2)); // 2
@@ -199,7 +314,7 @@ mod test {
         println!("{}", cache.get(2)); // -1
 
         println!("******************");
-        let mut cache = LRUCache::new(2);
+        let mut cache = LRUCache2::new(2);
         cache.put(2, 1);
         cache.put(1, 1);
         cache.put(2, 3);
@@ -208,7 +323,7 @@ mod test {
         println!("{}", cache.get(2)); // 3
 
         println!("******************");
-        let mut cache = LRUCache::new(2);
+        let mut cache = LRUCache2::new(2);
         println!("{}", cache.get(2)); // -1
         cache.put(2, 6);
         println!("{}", cache.get(1)); // -1
