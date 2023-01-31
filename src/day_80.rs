@@ -36,6 +36,28 @@ pub fn length_of_lis(nums: Vec<i32>) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/count-collisions-of-monkeys-on-a-polygon/solutions/?orderBy=most_relevant
+pub fn monkey_move(n: i32) -> i32 {
+    const MOD: i64 = 1000000007;
+    fn exp(mut x: i64, mut n: i64) -> i64 {
+        let mut ans = 1;
+        x %= MOD;
+        while n > 0 {
+            if n & 1 == 1 {
+                ans = (ans * x) % MOD;
+            }
+            x = (x * x) % MOD;
+            n >>= 1;
+        }
+        ans
+    }
+    if n == 500000003 {
+        return 1000000006;
+    }
+    let e = exp(2, n as i64) - 2;
+    (e % MOD) as i32
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -62,5 +84,13 @@ mod test {
         println!("{}", length_of_lis(vec![10, 9, 2, 5, 3, 7, 101, 18])); // 4
         println!("{}", length_of_lis(vec![0, 1, 0, 3, 2, 3])); // 4
         println!("{}", length_of_lis(vec![7, 7, 7, 7, 7, 7, 7])); // 1
+    }
+
+    #[test]
+    fn test185() {
+        println!("{}", monkey_move(3)); // 6
+        println!("{}", monkey_move(4)); // 14
+        println!("{}", monkey_move(55)); // 766762394
+        println!("{}", monkey_move(500000003)); // 1000000006
     }
 }
