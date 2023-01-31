@@ -107,6 +107,5 @@ mod test {
             }
         }
         println!("{}", ans);
-        println!("{}", c(102, 2));
     }
 }
