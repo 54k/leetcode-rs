@@ -78,6 +78,7 @@ pub mod day_78;
 pub mod day_79;
 pub mod day_8;
 pub mod day_80;
+pub mod day_81;
 pub mod day_9;
 pub mod design_twitter_day16;
 pub mod insert_delete_get_random_day17;
