@@ -1,3 +1,6 @@
+use std::cmp::Reverse;
+use std::iter::Rev;
+
 pub fn is_alien_sorted(words: Vec<String>, order: String) -> bool {
     fn is_alien_sorted1(words: Vec<String>, order: String) -> bool {
         use std::collections::HashMap;
@@ -48,6 +51,28 @@ pub fn is_alien_sorted(words: Vec<String>, order: String) -> bool {
     is_alien_sorted2(words, order)
 }
 
+fn top_k_frequent(words: Vec<String>, k: i32) -> Vec<String> {
+    use std::cmp::*;
+    use std::collections::*;
+    let mut map = HashMap::new();
+    let mut heap = BinaryHeap::new();
+    let mut ans = vec![];
+    for w in words {
+        *map.entry(w).or_insert(0) += 1;
+    }
+    for (key, val) in map {
+        heap.push(Reverse((val, Reverse(key))));
+        if heap.len() > k as usize {
+            heap.pop();
+        }
+    }
+    while let Some(Reverse((_, Reverse(s)))) = heap.pop() {
+        ans.push(s);
+    }
+    ans.reverse();
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -69,5 +94,57 @@ mod test {
                 "worldabcefghijkmnpqstuvxyz".to_string()
             )
         ); // false
+    }
+
+    #[test]
+    fn test190() {
+        println!(
+            "{:?}",
+            top_k_frequent(
+                vec![
+                    "the".to_string(),
+                    "day".to_string(),
+                    "is".to_string(),
+                    "sunny".to_string(),
+                    "the".to_string(),
+                    "the".to_string(),
+                    "the".to_string(),
+                    "sunny".to_string(),
+                    "is".to_string(),
+                    "is".to_string()
+                ],
+                4,
+            )
+        ); // ["the","is","sunny","day"]
+
+        println!(
+            "{:?}",
+            top_k_frequent(
+                vec![
+                    "i".to_string(),
+                    "love".to_string(),
+                    "leetcode".to_string(),
+                    "i".to_string(),
+                    "love".to_string(),
+                    "coding".to_string()
+                ],
+                2,
+            )
+        ); // ["i","love"]
+
+        println!(
+            "{:?}",
+            top_k_frequent(
+                vec![
+                    "i".to_string(),
+                    "love".to_string(),
+                    "leetcode".to_string(),
+                    "i".to_string(),
+                    "love".to_string(),
+                    "coding".to_string()
+                ],
+                1,
+            )
+        ); // ["i"]
     }
 }
