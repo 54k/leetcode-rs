@@ -1,6 +1,3 @@
-use std::cmp::Reverse;
-use std::iter::Rev;
-
 pub fn is_alien_sorted(words: Vec<String>, order: String) -> bool {
     fn is_alien_sorted1(words: Vec<String>, order: String) -> bool {
         use std::collections::HashMap;
