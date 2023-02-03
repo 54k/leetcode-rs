@@ -429,6 +429,6 @@ mod test {
             remove_duplicate_letters(
                 "AAAABBBCCXYZDDDDEEEFFFAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBB".to_string()
             )
-        ); // ABCDEF
+        ); // ABCXYZDEF
     }
 }
