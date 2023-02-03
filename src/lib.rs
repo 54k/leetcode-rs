@@ -86,3 +86,4 @@ pub mod insert_delete_get_random_day17;
 pub mod linked_lists;
 pub mod parser;
 pub mod stepik;
+pub mod yandex;
