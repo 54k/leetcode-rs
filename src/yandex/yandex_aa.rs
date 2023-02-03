@@ -308,6 +308,7 @@ fn remove_duplicate_letters(s: String) -> String {
     let mut selected = HashSet::new();
 
     for c in s.chars() {
+        *count_map.get_mut(&c).unwrap() -= 1;
         if !selected.contains(&c) {
             while !stack.is_empty()
                 && count_map[&stack[stack.len() - 1]] > 0
