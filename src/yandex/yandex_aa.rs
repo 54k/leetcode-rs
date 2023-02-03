@@ -22,6 +22,7 @@
 // pprint(atm(5500, l))  # '3x1000 5x500'
 
 use crate::day_75::find_cheapest_price;
+use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 // как решать:
@@ -366,31 +367,34 @@ fn find_triplets_sum(a: Vec<i32>, b: Vec<i32>, c: Vec<i32>, x: i32) -> i32 {
     let a_len = a.len();
     let b_len = b.len();
     let c_len = c.len();
-    let mut it = 0;
+
     for k in 0..c_len {
         let ck = c[k];
         let mut i = 0;
         let mut j = b_len as i32 - 1;
 
         while i < a_len && j >= 0 {
-            it += 1;
-
             let ai = a[i as usize];
             let bj = b[j as usize];
 
             let s = ai + bj + ck;
-            if s == x {
-                // сумма набрана увеличиваем счетчик ответа
-                ans += 1;
-                println!("{}-{}-{} {}+{}+{}={} ans: {}", i, j, k, ai, bj, ck, x, ans);
-                i += 1;
-                j -= 1;
-            } else if s < x {
-                // не добрали сумму, пытаемся увеличить
-                i += 1;
-            } else {
-                // перебор, пытаемся уменьшить сумму
-                j -= 1;
+
+            match s.cmp(&x) {
+                Ordering::Equal => {
+                    // сумма набрана увеличиваем счетчик ответа
+                    ans += 1;
+                    println!("{}-{}-{} {}+{}+{}={} ans: {}", i, j, k, ai, bj, ck, x, ans);
+                    i += 1;
+                    j -= 1;
+                }
+                Ordering::Less => {
+                    // не добрали сумму, пытаемся увеличить
+                    i += 1;
+                }
+                Ordering::Greater => {
+                    // перебор, пытаемся уменьшить сумму
+                    j -= 1;
+                }
             }
         }
     }
