@@ -21,6 +21,7 @@
 // pprint(atm(50, l))  # 'Error: Not enough money'
 // pprint(atm(5500, l))  # '3x1000 5x500'
 
+use crate::day_75::find_cheapest_price;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 // как решать:
@@ -231,6 +232,10 @@ fn anagrams(words: Vec<String>) -> Vec<Vec<String>> {
 // Хорошо, если кандидат задаст вопрос про пустые массивы. Можно попросить в этом случае возвращать INT_MAX.
 // Очень хорошо, если кандидат спросит про случай minDistance({INT_MAX}, {-1}) (например) и поймет,
 // что ответ на задачу на самом деле не помещается в int.
+// как решать:
+// уже расписано в описании задачи
+// по движению указателей почему так - мы стараемся минимизировать расстояние между двумя элементами массива,
+// поэтому каждый раз двигаем указатель массива с меньшим элементов к большему, тк это уменьшит расстояние
 #[allow(dead_code)]
 fn min_distance(mut a: Vec<i32>, mut b: Vec<i32>) -> i64 {
     a.sort();
@@ -262,6 +267,7 @@ fn min_distance(mut a: Vec<i32>, mut b: Vec<i32>) -> i64 {
 // как решать:
 // задача очень похожа на задачу слияния интервалов
 // https://emre.me/coding-patterns/merge-intervals/
+// собственно используется такой же подход и паттерн
 #[allow(dead_code)]
 fn rle(s: String) -> String {
     let s = s.chars().collect::<Vec<_>>();
@@ -298,6 +304,14 @@ fn rle(s: String) -> String {
 // как решать:
 // задача похожа на 8.2.2.
 // Ближайшие меньшие элементы из книги Лааконсена Олимпиадное программирование
+// Суть решения:
+// Поддерживая словарь количества букв,
+// заводим стэк который трэкает последний добавленный в него элемент
+// множество selected нужно для того чтобы понимать включен символ в результат (есть ли уже на стэке или нет)
+// Если мы встречаем символ на стэке который больше следующего и мы можем его выкинуть ( то есть count в словаре > 0 ),
+// то значение из стэка можно удалить пока не встретим элемент строго меньше текущего
+// это похоже на задачу о нахождении ближайшего минимума для элементов массива
+// тк каждый элемент в стэке строго меньше следующего - получается строка которая лексикографически меньше
 #[allow(dead_code)]
 fn remove_duplicate_letters(s: String) -> String {
     let mut count_map = HashMap::new();
@@ -323,6 +337,64 @@ fn remove_duplicate_letters(s: String) -> String {
     }
 
     stack.into_iter().collect()
+}
+
+// Даны три массива a , b , c и число x .
+// Посчитать число троек  (i, j, k) , таких что
+// a[i] + b[j] + c[k] == x
+// Массивы можно модифицировать inplace.
+// a = [1, 2, 3, 4, 5, 6, 7]
+// b = [2, 3, 5, 7, 11]
+// c = [1, 1, 2, 3, 5, 7]
+// a_len = len(a)
+// b_len = len(b)
+// c_len = len(c)
+//
+// x = 15
+// sorted arrays
+// mem const, complexibility = n^2
+// Find s - c[k] in top-to-tail merged a and b
+// находим s - c[k] в отсортированных массивах
+
+// как решать:
+// примерно как 3sum c литкода только тут 3 массива и там 1
+// задача сводится к задаче 2sum с отсортированными массивами где ты должен набрать необходимую сумму,
+// используя два указателя, один стоит на минимальном элементе первого массива (в начале)
+// второй на самом большем второго массива (в конце)
+fn find_triplets_sum(a: Vec<i32>, b: Vec<i32>, c: Vec<i32>, x: i32) -> i32 {
+    let mut ans = 0;
+    let a_len = a.len();
+    let b_len = b.len();
+    let c_len = c.len();
+    let mut it = 0;
+    for k in 0..c_len {
+        let ck = c[k];
+        let mut i = 0;
+        let mut j = b_len as i32 - 1;
+
+        while i < a_len && j >= 0 {
+            it += 1;
+
+            let ai = a[i as usize];
+            let bj = b[j as usize];
+
+            let s = ai + bj + ck;
+            if s == x {
+                // сумма набрана увеличиваем счетчик ответа
+                ans += 1;
+                println!("{}-{}-{} {}+{}+{}={} ans: {}", i, j, k, ai, bj, ck, x, ans);
+                i += 1;
+                j -= 1;
+            } else if s < x {
+                // не добрали сумму, пытаемся увеличить
+                i += 1;
+            } else {
+                // перебор, пытаемся уменьшить сумму
+                j -= 1;
+            }
+        }
+    }
+    ans
 }
 
 #[cfg(test)]
@@ -427,8 +499,29 @@ mod test {
         println!(
             "{}",
             remove_duplicate_letters(
-                "AAAABBBCCXYZDDDDEEEFFFAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBB".to_string()
+                "PPZZPPAAAABBBCCXYZDDDDEEEFFFAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBB".to_string()
             )
-        ); // ABCXYZDEF
+        ); // PABCXYZDEF
+    }
+
+    #[test]
+    fn test_find_triplets_sum() {
+        // a = [1, 2, 3, 4, 5, 6, 7]
+        // b = [2, 3, 5, 7, 11]
+        // c = [1, 1, 2, 3, 5, 7]
+        // a_len = len(a)
+        // b_len = len(b)
+        // c_len = len(c)
+        //
+        // x = 15
+        println!(
+            "{}",
+            find_triplets_sum(
+                vec![1, 2, 3, 4, 5, 6, 7],
+                vec![2, 3, 5, 7, 11],
+                vec![1, 1, 2, 3, 5, 7],
+                15
+            )
+        ); // 16
     }
 }
