@@ -1,3 +1,5 @@
+use std::sync::atomic::Ordering;
+
 // https://leetcode.com/problems/permutation-in-string/description/
 pub fn check_inclusion(s1: String, s2: String) -> bool {
     if s1.len() > s2.len() {
@@ -105,6 +107,30 @@ pub fn add_spaces(s: String, spaces: Vec<i32>) -> String {
     ans
 }
 
+// Using a hashmap, we can map the values of arr2 to their position in arr2.
+// After, we can use a custom sorting function.
+pub fn relative_sort_array(mut arr1: Vec<i32>, arr2: Vec<i32>) -> Vec<i32> {
+    use std::cmp::Ordering;
+    use std::collections::HashMap;
+    let map = arr2
+        .into_iter()
+        .enumerate()
+        .map(|(a, b)| (b, a))
+        .collect::<HashMap<i32, usize>>();
+    arr1.sort_by(|a, b| {
+        if map.contains_key(a) && map.contains_key(b) {
+            map.get(a).unwrap().cmp(map.get(b).unwrap())
+        } else if map.contains_key(a) {
+            Ordering::Less
+        } else if map.contains_key(b) {
+            Ordering::Greater
+        } else {
+            a.cmp(b)
+        }
+    });
+    arr1
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -130,6 +156,10 @@ mod test {
     fn test196() {
         println!("{:?}", find_closest_elements(vec![1, 2, 3, 4, 5], 4, 3)); // [1,2,3,4]
         println!("{:?}", find_closest_elements(vec![1, 2, 3, 4, 5], 4, -1)); // [1,2,3,4]
+        println!(
+            "{:?}",
+            find_closest_elements(vec![1, 3, 5, 10, 15, 22, 23, 24, 25], 5, 8)
+        ); // [1, 3, 5, 10, 15]
     }
 
     #[test]
@@ -160,12 +190,6 @@ mod test {
 
     #[test]
     fn test199() {
-        println!("{:?}", find_closest_elements(vec![1, 2, 3, 4, 5], 4, 3)); // [1,2,3,4]
-        println!("{:?}", find_closest_elements(vec![1, 2, 3, 4, 5], 4, -1)); // [1,2,3,4]
-    }
-
-    #[test]
-    fn test200() {
         println!(
             "{}",
             add_spaces("LeetcodeHelpsMeLearn".to_string(), vec![8, 13, 15])
@@ -174,5 +198,20 @@ mod test {
             "{}",
             add_spaces("spacing".to_string(), vec![0, 1, 2, 3, 4, 5, 6])
         ); // " s p a c i n g"
+    }
+
+    #[test]
+    fn test200() {
+        println!(
+            "{:?}",
+            relative_sort_array(
+                vec![2, 3, 1, 3, 2, 4, 6, 7, 9, 2, 19],
+                vec![2, 1, 4, 3, 9, 6]
+            )
+        ); // [2,2,2,1,4,3,3,9,6,7,19]
+        println!(
+            "{:?}",
+            relative_sort_array(vec![28, 6, 22, 8, 44, 17], vec![22, 28, 8, 6])
+        ); // [22,28,8,6,17,44]
     }
 }

@@ -88,8 +88,82 @@ pub fn longest_subarray(nums: Vec<i32>) -> i32 {
 // Как только получится прийти в какого-то общего предка, решение сводится к предыдущему.
 
 // https://www.baeldung.com/cs/tree-lowest-common-ancestor
-pub fn lowest_common_ancestor(tree: Vec<Vec<i32>>) -> i32 {
-    todo!()
+
+// The idea of this approach is to have two pointers, one on each node.
+// We need to move these pointers towards the root in a way that allows them to meet at the LCA.
+//
+// The first thing we can notice is that these pointers should be in the same depth.
+// In addition to that, the deeper pointer can never be the LCA.
+// Therefore, our first step should be to keep moving the deeper pointer to its parent until the two pointers are on the same depth.
+//
+// Now, we have two pointers that are on the same depth.
+// We can keep moving both pointers towards the root one step at a time until they meet at one node.
+// Since this node is the deepest node that our pointers can meet at, therefore,
+// it’s the deepest common ancestor of our starting nodes, which is the LCA.
+
+// 3.2. Preprocessing
+//
+// In order to implement this solution, we will need to calculate the depth and the parent of each node.
+// This can be done with a simple DFS traversal starting from the root.
+
+// 3.3. Finding the LCA
+//
+// After calling the previous function starting from the root, we will have the depth and parent of each node.
+// We can now apply the approach that we discussed earlier.
+pub fn lowest_common_ancestor(edges: Vec<(usize, usize)>, x: usize, y: usize, n: usize) -> usize {
+    let mut adj = vec![vec![]; n + 1]; // 1-индексация в дереве
+    for (from, to) in edges {
+        adj[from].push(to);
+        adj[to].push(from);
+    }
+    // Finding the depth and parent of each node
+    let mut visited = vec![false; n + 1];
+    let mut depth = vec![0; n + 1];
+    let mut parent = vec![0; n + 1];
+
+    fn dfs(
+        v: usize,
+        adj: &Vec<Vec<usize>>,
+        depth: &mut Vec<i32>,
+        parent: &mut Vec<usize>,
+        visited: &mut Vec<bool>,
+    ) {
+        visited[v] = true;
+        for &u in &adj[v] {
+            if !visited[u] {
+                parent[u] = v;
+                depth[u] = depth[v] + 1;
+                dfs(u, adj, depth, parent, visited);
+            }
+        }
+    }
+    // Firstly, we set the current node as visited.
+    // Secondly, we set the parent and depth of the child node before calling the function recursively for it.
+    // The complexity of the preprocessing step in this approach is O(n), where n is the number of nodes.
+    // The complexity is considered efficient because we only need to apply it once.
+    dfs(1, &adj, &mut depth, &mut parent, &mut visited);
+
+    // First of all, we keep moving the deeper node to its parent until both nodes have the same depth.
+    // After that, we move both nodes to their parents until they meet.
+    let mut v = x;
+    let mut u = y;
+    while depth[v] != depth[u] {
+        if depth[v] > depth[u] {
+            v = parent[v];
+        } else {
+            u = parent[u];
+        }
+    }
+    while v != u {
+        v = parent[v];
+        u = parent[u];
+    }
+
+    // Although the approach is considered fairly simple, however,
+    // finding the LCA of a pair of nodes also has a complexity of O(h), where h is the height of the tree.
+    // This complexity can go as far as becoming O(n) in case of an almost linear tree
+    // (consider two long chains connected at the root).
+    v
 }
 
 // Дан отсортированный массив целых чисел a , целое число K и индекс элемента index.
@@ -156,6 +230,8 @@ pub fn normalize_spaces(str: String) -> String {
 // что то в духе есть строка в которой не только буквы,
 // все не буквы надо пропустить и понять является ли оставшееся палиндромомом
 
+// А мудила в НИИ - инвалид умa! -> true
+
 // class Solution:
 // def isPalindrome(self, s: str) -> bool:
 // left = 0
@@ -198,7 +274,23 @@ pub fn normalize_spaces(str: String) -> String {
 // r -= 1
 // return True
 pub fn palindrome(s: String) -> bool {
-    todo!()
+    let s = s.chars().collect::<Vec<_>>();
+    let mut l = 0;
+    let mut r = s.len() - 1;
+    while l < r {
+        while l < r && !s[l].is_alphabetic() {
+            l += 1;
+        }
+        while l < r && !s[r].is_alphabetic() {
+            r -= 1;
+        }
+        if s[l].to_lowercase().last().unwrap() != s[r].to_lowercase().last().unwrap() {
+            return false;
+        }
+        l += 1;
+        r -= 1;
+    }
+    true
 }
 
 // Даны даты заезда и отъезда каждого гостя.
@@ -233,9 +325,30 @@ pub fn max_guests(mut guests: Vec<(i32, i32)>) -> i32 {
 }
 
 // Пофильтровать один список по другому сортированному списку
-// pprint(s_f2([1, 3, 5, 7, 8, 9], [1, 2, 6, 8, 9]))
-fn filter_by_another() {
-    todo!()
+// pprint(s_f2([1, 3, 5, 7, 8, 9], [1, 2, 6, 8, 9])) --> [3, 5, 7]
+pub fn filter_by_another(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+    use std::cmp::Ordering;
+    let mut ans = vec![];
+    let mut i = 0;
+    let mut j = 0;
+
+    while i < a.len() {
+        match a[i].cmp(&b[j]) {
+            Ordering::Equal => {
+                i += 1;
+                j += 1;
+            }
+            Ordering::Less => {
+                ans.push(a[i]);
+                i += 1;
+            }
+            Ordering::Greater => {
+                j += 1;
+            }
+        }
+    }
+
+    ans
 }
 
 // Нужно реализовать функцию OneEditApart , проверяющую, можно ли одну строку получить из другой не более,
@@ -268,8 +381,43 @@ fn filter_by_another() {
 // Input: s = "1203", t = "1213"
 // Output: true
 // Explanation: We can replace '0' with '1' to get t.
-fn is_one_edit_distance(s: String, t: String) -> bool {
-    todo!()
+pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
+    if s.len() > t.len() {
+        std::mem::swap(&mut s, &mut t);
+    }
+    let ns = s.len();
+    let nt = t.len();
+    if (nt - ns) > 1 {
+        return false;
+    }
+    let s = s.chars().collect::<Vec<_>>();
+    let t = t.chars().collect::<Vec<_>>();
+    let mut i = 0;
+    let mut j = 0;
+
+    if ns == nt {
+        while i < s.len() {
+            let mut diff = 0;
+            if s[i] != t[j] {
+                diff += 1;
+                if diff > 1 {
+                    return false;
+                }
+            }
+            i += 1;
+        }
+        true
+    } else {
+        while i < ns && j < nt {
+            if s[i] == t[j] {
+                i += 1;
+                j += 1;
+            } else {
+                j += 1;
+            }
+        }
+        i == ns
+    }
 }
 
 // Реализовать функцию fuzzysearch как в редакторе sublime text 3 .
@@ -390,16 +538,53 @@ mod test {
     }
 
     #[test]
+    fn test_lowest_common_ancestor() {
+        println!(
+            "{}",
+            lowest_common_ancestor(
+                vec![
+                    (1, 2),
+                    (1, 3),
+                    (2, 7),
+                    (2, 8),
+                    (3, 4),
+                    (3, 5),
+                    (3, 6),
+                    (7, 9),
+                    (7, 10),
+                    (8, 11),
+                ],
+                7,
+                11,
+                11,
+            )
+        ); // 2
+    }
+
+    #[test]
     fn test_find_closest_elements() {
         println!("{:?}", find_closest_elements(vec![1, 2, 3, 4, 5], 4, 3)); // [1,2,3,4]
         println!("{:?}", find_closest_elements(vec![1, 2, 3, 4, 5], 4, -1)); // [1,2,3,4]
     }
+
     #[test]
     fn test_normalize_spaces() {
         println!(
             "{}",
             normalize_spaces("    so  me    string     ".to_string())
-        );
+        ); // 'so me string'
+    }
+
+    #[test]
+    fn test_palindromes() {
+        println!("{}", palindrome("Не дебил - и беден?".to_string())); // true
+        println!("{}", palindrome("Ум за рамки - к маразму!".to_string())); // true
+        println!("{}", palindrome("Мы доломали! Сила молодыМ!".to_string())); // true
+        println!(
+            "{}",
+            palindrome("А мудила в НИИ - инвалид умА!".to_string())
+        ); // true
+        println!("{}", palindrome("Улыбок тебе, дед Макар!".to_string())); // false
     }
 
     #[test]
@@ -408,6 +593,14 @@ mod test {
         println!("{}", max_guests(vec![(1, 2)])); // 1
         println!("{}", max_guests(vec![(1, 2), (2, 3)])); // 2
         println!("{}", max_guests(vec![(1, 5), (0, 1), (4, 5)])); // 2
+    }
+
+    #[test]
+    fn test_filter_by_another() {
+        println!(
+            "{:?}",
+            filter_by_another(vec![1, 3, 5, 7, 8, 9], vec![1, 2, 6, 8, 9])
+        ); // [3, 5, 7]
     }
 
     #[test]
@@ -424,6 +617,10 @@ mod test {
             "{:?}",
             is_one_edit_distance("1203".to_string(), "1213".to_string())
         ); // true
+        println!(
+            "{:?}",
+            is_one_edit_distance("12145".to_string(), "1213".to_string())
+        ); // false
     }
 
     #[test]
