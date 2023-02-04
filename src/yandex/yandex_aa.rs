@@ -21,7 +21,6 @@
 // pprint(atm(50, l))  # 'Error: Not enough money'
 // pprint(atm(5500, l))  # '3x1000 5x500'
 
-use crate::day_75::find_cheapest_price;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
@@ -92,7 +91,7 @@ fn atm(mut sum: i32, limits: &mut HashMap<i32, i32>) -> String {
 // Нужно написать программу, которая возвращает билеты
 // в порядке следования по маршруту.
 
-// как решать:
+// Как решать:
 // граф представлен списком ребер без циклов и повторов,
 // как вариант решения это топологическая сортировка такого графа
 // создать список смежности, запустить дфс и вывести путь - довольно сложно
@@ -208,7 +207,7 @@ fn tickets(edges: Vec<(String, String)>) -> Vec<(String, String)> {
 // )
 // )
 
-// как решать:
+// Как решать:
 // анаграмму удобно представить словарем символов
 // завести словарь с ключом словаря анаграммы и списком строк
 // вывести значения
@@ -233,7 +232,7 @@ fn anagrams(words: Vec<String>) -> Vec<Vec<String>> {
 // Хорошо, если кандидат задаст вопрос про пустые массивы. Можно попросить в этом случае возвращать INT_MAX.
 // Очень хорошо, если кандидат спросит про случай minDistance({INT_MAX}, {-1}) (например) и поймет,
 // что ответ на задачу на самом деле не помещается в int.
-// как решать:
+// Как решать:
 // уже расписано в описании задачи
 // по движению указателей почему так - мы стараемся минимизировать расстояние между двумя элементами массива,
 // поэтому каждый раз двигаем указатель массива с меньшим элементов к большему, тк это уменьшит расстояние
@@ -265,7 +264,7 @@ fn min_distance(mut a: Vec<i32>, mut b: Vec<i32>) -> i64 {
 // 1. Если символ встречается 1 раз, он остается без изменений
 // 2. Если символ повторяется более 1 раза, к нему добавляется количество повторений
 
-// как решать:
+// Как решать:
 // задача очень похожа на задачу слияния интервалов
 // https://emre.me/coding-patterns/merge-intervals/
 // собственно используется такой же подход и паттерн
@@ -305,7 +304,8 @@ fn rle(s: String) -> String {
 // как решать:
 // задача похожа на 8.2.2.
 // Ближайшие меньшие элементы из книги Лааконсена Олимпиадное программирование
-// Суть решения:
+
+// Как решать:
 // Поддерживая словарь количества букв,
 // заводим стэк который трэкает последний добавленный в него элемент
 // множество selected нужно для того чтобы понимать включен символ в результат (есть ли уже на стэке или нет)
@@ -399,6 +399,56 @@ fn find_triplets_sum(a: Vec<i32>, b: Vec<i32>, c: Vec<i32>, x: i32) -> i32 {
         }
     }
     ans
+}
+
+// https://leetcode.com/problems/intersection-of-two-arrays/description/
+// Given two integer arrays nums1 and nums2, return an array of their intersection.
+// Each element in the result must be unique and you may return the result in any order.
+pub fn intersection(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+    let mut res = vec![];
+    let mut nums1 = nums1.into_iter().collect::<HashSet<_>>();
+    for n in nums2 {
+        if nums1.contains(&n) {
+            res.push(n);
+            nums1.remove(&n);
+        }
+    }
+    res
+}
+
+// Definition for singly-linked list.
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+
+// https://leetcode.com/problems/merge-two-sorted-lists/description/
+pub fn merge_two_lists(
+    list1: Option<Box<ListNode>>,
+    list2: Option<Box<ListNode>>,
+) -> Option<Box<ListNode>> {
+    fn rec(
+        mut list1: Option<Box<ListNode>>,
+        mut list2: Option<Box<ListNode>>,
+    ) -> Option<Box<ListNode>> {
+        if list1.is_none() {
+            list2
+        } else if list2.is_none() {
+            list1
+        } else {
+            let mut l2 = list2.as_mut()?;
+            let mut l1 = list1.as_mut()?;
+            if l1.val < l2.val {
+                l1.next = rec(l1.next.take(), list2);
+                list1
+            } else {
+                l2.next = rec(list1, l2.next.take());
+                list2
+            }
+        }
+    }
+    rec(list1, list2)
 }
 
 #[cfg(test)]
@@ -527,5 +577,11 @@ mod test {
                 15
             )
         ); // 16
+    }
+
+    #[test]
+    fn test_intersect_list() {
+        println!("{:?}", intersection(vec![1, 2, 2, 1], vec![2, 2]));
+        println!("{:?}", intersection(vec![4, 9, 5], vec![9, 4, 9, 8, 4]));
     }
 }
