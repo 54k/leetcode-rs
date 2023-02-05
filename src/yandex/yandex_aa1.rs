@@ -358,26 +358,28 @@ pub fn filter_by_another(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
 // https://leetcode.com/problems/one-edit-distance/ задача для премиум аккаунта, увы
 // а вообще литкод охуел - 300 баксов в год, чтобы пить урину каждый день
 
+// Так же это задача 1.5 из книги Cracking the code interview (Карьера программиста)
+
 // Given two strings s and t, determine if they are both one edit distance apart.
-// ​
+//
 // Note:
 // There are 3 possiblities to satisify one edit distance apart:
-// ​
+//
 // Insert a character into s to get t
 // Delete a character from s to get t
 // Replace a character of s to get t
 // Example 1:
-// ​
+//
 // Input: s = "ab", t = "acb"
 // Output: true
 // Explanation: We can insert 'c' into s to get t.
 // Example 2:
-// ​
+//
 // Input: s = "cab", t = "ad"
 // Output: false
 // Explanation: We cannot get t from s by only one step.
 // Example 3:
-// ​
+//
 // Input: s = "1203", t = "1213"
 // Output: true
 // Explanation: We can replace '0' with '1' to get t.
@@ -396,6 +398,7 @@ pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
     let mut j = 0;
 
     if ns == nt {
+        // нужна замена символа - смотрим сколько символов отличаются
         while i < s.len() {
             let mut diff = 0;
             if s[i] != t[j] {
@@ -408,6 +411,8 @@ pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
         }
         true
     } else {
+        // нужна вставка символа (или удаление этот кейс покрывает оба случая) проверяем,
+        // что меньшая строка полностью содержится в текущей
         while i < ns && j < nt {
             if s[i] == t[j] {
                 i += 1;
@@ -448,7 +453,6 @@ pub fn is_subsequence(s: String, t: String) -> bool {
         }
         i == s.len()
     }
-
     // решение яндекса - валится если s -> пустая строка
     fn approach2(s: String, t: String) -> bool {
         let s = s.chars().collect::<Vec<_>>();
@@ -502,6 +506,85 @@ pub fn move_zeroes(nums: &mut Vec<i32>) {
         });
     }
     no_std(nums)
+}
+
+// Inplace заменяет в массиве символы пробела на последовательность символов '%', '2', '0'.
+
+// Задача номер 3 (строки и массивы) из книги Cracking the coding interview (Карьера программиста на русском)
+// На вход подается строка и число original length
+
+// Общий подход к задачам обработки строк - изменять строку, начиная с конца и двигаясь от конца строки к началу.
+// Это полезно, потому что в конце строки есть дополнительное пространство,
+// в котором можно изменять символы, не думая о возможной потере информации.
+
+// Воспользуемся этим методом в данной задаче.
+// Алгоритм использует двупроходное сканирование.
+// При первом проходе мы подсчитываем, сколько пробелов находится в строке.
+// Умножая полученное значение на 3, мы получим количество дополнительных символов в результирующей строке.
+// При втором проходе, который осуществляется в обратном направлении, выполняется фактическая модификация строки.
+// Обнаруживая пробел, мы заменяем его на %20. Если символ не является пробелом, то он просто копируется.
+
+// Ввод: "Mr John Smith", 13
+
+// https://leetcode.com/discuss/interview-question/124608/amazon-phone-screen-urlify-a-given-string-replace-spaces-with-20
+fn urlify(mut s: String, len: usize) -> String {
+    let mut s = s.chars().collect::<Vec<_>>();
+    let mut spaces_count = 0;
+    for i in 0..len {
+        if s[i] == ' ' {
+            spaces_count += 1;
+        }
+    }
+    let mut new_length = len + spaces_count * 2; // 2 потому что нужно 1 пробел и %2 символ для замены
+    for i in (0..len).rev() {
+        // пойнтер на старый конец строки
+        if s[i] == ' ' {
+            s[new_length - 1] = '0';
+            s[new_length - 2] = '2';
+            s[new_length - 3] = '%';
+            new_length -= 3;
+        } else {
+            s[new_length - 1] = s[i];
+            new_length -= 1;
+        }
+    }
+    s.into_iter().collect()
+}
+
+// Дан список интов, повторяющихся элементов в списке нет.
+// Нужно преобразовать это множество в строку, сворачивая соседние по числовому ряду числа в диапазоны.
+
+// сворачивая соседние по числовому ряду числа в диапазоны -> очень умная формулировка, если проще,
+// то нужно все соседние числа (восходящая последовательность, e.g. 1,2,3 свернуть в интервал 1,3
+// 1,3,4,5 будет свернут в два интервала [1],[3,5]
+
+// Пустая последовательность сворачивается в пустой массив
+
+// https://leetcode.com/problems/summary-ranges/
+pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
+    if nums.is_empty() {
+        return vec![];
+    }
+    let mut ans = vec![];
+    let mut interval = (nums[0], nums[0]);
+    for i in 1..nums.len() {
+        if nums[i] - nums[i - 1] == 1 {
+            interval.1 = nums[i];
+        } else {
+            ans.push(interval);
+            interval = (nums[i], nums[i]);
+        }
+    }
+    ans.push(interval);
+    ans.into_iter()
+        .map(|interval| {
+            if interval.0 == interval.1 {
+                format!("{}", interval.0)
+            } else {
+                format!("{}->{}", interval.0, interval.1)
+            }
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -647,5 +730,18 @@ mod test {
         let mut vec3 = vec![3, 1, 2, 0, 0];
         move_zeroes(&mut vec3);
         println!("{:?}", vec3);
+    }
+
+    #[test]
+    fn test_urlify() {
+        println!("{}", urlify("Mr John Smith    ".to_string(), 13));
+        println!("{}", urlify(" my  ur l           ".to_string(), 9));
+    }
+
+    #[test]
+    fn test_summary_ranges() {
+        println!("{:?}", summary_ranges(vec![0, 1, 2, 4, 5, 7])); // ["0->2","4->5","7"]
+        println!("{:?}", summary_ranges(vec![0, 2, 3, 4, 6, 8, 9])); // ["0","2->4","6","8->9"]
+        println!("{:?}", summary_ranges(vec![])); // []
     }
 }
