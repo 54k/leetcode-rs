@@ -1,5 +1,3 @@
-use std::sync::atomic::Ordering;
-
 // https://leetcode.com/problems/permutation-in-string/description/
 pub fn check_inclusion(s1: String, s2: String) -> bool {
     if s1.len() > s2.len() {
