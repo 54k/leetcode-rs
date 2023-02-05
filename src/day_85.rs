@@ -49,6 +49,11 @@ pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
         .collect()
 }
 
+// https://leetcode.com/problems/subarray-sum-equals-k/
+pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -67,5 +72,11 @@ mod test {
         println!("{:?}", summary_ranges(vec![0, 1, 2, 4, 5, 7])); // ["0->2","4->5","7"]
         println!("{:?}", summary_ranges(vec![0, 2, 3, 4, 6, 8, 9])); // ["0","2->4","6","8->9"]
         println!("{:?}", summary_ranges(vec![])); // []
+    }
+
+    #[test]
+    fn test203() {
+        println!("{:?}", subarray_sum(vec![1, 1, 1], 2)); // 2
+        println!("{:?}", subarray_sum(vec![1, 2, 3], 3)); // 2
     }
 }

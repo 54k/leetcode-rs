@@ -144,7 +144,6 @@ pub fn lowest_common_ancestor(edges: Vec<(usize, usize)>, x: usize, y: usize, n:
     dfs(1, &adj, &mut depth, &mut parent, &mut visited);
 
     // First of all, we keep moving the deeper node to its parent until both nodes have the same depth.
-    // After that, we move both nodes to their parents until they meet.
     let mut v = x;
     let mut u = y;
     while depth[v] != depth[u] {
@@ -154,6 +153,7 @@ pub fn lowest_common_ancestor(edges: Vec<(usize, usize)>, x: usize, y: usize, n:
             u = parent[u];
         }
     }
+    // After that, we move both nodes to their parents until they meet.
     while v != u {
         v = parent[v];
         u = parent[u];
@@ -306,6 +306,7 @@ pub fn palindrome(s: String) -> bool {
 // Наибольшее значение, принимаемое счетчиком, и будет искомым ответом.
 // Найденный алгоритм работает за время O(n log n), потому что сортировка событий занимает время O(n log n),
 // а заметание – время O(n).
+
 // https://www.geeksforgeeks.org/find-the-point-where-maximum-intervals-overlap/
 pub fn max_guests(mut guests: Vec<(i32, i32)>) -> i32 {
     guests = guests
@@ -347,7 +348,6 @@ pub fn filter_by_another(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
             }
         }
     }
-
     ans
 }
 
@@ -387,9 +387,10 @@ pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
     if s.len() > t.len() {
         std::mem::swap(&mut s, &mut t);
     }
-    let ns = s.len();
-    let nt = t.len();
-    if (nt - ns) > 1 {
+    let len_s = s.len();
+    let len_t = t.len();
+    if (len_t - len_s) > 1 {
+        // случай где нужно заведомо больше операций
         return false;
     }
     let s = s.chars().collect::<Vec<_>>();
@@ -397,7 +398,7 @@ pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
     let mut i = 0;
     let mut j = 0;
 
-    if ns == nt {
+    if len_s == len_t {
         // нужна замена символа - смотрим сколько символов отличаются
         while i < s.len() {
             let mut diff = 0;
@@ -413,7 +414,7 @@ pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
     } else {
         // нужна вставка символа (или удаление этот кейс покрывает оба случая) проверяем,
         // что меньшая строка полностью содержится в текущей
-        while i < ns && j < nt {
+        while i < len_s && j < len_t {
             if s[i] == t[j] {
                 i += 1;
                 j += 1;
@@ -421,7 +422,7 @@ pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
                 j += 1;
             }
         }
-        i == ns
+        i == len_s
     }
 }
 
@@ -524,7 +525,7 @@ pub fn move_zeroes(nums: &mut Vec<i32>) {
 // При втором проходе, который осуществляется в обратном направлении, выполняется фактическая модификация строки.
 // Обнаруживая пробел, мы заменяем его на %20. Если символ не является пробелом, то он просто копируется.
 
-// Ввод: "Mr John Smith", 13
+// Ввод: "Mr John Smith    ", 13
 
 // https://leetcode.com/discuss/interview-question/124608/amazon-phone-screen-urlify-a-given-string-replace-spaces-with-20
 fn urlify(mut s: String, len: usize) -> String {
@@ -585,6 +586,56 @@ pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
             }
         })
         .collect()
+}
+
+// Сложение ступенчатых графиков.py
+//
+// Есть два ступенчатых графика некоторых наблюдаемых величин,
+// заданных отсортированными списками координат начала ступенек (<время измерения>, <значение>).
+// Подразумевается, что величина сохраняет своё значение между измерениями.
+// Все времена измерений в обоих графиках различны.
+//
+// Очень хуевоe условие/обьяснение
+//
+// pprint(
+// charts_sum(
+// [[1, 2], [4, 1]],
+// [[2, 4], [3, 6], [5, 7]]
+// )
+// ) --> [[1, 2], [2, 6], [3, 8], [4, 7], [5, 8]]
+fn charts_sum(mut chart1: Vec<(i32, i32)>, mut chart2: Vec<(i32, i32)>) -> Vec<(i32, i32)> {
+    let len1 = chart1.len();
+    let len2 = chart2.len();
+    let mut ans = vec![];
+
+    let mut i = 0;
+    let mut j = 0;
+
+    let mut last_1 = 0;
+    let mut last_2 = 0;
+
+    loop {
+        if i < len1 && j < len2 && chart1[i].0 == chart2[j].0 {
+            ans.push((chart1[i].0, chart1[i].0 + chart2[j].0));
+            last_1 = chart1[i].0;
+            last_2 = chart2[j].0;
+            i += 1;
+            j += 1;
+        } else if j >= len2 || (i < len1 && chart1[i].0 < chart2[j].0) {
+            ans.push((chart1[i].0, chart1[i].1 + last_2));
+            last_1 = chart1[i].1;
+            i += 1;
+        } else {
+            ans.push((chart2[j].0, chart2[j].1 + last_1));
+            last_2 = chart2[j].1;
+            j += 1;
+        }
+        if i == len1 && j == len2 {
+            break;
+        }
+    }
+
+    ans
 }
 
 #[cfg(test)]
@@ -743,5 +794,13 @@ mod test {
         println!("{:?}", summary_ranges(vec![0, 1, 2, 4, 5, 7])); // ["0->2","4->5","7"]
         println!("{:?}", summary_ranges(vec![0, 2, 3, 4, 6, 8, 9])); // ["0","2->4","6","8->9"]
         println!("{:?}", summary_ranges(vec![])); // []
+    }
+
+    #[test]
+    fn test_charts_sum() {
+        println!(
+            "{:?}",
+            charts_sum(vec![(1, 2), (4, 1)], vec![(2, 4), (3, 6), (5, 7)])
+        ); // [(1, 2), (2, 6), (3, 8), (4, 7), (5, 8)]
     }
 }
