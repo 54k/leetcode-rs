@@ -20,7 +20,8 @@ pub fn check_inclusion(s1: String, s2: String) -> bool {
     false
 }
 
-// https://leetcode.com/problems/find-k-closest-elements/solutions/106419/o-log-n-java-1-line-o-log-n-k-ruby/ StefanPochmann is a god
+// https://leetcode.com/problems/find-k-closest-elements/solutions/106419/o-log-n-java-1-line-o-log-n-k-ruby/
+// StefanPochmann is a god
 // https://leetcode.com/problems/find-k-closest-elements/
 pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
     let mut lo = 0;
