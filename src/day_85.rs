@@ -54,6 +54,43 @@ pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
     todo!()
 }
 
+// https://leetcode.com/problems/add-strings/
+pub fn add_strings(num1: String, num2: String) -> String {
+    let mut num1 = num1.chars().collect::<Vec<_>>();
+    let mut num2 = num2.chars().collect::<Vec<_>>();
+
+    num1.reverse();
+    num2.reverse();
+    if num1.len() > num2.len() {
+        std::mem::swap(&mut num1, &mut num2);
+    }
+    let mut carry = 0;
+    let mut ans = String::new();
+    let mut i = 0;
+
+    while i < num1.len() {
+        let n1 = char::to_digit(num1[i], 10).unwrap();
+        let n2 = char::to_digit(num2[i], 10).unwrap();
+        let sum = n1 + n2 + carry;
+        ans.push_str(&format!("{}", sum % 10));
+        carry = sum / 10;
+        i += 1;
+    }
+
+    while i < num2.len() {
+        let n2 = char::to_digit(num2[i], 10).unwrap();
+        let sum = n2 + carry;
+        ans.push_str(&format!("{}", sum % 10));
+        carry = sum / 10;
+        i += 1;
+    }
+
+    if carry > 0 {
+        ans.push_str(&format!("{}", carry));
+    }
+    ans.chars().rev().collect()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -78,5 +115,11 @@ mod test {
     fn test203() {
         println!("{:?}", subarray_sum(vec![1, 1, 1], 2)); // 2
         println!("{:?}", subarray_sum(vec![1, 2, 3], 3)); // 2
+    }
+
+    #[test]
+    fn test204() {
+        println!("{:?}", add_strings("11".to_string(), "123".to_string())); // 134
+        println!("{:?}", add_strings("456".to_string(), "77".to_string())); // 533
     }
 }
