@@ -49,11 +49,6 @@ pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
         .collect()
 }
 
-// https://leetcode.com/problems/subarray-sum-equals-k/
-pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
-    todo!()
-}
-
 // https://leetcode.com/problems/add-strings/
 pub fn add_strings(num1: String, num2: String) -> String {
     let mut num1 = num1.chars().collect::<Vec<_>>();
@@ -113,12 +108,6 @@ mod test {
 
     #[test]
     fn test203() {
-        println!("{:?}", subarray_sum(vec![1, 1, 1], 2)); // 2
-        println!("{:?}", subarray_sum(vec![1, 2, 3], 3)); // 2
-    }
-
-    #[test]
-    fn test204() {
         println!("{:?}", add_strings("11".to_string(), "123".to_string())); // 134
         println!("{:?}", add_strings("456".to_string(), "77".to_string())); // 533
     }

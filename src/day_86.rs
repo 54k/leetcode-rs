@@ -1,4 +1,18 @@
-// Подотрезок с суммой X.py
+// Use two pointers to create the new array of 2n elements.
+// The first starting at the beginning and the other starting at (n+1)th position.
+// Alternate between them and create the new array.
+
+// https://leetcode.com/problems/shuffle-the-array/
+// https://leetcode.com/problems/shuffle-the-array/solutions/2973933/shuffle-the-array/?orderBy=most_relevant
+pub fn shuffle(mut nums: Vec<i32>, n: i32) -> Vec<i32> {
+    let mut ans = vec![0; n as usize * 2];
+    for i in 0..n as usize {
+        ans[i * 2] = nums[i];
+        ans[i * 2 + 1] = nums[i + n as usize];
+    }
+    ans
+}
+
 // https://leetcode.com/problems/subarray-sum-equals-k/
 pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
     fn running(nums: Vec<i32>, k: i32) -> i32 {
@@ -33,7 +47,6 @@ pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
     optimized(nums, k)
 }
 
-// Минимальное произведение ???
 // https://leetcode.com/problems/maximum-product-subarray/
 pub fn max_product(nums: Vec<i32>) -> i32 {
     fn brute(nums: Vec<i32>) -> i32 {
@@ -66,9 +79,34 @@ pub fn max_product(nums: Vec<i32>) -> i32 {
             // or the max/min by the previous number times the current one
             max = nums[i].max(max * nums[i]);
             min = nums[i].min(min * nums[i]);
+
             ans = ans.max(max);
         }
         ans
     }
     optimized(nums)
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test203() {
+        println!("{:?}", shuffle(vec![2, 5, 1, 3, 4, 7], 3)); // [2,3,5,4,1,7]
+        println!("{:?}", shuffle(vec![1, 2, 3, 4, 4, 3, 2, 1], 4)); // [1,4,2,3,3,2,4,1]
+    }
+
+    #[test]
+    fn test204() {
+        println!("{:?}", subarray_sum(vec![1, 1, 1], 2)); // 2
+        println!("{:?}", subarray_sum(vec![1, 2, 3], 3)); // 2
+        println!("{:?}", subarray_sum(vec![-1, -1, 1], 0)); // 1
+    }
+
+    #[test]
+    fn test205() {
+        println!("{}", max_product(vec![2, 3, -2, 4])); // 6
+        println!("{}", max_product(vec![-2, 0, -1])); // 0
+    }
 }

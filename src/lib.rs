@@ -83,6 +83,7 @@ pub mod day_82;
 pub mod day_83;
 pub mod day_84;
 pub mod day_85;
+pub mod day_86;
 pub mod day_9;
 pub mod design_twitter_day16;
 pub mod insert_delete_get_random_day17;
