@@ -1,5 +1,3 @@
-use std::task::ready;
-
 // https://leetcode.com/problems/fruit-into-baskets/solutions/2960000/fruit-into-baskets/
 // https://leetcode.com/problems/fruit-into-baskets/solutions/?orderBy=most_relevant
 // Given an array of integers, find the longest subarray that contains at most 2 unique integers.
@@ -172,6 +170,19 @@ pub fn is_palindrome(s: String) -> bool {
     true
 }
 
+pub fn last_stone_weight(stones: Vec<i32>) -> i32 {
+    use std::collections::BinaryHeap;
+    let mut heap = BinaryHeap::from(stones);
+    while heap.len() > 1 {
+        let y = heap.pop().unwrap(); // first heaviest stone
+        let x = heap.pop().unwrap(); // second heaviest stone
+        if x != y {
+            heap.push(y - x)
+        }
+    }
+    heap.pop().unwrap_or(0)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -226,5 +237,12 @@ mod test {
         ); // true
         println!("{}", is_palindrome("a.".to_string())); // false
         println!("{}", is_palindrome("race a car".to_string())); // false
+    }
+
+    #[test]
+    fn test210() {
+        println!("{}", last_stone_weight(vec![2, 7, 4, 1, 8, 1])); // 1
+        println!("{}", last_stone_weight(vec![1])); // 1
+        println!("{}", last_stone_weight(vec![2, 2])); // 0
     }
 }

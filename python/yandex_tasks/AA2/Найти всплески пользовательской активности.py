@@ -1,7 +1,7 @@
 #  Есть последовательность событий, каждое событие это пара user_id, time, события отсортированы по времени
 #  Нужно уметь отвечать на вопрос, сколько за последние 5 минут было пользователей, которые задали >= 1000 запросов.
 
-from collections import defautdict
+from collections import defaultdict
 
 
 class UserStatistics(object):

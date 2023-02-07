@@ -30,11 +30,11 @@ def is_vert_sym(points) -> bool:
 
         # если расстояние равно то ничего не делаем (точка симметрична в себя)
 
-        for d in deltas.values():
-            if d != 0:  # если для каждого игрека нашлась пара, то множество симметрично
-                return False
+    for d in deltas.values():
+        if d != 0:  # если для каждого игрека нашлась пара, то множество симметрично
+            return False
 
-        return True
+    return True
 
 
 print(is_vert_sym([(0, 0), (0, 0), (1, 1), (2, 2), (3, 1), (4, 0), (4, 0)]))  # True
