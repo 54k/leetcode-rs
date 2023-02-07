@@ -18,8 +18,6 @@
 //
 // shard[id % shards_count]
 
-use std::cmp::Ordering;
-
 fn find_mid(nums: Vec<i32>) -> i32 {
     fn solution1(nums: Vec<i32>) -> i32 {
         let mut prefix = vec![0; nums.len() + 1];

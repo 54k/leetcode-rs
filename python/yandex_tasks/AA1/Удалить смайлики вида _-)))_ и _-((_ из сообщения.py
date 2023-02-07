@@ -33,3 +33,5 @@ def remove_smiles(inp):
 
 
 pprint(remove_smiles("Ааааа!!!!! :-))(())"))
+# how to be noob, oops, wrong result
+pprint(remove_smiles(":-)):-(("))

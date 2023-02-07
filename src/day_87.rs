@@ -1,3 +1,5 @@
+use std::task::ready;
+
 // https://leetcode.com/problems/fruit-into-baskets/solutions/2960000/fruit-into-baskets/
 // https://leetcode.com/problems/fruit-into-baskets/solutions/?orderBy=most_relevant
 // Given an array of integers, find the longest subarray that contains at most 2 unique integers.
@@ -98,7 +100,6 @@ pub fn sort_array_by_parity(mut nums: Vec<i32>) -> Vec<i32> {
             if nums[left] & 1 > nums[right] & 1 {
                 nums.swap(left, right);
             }
-
             if nums[left] & 1 == 0 {
                 left += 1;
             }
@@ -109,6 +110,66 @@ pub fn sort_array_by_parity(mut nums: Vec<i32>) -> Vec<i32> {
         nums
     }
     approach2(nums)
+}
+
+// https://leetcode.com/problems/remove-all-occurrences-of-a-substring/
+pub fn remove_occurrences(s: String, part: String) -> String {
+    let mut s = s.chars().collect::<Vec<_>>();
+    let part = part.chars().collect::<Vec<_>>();
+    loop {
+        let mut ans = String::new();
+        let mut i = 0;
+        let len = s.len();
+        let mut found = false;
+        while i < len {
+            if !found {
+                let mut j = 0;
+                while j < part.len() && i < len && s[i] == part[j] {
+                    i += 1;
+                    j += 1;
+                }
+                if j < part.len() {
+                    i -= j;
+                } else {
+                    found = true
+                }
+            }
+            if i < len {
+                ans.push(s[i]);
+                i += 1;
+            }
+        }
+        s = ans.chars().collect();
+        ans.clear();
+        if !found {
+            break;
+        }
+    }
+    s.into_iter().collect()
+}
+
+// https://leetcode.com/problems/valid-palindrome/description/
+pub fn is_palindrome(s: String) -> bool {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut left = 0;
+    let mut right = s.len() - 1;
+
+    while left < right {
+        if left < right && !char::is_alphanumeric(s[left]) {
+            left += 1;
+            continue;
+        }
+        if right > left && !char::is_alphanumeric(s[right]) {
+            right -= 1;
+            continue;
+        }
+        if s[left].to_lowercase().to_string() != s[right].to_lowercase().to_string() {
+            return false;
+        }
+        left += 1;
+        right -= 1;
+    }
+    true
 }
 
 #[cfg(test)]
@@ -127,5 +188,43 @@ mod test {
     fn test207() {
         println!("{:?}", sort_array_by_parity(vec![3, 1, 2, 4])); // [2,4,3,1]
         println!("{:?}", sort_array_by_parity(vec![0, 2])); // [0, 2]
+    }
+
+    #[test]
+    fn test208() {
+        println!(
+            "{}",
+            remove_occurrences("daabcbaabcbc".to_string(), "abc".to_string())
+        ); // "dab"
+        println!(
+            "{}",
+            remove_occurrences("eemckxmckx".to_string(), "emckx".to_string())
+        ); // ""
+        println!(
+            "{}",
+            remove_occurrences("axxxxyyyyb".to_string(), "xy".to_string())
+        ); // "ab"
+        println!("{}", remove_occurrences("a".to_string(), "aa".to_string())); // "a"
+        println!(
+            "{}",
+            remove_occurrences(
+                "hhvhvaahvahvhvaavhvaasshvahvaln".to_string(),
+                "hva".to_string()
+            )
+        ); // "ssln"
+        println!(
+            "{}",
+            remove_occurrences("aabababa".to_string(), "aba".to_string())
+        ); // "ba"
+    }
+
+    #[test]
+    fn test209() {
+        println!(
+            "{}",
+            is_palindrome("A man, a plan, a canal: Panama".to_string())
+        ); // true
+        println!("{}", is_palindrome("a.".to_string())); // false
+        println!("{}", is_palindrome("race a car".to_string())); // false
     }
 }

@@ -1,4 +1,6 @@
-// https://leetcode.com/problems/maximize-distance-to-closest-person/
+// Выбрать место в кинотеатре.py // выбрать писсуар
+// Let's just call this what it is, this has nothing to do with picking seats,
+// this is the algorithm for picking a urinal in a public bathroom :D
 // Места в кинотеатре расположены в один ряд.
 // Только что пришедший зритель выбирает место, чтобы сидеть максимально далеко
 // от остальных зрителей в ряду. То есть расстояние от того места,
@@ -7,10 +9,6 @@
 // Гарантируется, что в ряду всегда есть свободные места и уже сидит хотя бы один зритель.
 // Напишите функцию, которая по заданному ряду мест (массиву из нулей и единиц)
 // вернёт расстояние от выбранного пришедшим зрителем места до другого ближайшего зрителя.
-
-// Let's just call this what it is, this has nothing to do with picking seats,
-// this is the algorithm for picking a urinal in a public bathroom :D
-
 // https://leetcode.com/problems/maximize-distance-to-closest-person/
 pub fn max_dist_to_closest(seats: Vec<i32>) -> i32 {
     let mut i = 0i32;
@@ -35,6 +33,7 @@ pub fn max_dist_to_closest(seats: Vec<i32>) -> i32 {
     ans
 }
 
+// Длинное умножение на разряд.py
 // Дана строка из десятичных цифр (длинное число, младшие разряды расположены по младшему индексу).
 // Написать код, который умножит это число на число 1 <= n <= 9.
 // Ограничения по памяти: O(1) дополнительной памяти,
@@ -55,6 +54,7 @@ pub fn multiply_string(str: String, n: i32) -> String {
     str.into_iter().rev().collect()
 }
 
+// Максимальный подмассив единиц.py
 // Дан массив из нулей и единиц. Нужно определить, какой максимальный по длине
 // подинтервал единиц можно получить, удалив ровно один элемент массива.
 
@@ -80,6 +80,7 @@ pub fn longest_subarray(nums: Vec<i32>) -> i32 {
     ans as i32
 }
 
+// Наименьший общий предок в дереве за O(1) памяти.py
 // Считаем глубину каждой вершины, потом идем двумя указателями вверх от вершин, пока они не встретятся.
 // O(h) по времени, где h - высота дерева. Обычно люди сначала предлагают этот вариант, его и стоит писать.
 //
@@ -166,6 +167,7 @@ pub fn lowest_common_ancestor(edges: Vec<(usize, usize)>, x: usize, y: usize, n:
     v
 }
 
+// Найти K ближайших элементов в отсортированном массиве.py
 // Дан отсортированный массив целых чисел a , целое число K и индекс элемента index.
 // Необходимо вернуть в любом порядке K чисел из массива,
 // которые являются ближайшими по значению к элементу a[index] .
@@ -189,6 +191,7 @@ pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
     pochmann_solution(arr, k, x)
 }
 
+// Нормализация пробелов.py
 // Без условия :( Странное решение от яндекса не делает трим одного пробела в начале,
 // да и вообще воняет O(n^2) говной c этим охуительным удалением буквы из середины массива
 // https://leetcode.com/discuss/interview-question/algorithms/124659/google-phone-screen-given-a-string-with-spaces-normalize-it
@@ -226,73 +229,37 @@ pub fn normalize_spaces(str: String) -> String {
     ans
 }
 
+// Палиндром.py
 // Тоже без условия :(
 // что то в духе есть строка в которой не только буквы,
 // все не буквы надо пропустить и понять является ли оставшееся палиндромомом
 
 // А мудила в НИИ - инвалид умa! -> true
-
-// class Solution:
-// def isPalindrome(self, s: str) -> bool:
-// left = 0
-// right = len(s) - 1
-//
-// while left < right:  # Строгое не равно работает как с четной так и с нечетной строкой
-// left_char = s[left]
-// right_char = s[right]
-//
-// if not left_char.isalnum():  # .isalpha() для только букв
-// left += 1  # Увеличиваем индекс пока не наткнемся на валидный символ
-// continue
-//
-// if not right_char.isalnum():
-// right -= 1
-// continue
-// # Когда оба символа валидные, чекаем на раввенство
-// if left_char.lower() != right_char.lower():
-// return False
-//
-// left += 1
-// right -= 1
-//
-// return True
-//
-//
-// # Чуть более пижонски
-//
-// def isPalindrome(self, s):
-// l = 0
-// r = len(s)-1
-// while l < r:
-// while l < r and not s[l].isalnum():
-// l += 1
-// while l < r and not s[r].isalnum():
-// r -= 1
-// if s[l].lower() != s[r].lower():
-// return False
-// l += 1
-// r -= 1
-// return True
-pub fn palindrome(s: String) -> bool {
+// https://leetcode.com/problems/valid-palindrome/
+pub fn is_palindrome(s: String) -> bool {
     let s = s.chars().collect::<Vec<_>>();
-    let mut l = 0;
-    let mut r = s.len() - 1;
-    while l < r {
-        while l < r && !s[l].is_alphabetic() {
-            l += 1;
+    let mut left = 0;
+    let mut right = s.len() - 1;
+
+    while left < right {
+        if left < right && !char::is_alphanumeric(s[left]) {
+            left += 1;
+            continue;
         }
-        while l < r && !s[r].is_alphabetic() {
-            r -= 1;
+        if right > left && !char::is_alphanumeric(s[right]) {
+            right -= 1;
+            continue;
         }
-        if s[l].to_lowercase().last().unwrap() != s[r].to_lowercase().last().unwrap() {
+        if s[left].to_lowercase().to_string() != s[right].to_lowercase().to_string() {
             return false;
         }
-        l += 1;
-        r -= 1;
+        left += 1;
+        right -= 1;
     }
     true
 }
 
+// Посетители гостиницы.py
 // Даны даты заезда и отъезда каждого гостя.
 // Необходимо написать функцию, которая считает максимальное число посетителей, которые одновременно проживали в гостинице.
 //
@@ -325,6 +292,7 @@ pub fn max_guests(mut guests: Vec<(i32, i32)>) -> i32 {
     ans
 }
 
+// Пофильтровать сортированный список по другому сортированному списку.py
 // Пофильтровать один список по другому сортированному списку
 // pprint(s_f2([1, 3, 5, 7, 8, 9], [1, 2, 6, 8, 9])) --> [3, 5, 7]
 pub fn filter_by_another(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
@@ -351,6 +319,7 @@ pub fn filter_by_another(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
     ans
 }
 
+// Проверка строк на исправление.py
 // Нужно реализовать функцию OneEditApart , проверяющую, можно ли одну строку получить из другой не более,
 // чем за одно исправление (удаление, добавление, изменение символа):
 
@@ -426,6 +395,7 @@ pub fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
     }
 }
 
+// Реализовать функцию fuzzysearch.py
 // Реализовать функцию fuzzysearch как в редакторе sublime text 3 .
 // Для незнакомых с редактором и/или термином fuzzysearch (нечёткий поиск),
 // можно упомянуть более формальное название — approximate string matching
@@ -476,6 +446,7 @@ pub fn is_subsequence(s: String, t: String) -> bool {
     approach2(s, t)
 }
 
+// Удалить нули из вектора.py
 // Дан вектор, надо удалить из него нули, сохранив порядок остальных элементов.
 // Интересует как с использованием стандартных средств, так и без них.
 // https://leetcode.com/problems/move-zeroes/
@@ -509,6 +480,7 @@ pub fn move_zeroes(nums: &mut Vec<i32>) {
     no_std(nums)
 }
 
+// URL-кодирование.py
 // Inplace заменяет в массиве символы пробела на последовательность символов '%', '2', '0'.
 
 // Задача номер 3 (строки и массивы) из книги Cracking the coding interview (Карьера программиста на русском)
@@ -552,6 +524,7 @@ fn urlify(mut s: String, len: usize) -> String {
     s.into_iter().collect()
 }
 
+// Свертка списка в диапазоны.py
 // Дан список интов, повторяющихся элементов в списке нет.
 // Нужно преобразовать это множество в строку, сворачивая соседние по числовому ряду числа в диапазоны.
 
@@ -589,7 +562,6 @@ pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
 }
 
 // Сложение ступенчатых графиков.py
-//
 // Есть два ступенчатых графика некоторых наблюдаемых величин,
 // заданных отсортированными списками координат начала ступенек (<время измерения>, <значение>).
 // Подразумевается, что величина сохраняет своё значение между измерениями.
@@ -638,12 +610,132 @@ fn charts_sum(mut chart1: Vec<(i32, i32)>, mut chart2: Vec<(i32, i32)>) -> Vec<(
     ans
 }
 
+// Сумма hex-чисел.py
 // Даны две строки, каждая из которых — hex-число в прямой записи (старший знак в нулевой позиции).
 // Написать код суммирования этих чисел.
 fn hex_sum(s1: String, s2: String) -> String {
+    use std::collections::HashMap;
+
+    let s1 = s1.chars().rev().collect::<Vec<_>>();
+    let s2 = s2.chars().rev().collect::<Vec<_>>();
+
+    let letter_to_num = vec![
+        ('0', 0),
+        ('1', 1),
+        ('2', 2),
+        ('3', 3),
+        ('4', 4),
+        ('5', 5),
+        ('6', 6),
+        ('7', 7),
+        ('8', 8),
+        ('9', 9),
+        ('A', 10),
+        ('B', 11),
+        ('C', 12),
+        ('D', 13),
+        ('E', 14),
+        ('F', 15),
+    ]
+    .into_iter()
+    .collect::<HashMap<char, i32>>();
+
+    let num_to_letter = vec![
+        (0, '0'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, 'A'),
+        (11, 'B'),
+        (12, 'C'),
+        (13, 'D'),
+        (14, 'E'),
+        (15, 'F'),
+    ]
+    .into_iter()
+    .collect::<HashMap<i32, char>>();
+
     let mut ans = String::new();
-    ans
+    let mut i = 0;
+    let mut j = 0;
+    let mut carry = 0;
+    loop {
+        let mut n1 = 0;
+        if i < s1.len() {
+            n1 = *letter_to_num.get(&s1[i]).unwrap();
+            i += 1;
+        }
+        let mut n2 = 0;
+        if j < s2.len() {
+            n2 = *letter_to_num.get(&s2[j]).unwrap();
+            j += 1;
+        }
+
+        let sum = n1 + n2 + carry;
+        ans.push(*num_to_letter.get(&(sum % 16)).unwrap());
+        carry = sum / 16;
+
+        if i == s1.len() && j == s2.len() {
+            if carry > 0 {
+                ans.push(*num_to_letter.get(&carry).unwrap());
+            }
+            break;
+        }
+    }
+    ans.chars().rev().collect()
 }
+
+// Удалить смайлики вида _-)))_ и _-((_ из сообщения.py
+fn remove_smiles(s: String) -> String {
+    fn in_place(s: String) -> String {
+        // на месте, хоть вроде бы этого и не просят
+        let mut s = s.chars().collect::<Vec<_>>();
+        let mut right = 0;
+        let mut left = 0;
+        while right < s.len() {
+            if right + 2 < s.len() && s[right] == ':' && s[right + 1] == '-' {
+                while right + 2 < s.len() && s[right] == ':' && s[right + 1] == '-' {
+                    let mut k = 2;
+                    if s[right + k] == '(' {
+                        while right + k < s.len() && s[right + k] == '(' {
+                            k += 1;
+                        }
+                        right += k;
+                    } else if s[right + k] == ')' {
+                        while right + k < s.len() && s[right + k] == ')' {
+                            k += 1;
+                        }
+                        right += k;
+                    } else {
+                        right += 1;
+                    }
+                }
+                if right < s.len() {
+                    s.swap(left, right);
+                    right += 1;
+                    left += 1;
+                }
+            } else {
+                s.swap(left, right);
+                right += 1;
+                left += 1;
+            }
+        }
+        if left > 0 {
+            s[0..left].iter().collect()
+        } else {
+            "".to_string()
+        }
+    }
+    in_place(s)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -717,14 +809,17 @@ mod test {
 
     #[test]
     fn test_palindromes() {
-        println!("{}", palindrome("Не дебил - и беден?".to_string())); // true
-        println!("{}", palindrome("Ум за рамки - к маразму!".to_string())); // true
-        println!("{}", palindrome("Мы доломали! Сила молодыМ!".to_string())); // true
+        println!("{}", is_palindrome("Не дебил - и беден?".to_string())); // true
+        println!("{}", is_palindrome("Ум за рамки - к маразму!".to_string())); // true
         println!(
             "{}",
-            palindrome("А мудила в НИИ - инвалид умА!".to_string())
+            is_palindrome("Мы доломали! Сила молодыМ!".to_string())
         ); // true
-        println!("{}", palindrome("Улыбок тебе, дед Макар!".to_string())); // false
+        println!(
+            "{}",
+            is_palindrome("А мудила в НИИ - инвалид умА!".to_string())
+        ); // true
+        println!("{}", is_palindrome("Улыбок тебе, дед Макар!".to_string())); // false
     }
 
     #[test]
@@ -808,5 +903,24 @@ mod test {
             "{:?}",
             charts_sum(vec![(1, 2), (4, 1)], vec![(2, 4), (3, 6), (5, 7)])
         ); // [(1, 2), (2, 6), (3, 8), (4, 7), (5, 8)]
+    }
+
+    #[test]
+    fn test_hex_sum() {
+        println!("{}", hex_sum("BA8".to_string(), "B78".to_string())); // 1720
+        println!("{}", hex_sum("DEADBEEF".to_string(), "B78".to_string())); // DEADCA67
+        println!(
+            "{}",
+            hex_sum("DEADBEEF".to_string(), "CAFEBABE".to_string())
+        ); // 1A9AC79AD
+    }
+
+    #[test]
+    fn test_remove_smiles() {
+        println!("{}", remove_smiles(":-)):-((".to_string())); // ''
+        println!("{}", remove_smiles(":-))(())".to_string())); // (())
+        println!("{}", remove_smiles(":-))((:-))".to_string())); // ((
+        println!("{}", remove_smiles("Ааааа!!!!! :-))(())".to_string())); // Ааааа!!!!! (())
+        println!("{}", remove_smiles("Ааа:-)аа!!!!!:-)()".to_string())); // Ааааа!!!!!()
     }
 }
