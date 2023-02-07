@@ -640,7 +640,10 @@ fn charts_sum(mut chart1: Vec<(i32, i32)>, mut chart2: Vec<(i32, i32)>) -> Vec<(
 
 // Даны две строки, каждая из которых — hex-число в прямой записи (старший знак в нулевой позиции).
 // Написать код суммирования этих чисел.
-
+fn hex_sum(s1: String, s2: String) -> String {
+    let mut ans = String::new();
+    ans
+}
 #[cfg(test)]
 mod test {
     use super::*;
