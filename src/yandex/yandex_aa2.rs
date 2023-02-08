@@ -173,7 +173,26 @@ fn is_vert_sym(points: Vec<(i32, i32)>) -> bool {
 // https://leetcode.com/problems/permutation-in-string/description/
 // https://leetcode.com/problems/permutation-in-string/solutions/127729/short-permutation-in-a-long-string/?orderBy=most_relevant
 fn check_inclusion(s1: String, s2: String) -> bool {
-    todo!()
+    let slen1 = s1.len();
+    let slen2 = s2.len();
+    if slen1 > slen2 {
+        return false;
+    }
+    let s2 = s2.chars().collect::<Vec<_>>();
+    let mut hash1 = vec![0; 26];
+    for c in s1.chars() {
+        hash1[c as usize - 'a' as usize] += 1;
+    }
+    for i in 0..=(slen2 - slen1) {
+        let mut hash2 = vec![0; 26];
+        for j in i..i + slen1 {
+            hash2[s2[j] as usize - 'a' as usize] += 1;
+        }
+        if hash1 == hash2 {
+            return true;
+        }
+    }
+    false
 }
 
 #[cfg(test)]
