@@ -197,6 +197,9 @@ fn tickets(edges: Vec<(String, String)>) -> Vec<(String, String)> {
     topological_sort(edges)
 }
 
+// Группировка анаграмм.py
+// https://leetcode.com/problems/group-anagrams/description/
+
 // Дан массив строк, нужно сгруппировать в нем анаграммы.
 // Слово X является анаграммой слова Y, если оно может быть
 // получено из другого перестановкой букв.
@@ -211,19 +214,37 @@ fn tickets(edges: Vec<(String, String)>) -> Vec<(String, String)> {
 // анаграмму удобно представить словарем символов
 // завести словарь с ключом словаря анаграммы и списком строк
 // вывести значения
-fn anagrams(words: Vec<String>) -> Vec<Vec<String>> {
-    let mut anagrams = HashMap::new();
-    for word in words {
-        let mut anagram_key = BTreeMap::new(); // руст такой руст, hashmap ведет себя как линкед мап
-        for ch in word.chars() {
-            *anagram_key.entry(ch).or_insert(0) += 1;
+fn group_anagrams(words: Vec<String>) -> Vec<Vec<String>> {
+    fn group_anagrams1(words: Vec<String>) -> Vec<Vec<String>> {
+        let mut anagrams = HashMap::new();
+        for word in words {
+            let mut anagram_key = BTreeMap::new(); // руст такой руст, hashmap ведет себя как линкед мап
+            for ch in word.chars() {
+                *anagram_key.entry(ch).or_insert(0) += 1;
+            }
+            anagrams
+                .entry(format!("{:?}", anagram_key))
+                .or_insert(vec![])
+                .push(word);
         }
-        anagrams
-            .entry(format!("{:?}", anagram_key))
-            .or_insert(vec![])
-            .push(word);
+        anagrams.values().cloned().collect()
     }
-    anagrams.values().cloned().collect()
+    fn group_anagrams2(strs: Vec<String>) -> Vec<Vec<String>> {
+        use std::collections::*;
+        let mut ans = HashMap::new();
+        for s in strs {
+            let mut hist = vec![0; 26];
+            for c in s.chars() {
+                hist[c as usize - 'a' as usize] += 1;
+            }
+            ans.entry(hist).or_insert(vec![]).push(s);
+        }
+        ans.into_iter().fold(vec![], |mut acc, (_, v)| {
+            acc.push(v);
+            acc
+        })
+    }
+    group_anagrams2(words)
 }
 
 // Даны два массива a и b . Нужно найти минимум abs(a[i]-b[j]) :
@@ -254,6 +275,8 @@ fn min_distance(mut a: Vec<i32>, mut b: Vec<i32>) -> i64 {
     ans
 }
 
+// Сжатие строки (RLE) [не более 30 мин].py
+// Задача 1.5 из первого раздела CTCI (Карьера программиста)
 // Дана строка, состоящая из букв A-Z:
 // "AAAABBBCCXYZDDDDEEEFFFAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 // Нужно написать функцию RLE, которая на выходе даст строку вида:
@@ -299,6 +322,7 @@ fn rle(s: String) -> String {
     ans
 }
 
+// Удалить повторяющиеся символы и получить лексикографически наименьшую строку.py
 // Дана строка. Нужно удалить из нее повторяющиеся символы таким образом
 // чтобы результирующая строка была лексикографически наименьшей
 // как решать:
@@ -509,7 +533,7 @@ mod test {
         // )
         println!(
             "{:?}",
-            anagrams(vec![
+            group_anagrams(vec![
                 "сон".to_string(),
                 "нос".to_string(),
                 "сорт".to_string(),
