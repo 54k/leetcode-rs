@@ -195,6 +195,29 @@ fn check_inclusion(s1: String, s2: String) -> bool {
     false
 }
 
+// Для двух поисковых выдач, заданных массивами DocId'ов (т.е. просто векторами целых чисел)
+// длины N, для всех K от 1 до N нужно посчитать количество общих документов в топах размера K.
+// Непоисковая формулировка:
+// Для двух массивов целых чисел длины N, для всех K от 1 до N,
+// посчитать количество общих чисел на префиксах длины K.
+
+fn find_intersection(a: Vec<i32>, b: Vec<i32>) -> Vec<usize> {
+    // Все числа в каждом из массивов различные.
+    fn different_nums_in_each_array(a: Vec<i32>, b: Vec<i32>) -> Vec<usize> {
+        use std::collections::HashSet;
+        let mut s1 = HashSet::new();
+        let mut s2 = HashSet::new();
+        let mut ans = vec![];
+        for i in 0..a.len() {
+            s1.insert(a[i]);
+            s2.insert(b[i]);
+            ans.push(s1.intersection(&s2).count());
+        }
+        ans
+    }
+    different_nums_in_each_array(a, b)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -237,5 +260,13 @@ mod test {
             "{}",
             check_inclusion("ab".to_string(), "eidboaoo".to_string())
         ); // false
+    }
+
+    #[test]
+    fn test_find_intersection() {
+        println!(
+            "{:?}",
+            find_intersection(vec![1, 2, 3, 4, 5], vec![6, 2, 3, 9, 10])
+        ); // [0, 1, 2, 2, 2]
     }
 }
