@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::cmp::max;
 use std::rc::Rc;
 
 // https://leetcode.com/problems/jump-game-iii/description/
@@ -129,7 +130,39 @@ pub fn vertical_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> 
 
 // https://leetcode.com/problems/cinema-seat-allocation/
 pub fn max_number_of_families(n: i32, reserved_seats: Vec<Vec<i32>>) -> i32 {
-    0
+    fn max_number_of_families1(n: i32, reserved_seats: Vec<Vec<i32>>) -> i32 {
+        // doesn't work with n = 10^9
+        let mut seats = vec![0; n as usize];
+        const PADDING: i32 = i32::MAX << 10;
+        const FAM: i32 = (1 << 4) - 1;
+        for s in reserved_seats {
+            let row = s[0];
+            let occupied = s[1];
+            seats[row as usize - 1] |= (PADDING) | (1 << (10 - occupied));
+        }
+        for i in 0..n {
+            seats[i as usize] = PADDING | !seats[i as usize];
+        }
+
+        const FAM_TWO: i32 = PADDING | FAM << 1 | FAM << 5;
+        const FAM_RIGHT: i32 = PADDING | FAM << 1;
+        const FAM_LEFT: i32 = PADDING | FAM << 5;
+        const FAM_MID: i32 = PADDING | FAM << 3;
+
+        let mut ans = 0;
+        for s in seats {
+            if FAM_TWO & s == FAM_TWO {
+                ans += 2;
+            } else if (FAM_RIGHT & s == FAM_RIGHT)
+                || (FAM_LEFT & s == FAM_LEFT)
+                || (FAM_MID & s == FAM_MID)
+            {
+                ans += 1
+            }
+        }
+        ans
+    }
+    max_number_of_families1(n, reserved_seats)
 }
 
 #[cfg(test)]
@@ -274,5 +307,43 @@ mod test {
                 }))),
             }))))
         ); // [[0],[1],[3,2,2],[4]]
+    }
+
+    #[test]
+    fn test215() {
+        println!(
+            "{}",
+            max_number_of_families(
+                3,
+                vec![
+                    vec![1, 2],
+                    vec![1, 3],
+                    vec![1, 8],
+                    vec![2, 6],
+                    vec![3, 1],
+                    vec![3, 10]
+                ]
+            )
+        ); //4
+
+        println!(
+            "{}",
+            max_number_of_families(2, vec![vec![2, 1], vec![1, 8], vec![2, 6]])
+        ); //2
+
+        println!(
+            "{}",
+            max_number_of_families(
+                3,
+                vec![
+                    vec![1, 2],
+                    vec![1, 3],
+                    vec![1, 8],
+                    vec![2, 6],
+                    vec![3, 1],
+                    vec![3, 10]
+                ]
+            )
+        ); // 4
     }
 }
