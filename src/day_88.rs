@@ -144,10 +144,10 @@ pub fn max_number_of_families(n: i32, reserved_seats: Vec<Vec<i32>>) -> i32 {
             seats[i as usize] = PADDING | !seats[i as usize];
         }
 
-        const FAM_TWO: i32 = PADDING | FAM << 1 | FAM << 5;
         const FAM_RIGHT: i32 = PADDING | FAM << 1;
         const FAM_LEFT: i32 = PADDING | FAM << 5;
         const FAM_MID: i32 = PADDING | FAM << 3;
+        const FAM_TWO: i32 = FAM_LEFT | FAM_RIGHT;
 
         let mut ans = 0;
         for s in seats {
