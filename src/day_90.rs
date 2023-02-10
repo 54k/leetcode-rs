@@ -48,6 +48,52 @@ pub fn max_distance(grid: Vec<Vec<i32>>) -> i32 {
     }
 }
 
+// https://leetcode.com/problems/sort-colors/
+pub fn sort_colors(nums: &mut Vec<i32>) {
+    fn n2(nums: &mut Vec<i32>) {
+        let mut i = 0;
+        'op: while i < nums.len() {
+            for j in i..nums.len() {
+                if nums[j] < nums[i] {
+                    nums.swap(i, j);
+                    continue 'op;
+                }
+            }
+            i += 1;
+        }
+    }
+
+    // https://leetcode.com/problems/sort-colors/solutions/849331/rust-one-pass/
+    fn n(nums: &mut Vec<i32>) {
+        /*
+        The idea is iterating through to push 0s and 2s to sides
+        Indices i0 and i2 mark the boundary so that
+            0s over [0, i0)
+            1s over [i0, i2)
+            2s over [i2, len)
+        */
+        let (mut i, mut i1, mut i2) = (0, 0, nums.len());
+        while i < i2 {
+            match nums[i] {
+                0 => {
+                    nums.swap(i1, i);
+                    i1 += 1;
+                    i += 1;
+                }
+                2 => {
+                    i2 -= 1;
+                    nums.swap(i2, i);
+                }
+                _ => {
+                    i += 1;
+                }
+            }
+        }
+    }
+
+    n(nums)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -62,5 +108,15 @@ mod test {
             "{}",
             max_distance(vec![vec![1, 0, 0], vec![0, 0, 0], vec![0, 0, 0]])
         ); // 4
+    }
+
+    #[test]
+    fn test219() {
+        let mut v1 = vec![2, 0, 2, 1, 1, 0];
+        sort_colors(&mut v1);
+        println!("{:?}", v1); // [0,0,1,1,2,2]
+        let mut v2 = vec![2, 0, 1];
+        sort_colors(&mut v2);
+        println!("{:?}", v2); // [0,1,2]
     }
 }

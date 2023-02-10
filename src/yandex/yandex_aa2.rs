@@ -293,9 +293,62 @@ fn same_subtrees(root: Node<char>) -> (i32, char, char) {
     )
 }
 
+// Найти всплески пользовательской активности.py
+pub mod user_activity {
+    use std::collections::{HashMap, VecDeque};
+
+    // Есть последовательность событий, каждое событие это пара user_id, time, события отсортированы по времени
+    // Нужно уметь отвечать на вопрос, сколько за последние 5 минут было пользователей, которые задали >= 1000 запросов.
+    pub struct UserActivity {
+        events: VecDeque<(i32, i32)>,
+        events_count_by_user: HashMap<i32, i32>,
+        time_frame: i32,
+    }
+
+    impl UserActivity {
+        pub fn new(time_frame: i32) -> Self {
+            Self {
+                events: VecDeque::new(),
+                events_count_by_user: HashMap::new(),
+                time_frame,
+            }
+        }
+
+        pub fn add_event(&mut self, user_id: i32, time_minute: i32) {
+            let start_time_frame = time_minute - self.time_frame;
+
+            while let Some((_, time)) = self.events.front() {
+                if *time >= start_time_frame {
+                    break;
+                }
+                let (uid, _) = self.events.pop_front().unwrap();
+                let events_count = self.events_count_by_user.get_mut(&uid).unwrap();
+                *events_count -= 1;
+                if *events_count == 0 {
+                    self.events_count_by_user.remove(&uid);
+                }
+            }
+
+            self.events.push_back((user_id, time_minute));
+            *self.events_count_by_user.entry(user_id).or_insert(0) += 1;
+        }
+
+        pub fn query_active_users(&mut self) -> Vec<i32> {
+            let mut ans = vec![];
+            for (&uid, &events) in &self.events_count_by_user {
+                if events >= 1000 {
+                    ans.push(uid);
+                }
+            }
+            ans
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::yandex::yandex_aa2::user_activity::UserActivity;
 
     #[test]
     fn test_subarray_sum() {
@@ -395,5 +448,16 @@ mod test {
                 }))),
             }))))
         );
+    }
+
+    #[test]
+    fn test_find_active_users() {
+        let mut user_activity = UserActivity::new(5);
+        for i in 0..=60 {
+            for _ in 0..1500 {
+                user_activity.add_event(i, i);
+            }
+            println!("{:?}", user_activity.query_active_users());
+        }
     }
 }
