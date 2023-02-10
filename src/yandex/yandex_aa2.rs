@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 // Подотрезок с суммой X.py
 // Дан массив целых чисел, нужно найти непустой подотрезок
 // (непрерывную подпоследовательность) с заданной суммой X, либо сказать, что это невозможно.
@@ -218,6 +221,78 @@ fn find_intersection(a: Vec<i32>, b: Vec<i32>) -> Vec<usize> {
     different_nums_in_each_array(a, b)
 }
 
+// Дано бинарное дерево с выделенным корнем, в каждой вершине которого записано по одной букве A-Z.
+// Две вершины считаются эквивалентными, если поддеревья этих вершин содержат одинаковое множество (т.е. без учета частот) букв.
+// Нужно найти любую пару эквивалентных вершин.
+// Можно усложнить, задав:
+// Нужно найти две эквивалентные вершины с максимальным суммарным размером поддеревьев.
+
+// Решение за O(NK), где N - размер дерева, K - размер алфавита.
+// То есть, обход дерева с построением дескриптора (булева массива размера K)
+// поддерева и отображения - дескриптор->два максимальных поддерева с этим дескриптором.
+//
+// Можно поддерживать мап из декскриптора в максимальное поддерево с таким дескриптором
+// и обновлять пару с максимальной суммой каждый раз, когда мы пытаемся обновить в мапе максимум.
+// Так писать даже проще.
+// Хороший кандидат в качестве дескриптора использует битовую маску встреченных букв и получит сложность O(N).
+
+// https://leetcode.com/problems/find-duplicate-subtrees/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode<T> {
+    pub val: T,
+    pub left: Option<Rc<RefCell<TreeNode<T>>>>,
+    pub right: Option<Rc<RefCell<TreeNode<T>>>>,
+}
+type Node<T> = Option<Rc<RefCell<TreeNode<T>>>>;
+fn same_subtrees(root: Node<char>) -> (i32, char, char) {
+    todo!();
+    use std::collections::*;
+    // функция возвращает битовую маску текущего поддерева
+    // Можно усложнить, задав:
+    // Нужно найти две эквивалентные вершины с максимальным суммарным размером поддеревьев.
+    fn traverse(
+        root: Node<char>,
+        trees_counts: &mut HashMap<i32, (i32, Node<char>)>,
+        ans: &mut (i32, Node<char>, Node<char>), // кол-во вершин + пара эквивалентных вершин
+    ) -> (i32, i32) {
+        if root.is_none() {
+            return (0, 0);
+        }
+        let r = root.clone().unwrap();
+        let r = r.borrow();
+
+        let left_subtree = traverse(r.left.clone(), trees_counts, ans);
+        let right_subtree = traverse(r.right.clone(), trees_counts, ans);
+
+        let mut mask = 1 << (r.val as i32 - 'A' as i32);
+        mask |= left_subtree.1;
+        mask |= right_subtree.1;
+
+        let tree_size = left_subtree.0 + right_subtree.0 + 1;
+
+        let entry = trees_counts
+            .entry(mask)
+            .or_insert((tree_size, root.clone()));
+
+        if entry.0 < tree_size {
+            if ans.0 < tree_size {
+                *ans = (tree_size, entry.1.clone(), root.clone());
+            }
+            *entry = (tree_size, root);
+        }
+
+        (tree_size, mask)
+    }
+    let mut ans = (0, None, None);
+    traverse(root, &mut HashMap::new(), &mut ans);
+    // (ans.1, ans.2)
+    (
+        ans.0,
+        ans.1.unwrap().borrow().val,
+        ans.2.unwrap().borrow().val,
+    )
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -268,5 +343,57 @@ mod test {
             "{:?}",
             find_intersection(vec![1, 2, 3, 4, 5], vec![6, 2, 3, 9, 10])
         ); // [0, 1, 2, 2, 2]
+    }
+
+    #[test]
+    fn test_find_same_subtrees() {
+        println!(
+            "{:?}",
+            same_subtrees(Some(Rc::new(RefCell::new(TreeNode {
+                val: 'A',
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 'B',
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 'Z',
+                        left: Some(Rc::new(RefCell::new(TreeNode {
+                            val: 'Z',
+                            left: Some(Rc::new(RefCell::new(TreeNode {
+                                val: 'C',
+                                left: None,
+                                right: None,
+                            }))),
+                            right: None,
+                        }))),
+                        right: None,
+                    }))),
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 'O',
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 'C',
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 'X',
+                        left: Some(Rc::new(RefCell::new(TreeNode {
+                            val: 'X',
+                            left: Some(Rc::new(RefCell::new(TreeNode {
+                                val: 'X',
+                                left: None,
+                                right: None,
+                            }))),
+                            right: None,
+                        }))),
+                        right: None,
+                    }))),
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 'P',
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+            }))))
+        );
     }
 }

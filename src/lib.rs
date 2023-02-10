@@ -1,3 +1,5 @@
+extern crate core;
+
 pub mod codesignal;
 pub mod day_1;
 pub mod day_10;
@@ -86,7 +88,9 @@ pub mod day_85;
 pub mod day_86;
 pub mod day_87;
 pub mod day_88;
+pub mod day_89;
 pub mod day_9;
+pub mod day_90;
 pub mod design_twitter_day16;
 pub mod insert_delete_get_random_day17;
 pub mod linked_lists;
