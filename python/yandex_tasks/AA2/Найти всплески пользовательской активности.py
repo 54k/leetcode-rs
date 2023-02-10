@@ -15,26 +15,26 @@ class UserStatistics(object):
     def clean_old_events(self, time):
         first_in_window = time - self.window_time
 
-        while events_window and events_window[0][0] < first_in_window:
-            if self.user_events_in_window[events_window[0][1]] == 1:
-                self.user_events_in_window.pop(events_window[0][1])
+        while self.events_window and self.events_window[0][0] < first_in_window:
+            if self.user_events_in_window[self.events_window[0][1]] == 1:
+                self.user_events_in_window.pop(self.events_window[0][1])
             else:
-                self.user_events_in_window[events_window[0][1]] -= 1
+                self.user_events_in_window[self.events_window[0][1]] -= 1
 
-            if self.user_events_in_window[events_window[0][1]] == self.limit - 1:
-                big_users_count -= 1
+            if self.user_events_in_window[self.events_window[0][1]] == self.limit - 1:
+                self.big_users_count -= 1
 
-            events_window.pop(0)
+            self.events_window.pop(0)
 
     def event(self, time, user_id):
-        clean_old_events(self, time)
+        self.clean_old_events(time)
 
         self.events_window.append((time, user_id))
         self.user_events_in_window[user_id] += 1
 
         if self.user_events_in_window[user_id] == self.limit:
-            big_users_count += 1
+            self.big_users_count += 1
 
-    def getRobotsCount(self, time):
-        clean_old_events(self, time)
+    def get_robots_count(self, time):
+        self.clean_old_events(time)
         return self.big_users_count
