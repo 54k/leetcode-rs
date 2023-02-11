@@ -244,10 +244,8 @@ pub struct TreeNode<T> {
     pub right: Option<Rc<RefCell<TreeNode<T>>>>,
 }
 type Node<T> = Option<Rc<RefCell<TreeNode<T>>>>;
-fn same_subtrees(root: Node<char>) -> (i32, char, char) {
-    todo!();
+fn same_subtrees(root: Node<char>) -> (Node<char>, Node<char>) {
     use std::collections::*;
-    // функция возвращает битовую маску текущего поддерева
     // Можно усложнить, задав:
     // Нужно найти две эквивалентные вершины с максимальным суммарным размером поддеревьев.
     fn traverse(
@@ -285,12 +283,7 @@ fn same_subtrees(root: Node<char>) -> (i32, char, char) {
     }
     let mut ans = (0, None, None);
     traverse(root, &mut HashMap::new(), &mut ans);
-    // (ans.1, ans.2)
-    (
-        ans.0,
-        ans.1.unwrap().borrow().val,
-        ans.2.unwrap().borrow().val,
-    )
+    (ans.1, ans.2)
 }
 
 // Найти всплески пользовательской активности.py
