@@ -149,8 +149,76 @@ fn task_1_6(str: String) -> String {
 // Имеется изображение, представленное матрицей НхН, каждый пиксел представлен 4 байтами
 // Напишите метод для поворота изображения на 90 градусов.
 // Удастся ли вам выполнить эту операцию "на месте"?
-fn test_1_7(matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-    matrix
+fn task_1_7(matrix: &mut Vec<Vec<i32>>) {
+    let n = matrix.len();
+    for layer in 0..n / 2 {
+        let first = layer;
+        let last = n - 1 - layer;
+        for i in first..last {
+            let offset = i - first;
+            // сохранить верхнюю сторону
+            let top = matrix[first][i];
+
+            // левая сторона -> верхняя сторона
+            matrix[first][i] = matrix[last - offset][first];
+
+            // нижняя сторона -> левая сторона
+            matrix[last - offset][first] = matrix[last][last - offset];
+
+            // правая сторона -> нижняя сторона
+            matrix[last][last - offset] = matrix[i][last];
+
+            // верхняя сторона -> правая сторона
+            matrix[i][last] = top;
+        }
+    }
+}
+
+// Напишите алгоритм, реализующий следующие условия:
+// если элемент матрицы MxN равен 0, то весь столбец и вся строка обнуляются
+fn task_1_8(matrix: &mut Vec<Vec<i32>>) {
+    let mut row = vec![false; matrix.len()];
+    let mut column = vec![false; matrix[0].len()];
+
+    for i in 0..matrix.len() {
+        for j in 0..matrix[0].len() {
+            if matrix[i][j] == 0 {
+                row[i] = true;
+                column[j] = true;
+            }
+        }
+    }
+
+    for i in 0..matrix.len() {
+        for j in 0..matrix[0].len() {
+            if row[i] || column[j] {
+                matrix[i][j] = 0;
+            }
+        }
+    }
+}
+
+// Допустим, что существует метод isSubstring, проверяющий,
+// является ли одно слово подстрокой другого. Для двух строк s1 и s2 напишите код,
+// который проверяет, получена ли строка s2 циклическим сдвигом s1, используя только
+// один вызов метода isSubstring (пример: слово waterbottle получено циклическим сдвигом
+// erbottlewat
+fn task_1_9(a: String, b: String) -> bool {
+    fn is_substring(a: Vec<char>, b: Vec<char>) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && a[i] != b[j] {
+            i += 1;
+        }
+        while i < a.len() && j < b.len() && a[i] == b[j] {
+            i += 1;
+            j += 1;
+        }
+        j == b.len()
+    }
+    let a = format!("{}{}", a, a).chars().collect::<Vec<_>>();
+    let b = b.chars().collect::<Vec<_>>();
+    is_substring(a, b)
 }
 
 #[cfg(test)]
@@ -201,5 +269,50 @@ mod test {
     }
 
     #[test]
-    fn test_1_7() {}
+    fn test_1_7() {
+        let mut matrix = vec![
+            vec![1, 1, 1, 1],
+            vec![2, 2, 2, 2],
+            vec![3, 3, 3, 3],
+            vec![4, 4, 4, 4],
+        ];
+        for r in &matrix {
+            println!("{:?}", r);
+        }
+        task_1_7(&mut matrix);
+        println!();
+        for r in &matrix {
+            println!("{:?}", r);
+        }
+    }
+
+    #[test]
+    fn test_1_8() {
+        let mut matrix = vec![
+            vec![1, 1, 1, 1],
+            vec![2, 2, 0, 2],
+            vec![3, 3, 3, 3],
+            vec![0, 4, 4, 4],
+        ];
+        for r in &matrix {
+            println!("{:?}", r);
+        }
+        task_1_8(&mut matrix);
+        println!();
+        for r in &matrix {
+            println!("{:?}", r);
+        }
+    }
+
+    #[test]
+    fn test_1_9() {
+        // cat atc tca cat
+        println!(
+            "{}",
+            task_1_9("waterbottle".to_string(), "erbottlewat".to_string())
+        ); // true
+        println!("{}", task_1_9("cat".to_string(), "tca".to_string())); // true
+        println!("{}", task_1_9("cat".to_string(), "act".to_string())); // false
+        println!("{}", task_1_9("cat".to_string(), "dog".to_string())); // false
+    }
 }
