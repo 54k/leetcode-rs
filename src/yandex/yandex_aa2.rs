@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::cmp::min;
 use std::rc::Rc;
 
 // Подотрезок с суммой X.py
@@ -77,6 +78,50 @@ pub fn max_product(nums: Vec<i32>) -> i32 {
         ans
     }
     optimized(nums)
+}
+
+/*
+ * дана последовательность целых чисел, найти минимально возможно возможное произведение пары элементов
+ * последовательности
+ */
+pub fn min_product(nums: Vec<i32>) -> i32 {
+    let mut has_negative = false;
+    let mut all_negative = true;
+    for i in 0..nums.len() {
+        if nums[i] > 0 {
+            all_negative = false;
+        } else {
+            has_negative = true;
+        }
+    }
+    if all_negative {
+        let max_1 = nums.iter().enumerate().max_by(|x, y| x.1.cmp(y.1)).unwrap();
+        let max_2 = nums
+            .iter()
+            .enumerate()
+            .filter(|x| x.0 != max_1.0)
+            .max_by(|x, y| x.1.cmp(y.1))
+            .unwrap();
+        max_1.1 * max_2.1
+    } else if has_negative {
+        let min_1 = nums.iter().enumerate().min_by(|x, y| x.1.cmp(y.1)).unwrap();
+        let max_2 = nums
+            .iter()
+            .enumerate()
+            .filter(|x| x.0 != min_1.0)
+            .max_by(|x, y| x.1.cmp(y.1))
+            .unwrap();
+        min_1.1 * max_2.1
+    } else {
+        let min_1 = nums.iter().enumerate().min_by(|x, y| x.1.cmp(y.1)).unwrap();
+        let min_2 = nums
+            .iter()
+            .enumerate()
+            .filter(|x| x.0 != min_1.0)
+            .min_by(|x, y| x.1.cmp(y.1))
+            .unwrap();
+        min_1.1 * min_2.1
+    }
 }
 
 // Вертикальная ось симметрии.py
@@ -389,6 +434,15 @@ mod test {
             "{:?}",
             find_intersection(vec![1, 2, 3, 4, 5], vec![6, 2, 3, 9, 10])
         ); // [0, 1, 2, 2, 2]
+    }
+
+    #[test]
+    fn test_min_product() {
+        println!("{}", min_product(vec![9, 4, 2, 5, 3])); // 6
+        println!("{}", min_product(vec![1, 2, 3, 4])); // 2
+        println!("{}", min_product(vec![-1, -2, -3, -4])); // 2
+        println!("{}", min_product(vec![-1, -2, 3, 4])); // -8
+        println!("{}", min_product(vec![0, 0, 0, 0])); // 0
     }
 
     #[test]

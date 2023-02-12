@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 pub fn minimum_fuel_cost(roads: Vec<Vec<i32>>, seats: i32) -> i64 {
     use std::collections::VecDeque;
     let n = roads.len() + 1;
@@ -34,6 +37,35 @@ pub fn minimum_fuel_cost(roads: Vec<Vec<i32>>, seats: i32) -> i64 {
         }
     }
     fuel
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn lowest_common_ancestor(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    p: Option<Rc<RefCell<TreeNode>>>,
+    q: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    if root.is_none() || root == p || root == q {
+        return root;
+    }
+    let r = root.clone().unwrap();
+    let r = r.borrow();
+    let left = lowest_common_ancestor(r.left.clone(), p.clone(), q.clone());
+    let right = lowest_common_ancestor(r.right.clone(), p, q);
+    if left.is_some() && right.is_some() {
+        return root;
+    }
+    if left.is_some() {
+        left
+    } else {
+        right
+    }
 }
 
 #[cfg(test)]
