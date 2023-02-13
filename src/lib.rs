@@ -94,6 +94,7 @@ pub mod day_9;
 pub mod day_90;
 pub mod day_91;
 pub mod day_92;
+pub mod day_93;
 pub mod design_twitter_day16;
 pub mod insert_delete_get_random_day17;
 pub mod linked_lists;
