@@ -1,3 +1,4 @@
+// https://leetcode.com/problems/add-binary/description/
 pub fn add_binary(a: String, b: String) -> String {
     let a = a.chars().rev().collect::<Vec<_>>();
     let b = b.chars().rev().collect::<Vec<_>>();
@@ -45,7 +46,7 @@ mod test {
 
     #[test]
     fn test223() {
-        println!("{}", add_binary("11".to_string(), "1".to_string()));
-        println!("{}", add_binary("1010".to_string(), "1011".to_string()));
+        println!("{}", add_binary("11".to_string(), "1".to_string())); // 100
+        println!("{}", add_binary("1010".to_string(), "1011".to_string())); // 10101
     }
 }
