@@ -119,6 +119,110 @@ fn task_2_3(n: &mut TNode) {
     }
 }
 
+// Напишите код для разбиения связного списка вокруг значения х,
+// так чтобы все узлы, меньшие х, предшествовали узлам, большим или равным х.
+// Если х содержится в списке, то значения х должны следовать строго после элементов, меньших х (см. далее).
+// Элемент разбивки х может находиться где угодно в "правой части";
+// он не обязан располагаться между левой и правой частью.
+//
+// Пример:
+// Ввод: 3->5->8->5->10->2->1 [значение разбивки = 5]
+// Вывод: 3->2->1->5->8->5->10
+fn task_2_4(mut n: TNode, x: i32) -> TNode {
+    let mut head = None;
+    let mut head_tail = &mut head;
+    let mut tail = None;
+    let mut tail_tail = &mut tail;
+
+    while let Some(mut node) = n.take() {
+        n = node.next.take();
+        if node.val < x {
+            if head_tail.is_none() {
+                head = Some(node);
+                head_tail = &mut head;
+            } else {
+                let _ = head_tail.as_mut().unwrap().next.insert(node);
+                head_tail = &mut head_tail.as_mut().unwrap().next;
+            }
+        } else if tail_tail.is_none() {
+            tail = Some(node);
+            tail_tail = &mut tail;
+        } else {
+            let _ = tail_tail.as_mut().unwrap().next.insert(node);
+            tail_tail = &mut tail_tail.as_mut().unwrap().next;
+        }
+    }
+
+    head_tail.as_mut().unwrap().next = tail;
+    head
+}
+
+// Два числа хранятся в виде связных списков, в которых каждый узел представляет один разряд.
+// Все цифры хранятся в обратном порядке, при этом малдший разряд (единицы) хранится в начале списка.
+// Напишите функцию которая суммирует два числа и возвращает резульат в виде связного списка.
+// Пример:
+// Ввод: (7-1-6) + (5-9-2), то есть 617 + 295
+// Вывод: 2-1-9, то есть 912
+// Дополнительно: решите задачу предполагая, что цифры записаны в прямом порядке.
+// Ввод: (6-1-7) + (2-9-5), то есть 617 + 295
+// Вывод: (9-1-2), то есть 912
+fn task_2_5(a: TNode, b: TNode) -> TNode {
+    fn reverse_list(mut n: TNode) -> TNode {
+        let mut prev = None;
+        while let Some(mut current) = n.take() {
+            let next = current.next.take();
+            current.next = prev;
+            prev = Some(current);
+            n = next;
+        }
+        prev
+    }
+
+    fn reverse_order(mut a: TNode, mut b: TNode) -> TNode {
+        const RADIX: i32 = 10;
+        let mut ans = None;
+        let mut ans_ptr = &mut ans;
+        let mut carry = 0;
+        loop {
+            let ai = if let Some(v) = a.take() {
+                a = v.next;
+                v.val
+            } else {
+                0
+            };
+            let bj = if let Some(v) = b.take() {
+                b = v.next;
+                v.val
+            } else {
+                0
+            };
+
+            let mut sum = ai + bj + carry;
+            carry = sum / RADIX;
+            sum %= RADIX;
+            let n = Some(Box::new(ListNode::new(sum)));
+
+            if ans_ptr.is_none() {
+                ans = n;
+                ans_ptr = &mut ans;
+            } else {
+                ans_ptr.as_mut().unwrap().next = n;
+                ans_ptr = &mut ans_ptr.as_mut().unwrap().next;
+            }
+
+            if a.is_none() && b.is_none() {
+                if carry > 0 {
+                    ans_ptr.as_mut().unwrap().next = Some(Box::new(ListNode::new(carry)));
+                }
+                break;
+            }
+        }
+        ans
+    }
+
+    reverse_list(reverse_order(a, b))
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -183,5 +287,68 @@ mod test {
         }
         task_2_3(mid);
         println!("{:?}", head);
+    }
+
+    #[test]
+    fn test_2_4() {
+        // 3->5->8->5->10->2->1
+        let head = Some(Box::new(ListNode {
+            val: 3,
+            next: Some(Box::new(ListNode {
+                val: 5,
+                next: Some(Box::new(ListNode {
+                    val: 8,
+                    next: Some(Box::new(ListNode {
+                        val: 5,
+                        next: Some(Box::new(ListNode {
+                            val: 10,
+                            next: Some(Box::new(ListNode {
+                                val: 2,
+                                next: Some(Box::new(ListNode { val: 1, next: None })),
+                            })),
+                        })),
+                    })),
+                })),
+            })),
+        }));
+        println!("{:?}", task_2_4(head, 5));
+    }
+
+    #[test]
+    fn test_2_5() {
+        let a = Some(Box::new(ListNode {
+            val: 7,
+            next: Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode { val: 6, next: None })),
+            })),
+        }));
+        let b = Some(Box::new(ListNode {
+            val: 5,
+            next: Some(Box::new(ListNode {
+                val: 9,
+                next: Some(Box::new(ListNode { val: 2, next: None })),
+            })),
+        }));
+        println!("{:?}", task_2_5(a, b));
+
+        let c = Some(Box::new(ListNode {
+            val: 9,
+            next: Some(Box::new(ListNode {
+                val: 9,
+                next: Some(Box::new(ListNode { val: 9, next: None })),
+            })),
+        }));
+        let d = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 0,
+                next: Some(Box::new(ListNode {
+                    val: 0,
+                    next: Some(Box::new(ListNode { val: 1, next: None })),
+                })),
+            })),
+        }));
+        println!("{:?}", task_2_5(c, d));
     }
 }
