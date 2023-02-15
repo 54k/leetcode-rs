@@ -223,6 +223,70 @@ fn task_2_5(a: TNode, b: TNode) -> TNode {
     reverse_list(reverse_order(a, b))
 }
 
+// Реализуйте функцию, проверяющую, является ли связный список палиндромом.
+fn task_2_6(mut n: TNode) -> bool {
+    fn half_by_half(mut n: TNode) -> bool {
+        // Viper got you in a pipe, half by half
+        let mut prev = None;
+        while let Some(mut t) = n.take() {
+            let next = t.next.take();
+            if prev == next {
+                return true;
+            }
+            t.next = prev;
+            prev = Some(t);
+            n = next;
+        }
+        false
+    }
+    half_by_half(n)
+}
+
+// Проверьте пересекаются ли два заданных односвязных списка. Верните узел пересечения.
+// Учтите, что пересечени определяется ссылкой, а не значением.
+// Иначе говоря, если k-й узел первого связного списка точно совпадает с j-м узлом второго связного списка,
+// то списки считаются пересекающимися.
+fn task_2_7(mut a: TNode, mut b: TNode) -> TNode {
+    fn list_len_and_last(mut n: &TNode) -> (i32, i32) {
+        let mut len = 0;
+        let mut last_val = -1;
+        while let Some(t) = n {
+            last_val = t.val;
+            n = &t.next;
+            len += 1;
+        }
+        (len, last_val)
+    }
+
+    let (a_len, a_last) = list_len_and_last(&a);
+    let (b_len, b_last) = list_len_and_last(&b);
+    if a_last != b_last {
+        return None;
+    }
+    let mut diff = (a_len - b_len).abs();
+    if a_len > b_len {
+        std::mem::swap(&mut a, &mut b);
+    }
+    while diff > 0 {
+        b = b.take().unwrap().next;
+        diff -= 1;
+    }
+
+    while let Some(n1) = a.take() {
+        if let Some(n2) = b.take() {
+            if n1.val == n2.val {
+                return Some(n1);
+            }
+        }
+    }
+    None
+}
+
+// Для кольцевого связного осписка реализуйте алгоритм возвращающий начальный узел петли.
+fn task_2_8() {
+    unreachable!("Not impementable in Rust")
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -350,5 +414,72 @@ mod test {
             })),
         }));
         println!("{:?}", task_2_5(c, d));
+    }
+
+    #[test]
+    fn test_2_6() {
+        let d = Some(Box::new(ListNode {
+            val: 0,
+            next: Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode {
+                    val: 2,
+                    next: Some(Box::new(ListNode {
+                        val: 1,
+                        next: Some(Box::new(ListNode { val: 0, next: None })),
+                    })),
+                })),
+            })),
+        }));
+        println!("{:?}", task_2_6(d));
+        let d = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode {
+                    val: 2,
+                    next: Some(Box::new(ListNode {
+                        val: 1,
+                        next: Some(Box::new(ListNode { val: 0, next: None })),
+                    })),
+                })),
+            })),
+        }));
+        println!("{:?}", task_2_6(d));
+    }
+
+    #[test]
+    fn test_2_7() {
+        let a = Some(Box::new(ListNode {
+            val: 0,
+            next: Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode {
+                    val: 2,
+                    next: Some(Box::new(ListNode {
+                        val: 1,
+                        next: Some(Box::new(ListNode { val: 0, next: None })),
+                    })),
+                })),
+            })),
+        }));
+        let b = Some(Box::new(ListNode {
+            val: 100,
+            next: Some(Box::new(ListNode {
+                val: 0,
+                next: Some(Box::new(ListNode {
+                    val: 1,
+                    next: Some(Box::new(ListNode {
+                        val: 2,
+                        next: Some(Box::new(ListNode {
+                            val: 1,
+                            next: Some(Box::new(ListNode { val: 0, next: None })),
+                        })),
+                    })),
+                })),
+            })),
+        }));
+
+        println!("{:?}", task_2_7(a, b));
     }
 }
