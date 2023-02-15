@@ -1,4 +1,4 @@
-// https://leetcode.com/submissions/detail/898152176/
+// https://leetcode.com/problems/add-to-array-form-of-integer/
 pub fn add_to_array_form(mut num: Vec<i32>, mut k: i32) -> Vec<i32> {
     const RADIX: i32 = 10;
     num.reverse();
