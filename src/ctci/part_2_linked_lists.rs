@@ -1,6 +1,8 @@
 // Lasciate ogne speranza, voi ch’entrate
 // Оставь надежду, всяк сюда входящий
 
+use std::ptr::NonNull;
+
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode {
     pub val: i32,
@@ -283,8 +285,31 @@ fn task_2_7(mut a: TNode, mut b: TNode) -> TNode {
 }
 
 // Для кольцевого связного осписка реализуйте алгоритм возвращающий начальный узел петли.
-fn task_2_8() {
-    unreachable!("Not impementable in Rust")
+// Ввод: А->B->C->D->E->C (предыдущий узел С)
+struct UnsafeTreeNode {
+    val: i32,
+    next: Option<NonNull<UnsafeTreeNode>>,
+}
+type UTNode = Option<NonNull<UnsafeTreeNode>>;
+
+fn task_2_8(node: UTNode) -> UTNode {
+    unsafe {
+        let mut slow = &node;
+        let mut fast = &node;
+        while fast.is_some() && fast.unwrap().as_ref().next.is_some() {
+            slow = &slow.unwrap().as_ref().next;
+            fast = &fast.unwrap().as_ref().next.unwrap().as_ref().next;
+            if slow == fast {
+                slow = &node;
+                while slow != fast {
+                    slow = &slow.unwrap().as_ref().next;
+                    fast = &fast.unwrap().as_ref().next;
+                }
+                break;
+            }
+        }
+        *slow
+    }
 }
 
 #[cfg(test)]
@@ -481,5 +506,38 @@ mod test {
         }));
 
         println!("{:?}", task_2_7(a, b));
+    }
+
+    #[test]
+    fn test_2_8() {
+        // God, I'm good
+        let joint = NonNull::new(Box::into_raw(Box::new(UnsafeTreeNode {
+            val: 3,
+            next: None,
+        })));
+        let head = NonNull::new(Box::into_raw(Box::new(UnsafeTreeNode {
+            val: 1,
+            next: NonNull::new(Box::into_raw(Box::new(UnsafeTreeNode {
+                val: 2,
+                next: joint.map(|mut j| {
+                    unsafe {
+                        j.as_mut().next = NonNull::new(Box::into_raw(Box::new(UnsafeTreeNode {
+                            val: 3,
+                            next: NonNull::new(Box::into_raw(Box::new(UnsafeTreeNode {
+                                val: 4,
+                                next: NonNull::new(Box::into_raw(Box::new(UnsafeTreeNode {
+                                    val: 5,
+                                    next: joint,
+                                }))),
+                            }))),
+                        })));
+                    }
+                    j
+                }),
+            }))),
+        })));
+        unsafe {
+            println!("{:?}", task_2_8(head).unwrap().as_ref().val);
+        }
     }
 }
