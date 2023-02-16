@@ -510,7 +510,6 @@ mod test {
 
     #[test]
     fn test_2_8() {
-        // God, I'm good
         let joint = NonNull::new(Box::into_raw(Box::new(UnsafeTreeNode {
             val: 3,
             next: None,
