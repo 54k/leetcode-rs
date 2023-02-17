@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::VecDeque;
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -164,6 +165,54 @@ pub fn evaluate_tree(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
 //     inorder(original, cloned)
 //     return ans
 // }
+
+// https://leetcode.com/problems/binary-tree-level-order-traversal-ii/
+pub fn level_order_bottom(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+    fn bfs(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        use std::collections::*;
+        if root.is_none() {
+            return vec![];
+        }
+        let mut paths = vec![];
+        let mut q = VecDeque::new();
+        q.push_back(root);
+        while !q.is_empty() {
+            let mut len = q.len();
+            let mut same_level_siblings = vec![];
+            while len > 0 {
+                len -= 1;
+                let node = q.pop_front().unwrap().unwrap();
+                let node = node.borrow();
+                same_level_siblings.push(node.val);
+                if node.left.is_some() {
+                    q.push_back(node.left.clone());
+                }
+                if node.right.is_some() {
+                    q.push_back(node.right.clone());
+                }
+            }
+            paths.push(same_level_siblings);
+        }
+        paths.into_iter().rev().collect()
+    }
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        let mut ans = vec![];
+        fn dfs(root: Option<Rc<RefCell<TreeNode>>>, depth: usize, paths: &mut Vec<Vec<i32>>) {
+            if let Some(r) = root {
+                let r = r.borrow();
+                if depth == paths.len() {
+                    paths.push(vec![]);
+                }
+                dfs(r.left.clone(), depth + 1, paths);
+                dfs(r.right.clone(), depth + 1, paths);
+                paths[depth].push(r.val);
+            }
+        }
+        dfs(root, 0, &mut ans);
+        ans.into_iter().rev().collect()
+    }
+    bfs(root)
+}
 
 #[cfg(test)]
 mod test {
@@ -349,5 +398,27 @@ mod test {
             right: None,
         })));
         println!("{}", evaluate_tree(root));
+    }
+
+    #[test]
+    fn test237() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 4,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{:?}", level_order_bottom(root)); // [[4], [2, 3], [1]]
     }
 }
