@@ -135,6 +135,7 @@ pub fn evaluate_tree(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
 }
 
 // https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/description/
+// https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/solutions/966198/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/?orderBy=most_relevant
 /**
  * Definition for a binary tree node.
  * function TreeNode(val) {
@@ -154,8 +155,8 @@ pub fn evaluate_tree(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
 //     const inorder = (o, c) => {
 //         if (o !== null) {
 //             inorder(o.left, c.left)
-//             if (o == target) {
-//             ans = c
+//             if (o === target) {
+//                  ans = c
 //             }
 //             inorder(o.right, c.right)
 //         }
