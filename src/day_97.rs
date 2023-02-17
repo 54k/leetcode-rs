@@ -210,7 +210,92 @@ pub fn level_order_bottom(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> 
         dfs(root, 0, &mut ans);
         ans.into_iter().rev().collect()
     }
-    bfs(root)
+    dfs(root)
+}
+
+// https://leetcode.com/problems/sum-root-to-leaf-numbers/
+pub fn sum_numbers(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    fn preorder(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        mut current_sum: i32,
+        sum_leaf_numbers: &mut i32,
+    ) {
+        if let Some(r) = root {
+            let r = r.borrow();
+            current_sum *= 10;
+            current_sum += r.val;
+            if r.left.is_none() && r.right.is_none() {
+                *sum_leaf_numbers += current_sum;
+            }
+            preorder(r.left.clone(), current_sum, sum_leaf_numbers);
+            preorder(r.right.clone(), current_sum, sum_leaf_numbers);
+        }
+    }
+    let mut ans = 0;
+    preorder(root, 0, &mut ans);
+    ans
+}
+
+// https://leetcode.com/problems/smallest-string-starting-from-leaf/
+pub fn smallest_from_leaf(root: Option<Rc<RefCell<TreeNode>>>) -> String {
+    fn preorder(root: Option<Rc<RefCell<TreeNode>>>, mut path: String, smallest_path: &mut String) {
+        if let Some(r) = root {
+            let r = r.borrow();
+            path.push(char::from_u32(r.val as u32 + 'a' as u32).unwrap());
+
+            if r.left.is_none() && r.right.is_none() {
+                let mut path = path.clone().chars().rev().collect();
+                // reached leaf
+                if smallest_path.is_empty() {
+                    *smallest_path = path;
+                } else {
+                    *smallest_path = smallest_path.min(&mut path).to_string();
+                }
+            }
+
+            preorder(r.left.clone(), path.clone(), smallest_path);
+            preorder(r.right.clone(), path.clone(), smallest_path);
+        }
+    }
+    let mut ans = "".to_string();
+    preorder(root, "".to_string(), &mut ans);
+    ans
+}
+
+// https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+pub fn kth_smallest(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> i32 {
+    fn kth_smallest_arr(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> i32 {
+        fn inorder(root: Option<Rc<RefCell<TreeNode>>>, k: i32, ans: &mut Vec<i32>) {
+            if let Some(r) = root {
+                let r = r.borrow();
+                inorder(r.left.clone(), k, ans);
+                ans.push(r.val);
+                inorder(r.right.clone(), k, ans);
+            }
+        }
+        let mut ans = vec![];
+        inorder(root, k, &mut ans);
+        ans[k as usize - 1]
+    }
+
+    fn kth_smallest_elem(root: Option<Rc<RefCell<TreeNode>>>, mut k: i32) -> i32 {
+        fn inorder(root: Option<Rc<RefCell<TreeNode>>>, k: &mut i32, ans: &mut i32) {
+            if let Some(r) = root {
+                let r = r.borrow();
+                inorder(r.left.clone(), k, ans);
+                *k -= 1;
+                if *k == 0 {
+                    *ans = r.val;
+                }
+                inorder(r.right.clone(), k, ans);
+            }
+        }
+        let mut ans = 0;
+        inorder(root, &mut k, &mut ans);
+        ans
+    }
+
+    kth_smallest_elem(root, k)
 }
 
 #[cfg(test)]
@@ -419,5 +504,95 @@ mod test {
             }))),
         })));
         println!("{:?}", level_order_bottom(root)); // [[4], [2, 3], [1]]
+    }
+
+    #[test]
+    fn test238() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 1,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 1,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{}", sum_numbers(root));
+    }
+
+    #[test]
+    fn test239() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 1,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 1,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{}", smallest_from_leaf(root));
+    }
+
+    #[test]
+    fn test240() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 4,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{}", kth_smallest(root, 2)); // 2
     }
 }
