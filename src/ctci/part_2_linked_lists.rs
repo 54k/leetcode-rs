@@ -238,6 +238,9 @@ fn task_2_6(mut n: TNode) -> bool {
             t.next = prev;
             prev = Some(t);
             n = next;
+            if prev == n {
+                return true;
+            }
         }
         false
     }
@@ -467,6 +470,17 @@ mod test {
                         val: 1,
                         next: Some(Box::new(ListNode { val: 0, next: None })),
                     })),
+                })),
+            })),
+        }));
+        println!("{:?}", task_2_6(d));
+        let d = Some(Box::new(ListNode {
+            val: 2,
+            next: Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode {
+                    val: 1,
+                    next: Some(Box::new(ListNode { val: 2, next: None })),
                 })),
             })),
         }));

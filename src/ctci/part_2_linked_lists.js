@@ -291,6 +291,134 @@ const task_2_5 = () => {
     test_2_5()
 }
 
+const task_2_6 = () => {
+    const solve = (n) => {
+        const eq = (a, b) => {
+            while (a !== null && b !== null) {
+                if (a.val !== b.val) {
+                    return false
+                }
+                a = a.next
+                b = b.next
+            }
+            return a === b
+        }
+        let prev = null
+        while (n !== null) {
+            let next = n.next
+            if (eq(prev, next)) {
+                return true
+            }
+            n.next = prev
+            prev = n
+            n = next
+            if (eq(prev, n)) {
+                return true
+            }
+        }
+        return false
+    }
+    const test_2_6 = () => {
+        const a = ListNode.of(1,
+            ListNode.of(2,
+                ListNode.of(3,
+                    ListNode.of(2,
+                        ListNode.of(1)))))
+        console.log(solve(a).toString())
+        const b = ListNode.of(1,
+            ListNode.of(2,
+                ListNode.of(2,
+                    ListNode.of(1))))
+        console.log(solve(b).toString())
+        const c = ListNode.of(1,
+            ListNode.of(2,
+                ListNode.of(1,
+                    ListNode.of(1))))
+        console.log(solve(c).toString())
+    }
+    test_2_6()
+}
+
+// Проверьте пересекаются ли два заданных односвязных списка. Верните узел пересечения.
+// Учтите, что пересечени определяется ссылкой, а не значением.
+// Иначе говоря, если k-й узел первого связного списка точно совпадает с j-м узлом второго связного списка,
+// то списки считаются пересекающимися.
+const task_2_7 = () => {
+    const solve = (a, b) => {
+        const len = (n) => {
+            let len = 0
+            while (n !== null) {
+                len++
+                n = n.next
+            }
+            return len
+        }
+        let a_len = len(a);
+        let b_len = len(b);
+        if (a_len > b_len) {
+            let [t, t_len] = [a, a_len]
+            a = b
+            b = t
+            a_len = b_len
+            b_len = t_len
+        }
+        while (b_len-- !== a_len) {
+            b = b.next
+        }
+        while (a !== null && b !== null) {
+            if (a === b) {
+                return a
+            }
+            a = a.next
+            b = b.next
+        }
+        return null
+    }
+    const test_2_7 = () => {
+        let joint = ListNode.of(3,
+            ListNode.of(4));
+        let a = ListNode.of(1,
+            ListNode.of(2,
+                joint))
+        let b = ListNode.of(1, ListNode.of(1, ListNode.of(1, joint)))
+        let c = ListNode.of(1, joint)
+        console.log(solve(a, b).toString())
+        console.log(solve(a, c).toString())
+    }
+    test_2_7()
+}
+
+// Для кольцевого связного осписка реализуйте алгоритм возвращающий начальный узел петли.
+// Ввод: А->B->C->D->E->C (предыдущий узел С)
+const task_2_8 = () => {
+    const solve = (n) => {
+        let slow = n
+        let fast = n
+        while (fast !== null && fast.next !== null) {
+            slow = slow.next
+            fast = fast.next.next
+            if (slow === fast) {
+                slow = n
+                while (slow !== fast) {
+                    slow = slow.next
+                    fast = fast.next
+                }
+                return slow
+            }
+        }
+        return null
+    }
+    const test_2_8 = () => {
+        let tail = ListNode.of('D');
+        let joint = tail.next = ListNode.of('B', ListNode.of('C',
+            tail))
+        let ans = solve(ListNode.of('A', joint));
+        console.log(ans)
+    }
+
+    test_2_8()
+}
+
 /* main */
 (() => {
     task_2_1()
@@ -298,4 +426,7 @@ const task_2_5 = () => {
     task_2_3()
     task_2_4()
     task_2_5()
+    task_2_6()
+    task_2_7()
+    task_2_8()
 })()
