@@ -435,6 +435,28 @@ pub fn trim_bst(
     recursive(root, low, high)
 }
 
+// https://leetcode.com/problems/two-sum-iv-input-is-a-bst/
+pub fn find_target(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> bool {
+    use std::collections::*;
+    fn inorder(root: Option<Rc<RefCell<TreeNode>>>, k: i32, set: &mut HashSet<i32>) -> bool {
+        let mut res = false;
+        if let Some(r) = root {
+            let r = r.borrow();
+            res |= inorder(r.left.clone(), k, set);
+            if set.contains(&(k - r.val)) {
+                res |= true;
+            }
+            set.insert(r.val);
+            res |= inorder(r.right.clone(), k, set);
+            res
+        } else {
+            res
+        }
+    }
+    let mut set = HashSet::new();
+    inorder(root, k, &mut set)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
