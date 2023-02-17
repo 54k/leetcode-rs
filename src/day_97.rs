@@ -108,6 +108,62 @@ pub fn sum_root_to_leaf(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/evaluate-boolean-binary-tree/
+pub fn evaluate_tree(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    // Leaf nodes have either the value 0 or 1, where 0 represents False and 1 represents True.
+    // Non-leaf nodes have either the value 2 or 3, where 2 represents the boolean OR and 3 represents the boolean AND.
+    fn postorder(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        if let Some(r) = root {
+            let r = r.borrow();
+            let left_val = postorder(r.left.clone());
+            let right_val = postorder(r.right.clone());
+            if r.left.is_none() && r.right.is_none() {
+                // is leaf
+                r.val == 1
+            } else {
+                match r.val {
+                    2 => left_val || right_val,
+                    3 => left_val && right_val,
+                    _ => unreachable!(),
+                }
+            }
+        } else {
+            false
+        }
+    }
+    postorder(root)
+}
+
+// https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/description/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} original
+ * @param {TreeNode} cloned
+ * @param {TreeNode} target
+ * @return {TreeNode}
+ */
+// javascript
+// const getTargetCopy = function(original, cloned, target) {
+//     let ans = null
+//     const inorder = (o, c) => {
+//         if (o !== null) {
+//             inorder(o.left, c.left)
+//             if (o == target) {
+//             ans = c
+//             }
+//             inorder(o.right, c.right)
+//         }
+//     }
+//     inorder(original, cloned)
+//     return ans
+// }
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -259,5 +315,38 @@ mod test {
             }))),
         })));
         println!("{}", sum_root_to_leaf(root));
+    }
+
+    #[test]
+    fn test236() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 2,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 1,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{}", evaluate_tree(root));
+
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 0,
+            left: None,
+            right: None,
+        })));
+        println!("{}", evaluate_tree(root));
     }
 }
