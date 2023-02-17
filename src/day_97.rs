@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Ref, RefCell};
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -322,6 +322,59 @@ pub fn right_side_view(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
     ans
 }
 
+// https://leetcode.com/problems/sum-of-left-leaves/
+pub fn sum_of_left_leaves(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    fn postorder(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        sum_leaves: &mut i32,
+        is_left_direction: bool,
+    ) {
+        if let Some(r) = root {
+            let r = r.borrow();
+            postorder(r.left.clone(), sum_leaves, true);
+            postorder(r.right.clone(), sum_leaves, false);
+            if r.left.is_none() && r.right.is_none() && is_left_direction {
+                *sum_leaves += r.val;
+            }
+        }
+    }
+    fn preorder(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        let mut sum = 0;
+        if let Some(r) = root {
+            let r = r.borrow();
+            if let Some(l) = r.left.clone() {
+                // is it left leaf node?
+                let l = l.borrow();
+                if l.left.is_none() && l.right.is_none() {
+                    sum += l.val;
+                }
+            }
+            sum += preorder(r.left.clone());
+            sum += preorder(r.right.clone());
+        }
+        sum
+    }
+    // preorder(root);
+    let mut ans = 0;
+    postorder(root, &mut ans, true);
+    ans
+}
+
+// https://leetcode.com/problems/convert-bst-to-greater-tree/description/
+pub fn convert_bst(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+    fn inorder(root: Option<Rc<RefCell<TreeNode>>>, tree_sum_right: &mut i32) {
+        if let Some(r) = root {
+            let mut r = r.borrow_mut();
+            inorder(r.right.clone(), tree_sum_right);
+            *tree_sum_right += r.val;
+            r.val += *tree_sum_right;
+            inorder(r.left.clone(), tree_sum_right);
+        }
+    }
+    inorder(root.clone(), &mut 0);
+    root
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -640,5 +693,86 @@ mod test {
             }))),
         })));
         println!("{:?}", right_side_view(root)); // [3,4,2]
+    }
+
+    #[test]
+    fn test242() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 10,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: None,
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 4,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))),
+        })));
+        println!("{}", sum_of_left_leaves(root)); // 12
+
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: None,
+            right: None,
+        })));
+
+        println!("{}", sum_of_left_leaves(root)); // 1
+    }
+
+    #[test]
+    fn test243() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 4,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 3,
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 6,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 5,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 7,
+                    left: None,
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 8,
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+            }))),
+        })));
+
+        println!("{:?}", convert_bst(root));
     }
 }
