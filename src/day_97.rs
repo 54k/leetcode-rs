@@ -298,6 +298,30 @@ pub fn kth_smallest(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> i32 {
     kth_smallest_elem(root, k)
 }
 
+// https://leetcode.com/problems/binary-tree-right-side-view/
+pub fn right_side_view(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
+    fn preorder_inverted(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        depth: i32,
+        path: &mut Vec<i32>,
+        max_depth: &mut i32,
+    ) {
+        if let Some(r) = root {
+            let r = r.borrow();
+            if *max_depth < depth {
+                *max_depth = depth;
+                path.push(r.val);
+            }
+            preorder_inverted(r.right.clone(), depth + 1, path, max_depth);
+            preorder_inverted(r.left.clone(), depth + 1, path, max_depth);
+        }
+    }
+    let mut max_depth = -1;
+    let mut ans = vec![];
+    preorder_inverted(root, 0, &mut ans, &mut max_depth);
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -594,5 +618,27 @@ mod test {
             }))),
         })));
         println!("{}", kth_smallest(root, 2)); // 2
+    }
+
+    #[test]
+    fn test241() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 4,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{:?}", right_side_view(root)); // [3,4,2]
     }
 }
