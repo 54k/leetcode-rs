@@ -375,6 +375,66 @@ pub fn convert_bst(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<Tre
     root
 }
 
+// https://leetcode.com/problems/trim-a-binary-search-tree/
+pub fn trim_bst(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    low: i32,
+    high: i32,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    fn postorder(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        low: i32,
+        high: i32,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        fn postorder(
+            root: Option<Rc<RefCell<TreeNode>>>,
+            low: i32,
+            high: i32,
+        ) -> Option<Rc<RefCell<TreeNode>>> {
+            if let Some(r) = root.clone() {
+                let mut r = r.borrow_mut();
+                r.left = postorder(r.left.clone(), low, high);
+                r.right = postorder(r.right.clone(), low, high);
+                if low <= r.val && r.val <= high {
+                    root
+                } else if r.left.is_some() {
+                    r.left.clone()
+                } else if r.right.is_some() {
+                    r.right.clone()
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        }
+        postorder(root, low, high)
+    }
+
+    fn recursive(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        low: i32,
+        high: i32,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if let Some(r) = root.clone() {
+            let mut r = r.borrow_mut();
+            if r.val < low {
+                return recursive(r.right.clone(), low, high);
+            }
+            if r.val > high {
+                return recursive(r.left.clone(), low, high);
+            }
+
+            r.left = recursive(r.left.clone(), low, high);
+            r.right = recursive(r.right.clone(), low, high);
+            root
+        } else {
+            None
+        }
+    }
+    recursive(root, low, high)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
