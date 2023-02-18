@@ -1,7 +1,7 @@
 extern crate core;
 
-pub mod codesignal;
 pub mod ctci;
+pub mod cube_js;
 pub mod day_1;
 pub mod day_10;
 pub mod day_11;
@@ -99,10 +99,10 @@ pub mod day_94;
 pub mod day_95;
 pub mod day_96;
 pub mod day_97;
+pub mod day_98;
 pub mod design_twitter_day16;
 pub mod insert_delete_get_random_day17;
 pub mod linked_lists;
-pub mod parser;
 pub mod picodata;
 pub mod stepik;
 pub mod yandex;

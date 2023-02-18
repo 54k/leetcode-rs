@@ -457,6 +457,68 @@ pub fn find_target(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> bool {
     inorder(root, k, &mut set)
 }
 
+// https://leetcode.com/problems/maximum-binary-tree/description/
+pub fn construct_maximum_binary_tree(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+    use std::collections::*;
+    let map = nums
+        .iter()
+        .enumerate()
+        .map(|(i, x)| (*x, i as i32))
+        .collect::<HashMap<i32, i32>>();
+    fn dfs(
+        nums: &[i32],
+        lo: i32,
+        hi: i32,
+        map: &HashMap<i32, i32>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if lo <= hi {
+            let max = nums[lo as usize..=hi as usize].iter().max().unwrap();
+            let max_idx = *map.get(max).unwrap();
+
+            let left = dfs(nums, lo, max_idx - 1, map);
+            let right = dfs(nums, max_idx + 1, hi, map);
+
+            Some(Rc::new(RefCell::new(TreeNode {
+                val: *max,
+                left,
+                right,
+            })))
+        } else {
+            None
+        }
+    }
+    dfs(&nums, 0, nums.len() as i32 - 1, &map)
+}
+
+// https://leetcode.com/problems/maximum-binary-tree-ii/description/
+pub fn insert_into_max_tree(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    val: i32,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>, val: i32) -> Option<Rc<RefCell<TreeNode>>> {
+        if let Some(r) = root.clone() {
+            let mut r = r.borrow_mut();
+            if r.val > val {
+                r.right = dfs(r.right.clone(), val);
+                root
+            } else {
+                Some(Rc::new(RefCell::new(TreeNode {
+                    val,
+                    left: root,
+                    right: None,
+                })))
+            }
+        } else {
+            Some(Rc::new(RefCell::new(TreeNode {
+                val,
+                left: None,
+                right: None,
+            })))
+        }
+    }
+    dfs(root, val)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -856,5 +918,13 @@ mod test {
         })));
 
         println!("{:?}", convert_bst(root));
+    }
+
+    #[test]
+    fn test244() {
+        println!(
+            "{:?}",
+            construct_maximum_binary_tree(vec![3, 2, 1, 6, 0, 5])
+        );
     }
 }
