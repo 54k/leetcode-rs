@@ -114,6 +114,21 @@ pub fn get_startup_name() {
     });
 }
 
+// https://leetcode.com/problems/first-unique-character-in-a-string/
+pub fn first_uniq_char(s: String) -> i32 {
+    use std::collections::*;
+    let mut map = HashMap::new();
+    for ch in s.chars() {
+        map.entry(ch).or_insert(0) += 1;
+    }
+    for (i, ch) in s.chars().enumerate() {
+        if *map.get(&ch).unwrap() > 1 {
+            return i as i32;
+        }
+    }
+    -1
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -147,5 +162,10 @@ mod test {
     #[test]
     fn test252() {
         get_startup_name()
+    }
+
+    #[test]
+    fn test253() {
+        println!("{}", first_uniq_char("loveleetcode".to_string())); // 2
     }
 }
