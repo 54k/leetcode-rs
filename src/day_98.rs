@@ -3,14 +3,39 @@ use std::rc::Rc;
 
 // https://leetcode.com/problems/wildcard-matching/
 pub fn is_match(s: String, p: String) -> bool {
-    fn rec(s: &Vec<char>, p: &Vec<char>, i: i32, j: i32) -> bool {
-        todo!("try top down impl");
-        if i == -1 && j == -1 {
-            return true;
+    fn rec(
+        memo: &mut Vec<Vec<Option<bool>>>,
+        s: &Vec<char>,
+        p: &Vec<char>,
+        i: i32,
+        j: i32,
+    ) -> bool {
+        if i == -1 || j == -1 {
+            return i == -1 && (j == -1 || p[0..=j as usize].iter().all(|x| *x == '*'));
         }
-        false
+        let j = j as usize;
+        let i = i as usize;
+        if let None = memo[i][j] {
+            memo[i][j] = Some(match p[j] {
+                '*' => {
+                    rec(memo, s, p, i as i32 - 1, j as i32)
+                        || rec(memo, s, p, i as i32 - 1, j as i32 - 1)
+                        || rec(memo, s, p, i as i32, j as i32 - 1)
+                }
+                '?' => rec(memo, s, p, i as i32 - 1, j as i32 - 1),
+                _ => {
+                    if p[j] == s[i] {
+                        rec(memo, s, p, i as i32 - 1, j as i32 - 1)
+                    } else {
+                        false
+                    }
+                }
+            })
+        }
+        memo[i][j].unwrap()
     }
     rec(
+        &mut vec![vec![None; p.len()]; s.len()],
         &s.chars().collect(),
         &p.chars().collect(),
         s.len() as i32 - 1,
@@ -97,12 +122,71 @@ pub fn are_occurrences_equal(s: String) -> bool {
     }
 }
 
+// https://leetcode.com/problems/unique-paths-ii/
+pub fn unique_paths_with_obstacles(obstacle_grid: Vec<Vec<i32>>) -> i32 {
+    fn num_of_ways_to_reach_finish(obstacle_grid: Vec<Vec<i32>>) -> i32 {
+        let n = obstacle_grid.len();
+        let m = obstacle_grid[0].len();
+        let mut dp = vec![vec![0; m]; n];
+        if obstacle_grid[0][0] == 0 {
+            dp[0][0] = 1;
+        }
+        for i in 1..m {
+            if obstacle_grid[0][i] == 0 {
+                dp[0][i] = dp[0][i - 1]
+            }
+        }
+        for i in 1..n {
+            if obstacle_grid[i][0] == 0 {
+                dp[i][0] = dp[i - 1][0]
+            }
+        }
+        for i in 1..n {
+            for j in 1..m {
+                if obstacle_grid[i][j] == 0 {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+            }
+        }
+        dp[n - 1][m - 1]
+    }
+    num_of_ways_to_reach_finish(obstacle_grid)
+}
+
+// https://leetcode.com/problems/minimum-path-sum/description/
+pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
+    let n = grid.len();
+    let m = grid[0].len();
+    let mut dp = vec![vec![0; m]; n];
+    dp[0][0] = grid[0][0];
+    for i in 1..m {
+        dp[0][i] += dp[0][i - 1] + grid[0][i]
+    }
+    for i in 1..n {
+        dp[i][0] += dp[i - 1][0] + grid[i][0]
+    }
+    for i in 1..n {
+        for j in 1..m {
+            dp[i][j] = dp[i - 1][j].min(dp[i][j - 1]) + grid[i][j];
+        }
+    }
+    dp[n - 1][m - 1]
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
     #[test]
     fn test245() {
+        println!(
+            "{}",
+            is_match(
+                "abbabbbaabaaabbbbbabbabbabbbabbaaabbbababbabaaabbab".to_string(),
+                "*aabb***aa**a******aa*".to_string()
+            )
+        ); // true
+
         println!(
             "{}",
             is_match("abcabczzzde".to_string(), "*abc???de*".to_string())
@@ -154,5 +238,152 @@ mod test {
     fn test248() {
         println!("{}", are_occurrences_equal("abacbc".to_string())); // true
         println!("{}", are_occurrences_equal("aaabb".to_string())); // true
+    }
+
+    #[test]
+    fn test249() {
+        println!(
+            "{}",
+            unique_paths_with_obstacles(vec![vec![0, 0, 0], vec![0, 1, 0], vec![0, 0, 0]])
+        ); // 2
+
+        println!(
+            "{}",
+            unique_paths_with_obstacles(vec![vec![0, 1], vec![0, 0]])
+        ); // 1
+        println!(
+            "{}",
+            unique_paths_with_obstacles(vec![vec![0, 0], vec![0, 1]])
+        ); // 0
+
+        println!(
+            "{}",
+            unique_paths_with_obstacles(
+                [
+                    [
+                        0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1,
+                        0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0,
+                    ],
+                    [
+                        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+                        1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0,
+                    ],
+                    [
+                        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0,
+                        0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1,
+                    ],
+                    [
+                        0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+                    ],
+                    [
+                        0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+                        0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0,
+                    ],
+                    [
+                        1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1,
+                    ],
+                    [
+                        0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0,
+                        1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0,
+                    ],
+                    [
+                        1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1,
+                        1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0,
+                        0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1,
+                    ],
+                    [
+                        0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+                        1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+                    ],
+                    [
+                        1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+                    ],
+                    [
+                        0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+                        0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0,
+                        0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+                    ],
+                    [
+                        0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
+                        0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0,
+                        1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                    [
+                        1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+                    ],
+                    [
+                        0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                        0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0,
+                        0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
+                    ],
+                    [
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+                        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                ]
+                .map(|x| x.to_vec())
+                .to_vec(),
+            )
+        );
+    }
+
+    #[test]
+    fn test250() {
+        println!(
+            "{}",
+            min_path_sum(vec![vec![1, 3, 1], vec![1, 5, 1], vec![4, 2, 1]])
+        ); // 7
     }
 }
