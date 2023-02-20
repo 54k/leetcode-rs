@@ -1,5 +1,3 @@
-use std::cmp::max;
-
 // https://leetcode.com/problems/sort-array-by-increasing-frequency/
 pub fn frequency_sort(mut nums: Vec<i32>) -> Vec<i32> {
     const SHIFT: i32 = 100;
@@ -130,26 +128,25 @@ pub fn can_three_parts_equal_sum(arr: Vec<i32>) -> bool {
 // https://leetcode.com/problems/wiggle-sort-ii/solutions/77677/o-n-o-1-after-median-virtual-indexing/
 // https://en.wikipedia.org/wiki/Dutch_national_flag_problem#Pseudocode
 pub fn wiggle_sort(nums: &mut Vec<i32>) {
-    // thanks, Stefan, you're genius
-    fn index_rewrite(nums: &mut Vec<i32>, i: usize) -> i32 {
-        nums[(1 + 2 * (i)) % (nums.len() | 1)]
-    }
-    let mid = todo!("find median");
-    let mut i = 0;
+    nums.sort();
+    let len = nums.len();
+    let mid = (len + 1) / 2;
+    let (first_half, second_half) = nums.split_at_mut(mid);
+    first_half.reverse();
+    second_half.reverse();
     let mut j = 0;
-    let mut k = nums.len() - 1;
-    while j <= k {
-        if index_rewrite(nums, j) > mid {
-            nums.swap(i, j);
-            i += 1;
+    let mut k = 0;
+    let mut ans = vec![0; len];
+    for i in 0..len {
+        if i % 2 == 0 {
+            ans[i] = first_half[j];
             j += 1;
-        } else if index_rewrite(nums, j) < mid {
-            nums.swap(j, k);
-            k -= 1;
         } else {
-            j += 1;
+            ans[i] = second_half[k];
+            k += 1;
         }
     }
+    nums.copy_from_slice(&ans[0..len]);
 }
 
 #[cfg(test)]
@@ -217,7 +214,7 @@ mod test {
         let mut vec = vec![1, 3, 2, 2, 3, 1];
         wiggle_sort(&mut vec);
         println!("{:?}", vec); // [2,3,1,3,1,2]
-        let mut vec = vec![6, 1, 1, 13, -1, 0, -10, 20];
+        let mut vec = vec![1, 1, 2, 1, 2, 2, 1];
         wiggle_sort(&mut vec);
         println!("{:?}", vec); // [2,3,1,3,1,2]
     }
