@@ -4,6 +4,7 @@ pub mod ctci;
 pub mod cube_js;
 pub mod day_1;
 pub mod day_10;
+pub mod day_100;
 pub mod day_11;
 pub mod day_12;
 pub mod day_13;
