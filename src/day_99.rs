@@ -59,6 +59,47 @@ pub fn num_special_equiv_groups(words: Vec<String>) -> i32 {
         .len() as i32
 }
 
+// https://leetcode.com/problems/all-possible-full-binary-trees/description/
+pub fn all_possible_fbt(n: i32) -> Vec<Option<Rc<RefCell<TreeNode>>>> {
+    use std::collections::HashMap;
+    let mut memo = HashMap::new();
+    fn all_possible_fbt(
+        n: i32,
+        memo: &mut HashMap<i32, Vec<Option<Rc<RefCell<TreeNode>>>>>,
+    ) -> Vec<Option<Rc<RefCell<TreeNode>>>> {
+        if !memo.contains_key(&n) {
+            let mut ans = vec![];
+            if n == 1 {
+                ans.push(Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))));
+            } else if n % 2 == 1 {
+                for i in 0..n {
+                    let j = n - 1 - i;
+                    for left in all_possible_fbt(i, memo) {
+                        for right in all_possible_fbt(j, memo) {
+                            let mut bns = TreeNode {
+                                val: 0,
+                                left: None,
+                                right: None,
+                            };
+                            bns.left = left.clone();
+                            bns.right = right.clone();
+                            ans.push(Some(Rc::new(RefCell::new(bns))));
+                        }
+                    }
+                }
+            }
+            memo.insert(n, ans);
+        }
+        memo.get(&n).unwrap().clone()
+    }
+    all_possible_fbt(n, &mut memo);
+    memo.remove(&n).unwrap()
+}
+
 pub fn get_startup_name() {
     fn permute(
         keywords: &Vec<String>,
@@ -161,7 +202,7 @@ mod test {
 
     #[test]
     fn test252() {
-        get_startup_name()
+        println!("{:?}", all_possible_fbt(7));
     }
 
     #[test]
