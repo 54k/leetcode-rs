@@ -188,19 +188,18 @@ mod test {
 
     #[test]
     fn test259() {
-        // println!("{}", can_three_parts_equal_sum(vec![0, 0, 0, 0])); // true
-        // println!(
-        //     "{}",
-        //     can_three_parts_equal_sum(vec![6, 1, 1, 13, -1, 0, -10, 20])
-        // );
-        // // false
-        // println!(
-        //     "{}",
-        //     can_three_parts_equal_sum(vec![
-        //         29, 31, 27, -10, -67, 22, 15, -1, -16, -29, 59, -18, 48
-        //     ])
-        // ); // true
-
+        println!("{}", can_three_parts_equal_sum(vec![0, 0, 0, 0])); // true
+        println!(
+            "{}",
+            can_three_parts_equal_sum(vec![6, 1, 1, 13, -1, 0, -10, 20])
+        );
+        // false
+        println!(
+            "{}",
+            can_three_parts_equal_sum(vec![
+                29, 31, 27, -10, -67, 22, 15, -1, -16, -29, 59, -18, 48,
+            ])
+        ); // true
         println!(
             "{}",
             can_three_parts_equal_sum(vec![
