@@ -288,6 +288,21 @@ pub fn longest_subarray(nums: Vec<i32>) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/remove-duplicates-from-sorted-array/description/
+pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
+    if nums.is_empty() {
+        return 0;
+    }
+    let mut k = 0;
+    for i in 1..nums.len() {
+        if nums[k] != nums[i] {
+            k += 1;
+            nums.swap(k, i);
+        }
+    }
+    k as i32
+}
+
 // https://leetcode.com/problems/count-integers-in-intervals/solutions/2039706/merge-intervals/
 // https://leetcode.com/problems/count-integers-in-intervals/description/
 struct CountIntervals {}
@@ -382,5 +397,15 @@ mod test {
     #[test]
     fn test270() {
         println!("{}", longest_subarray(vec![1, 2, 3, 3, 2, 2])); // 2
+    }
+
+    #[test]
+    fn test271() {
+        let mut vec = vec![0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
+        println!("{}", remove_duplicates(&mut vec));
+        println!("{:?}", vec);
+        let mut vec = vec![0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
+        println!("{}", remove_duplicates(&mut vec));
+        println!("{:?}", vec);
     }
 }
