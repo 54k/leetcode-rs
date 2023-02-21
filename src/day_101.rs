@@ -36,7 +36,34 @@ pub fn queens_attackthe_king(queens: Vec<Vec<i32>>, king: Vec<i32>) -> Vec<Vec<i
         (1, 0),
         (1, -1),
     ];
-    todo!()
+    fn dfs(
+        board: &Vec<Vec<i32>>,
+        position: (i32, i32),
+        direction: (i32, i32),
+        result: &mut Vec<Vec<i32>>,
+    ) {
+        let (x, y) = position;
+        if x < 0 || y < 0 || x >= board.len() as i32 || y >= board[0].len() as i32 {
+            return;
+        }
+        if board[x as usize][y as usize] == 1 {
+            result.push(vec![x, y]);
+            return;
+        }
+        let next_position = (x + direction.0, y + direction.1);
+        dfs(board, next_position, direction, result);
+    }
+    let mut board = vec![vec![0; 8]; 8];
+    for q in queens {
+        let x = q[0];
+        let y = q[1];
+        board[x as usize][y as usize] = 1;
+    }
+    let mut result = vec![];
+    for d in DIR {
+        dfs(&board, (king[0], king[1]), d, &mut result);
+    }
+    result
 }
 
 // https://leetcode.com/problems/reverse-string-ii/description/
@@ -56,6 +83,44 @@ pub fn reverse_str(s: String, k: i32) -> String {
     s.into_iter().collect()
 }
 
+// https://leetcode.com/problems/longest-consecutive-sequence/description/
+pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
+    use std::collections::*;
+    if nums.is_empty() {
+        return 0;
+    }
+    let mut idx_map = HashMap::new();
+    let mut uf_size = vec![0; nums.len()];
+    let mut uf_array = vec![0; nums.len()];
+    for (idx, &num) in nums.iter().enumerate() {
+        uf_array[idx] = idx;
+        uf_size[idx] = 1;
+        idx_map.insert(num, idx);
+    }
+    fn find(uf_array: &mut Vec<usize>, x: usize) -> usize {
+        if uf_array[x] == x {
+            return x;
+        }
+        uf_array[x] = find(uf_array, uf_array[x]);
+        uf_array[x]
+    }
+    fn union(uf_array: &mut Vec<usize>, uf_size: &mut [i32], x: usize, y: usize) {
+        let mut x = find(uf_array, x);
+        let mut y = find(uf_array, y);
+        if uf_size[x] > uf_size[y] {
+            std::mem::swap(&mut x, &mut y);
+        }
+        uf_array[x] = y;
+        uf_size[y] += uf_size[x];
+    }
+    for (&k, &a) in &idx_map {
+        if let Some(&b) = idx_map.get(&(k - 1)) {
+            union(&mut uf_array, &mut uf_size, a, b);
+        }
+    }
+    uf_size.into_iter().max().unwrap()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -67,10 +132,34 @@ mod test {
     }
 
     #[test]
-    fn test262() {}
+    fn test262() {
+        println!(
+            "{:?}",
+            queens_attackthe_king(
+                vec![
+                    vec![0, 1],
+                    vec![1, 0],
+                    vec![4, 0],
+                    vec![0, 4],
+                    vec![3, 3],
+                    vec![2, 4],
+                ],
+                vec![0, 0],
+            )
+        ); // [[0,1],[1,0],[3,3]]
+    }
 
     #[test]
     fn test263() {
         println!("{}", reverse_str("abcdefg".to_string(), 2)); // bacdfeg
+    }
+
+    #[test]
+    fn test264() {
+        println!("{}", longest_consecutive(vec![100, 4, 200, 1, 3, 2])); // 4
+        println!(
+            "{}",
+            longest_consecutive(vec![0, 3, 7, 2, 5, 8, 4, 6, 0, 1])
+        ); // 9
     }
 }
