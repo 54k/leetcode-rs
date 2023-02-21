@@ -84,41 +84,83 @@ pub fn reverse_str(s: String, k: i32) -> String {
 }
 
 // https://leetcode.com/problems/longest-consecutive-sequence/description/
+// https://leetcode.com/problems/longest-consecutive-sequence/solutions/127576/longest-consecutive-sequence/
 pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
-    use std::collections::*;
-    if nums.is_empty() {
-        return 0;
-    }
-    let mut idx_map = HashMap::new();
-    let mut uf_size = vec![0; nums.len()];
-    let mut uf_array = vec![0; nums.len()];
-    for (idx, &num) in nums.iter().enumerate() {
-        uf_array[idx] = idx;
-        uf_size[idx] = 1;
-        idx_map.insert(num, idx);
-    }
-    fn find(uf_array: &mut Vec<usize>, x: usize) -> usize {
-        if uf_array[x] == x {
-            return x;
+    fn dsu(nums: Vec<i32>) -> i32 {
+        use std::collections::*;
+        if nums.is_empty() {
+            return 0;
         }
-        uf_array[x] = find(uf_array, uf_array[x]);
-        uf_array[x]
-    }
-    fn union(uf_array: &mut Vec<usize>, uf_size: &mut [i32], x: usize, y: usize) {
-        let mut x = find(uf_array, x);
-        let mut y = find(uf_array, y);
-        if uf_size[x] > uf_size[y] {
-            std::mem::swap(&mut x, &mut y);
+        let mut idx_map = HashMap::new();
+        let mut uf_size = vec![0; nums.len()];
+        let mut uf_array = vec![0; nums.len()];
+        for (idx, num) in nums.into_iter().enumerate() {
+            uf_array[idx] = idx;
+            uf_size[idx] = 1;
+            idx_map.insert(num, idx);
         }
-        uf_array[x] = y;
-        uf_size[y] += uf_size[x];
-    }
-    for (&k, &a) in &idx_map {
-        if let Some(&b) = idx_map.get(&(k - 1)) {
-            union(&mut uf_array, &mut uf_size, a, b);
+        fn find(uf_array: &mut Vec<usize>, x: usize) -> usize {
+            if uf_array[x] == x {
+                return x;
+            }
+            uf_array[x] = find(uf_array, uf_array[x]);
+            uf_array[x]
         }
+        fn union(uf_array: &mut Vec<usize>, uf_size: &mut [i32], x: usize, y: usize) {
+            let mut x = find(uf_array, x);
+            let mut y = find(uf_array, y);
+            if uf_size[x] > uf_size[y] {
+                std::mem::swap(&mut x, &mut y);
+            }
+            uf_array[x] = y;
+            uf_size[y] += uf_size[x];
+        }
+        for (&k, &a) in &idx_map {
+            if let Some(&b) = idx_map.get(&(k - 1)) {
+                union(&mut uf_array, &mut uf_size, a, b);
+            }
+        }
+        uf_size.into_iter().max().unwrap()
     }
-    uf_size.into_iter().max().unwrap()
+    fn with_set(nums: Vec<i32>) -> i32 {
+        use std::collections::*;
+        let mut set = HashSet::new();
+        for num in nums {
+            set.insert(num);
+        }
+        set.iter()
+            .filter(|&&x| !set.contains(&(x - 1)))
+            .map(|&x| (x..).take_while(|&x| set.contains(&x)).count())
+            .max()
+            .unwrap_or(0) as i32
+    }
+    fn leetcode(nums: Vec<i32>) -> i32 {
+        use std::collections::*;
+        let mut set = HashSet::new();
+        for num in nums {
+            set.insert(num);
+        }
+        let mut longest_streak = 0;
+        for &num in set.iter() {
+            if !set.contains(&(num - 1)) {
+                let mut current_num = num;
+                let mut current_streak = 1;
+
+                while set.contains(&(current_num + 1)) {
+                    current_num += 1;
+                    current_streak += 1;
+                }
+                longest_streak = longest_streak.max(current_streak);
+            }
+        }
+        longest_streak
+    }
+    leetcode(nums)
+}
+
+// https://leetcode.com/problems/find-three-consecutive-integers-that-sum-to-a-given-number/description/
+pub fn sum_of_three(num: i64) -> Vec<i64> {
+    todo!()
 }
 
 #[cfg(test)]
@@ -161,5 +203,10 @@ mod test {
             "{}",
             longest_consecutive(vec![0, 3, 7, 2, 5, 8, 4, 6, 0, 1])
         ); // 9
+    }
+
+    #[test]
+    fn test265() {
+        println!("{:?}", sum_of_three(33)); // [10,11,12]
     }
 }
