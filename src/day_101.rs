@@ -163,6 +163,11 @@ pub fn sum_of_three(num: i64) -> Vec<i64> {
     todo!()
 }
 
+// https://leetcode.com/problems/number-of-ways-to-buy-pens-and-pencils/
+pub fn ways_to_buy_pens_pencils(total: i32, cost1: i32, cost2: i32) -> i64 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -208,5 +213,11 @@ mod test {
     #[test]
     fn test265() {
         println!("{:?}", sum_of_three(33)); // [10,11,12]
+    }
+
+    #[test]
+    fn test266() {
+        println!("{}", ways_to_buy_pens_pencils(20, 10, 5)); // 9
+        println!("{}", ways_to_buy_pens_pencils(5, 10, 10)); // 1
     }
 }
