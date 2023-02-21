@@ -168,6 +168,11 @@ pub fn ways_to_buy_pens_pencils(total: i32, cost1: i32, cost2: i32) -> i64 {
     todo!()
 }
 
+// https://leetcode.com/problems/maximum-consecutive-floors-without-special-floors/description/
+pub fn max_consecutive(bottom: i32, top: i32, special: Vec<i32>) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -219,5 +224,10 @@ mod test {
     fn test266() {
         println!("{}", ways_to_buy_pens_pencils(20, 10, 5)); // 9
         println!("{}", ways_to_buy_pens_pencils(5, 10, 10)); // 1
+    }
+
+    #[test]
+    fn test267() {
+        println!("{}", max_consecutive(2, 9, vec![4, 6])); // 3
     }
 }
