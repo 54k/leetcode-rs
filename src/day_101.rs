@@ -160,7 +160,11 @@ pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
 
 // https://leetcode.com/problems/find-three-consecutive-integers-that-sum-to-a-given-number/description/
 pub fn sum_of_three(num: i64) -> Vec<i64> {
-    todo!()
+    if num % 3 == 0 {
+        vec![(num / 3) - 1, num / 3, (num / 3) + 1]
+    } else {
+        vec![]
+    }
 }
 
 // https://leetcode.com/problems/number-of-ways-to-buy-pens-and-pencils/
@@ -169,8 +173,135 @@ pub fn ways_to_buy_pens_pencils(total: i32, cost1: i32, cost2: i32) -> i64 {
 }
 
 // https://leetcode.com/problems/maximum-consecutive-floors-without-special-floors/description/
-pub fn max_consecutive(bottom: i32, top: i32, special: Vec<i32>) -> i32 {
-    todo!()
+// Say there are n special floors. After sorting special,
+// we have answer = max(answer, special[i] – special[i – 1] – 1) for all 0 < i ≤ n.
+pub fn max_consecutive(bottom: i32, top: i32, mut special: Vec<i32>) -> i32 {
+    fn solution1(bottom: i32, top: i32, mut special: Vec<i32>) -> i32 {
+        let mut ans = 0;
+        special.sort();
+        let mut start = bottom;
+        if special[0] - start > 0 {
+            ans = special[0] - start;
+            start = special[0];
+        }
+        for end in special.into_iter().skip(1) {
+            if end > start {
+                ans = ans.max(end - start - 1);
+            }
+            start = end;
+        }
+        if top > start {
+            ans = ans.max(top - start);
+        }
+        ans
+    }
+    fn solution2(mut bottom: i32, top: i32, mut special: Vec<i32>) -> i32 {
+        special.sort();
+        let mut out = 0;
+        for s in special {
+            out = out.max(s - bottom);
+            bottom = s + 1;
+        }
+        out.max(top - bottom + 1)
+    }
+    solution2(bottom, top, special)
+}
+
+// https://leetcode.com/problems/largest-combination-with-bitwise-and-greater-than-zero/description/
+// Intuition: we need to count integers that share the same bit. Bitwise AND of those integers will be positive.
+// We count integers that share each bit, and return the maximum.
+// https://leetcode.com/problems/largest-combination-with-bitwise-and-greater-than-zero/solutions/2039717/check-each-bit/
+pub fn largest_combination(candidates: Vec<i32>) -> i32 {
+    let mut max = 0;
+    for i in 0..30 {
+        let mut count = 0;
+        for &c in &candidates {
+            if (c >> i) & 1 == 1 {
+                count += 1;
+            }
+        }
+        max = max.max(count);
+    }
+    max
+}
+
+// https://leetcode.com/problems/count-number-of-maximum-bitwise-or-subsets/description/
+// https://leetcode.com/problems/count-number-of-maximum-bitwise-or-subsets/solutions/1525309/java-c-python-dp-solution/
+// Intuition
+// Similar to knapsack problem,
+// but use bitwise-or sum instead of math sum.
+//
+// Explanation
+// dp[sum] means the number of subsets with bitwise-or sum.
+pub fn count_max_or_subsets(nums: Vec<i32>) -> i32 {
+    fn recursive(nums: Vec<i32>) -> i32 {
+        fn dfs(nums: &[i32], i: usize, subset_or: i32, max: &mut i32, count_max: &mut i32) {
+            if i == nums.len() {
+                if subset_or > *max {
+                    *max = subset_or;
+                    *count_max = 0;
+                    *count_max += 1;
+                } else if subset_or == *max {
+                    *count_max += 1;
+                }
+                return;
+            }
+            dfs(nums, i + 1, subset_or | nums[i], max, count_max);
+            dfs(nums, i + 1, subset_or, max, count_max);
+        }
+        let mut max = 0;
+        let mut count_max = 0;
+        dfs(&nums, 0, 0, &mut max, &mut count_max);
+        count_max
+    }
+
+    fn knapsack_dp(nums: Vec<i32>) -> i32 {
+        let mut max = 0;
+        let mut dp = vec![0; 1 << 17];
+        dp[0] = 1;
+        for num in nums {
+            let num = num as usize;
+            for i in (0..=max).rev() {
+                dp[i | num] += dp[i]
+            }
+            max |= num;
+        }
+        dp[max]
+    }
+
+    knapsack_dp(nums)
+}
+
+// https://leetcode.com/problems/longest-subarray-with-maximum-bitwise-and/description/
+pub fn longest_subarray(nums: Vec<i32>) -> i32 {
+    let max = nums.iter().copied().max().unwrap();
+    let mut ans = 0;
+    let mut count_longest_max = 0;
+    for i in 0..nums.len() {
+        if nums[i] == max {
+            count_longest_max += 1;
+            ans = ans.max(count_longest_max);
+        } else {
+            count_longest_max = 0;
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/count-integers-in-intervals/solutions/2039706/merge-intervals/
+// https://leetcode.com/problems/count-integers-in-intervals/description/
+struct CountIntervals {}
+
+impl CountIntervals {
+    fn new() -> Self {
+        Self {}
+    }
+
+    fn add(&self, left: i32, right: i32) {}
+
+    fn count(&self) -> i32 {
+        0
+    }
 }
 
 #[cfg(test)]
@@ -218,6 +349,10 @@ mod test {
     #[test]
     fn test265() {
         println!("{:?}", sum_of_three(33)); // [10,11,12]
+        println!("{:?}", sum_of_three(4)); //
+        println!("{:?}", sum_of_three(129)); //
+        println!("{:?}", sum_of_three(99)); //
+        println!("{:?}", sum_of_three(992)); //
     }
 
     #[test]
@@ -229,5 +364,23 @@ mod test {
     #[test]
     fn test267() {
         println!("{}", max_consecutive(2, 9, vec![4, 6])); // 3
+        println!("{}", max_consecutive(6, 8, vec![7, 6, 8])); // 0
+        println!("{}", max_consecutive(28, 50, vec![35, 48])); // 0
+    }
+
+    #[test]
+    fn test268() {
+        println!("{}", largest_combination(vec![16, 17, 71, 62, 12, 24, 14])); // 4
+    }
+
+    #[test]
+    fn test269() {
+        println!("{}", count_max_or_subsets(vec![3, 2, 1, 5])); // 6
+        println!("{}", count_max_or_subsets(vec![2, 2, 2])); // 7
+    }
+
+    #[test]
+    fn test270() {
+        println!("{}", longest_subarray(vec![1, 2, 3, 3, 2, 2])); // 2
     }
 }
