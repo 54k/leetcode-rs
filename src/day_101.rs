@@ -167,11 +167,6 @@ pub fn sum_of_three(num: i64) -> Vec<i64> {
     }
 }
 
-// https://leetcode.com/problems/number-of-ways-to-buy-pens-and-pencils/
-pub fn ways_to_buy_pens_pencils(total: i32, cost1: i32, cost2: i32) -> i64 {
-    todo!()
-}
-
 // https://leetcode.com/problems/maximum-consecutive-floors-without-special-floors/description/
 // Say there are n special floors. After sorting special,
 // we have answer = max(answer, special[i] – special[i – 1] – 1) for all 0 < i ≤ n.
@@ -303,20 +298,17 @@ pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
     k as i32
 }
 
-// https://leetcode.com/problems/count-integers-in-intervals/solutions/2039706/merge-intervals/
-// https://leetcode.com/problems/count-integers-in-intervals/description/
-struct CountIntervals {}
-
-impl CountIntervals {
-    fn new() -> Self {
-        Self {}
+// https://leetcode.com/problems/number-of-ways-to-buy-pens-and-pencils/
+// https://leetcode.com/problems/number-of-ways-to-buy-pens-and-pencils/solutions/1953645/division/
+// If we buy cnt pens, we can buy up to (total - cnt * cost1) / cost2 + 1 pencils. We do plus one as we can also buy zero pencils.
+pub fn ways_to_buy_pens_pencils(total: i32, cost1: i32, cost2: i32) -> i64 {
+    let mut ans = 0i64;
+    let mut cnt = 0i64;
+    while cnt * cost1 as i64 <= total as i64 {
+        ans += (total as i64 - cnt * cost1 as i64) / cost2 as i64 + 1;
+        cnt += 1;
     }
-
-    fn add(&self, left: i32, right: i32) {}
-
-    fn count(&self) -> i32 {
-        0
-    }
+    ans
 }
 
 #[cfg(test)]
@@ -407,5 +399,11 @@ mod test {
         let mut vec = vec![0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
         println!("{}", remove_duplicates(&mut vec));
         println!("{:?}", vec);
+    }
+
+    #[test]
+    fn test272() {
+        println!("{}", ways_to_buy_pens_pencils(250, 50, 20)); // 3
+        println!("{}", ways_to_buy_pens_pencils(12, 39, 15)); // 3
     }
 }
