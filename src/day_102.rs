@@ -56,7 +56,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test268() {
+    fn test273() {
         println!(
             "{}",
             ship_within_days(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5)
