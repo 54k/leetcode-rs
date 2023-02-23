@@ -84,6 +84,59 @@ pub fn mincost_to_hire_workers(quality: Vec<i32>, wage: Vec<i32>, k: i32) -> f64
     ans
 }
 
+// https://leetcode.com/problems/maximize-the-confusion-of-an-exam/
+pub fn max_consecutive_answers(answer_key: String, k: i32) -> i32 {
+    fn linear(answer_key: String, k: i32) -> i32 {
+        let answer_key = answer_key
+            .chars()
+            .map(|x| match x {
+                'T' => 1,
+                _ => 0,
+            })
+            .collect::<Vec<_>>();
+        let mut ans = 0;
+        let mut count_of_ones = 0;
+        let mut count_of_zeros = 0;
+        let mut left = 0;
+        for i in 0..answer_key.len() {
+            if answer_key[i] == 0 {
+                count_of_zeros += 1;
+            } else {
+                count_of_ones += 1;
+            }
+            if count_of_ones <= k || count_of_zeros <= k {
+                ans = ans.max(count_of_ones + count_of_zeros);
+            }
+            if count_of_ones > k && count_of_zeros > k {
+                if answer_key[left] == 1 {
+                    count_of_ones -= 1;
+                } else {
+                    count_of_zeros -= 1;
+                }
+                left += 1;
+            }
+        }
+        ans
+    }
+    linear(answer_key, k)
+}
+
+// https://leetcode.com/problems/count-integers-in-intervals/solutions/2039706/merge-intervals/
+// https://leetcode.com/problems/count-integers-in-intervals/description/
+struct CountIntervals {}
+
+impl CountIntervals {
+    fn new() -> Self {
+        Self {}
+    }
+
+    fn add(&self, left: i32, right: i32) {}
+
+    fn count(&self) -> i32 {
+        0
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -116,5 +169,14 @@ mod test {
             "{:?}",
             mincost_to_hire_workers(vec![3, 1, 10, 10, 1], vec![4, 8, 2, 2, 7], 3)
         ); // 30.66667
+    }
+
+    #[test]
+    fn test279() {
+        println!("{}", max_consecutive_answers("TTFF".to_string(), 2)); // 4
+        println!("{}", max_consecutive_answers("TTTFFF".to_string(), 2)); // 5
+        println!("{}", max_consecutive_answers("TFFT".to_string(), 1)); // 3
+        println!("{}", max_consecutive_answers("FTFFTFTFTTFTTFTTFFTTFFTTTTTFTTTFTFFTTFFFFFTTTTFTTTTTTTTTFTTFFTTFTFFTTTFFFFFTTTFFTTTTFTFTFFTTFTTTTTTF".to_string(), 32));
+        // 85
     }
 }
