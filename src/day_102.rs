@@ -64,7 +64,39 @@ pub fn min_eating_speed(piles: Vec<i32>, h: i32) -> i32 {
 
 // https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/
 pub fn min_days(bloom_day: Vec<i32>, m: i32, k: i32) -> i32 {
-    0
+    fn can_get_bouquets(bloom_day: &Vec<i32>, m: i32, k: i32, mid: i32) -> bool {
+        let mut bouquets = 0;
+        let mut count = 0;
+        for i in 0..bloom_day.len() {
+            if bloom_day[i] <= mid {
+                count += 1;
+                if count == k {
+                    bouquets += 1;
+                    count = 0;
+                }
+            } else {
+                count = 0;
+            }
+        }
+        bouquets >= m
+    }
+    let mut lo = 0;
+    let mut hi = bloom_day.iter().copied().max().unwrap();
+    let mut ans = 0;
+    while lo <= hi {
+        let mid = (lo + hi) / 2;
+        if can_get_bouquets(&bloom_day, m, k, mid) {
+            ans = mid;
+            hi = mid - 1;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    if ans > 0 {
+        ans
+    } else {
+        -1
+    }
 }
 
 // https://leetcode.com/problems/count-integers-in-intervals/solutions/2039706/merge-intervals/
