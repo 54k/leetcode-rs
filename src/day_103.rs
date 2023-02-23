@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 // https://leetcode.com/problems/ipo/description/
 // https://leetcode.com/problems/ipo/solutions/2959870/ipo/
 pub fn find_maximized_capital(k: i32, mut w: i32, profits: Vec<i32>, capital: Vec<i32>) -> i32 {
@@ -247,19 +245,121 @@ pub fn diagonal_sum(mat: Vec<Vec<i32>>) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/number-of-ways-to-split-array/description/
+pub fn ways_to_split_array(nums: Vec<i32>) -> i32 {
+    let mut prefix = vec![0; nums.len()];
+    for i in 0..nums.len() {
+        if i == 0 {
+            prefix[i] = nums[i] as i64;
+        } else {
+            prefix[i] = prefix[i - 1] + nums[i] as i64;
+        }
+    }
+    let mut ans = 0;
+    for i in 0..nums.len() - 1 {
+        if prefix[i] >= prefix[nums.len() - 1] - prefix[i] {
+            ans += 1;
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/divide-players-into-teams-of-equal-skill/
+pub fn divide_players(mut skill: Vec<i32>) -> i64 {
+    skill.sort();
+    let n = skill.len() as i32 / 2;
+    let skill_sum = skill.iter().copied().sum::<i32>();
+    if skill_sum % n > 0 {
+        return -1;
+    }
+    let mut ans = 0;
+    let target = skill_sum / n;
+    let mut i = 0;
+    let mut j = skill.len() - 1;
+    while i < j {
+        let team_skill = skill[i] + skill[j];
+        if team_skill == target {
+            ans += skill[i] as i64 * skill[j] as i64;
+            i += 1;
+            j -= 1;
+        } else {
+            return -1;
+        }
+    }
+    ans
+}
+
 // https://leetcode.com/problems/count-integers-in-intervals/solutions/2039706/merge-intervals/
 // https://leetcode.com/problems/count-integers-in-intervals/description/
-struct CountIntervals {}
+use std::collections::*;
+
+struct CountIntervals {
+    intervals: BTreeMap<i32, i32>,
+    count_nums: i32,
+}
 
 impl CountIntervals {
     fn new() -> Self {
-        Self {}
+        Self {
+            intervals: BTreeMap::new(),
+            count_nums: 0,
+        }
     }
 
-    fn add(&self, left: i32, right: i32) {}
+    fn add(&mut self, mut left: i32, mut right: i32) {
+        self.count_nums += right - left + 1;
+        if self.intervals.is_empty() {
+            self.intervals.insert(left, right);
+            return;
+        }
+        let (&leftmost, _) = self.intervals.iter().next().unwrap();
+        let (_, &rightmost) = self.intervals.iter().rev().next().unwrap();
+        if leftmost > right || rightmost < left {
+            self.intervals.insert(left, right);
+            return;
+        }
+
+        // left end joining
+        if let Some((&l, &r)) = self.intervals.range(..left + 1).rev().next() {
+            if r + 1 >= left {
+                if r > right {
+                    self.count_nums -= right - left + 1;
+                } else {
+                    self.count_nums -= r - left + 1;
+                }
+                left = l;
+                right = right.max(r);
+            }
+        }
+
+        // removing containing intervals
+        let mut is_done = false;
+        while !is_done {
+            is_done = true;
+            if let Some((&l, &r)) = self.intervals.range(left + 1..).next() {
+                if r > right {
+                    break;
+                }
+                self.count_nums -= r - l + 1;
+                self.intervals.remove(&l);
+                is_done = false;
+            }
+        }
+
+        // right end joining
+        if let Some((&l, &r)) = self.intervals.range(left + 1..).next() {
+            if right + 1 >= l {
+                self.count_nums -= right - l + 1;
+                right = r;
+                self.intervals.remove(&l);
+            }
+        }
+
+        self.intervals.insert(left, right);
+    }
 
     fn count(&self) -> i32 {
-        0
+        self.count_nums
     }
 }
 
@@ -353,5 +453,46 @@ mod test {
                 vec![1, 1, 1, 1]
             ])
         ); // 8
+    }
+
+    #[test]
+    fn test286() {
+        println!("{}", ways_to_split_array(vec![10, 4, -8, 7])); // 2
+        println!("{}", ways_to_split_array(vec![2, 3, 1, 0])); // 2
+    }
+
+    #[test]
+    fn test287() {
+        println!("{}", divide_players(vec![3, 2, 5, 1, 3, 4])); // 22
+        println!("{}", divide_players(vec![3, 4])); // 12
+    }
+
+    #[test]
+    fn test288() {
+        let mut count_intervals = CountIntervals::new();
+        count_intervals.add(2, 3);
+        count_intervals.add(7, 10);
+        println!("{}", count_intervals.count()); // 6
+        count_intervals.add(5, 8);
+        println!("{}", count_intervals.count()); // 8
+
+        // [[],[],[8,43],[13,16],[26,33],[28,36],[29,37],[],[34,46],[10,23]]
+        let mut count_intervals = CountIntervals::new();
+        println!("{}", count_intervals.count()); // 0
+        count_intervals.add(8, 43);
+        count_intervals.add(13, 16);
+        count_intervals.add(26, 33);
+        count_intervals.add(28, 36);
+        count_intervals.add(29, 37);
+        println!("{}", count_intervals.count()); // 36
+        count_intervals.add(34, 36);
+        count_intervals.add(10, 23);
+
+        // [[],[5,10],[10,12],[]]
+        let mut count_intervals = CountIntervals::new();
+        println!("{}", count_intervals.count()); // 0
+        count_intervals.add(5, 10);
+        count_intervals.add(10, 12);
+        println!("{}", count_intervals.count()); // 8
     }
 }
