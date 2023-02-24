@@ -202,6 +202,50 @@ pub fn distinct_echo_substrings(text: String) -> i32 {
     sliding_window(text)
 }
 
+// https://leetcode.com/problems/next-greater-element-i/
+pub fn next_greater_element(mut nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+    use std::collections::HashMap;
+    fn build_greater_elements_map(nums: &[i32]) -> HashMap<i32, i32> {
+        let mut map = HashMap::new();
+        let mut stack = vec![];
+        for i in (0..nums.len()).rev() {
+            while !stack.is_empty() && *stack.last().unwrap() <= nums[i] {
+                stack.pop();
+            }
+            map.insert(
+                nums[i],
+                if stack.is_empty() {
+                    -1
+                } else {
+                    *stack.last().unwrap()
+                },
+            );
+            stack.push(nums[i]);
+        }
+        map
+    }
+    let next_greater_element_map = build_greater_elements_map(&nums2);
+    for i in 0..nums1.len() {
+        nums1[i] = *next_greater_element_map.get(&nums1[i]).unwrap();
+    }
+    nums1
+}
+
+// https://leetcode.com/problems/next-greater-element-iii/description/
+pub fn next_greater_element_ii(n: i32) -> i32 {
+    0
+}
+
+// https://leetcode.com/problems/sum-of-subarray-ranges/description/
+pub fn sub_array_ranges(nums: Vec<i32>) -> i64 {
+    0
+}
+
+// https://leetcode.com/problems/sum-of-total-strength-of-wizards/description/
+pub fn total_strength(strength: Vec<i32>) -> i32 {
+    0
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -288,5 +332,38 @@ mod test {
             "{}",
             distinct_echo_substrings("leetcodeleetcode".to_string())
         ); // 2
+    }
+
+    #[test]
+    fn test294() {
+        // Input: nums1 = [4,1,2], nums2 = [1,3,4,2]
+        // Output: [-1,3,-1]
+        // Explanation: The next greater element for each value of nums1 is as follows:
+        // - 4 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
+        //     - 1 is underlined in nums2 = [1,3,4,2]. The next greater element is 3.
+        //     - 2 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
+        println!(
+            "{:?}",
+            next_greater_element(vec![4, 1, 2], vec![1, 3, 4, 2])
+        ); // [-1,3,-1]
+    }
+
+    #[test]
+    fn test295() {
+        println!("{}", next_greater_element_ii(12)); // 21
+        println!("{}", next_greater_element_ii(21)); // -1
+    }
+
+    #[test]
+    fn test296() {
+        println!("{}", sub_array_ranges(vec![1, 2, 3])); // 4
+        println!("{}", sub_array_ranges(vec![1, 3, 3])); // 4
+        println!("{}", sub_array_ranges(vec![4, -2, -3, 4, 1])); // 59
+    }
+
+    #[test]
+    fn test297() {
+        println!("{}", total_strength(vec![1, 3, 1, 2])); // 44
+        println!("{}", total_strength(vec![5, 4, 6])); // 213
     }
 }
