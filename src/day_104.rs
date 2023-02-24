@@ -184,10 +184,12 @@ pub fn distinct_echo_substrings(text: String) -> i32 {
                 }
             }
             for i in 0..=text.len() - window_size * 2 {
+                // move the window forward, tracking the same count of characters
                 if same_count == window_size as i32 {
                     set.insert(&text[i..i + window_size]);
                 }
                 if i == text.len() - window_size * 2 {
+                    // last element of the window, nowhere to move
                     break;
                 }
                 same_count += (text[i + window_size] == text[i + window_size * 2]) as i32
