@@ -9,6 +9,7 @@ pub mod day_101;
 pub mod day_102;
 pub mod day_103;
 pub mod day_104;
+pub mod day_105;
 pub mod day_11;
 pub mod day_12;
 pub mod day_13;
