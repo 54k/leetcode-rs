@@ -10,7 +10,6 @@ pub trait MultiStack {
 #[derive(Debug)]
 pub struct FixedMultiStack {
     stack_size: usize,
-    num_of_stacks: usize,
     values: Vec<i32>,
     sizes: Vec<i32>,
 }
@@ -21,7 +20,6 @@ impl FixedMultiStack {
             values: vec![0; stack_size * num_of_stacks],
             sizes: vec![0; num_of_stacks],
             stack_size,
-            num_of_stacks,
         }
     }
 }
