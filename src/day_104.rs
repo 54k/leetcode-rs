@@ -232,8 +232,46 @@ pub fn next_greater_element(mut nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
 }
 
 // https://leetcode.com/problems/next-greater-element-iii/description/
+// https://leetcode.com/problems/next-permutation/description/
 pub fn next_greater_element_ii(n: i32) -> i32 {
-    0
+    fn next_permutation(nums: &mut [char]) {
+        let mut pivot_idx = -1;
+        // 15432 -> pivot idx is 0
+        for i in (1..nums.len()).rev() {
+            // find first index which is smaller that any element starting from it till the end
+            if nums[i - 1] < nums[i] {
+                pivot_idx = (i - 1) as i32;
+                break;
+            }
+        }
+        if pivot_idx == -1 {
+            // all elements in increasing order, e.g. this is the last permutation of array
+            // next permutation is reversed arr [4,3,2,1] -> [1,2,3,4]
+            nums.reverse();
+            return;
+        }
+        let pivot_idx = pivot_idx as usize;
+        for i in (pivot_idx + 1..nums.len()).rev() {
+            // find element greater than pivot and swap them
+            if nums[i] > nums[pivot_idx] {
+                nums.swap(i, pivot_idx);
+                let n = nums.len();
+                nums[pivot_idx + 1..n].reverse(); // reverse end of array after swap
+                break;
+            }
+        }
+    }
+    let nums_orig = format!("{}", n).chars().collect::<Vec<_>>();
+    let mut nums = nums_orig;
+    next_permutation(&mut nums);
+    let next_perm = nums
+        .into_iter()
+        .fold(0, |acc, v| (acc * 10) + v.to_digit(10).unwrap() as i64);
+    if next_perm > i32::MAX as i64 || next_perm <= n as i64 {
+        -1
+    } else {
+        next_perm as i32
+    }
 }
 
 // https://leetcode.com/problems/sum-of-subarray-ranges/description/
@@ -336,12 +374,6 @@ mod test {
 
     #[test]
     fn test294() {
-        // Input: nums1 = [4,1,2], nums2 = [1,3,4,2]
-        // Output: [-1,3,-1]
-        // Explanation: The next greater element for each value of nums1 is as follows:
-        // - 4 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
-        //     - 1 is underlined in nums2 = [1,3,4,2]. The next greater element is 3.
-        //     - 2 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
         println!(
             "{:?}",
             next_greater_element(vec![4, 1, 2], vec![1, 3, 4, 2])
@@ -352,6 +384,9 @@ mod test {
     fn test295() {
         println!("{}", next_greater_element_ii(12)); // 21
         println!("{}", next_greater_element_ii(21)); // -1
+        println!("{}", next_greater_element_ii(1)); // -1
+        println!("{}", next_greater_element_ii(101)); // 110
+        println!("{}", next_greater_element_ii(230241)); // 230412
     }
 
     #[test]
