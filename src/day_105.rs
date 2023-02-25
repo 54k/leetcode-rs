@@ -15,6 +15,85 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
 
 // https://leetcode.com/problems/sum-of-subarray-ranges/description/
 pub fn sub_array_ranges(nums: Vec<i32>) -> i64 {
+    fn brute_force(nums: Vec<i32>) -> i64 {
+        let mut ans = 0i64;
+        for i in 0..nums.len() {
+            for j in i..nums.len() {
+                let mut min = i32::MAX;
+                let mut max = i32::MIN;
+                for k in &nums[i..=j] {
+                    min = min.min(*k);
+                    max = max.max(*k);
+                }
+                ans += (max - min) as i64;
+            }
+        }
+        ans
+    }
+
+    // Algorithm
+    //
+    // Initialize an empty stack stack, get the size of nums as n.
+    //
+    // Iterate over every index from 0 to n (inclusive). For each index right, if either of the following two condition is met:
+    //
+    // index = n
+    // stack is not empty and nums[mid] >= nums[right], where mid is its top value:
+    // go to step 3. Otherwise, repeat step 2.
+    //
+    // Calculate the number of subarrays with nums[mid] as its minimum value:
+    //
+    // Pop mid from stack.
+    // If stack is empty, set left = -1, otherwise, left equals the top element from stack.
+    // Increment answer by (right - mid) * (mid - left).
+    // Repeat step 2.
+    fn stack_solution(nums: Vec<i32>) -> i64 {
+        let mut ans = 0;
+        let n = nums.len();
+        let mut stack = vec![];
+
+        for right in 0..=n {
+            while !stack.is_empty() && (right == n || nums[*stack.last().unwrap()] >= nums[right]) {
+                let mid = stack.pop().unwrap();
+                let left = if stack.is_empty() {
+                    -1
+                } else {
+                    *stack.last().unwrap() as i64
+                };
+                let mid_num = nums[mid] as i64;
+                let mid = mid as i64;
+                let right = right as i64;
+                let sum = mid_num * (mid - left) * (right - mid);
+                ans -= sum;
+            }
+            stack.push(right);
+        }
+        stack.clear();
+
+        for right in 0..=n {
+            while !stack.is_empty() && (right == n || nums[*stack.last().unwrap()] <= nums[right]) {
+                let mid = stack.pop().unwrap();
+                let left = if stack.is_empty() {
+                    -1
+                } else {
+                    *stack.last().unwrap() as i64
+                };
+                let mid_num = nums[mid] as i64;
+                let mid = mid as i64;
+                let right = right as i64;
+                let sum = mid_num * (mid - left) * (right - mid);
+                ans += sum;
+            }
+            stack.push(right);
+        }
+        ans
+    }
+    stack_solution(nums)
+    // brute_force(nums)
+}
+
+// https://leetcode.com/problems/sum-of-subarray-minimums/description/
+pub fn sum_subarray_mins(arr: Vec<i32>) -> i32 {
     0
 }
 
@@ -41,6 +120,12 @@ mod test {
 
     #[test]
     fn test298() {
+        println!("{}", sum_subarray_mins(vec![3, 1, 2, 4])); // 17
+        println!("{}", sum_subarray_mins(vec![11, 81, 94, 43, 3])); // 444
+    }
+
+    #[test]
+    fn test299() {
         println!("{}", total_strength(vec![1, 3, 1, 2])); // 44
         println!("{}", total_strength(vec![5, 4, 6])); // 213
     }
