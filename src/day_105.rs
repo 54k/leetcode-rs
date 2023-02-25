@@ -94,14 +94,60 @@ pub fn sub_array_ranges(nums: Vec<i32>) -> i64 {
 
 // https://leetcode.com/problems/sum-of-subarray-minimums/description/
 pub fn sum_subarray_mins(arr: Vec<i32>) -> i32 {
-    0
+    const MOD: i64 = 1_000_000_007;
+    fn normalize(a: i64) -> i64 {
+        a % MOD
+    }
+    fn mod_add(a: i64, b: i64) -> i64 {
+        normalize(normalize(a) + normalize(b))
+    }
+    fn mod_prod(a: i64, b: i64) -> i64 {
+        normalize(normalize(a) * normalize(b))
+    }
+    let mut ans = 0;
+    let mut stack = vec![];
+    let n = arr.len();
+    for right in 0..=n {
+        while !stack.is_empty() && (right == n || (arr[*stack.last().unwrap()] >= arr[right])) {
+            let mid = stack.pop().unwrap();
+            let mid_el = arr[mid] as i64;
+            let mid = mid as i64;
+            let left = stack.last().map(|x| *x as i64).unwrap_or_else(|| -1);
+            let right = right as i64;
+            let subarray_length = (mid - left) * (right - mid);
+            ans = mod_add(ans, mod_prod(mid_el, subarray_length));
+        }
+        stack.push(right);
+    }
+    ans as i32
+}
+// https://leetcode.com/problems/largest-rectangle-in-histogram/description/
+pub fn largest_rectangle_area(heights: Vec<i32>) -> i32 {
+    todo!();
+    let mut stack = vec![];
+    let mut ans = 0;
+    for right in 0..heights.len() {
+        while !stack.is_empty() && heights[*stack.last().unwrap()] >= heights[right] {
+            let left = stack.pop().unwrap();
+            let h = heights[left];
+
+            ans = ans.max(h * ((right as i32) - left as i32));
+        }
+        stack.push(right);
+    }
+    ans
 }
 
 // https://leetcode.com/problems/sum-of-total-strength-of-wizards/description/
 pub fn total_strength(strength: Vec<i32>) -> i32 {
+    todo!();
     0
 }
-
+// https://leetcode.com/problems/smallest-range-i/description/
+pub fn smallest_range_i(nums: Vec<i32>, k: i32) -> i32 {
+    todo!();
+    0
+}
 #[cfg(test)]
 mod test {
     use super::*;
@@ -126,7 +172,20 @@ mod test {
 
     #[test]
     fn test299() {
+        println!("{}", largest_rectangle_area(vec![2, 1, 5, 6, 2, 3])); // 10
+        println!("{}", largest_rectangle_area(vec![1, 1])); // 2
+    }
+
+    #[test]
+    fn test300() {
         println!("{}", total_strength(vec![1, 3, 1, 2])); // 44
         println!("{}", total_strength(vec![5, 4, 6])); // 213
+    }
+
+    #[test]
+    fn test301() {
+        println!("{}", smallest_range_i(vec![1], 0)); // 0
+        println!("{}", smallest_range_i(vec![0, 10], 2)); // 6
+        println!("{}", smallest_range_i(vec![1, 3, 6], 3)); // 0
     }
 }
