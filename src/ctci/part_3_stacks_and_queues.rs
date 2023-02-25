@@ -268,9 +268,93 @@ fn sort_stack(s1: &mut LinkedStack) {
     }
 }
 
+// Реализуйте приют для животных
+trait Shelter {
+    fn dequeue(&mut self) -> Box<dyn ShelterAnimal>;
+}
+trait ShelterAnimal {
+    fn timestamp(&self) -> i32;
+    fn release(self: Box<Self>) -> Box<dyn Animal>;
+}
+struct ShelterAnimalImpl(Box<dyn Animal>, i32);
+impl ShelterAnimal for ShelterAnimalImpl {
+    fn timestamp(&self) -> i32 {
+        self.1
+    }
+
+    //noinspection RsTypeCheck
+    // weird shit, it compiles actually
+    fn release(self: Box<Self>) -> Box<dyn Animal> {
+        self.0
+    }
+}
+trait Animal {
+    fn act(&self);
+}
+
+struct Cat {
+    name: String,
+}
+impl Animal for Cat {
+    fn act(&self) {
+        println!("I am a cat {}", self.name);
+    }
+}
+
+struct Dog {
+    name: String,
+}
+impl Animal for Dog {
+    fn act(&self) {
+        println!("I am a dog {}", self.name);
+    }
+}
+
+struct CatDogShelter {
+    cats: VecDeque<Box<dyn ShelterAnimal>>,
+    dogs: VecDeque<Box<dyn ShelterAnimal>>,
+    ts_seq: i32,
+}
+
+impl CatDogShelter {
+    fn new() -> Self {
+        Self {
+            cats: VecDeque::new(),
+            dogs: VecDeque::new(),
+            ts_seq: 0,
+        }
+    }
+    fn enqueue_dog(&mut self, animal: Box<dyn Animal>) {
+        self.cats
+            .push_back(Box::new(ShelterAnimalImpl(animal, self.ts_seq)));
+        self.ts_seq += 1;
+    }
+    fn enqueue_cat(&mut self, animal: Box<dyn Animal>) {
+        self.dogs
+            .push_back(Box::new(ShelterAnimalImpl(animal, self.ts_seq)));
+        self.ts_seq += 1;
+    }
+}
+
+impl Shelter for CatDogShelter {
+    fn dequeue(&mut self) -> Box<dyn ShelterAnimal> {
+        if self.cats.is_empty() {
+            self.dogs.pop_front()
+        } else if self.dogs.is_empty()
+            || self.cats.front().unwrap().timestamp() < self.dogs.front().unwrap().timestamp()
+        {
+            self.cats.pop_front()
+        } else {
+            self.dogs.pop_front()
+        }
+        .unwrap()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::panic::set_hook;
 
     #[test]
     fn test_fixed_multistack() {
@@ -361,5 +445,26 @@ mod test {
         assert_eq!(stack.pop(), 1);
         assert_eq!(stack.pop(), 2);
         assert_eq!(stack.pop(), 3);
+    }
+
+    #[test]
+    fn test_animal_shelter() {
+        let mut shelter = CatDogShelter::new();
+        shelter.enqueue_cat(Box::new(Cat {
+            name: "Meow".to_string(),
+        }));
+        shelter.enqueue_dog(Box::new(Dog {
+            name: "Bark".to_string(),
+        }));
+        shelter.enqueue_dog(Box::new(Dog {
+            name: "Dark".to_string(),
+        }));
+        shelter.enqueue_cat(Box::new(Cat {
+            name: "Pus in boots".to_string(),
+        }));
+        shelter.dequeue().release().act();
+        shelter.dequeue().release().act();
+        shelter.dequeue().release().act();
+        shelter.dequeue().release().act();
     }
 }
