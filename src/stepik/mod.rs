@@ -1,3 +1,4 @@
+mod algorithms_and_data_structures;
 mod algorithms_theory_and_practice;
 mod competitive_programming;
 mod math_competitive_programming;
