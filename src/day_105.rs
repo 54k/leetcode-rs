@@ -121,33 +121,26 @@ pub fn sum_subarray_mins(arr: Vec<i32>) -> i32 {
     }
     ans as i32
 }
+
 // https://leetcode.com/problems/largest-rectangle-in-histogram/description/
 pub fn largest_rectangle_area(heights: Vec<i32>) -> i32 {
-    todo!();
     let mut stack = vec![];
     let mut ans = 0;
-    for right in 0..heights.len() {
-        while !stack.is_empty() && heights[*stack.last().unwrap()] >= heights[right] {
-            let left = stack.pop().unwrap();
-            let h = heights[left];
-
-            ans = ans.max(h * ((right as i32) - left as i32));
+    for right in 0..=heights.len() {
+        while !stack.is_empty()
+            && (right == heights.len() || heights[*stack.last().unwrap()] >= heights[right])
+        {
+            let mid = stack.pop().unwrap();
+            let h = heights[mid];
+            let left = stack.last().map(|x| *x as i32).unwrap_or(-1);
+            let s = h * ((right as i32) - left - 1);
+            ans = ans.max(s);
         }
         stack.push(right);
     }
     ans
 }
 
-// https://leetcode.com/problems/sum-of-total-strength-of-wizards/description/
-pub fn total_strength(strength: Vec<i32>) -> i32 {
-    todo!();
-    0
-}
-// https://leetcode.com/problems/smallest-range-i/description/
-pub fn smallest_range_i(nums: Vec<i32>, k: i32) -> i32 {
-    todo!();
-    0
-}
 #[cfg(test)]
 mod test {
     use super::*;
@@ -174,18 +167,5 @@ mod test {
     fn test299() {
         println!("{}", largest_rectangle_area(vec![2, 1, 5, 6, 2, 3])); // 10
         println!("{}", largest_rectangle_area(vec![1, 1])); // 2
-    }
-
-    #[test]
-    fn test300() {
-        println!("{}", total_strength(vec![1, 3, 1, 2])); // 44
-        println!("{}", total_strength(vec![5, 4, 6])); // 213
-    }
-
-    #[test]
-    fn test301() {
-        println!("{}", smallest_range_i(vec![1], 0)); // 0
-        println!("{}", smallest_range_i(vec![0, 10], 2)); // 6
-        println!("{}", smallest_range_i(vec![1, 3, 6], 3)); // 0
     }
 }
