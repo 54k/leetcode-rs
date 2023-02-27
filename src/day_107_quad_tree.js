@@ -8,7 +8,7 @@ function Node(val, isLeaf, topLeft, topRight, bottomLeft, bottomRight) {
     this.topRight = topRight;
     this.bottomLeft = bottomLeft;
     this.bottomRight = bottomRight;
-};
+}
 
 /**
  * @param {number[][]} grid
@@ -52,8 +52,8 @@ const construct_optimized = function (grid) {
         const topRight = build_tree(x, y + half_length, half_length);
         const bottomLeft = build_tree(x + half_length, y, half_length);
         const bottomRight = build_tree(x + half_length, y + half_length, half_length);
-        if (topLeft.isLeaf && topRight.isLeaf && bottomLeft.isLeaf && bottomRight.isLeaf &&
-            topLeft.val == topRight.val && topRight.val == bottomLeft.val && bottomLeft.val == bottomRight.val) {
+        if (topLeft.isLeaf && topRight.isLeaf && bottomLeft.isLeaf && bottomRight.isLeaf && topLeft.val === topRight.val
+            && topRight.val === bottomLeft.val && bottomLeft.val === bottomRight.val) {
             return new Node(topLeft.val, true);
         }
         return new Node(grid[x][y], false, topLeft, topRight, bottomLeft, bottomRight);
