@@ -134,6 +134,74 @@ fn task_1_3_solver(size: usize, arrival: Vec<i32>, duration: Vec<i32>) -> Vec<i3
     res
 }
 
+fn task_1_4() {
+    struct Node {
+        val: i32,
+        max: i32,
+        next: Option<Box<Node>>,
+    }
+    struct MaxStack {
+        top: Option<Box<Node>>,
+    }
+    impl MaxStack {
+        fn new() -> Self {
+            Self { top: None }
+        }
+        fn push(&mut self, val: i32) {
+            let mut node = Node {
+                val,
+                max: val,
+                next: None,
+            };
+            if let Some(t) = self.top.take() {
+                node.max = node.max.max(t.max);
+                node.next = Some(t);
+            }
+            self.top = Some(Box::new(node));
+        }
+        fn pop(&mut self) -> i32 {
+            self.top
+                .take()
+                .map(|x| {
+                    self.top = x.next;
+                    x.val
+                })
+                .unwrap_or(0)
+        }
+        fn max(&self) -> i32 {
+            self.top.as_ref().map(|x| x.max).unwrap_or(0)
+        }
+    }
+    let mut stack = MaxStack::new();
+    let mut ans = vec![];
+    let stdin = std::io::stdin();
+    let mut buf = String::new();
+    stdin.read_line(&mut buf).unwrap();
+    let n = buf.trim().parse::<i32>().unwrap();
+    buf.clear();
+    for _ in 0..n {
+        stdin.read_line(&mut buf).unwrap();
+        let args = buf.trim().split(' ').collect::<Vec<_>>();
+        match args[0] {
+            "max" => {
+                ans.push(stack.max());
+            }
+            "push" => {
+                stack.push(args[1].parse::<i32>().unwrap());
+            }
+            "pop" => {
+                stack.pop();
+            }
+            _ => panic!("Unknown arg"),
+        };
+        buf.clear();
+    }
+
+    ans.into_iter().for_each(|x| {
+        println!("{}", x);
+    });
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
