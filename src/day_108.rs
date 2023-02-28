@@ -130,6 +130,20 @@ pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
     todo!()
 }
 
+// https://leetcode.com/problems/min-stack/
+// struct MinStack {}
+// impl MinStack {
+//     fn new() -> Self {}
+//
+//     fn push(&self, val: i32) {}
+//
+//     fn pop(&self) {}
+//
+//     fn top(&self) -> i32 {}
+//
+//     fn get_min(&self) -> i32 {}
+// }
+
 #[cfg(test)]
 mod test {
     use super::*;
