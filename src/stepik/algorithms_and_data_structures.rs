@@ -202,6 +202,53 @@ fn task_1_4() {
     });
 }
 
+fn task_1_5() {
+    let stdin = std::io::stdin();
+    let mut buf = String::new();
+    stdin.read_line(&mut buf).unwrap();
+    buf.clear();
+    stdin.read_line(&mut buf).unwrap();
+    let arr = buf
+        .trim()
+        .split(' ')
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    buf.clear();
+    stdin.read_line(&mut buf).unwrap();
+    let m = buf.trim().parse::<usize>().unwrap();
+    buf.clear();
+    println!(
+        "{}",
+        task_1_5_solver(arr, m)
+            .into_iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+}
+
+fn task_1_5_solver(arr: Vec<i32>, m: usize) -> Vec<i32> {
+    use std::collections::VecDeque;
+    let mut ans = vec![];
+    let mut queue: VecDeque<(i32, usize)> = VecDeque::new();
+    for i in 0..arr.len() {
+        while !queue.is_empty() && queue.back().unwrap().0 < arr[i] {
+            queue.pop_back();
+        }
+        queue.push_back((arr[i], i));
+        if i == m - 1 {
+            ans.push(queue.front().unwrap().0);
+        }
+        if i >= m {
+            if queue.front().unwrap().1 == (i - m) {
+                queue.pop_front();
+            }
+            ans.push(queue.front().unwrap().0);
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -254,5 +301,13 @@ mod test {
                 ]
             )
         ); // 6 29 73 101 116 123 164 189 194 208 216 259 270 295 322 362 -1 381 -1 -1 -1 404 420 461 484
+    }
+
+    #[test]
+    fn test_1_5() {
+        println!("{:?}", task_1_5_solver(vec![2, 7, 3, 1, 5, 2, 6, 2], 4)); // 7, 7, 5, 6, 6
+        println!("{:?}", task_1_5_solver(vec![2, 1, 5], 1)); // 2, 1, 5
+        println!("{:?}", task_1_5_solver(vec![2, 3, 9], 3)); // 9
+        println!("{:?}", task_1_5_solver(vec![4, 3, 2, 1], 1)); // 4, 3, 2, 1
     }
 }
