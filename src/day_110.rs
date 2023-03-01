@@ -1,3 +1,8 @@
+// https://leetcode.com/problems/shortest-unsorted-continuous-subarray/description/
+pub fn find_unsorted_subarray(nums: Vec<i32>) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/coin-change/description/
 // https://leetcode.com/problems/coin-change/editorial/
 pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
@@ -22,4 +27,18 @@ impl MinStack {
     fn get_min(&self) -> i32 {
         todo!()
     }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test313() {}
+
+    #[test]
+    fn test314() {}
+
+    #[test]
+    fn test315() {}
 }
