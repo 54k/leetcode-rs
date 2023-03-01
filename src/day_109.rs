@@ -78,21 +78,21 @@ pub fn find132pattern(nums: Vec<i32>) -> bool {
         false
     }
     fn mono_stack(nums: Vec<i32>) -> bool {
-        let mut stack: Vec<i32> = vec![];
-        let mut min = vec![0; nums.len()];
-        min[0] = nums[0];
+        let mut stack = vec![];
+        let mut mins = vec![0; nums.len()];
+        mins[0] = nums[0];
         for i in 1..nums.len() {
-            min[i] = min[i - 1].min(nums[i]);
+            mins[i] = mins[i - 1].min(nums[i]);
         }
-        for j in (0..nums.len()).rev() {
-            if nums[j] > min[j] {
-                while !stack.is_empty() && *stack.last().unwrap() <= min[j] {
+        for i in (0..nums.len()).rev() {
+            if mins[i] < nums[i] {
+                while !stack.is_empty() && stack[stack.len() - 1] <= mins[i] {
                     stack.pop();
                 }
-                if !stack.is_empty() && *stack.last().unwrap() < nums[j] {
+                if !stack.is_empty() && stack[stack.len() - 1] < nums[i] {
                     return true;
                 }
-                stack.push(nums[j]);
+                stack.push(nums[i]);
             }
         }
         false
@@ -100,25 +100,44 @@ pub fn find132pattern(nums: Vec<i32>) -> bool {
     mono_stack(nums)
 }
 
-// https://leetcode.com/problems/coin-change/description/
-// https://leetcode.com/problems/coin-change/editorial/
-pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
-    todo!()
-}
+// https://leetcode.com/problems/maximal-rectangle/
+pub fn maximal_rectangle(matrix: Vec<Vec<char>>) -> i32 {
+    let n = matrix.len();
+    let m = matrix[0].len();
+    let mut ans = 0;
 
-// https://leetcode.com/problems/min-stack/
-// struct MinStack {}
-// impl MinStack {
-//     fn new() -> Self {}
-//
-//     fn push(&self, val: i32) {}
-//
-//     fn pop(&self) {}
-//
-//     fn top(&self) -> i32 {}
-//
-//     fn get_min(&self) -> i32 {}
-// }
+    let mut hist = vec![vec![]; m];
+    for i in (0..n).rev() {
+        let mut stack = vec![];
+        for j in 0..m {
+            let height = if matrix[i][j] == '1' {
+                hist[j].last().unwrap_or(&0) + 1
+            } else {
+                0
+            };
+            hist[j].push(height);
+        }
+
+        let mut heights = vec![0; m];
+        for j in 0..m {
+            heights[j] = *hist[j].last().unwrap();
+        }
+
+        for right in 0..=hist.len() {
+            while !stack.is_empty()
+                && (right == hist.len() || heights[*stack.last().unwrap()] >= heights[right])
+            {
+                let mid = stack.pop().unwrap();
+                let h = heights[mid];
+                let left = stack.last().map(|x| *x as i32).unwrap_or(-1);
+                let square = h * (right as i32 - left - 1);
+                ans = ans.max(square);
+            }
+            stack.push(right);
+        }
+    }
+    ans
+}
 
 #[cfg(test)]
 mod test {
@@ -137,5 +156,18 @@ mod test {
         println!("{}", find132pattern(vec![1, 2, 3, 4])); // false
         println!("{}", find132pattern(vec![3, 1, 4, 2])); // true
         println!("{}", find132pattern(vec![-1, 3, 2, 0])); // true
+    }
+
+    #[test]
+    fn test312() {
+        println!(
+            "{}",
+            maximal_rectangle(vec![
+                vec!['1', '0', '1', '0', '0'],
+                vec!['1', '0', '1', '1', '1'],
+                vec!['1', '1', '1', '1', '1'],
+                vec!['1', '0', '0', '1', '0']
+            ])
+        );
     }
 }
