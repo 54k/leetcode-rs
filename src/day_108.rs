@@ -121,28 +121,63 @@ pub fn find_second_minimum_value(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
 // https://leetcode.com/problems/construct-string-from-binary-tree/description/
 // https://leetcode.com/problems/construct-string-from-binary-tree/editorial/
 pub fn tree2str(root: Option<Rc<RefCell<TreeNode>>>) -> String {
-    "".to_string()
-}
+    fn preorder_solution(root: Option<Rc<RefCell<TreeNode>>>) -> String {
+        fn preorder(root: Option<Rc<RefCell<TreeNode>>>, str: &mut String) {
+            if let Some(r) = root {
+                let r = r.borrow();
+                str.push_str(&r.val.to_string());
+                if r.left.is_none() && r.right.is_none() {
+                    return;
+                }
+                str.push('(');
+                preorder(r.left.clone(), str);
+                str.push(')');
 
-// https://leetcode.com/problems/coin-change/description/
-// https://leetcode.com/problems/coin-change/editorial/
-pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
-    todo!()
-}
+                if r.right.is_some() {
+                    str.push('(');
+                    preorder(r.right.clone(), str);
+                    str.push(')');
+                }
+            }
+        }
+        let mut str = String::new();
+        preorder(root, &mut str);
+        str
+    }
 
-// https://leetcode.com/problems/min-stack/
-// struct MinStack {}
-// impl MinStack {
-//     fn new() -> Self {}
-//
-//     fn push(&self, val: i32) {}
-//
-//     fn pop(&self) {}
-//
-//     fn top(&self) -> i32 {}
-//
-//     fn get_min(&self) -> i32 {}
-// }
+    fn iterative_stack(root: Option<Rc<RefCell<TreeNode>>>) -> String {
+        use std::collections::HashSet;
+        let mut str = String::new();
+        let mut visited = HashSet::new();
+        let mut stack = vec![];
+        stack.push(root);
+
+        while !stack.is_empty() {
+            let top = stack.last().unwrap().clone();
+            let top = top.unwrap();
+            let top = top.borrow();
+
+            if visited.contains(&top.val) {
+                stack.pop();
+                str.push(')');
+            } else {
+                visited.insert(top.val);
+                str.push_str(&format!("({}", top.val));
+                if top.left.is_none() && top.right.is_some() {
+                    str.push_str("()");
+                }
+                if top.right.is_some() {
+                    stack.push(top.right.clone());
+                }
+                if top.left.is_some() {
+                    stack.push(top.left.clone());
+                }
+            }
+        }
+        str[1..str.len() - 1].to_string()
+    }
+    iterative_stack(root)
+}
 
 #[cfg(test)]
 mod test {
@@ -216,8 +251,28 @@ mod test {
     }
 
     #[test]
-    fn test309() {}
-
-    #[test]
-    fn test310() {}
+    fn test309() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 2,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 5,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 5,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 7,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{:?}", tree2str(root));
+    }
 }
