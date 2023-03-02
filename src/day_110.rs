@@ -121,6 +121,20 @@ pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
     dp_bottom_up(coins, amount)
 }
 
+// https://leetcode.com/problems/longest-continuous-increasing-subsequence/description/
+pub fn find_length_of_lcis(nums: Vec<i32>) -> i32 {
+    let mut ans = 1;
+    let mut count = 0;
+    for i in 0..nums.len() {
+        count += 1;
+        if i == nums.len() - 1 || nums[i] >= nums[i + 1] {
+            ans = ans.max(count);
+            count = 0;
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -156,11 +170,13 @@ mod test {
     }
 
     #[test]
-    fn test315() {}
+    fn test315() {
+        println!("{}", coin_change(vec![1, 2, 5], 11)); // 3 // 11 = 5 + 5 + 1
+    }
 
     #[test]
-    fn test316() {}
-
-    #[test]
-    fn test317() {}
+    fn test316() {
+        println!("{}", find_length_of_lcis(vec![1, 3, 5, 4, 7])); // 3
+        println!("{}", find_length_of_lcis(vec![2, 2, 2, 2, 2])); // 1
+    }
 }

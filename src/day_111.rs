@@ -3,11 +3,6 @@ pub fn increasing_triplet(nums: Vec<i32>) -> bool {
     todo!()
 }
 
-// https://leetcode.com/problems/longest-continuous-increasing-subsequence/description/
-pub fn find_length_of_lcis(nums: Vec<i32>) -> i32 {
-    todo!()
-}
-
 // https://leetcode.com/problems/shortest-unsorted-continuous-subarray/description/
 pub fn find_unsorted_subarray(nums: Vec<i32>) -> i32 {
     todo!()
@@ -36,12 +31,6 @@ impl MinStack {
 #[cfg(test)]
 mod test {
     use super::*;
-
-    #[test]
-    fn test315() {}
-
-    #[test]
-    fn test316() {}
 
     #[test]
     fn test317() {}

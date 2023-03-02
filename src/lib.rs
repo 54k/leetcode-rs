@@ -1,5 +1,4 @@
 extern crate core;
-extern crate core;
 
 pub mod ctci;
 pub mod cube_js;
