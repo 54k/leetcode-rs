@@ -1,3 +1,5 @@
+use std::error::Error;
+
 fn task_1_1() {
     let stdin = std::io::stdin();
     let mut buf = String::new();
@@ -249,6 +251,51 @@ fn task_1_5_solver(arr: Vec<i32>, m: usize) -> Vec<i32> {
     ans
 }
 
+fn task_2_1() -> Result<(), Box<dyn Error>> {
+    let mut stdin = std::io::stdin();
+    let mut buf = String::new();
+    stdin.read_line(&mut buf)?;
+    let n = buf.trim().parse::<i32>()?;
+    buf.clear();
+    stdin.read_line(&mut buf)?;
+    let mut arr = buf
+        .trim()
+        .split(' ')
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    let swaps = task_2_1_solver(&mut arr);
+    println!("{}", swaps.len());
+    for swap in swaps {
+        println!("{} {}", swap.0, swap.1);
+    }
+    Ok(())
+}
+
+fn task_2_1_solver(arr: &mut Vec<i32>) -> Vec<(i32, i32)> {
+    fn sift_down(arr: &mut Vec<i32>, mut k: usize) -> Vec<(i32, i32)> {
+        let mut swaps = vec![];
+        let n = arr.len() - 1;
+        while 2 * k < n {
+            let mut j = 2 * k + 1;
+            if j < n && arr[j + 1] <= arr[j] {
+                j += 1;
+            }
+            if arr[k] <= arr[j] {
+                break;
+            }
+            swaps.push((k as i32, j as i32));
+            arr.swap(k, j);
+            k = j;
+        }
+        swaps
+    }
+    let mut ans = vec![];
+    for i in (0..=(arr.len() - 1) / 2).rev() {
+        ans.extend(sift_down(arr, i));
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -309,5 +356,12 @@ mod test {
         println!("{:?}", task_1_5_solver(vec![2, 1, 5], 1)); // 2, 1, 5
         println!("{:?}", task_1_5_solver(vec![2, 3, 9], 3)); // 9
         println!("{:?}", task_1_5_solver(vec![4, 3, 2, 1], 1)); // 4, 3, 2, 1
+    }
+
+    #[test]
+    fn test_2_1() {
+        let mut arr = vec![5, 4, 3, 2, 1]; // 1-index based
+        println!("{:?}", task_2_1_solver(&mut arr));
+        println!("{:?}", arr);
     }
 }
