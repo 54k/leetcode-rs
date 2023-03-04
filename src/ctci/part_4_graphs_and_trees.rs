@@ -285,7 +285,7 @@ fn task_4_7(n: usize, deps: Vec<(char, char)>) -> Vec<char> {
             result: &mut Vec<usize>,
         ) -> bool {
             if visited[v] == 1 {
-                return true;
+                return true; // has cycle
             }
             visited[v] = 1;
             for &u in &adj[v] {
@@ -315,8 +315,8 @@ fn task_4_7(n: usize, deps: Vec<(char, char)>) -> Vec<char> {
             .map(|x| (x as u8 + b'a') as char)
             .collect()
     }
-    // dfs_topological_sort(n, deps)
-    khan_topological_sort(n, deps)
+    dfs_topological_sort(n, deps)
+    // khan_topological_sort(n, deps)
 }
 
 #[cfg(test)]
