@@ -415,6 +415,64 @@ fn task_4_8_2(edges: Vec<(usize, usize)>, n: usize, mut p: usize, mut q: usize) 
     p
 }
 
+// 4.9 Бинарное дерево было создано обходом массива слева направо и вставкой каждого элемента.
+// Для заданного бинарного дерева поиска с разными элементами выведите все возможное массивы, которые
+// могли привести к созданию этого дерева.
+fn task_4_9(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+    fn weave_lists(
+        first: &mut Vec<i32>,
+        second: &mut Vec<i32>,
+        results: &mut Vec<Vec<i32>>,
+        prefix: &mut Vec<i32>,
+    ) {
+        if first.is_empty() || second.is_empty() {
+            let mut result = prefix.clone();
+            result.extend(first.clone());
+            result.extend(second.clone());
+            results.push(result);
+            return;
+        }
+
+        let head_first = first.remove(0);
+        prefix.push(head_first);
+        weave_lists(first, second, results, prefix);
+        prefix.pop();
+        first.insert(0, head_first);
+
+        let head_second = second.remove(0);
+        prefix.push(head_second);
+        weave_lists(first, second, results, prefix);
+        prefix.pop();
+        second.insert(0, head_second);
+    }
+
+    fn all_subsequences(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        let mut result = vec![];
+        if root.is_none() {
+            result.push(vec![]);
+            return result;
+        }
+        let root = root.unwrap();
+        let root = root.borrow();
+
+        let mut prefix = vec![];
+        prefix.push(root.val);
+
+        let mut left = all_subsequences(root.left.clone());
+        let mut right = all_subsequences(root.right.clone());
+
+        for l in &mut left {
+            for r in &mut right {
+                let mut weaved = vec![];
+                weave_lists(l, r, &mut weaved, &mut prefix);
+                result.extend(weaved);
+            }
+        }
+        result
+    }
+    all_subsequences(root)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -594,5 +652,23 @@ mod test {
             "{}",
             task_4_8_2(vec![(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)], 6, 3, 1)
         ); // 0
+    }
+
+    #[test]
+    fn test_task_4_9() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 2,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{:?}", task_4_9(root)); // [[2, 1, 3], [2, 3, 1]]
     }
 }
