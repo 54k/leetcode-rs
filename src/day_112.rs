@@ -1,5 +1,5 @@
-// https://leetcode.com/problems/shortest-unsorted-continuous-subarray/description/
-// https://leetcode.com/problems/shortest-unsorted-continuous-subarray/editorial/
+// https://leetcode.com/problems/count-subarrays-with-fixed-bounds/description/
+// https://leetcode.com/problems/count-subarrays-with-fixed-bounds/editorial/
 pub fn count_subarrays(nums: Vec<i32>, min_k: i32, max_k: i32) -> i64 {
     let mut ans = 0;
     let mut min_pos = -1;
