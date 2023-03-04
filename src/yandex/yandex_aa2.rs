@@ -1,5 +1,4 @@
 use std::cell::RefCell;
-use std::cmp::min;
 use std::rc::Rc;
 
 // Подотрезок с суммой X.py

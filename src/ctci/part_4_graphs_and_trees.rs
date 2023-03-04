@@ -61,7 +61,7 @@ fn task_4_1(edges: Vec<(usize, usize)>, start: usize, end: usize) -> bool {
 
 // 4.2 напишите алгоритм создания бинарного дерева с минимальной высотой из отсортированного (по возрастанию)
 // массива с уникальными целочисленными элементами
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 struct TreeNode {
     val: i32,
     left: Option<Rc<RefCell<TreeNode>>>,
@@ -190,7 +190,7 @@ fn task_4_5(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
     check_bst_tree_props(root, None, None)
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 struct TreeNodeWithParent {
     val: i32,
     parent: Option<Rc<RefCell<TreeNodeWithParent>>>, // pfff doesn't work in rust with eq
@@ -317,6 +317,102 @@ fn task_4_7(n: usize, deps: Vec<(char, char)>) -> Vec<char> {
     }
     dfs_topological_sort(n, deps)
     // khan_topological_sort(n, deps)
+}
+
+// 4.8 Создайте алгоритм и напишите код поиска первого общего предка двух узлов бинарного дерева.
+// Постарайтесь избежать хранения дополнительных узлов в структуре данных. Примечание - бинарное дерево
+// не обязательно является бинарным деревом поиска
+fn task_4_8_1(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    p: Option<Rc<RefCell<TreeNode>>>,
+    q: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    fn lowest_common_ancestor_binary_tree(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if root.is_none() || root == p || root == q {
+            return root;
+        }
+        let r = root.clone().unwrap();
+        let r = r.borrow();
+        let left = lowest_common_ancestor_binary_tree(r.left.clone(), p.clone(), q.clone());
+        let right = lowest_common_ancestor_binary_tree(r.right.clone(), p, q);
+        if left.is_some() && right.is_some() {
+            root
+        } else if left.is_some() {
+            left
+        } else {
+            right
+        }
+    }
+    lowest_common_ancestor_binary_tree(root, p, q)
+}
+
+// для дерева в графе
+// https://www.baeldung.com/cs/tree-lowest-common-ancestor
+// The idea of this approach is to have two pointers, one on each node.
+// We need to move these pointers towards the root in a way that allows them to meet at the LCA.
+//
+// The first thing we can notice is that these pointers should be in the same depth.
+// In addition to that, the deeper pointer can never be the LCA.
+// Therefore, our first step should be to keep moving the deeper pointer to its parent until the two pointers are on the same depth.
+//
+// Now, we have two pointers that are on the same depth.
+// We can keep moving both pointers towards the root one step at a time until they meet at one node.
+// Since this node is the deepest node that our pointers can meet at, therefore,
+// it’s the deepest common ancestor of our starting nodes, which is the LCA.
+
+// 3.2. Preprocessing
+//
+// In order to implement this solution, we will need to calculate the depth and the parent of each node.
+// This can be done with a simple DFS traversal starting from the root.
+
+// 3.3. Finding the LCA
+//
+// After calling the previous function starting from the root, we will have the depth and parent of each node.
+// We can now apply the approach that we discussed earlier.
+fn task_4_8_2(edges: Vec<(usize, usize)>, n: usize, mut p: usize, mut q: usize) -> usize {
+    fn dfs(
+        v: usize,
+        adj: &Vec<Vec<usize>>,
+        depth: &mut Vec<usize>,
+        parent: &mut Vec<usize>,
+        visited: &mut Vec<bool>,
+    ) {
+        visited[v] = true;
+        for &u in &adj[v] {
+            if !visited[u] {
+                parent[u] = v;
+                depth[u] = depth[v] + 1;
+                dfs(u, adj, depth, parent, visited);
+            }
+        }
+    }
+    let mut visited = vec![false; n];
+    let mut depth = vec![0; n];
+    let mut parent = vec![0; n];
+    let mut adj = vec![vec![]; n];
+    for (from, to) in edges {
+        adj[from].push(to);
+        adj[to].push(from);
+    }
+    dfs(0, &adj, &mut depth, &mut parent, &mut visited);
+    // Our first step should be to keep moving the deeper pointer to its parent
+    // until the two pointers are on the same depth.
+    while depth[p] != depth[q] {
+        if depth[p] < depth[q] {
+            q = parent[q];
+        } else {
+            p = parent[p];
+        }
+    }
+    while p != q {
+        p = parent[p];
+        q = parent[q];
+    }
+    p
 }
 
 #[cfg(test)]
@@ -463,5 +559,40 @@ mod test {
                 ]
             )
         ); // ['e', 'c', 'd', 'b', 'a', 'f'] or ['c', 'e', 'd', 'a', 'b', 'f']
+    }
+
+    #[test]
+    fn test_task_4_8_1() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 0,
+            left: None,
+            right: None,
+        })));
+        let left = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: None,
+            right: None,
+        })));
+        let right = Some(Rc::new(RefCell::new(TreeNode {
+            val: 2,
+            left: None,
+            right: None,
+        })));
+        root.clone().unwrap().borrow_mut().left = left.clone();
+        root.clone().unwrap().borrow_mut().right = right.clone();
+
+        println!("{:?}", task_4_8_1(root, left, right));
+    }
+
+    #[test]
+    fn test_task_4_8_2() {
+        println!(
+            "{}",
+            task_4_8_2(vec![(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)], 6, 3, 5)
+        ); // 2
+        println!(
+            "{}",
+            task_4_8_2(vec![(0, 1), (0, 2), (2, 3), (2, 4), (4, 5)], 6, 3, 1)
+        ); // 0
     }
 }
