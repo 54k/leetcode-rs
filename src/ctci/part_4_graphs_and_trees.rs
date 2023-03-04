@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Ref, RefCell};
 use std::rc::Rc;
 
 // Для заданного направленного графа реализуйте алгоритм,
@@ -190,6 +190,52 @@ fn task_4_5(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
     check_bst_tree_props(root, None, None)
 }
 
+#[derive(Debug, PartialEq)]
+struct TreeNodeWithParent {
+    val: i32,
+    parent: Option<Rc<RefCell<TreeNodeWithParent>>>, // pfff doesn't work in rust with eq
+    left: Option<Rc<RefCell<TreeNodeWithParent>>>,
+    right: Option<Rc<RefCell<TreeNodeWithParent>>>,
+}
+
+// Напишите алгоритм поиска "следующего" узла для заданного узла в бинарном дереве поиска.
+// Считайте, что у каждого узла есть ссылка на его родителя.
+fn task_4_6(
+    root: Option<Rc<RefCell<TreeNodeWithParent>>>,
+) -> Option<Rc<RefCell<TreeNodeWithParent>>> {
+    fn leftmost_child(
+        mut root: Option<Rc<RefCell<TreeNodeWithParent>>>,
+    ) -> Option<Rc<RefCell<TreeNodeWithParent>>> {
+        root.as_ref()?;
+        while let Some(r) = root {
+            let r = r.borrow();
+            root = r.left.clone();
+        }
+        root
+    }
+    fn inorder_successor(
+        root: Option<Rc<RefCell<TreeNodeWithParent>>>,
+    ) -> Option<Rc<RefCell<TreeNodeWithParent>>> {
+        if let Some(r) = root.clone() {
+            let r = r.borrow();
+            if r.right.is_some() {
+                leftmost_child(r.right.clone())
+            } else {
+                let mut q = root.clone();
+                let mut x = q.clone().unwrap().borrow().parent.clone();
+                while x.is_some() && x.clone().unwrap().borrow().left != q {
+                    q = x.clone();
+                    x = x.clone().unwrap().borrow().parent.clone();
+                }
+                x
+            }
+        } else {
+            None
+        }
+    }
+    inorder_successor(root)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -290,5 +336,31 @@ mod test {
         })));
 
         println!("{:?}", task_4_5(root)); // false
+    }
+
+    #[test]
+    fn test_task_4_6() {
+        let r = Some(Rc::new(RefCell::new(TreeNodeWithParent {
+            val: 0,
+            parent: None,
+            left: None,
+            right: None,
+        })));
+        let right = Some(Rc::new(RefCell::new(TreeNodeWithParent {
+            val: 2,
+            parent: r.clone(),
+            left: None,
+            right: None,
+        })));
+        let left = Some(Rc::new(RefCell::new(TreeNodeWithParent {
+            val: 0,
+            parent: r.clone(),
+            left: None,
+            right: None,
+        })));
+        r.clone().unwrap().borrow_mut().left = left.clone();
+        r.unwrap().borrow_mut().right = right;
+
+        println!("{:?}", task_4_6(left));
     }
 }
