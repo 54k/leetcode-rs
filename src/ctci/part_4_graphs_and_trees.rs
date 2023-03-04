@@ -241,7 +241,83 @@ fn task_4_6(
 // только после построения всех его зависимостей. Найдите такой порядок построения,
 // который позволит построить все проекты. Если действительного порядка не существует,
 // верните признак ошибки.
-fn task_4_7() {}
+fn task_4_7(n: usize, deps: Vec<(char, char)>) -> Vec<char> {
+    fn khan_topological_sort(n: usize, deps: Vec<(char, char)>) -> Vec<char> {
+        use std::collections::VecDeque;
+        let mut result = vec![];
+        let mut adj = vec![vec![]; n];
+        let mut in_degrees = vec![0; n];
+        for (from, to) in deps {
+            let from = from as usize - 'a' as usize;
+            let to = to as usize - 'a' as usize;
+            adj[from].push(to);
+            in_degrees[to] += 1;
+        }
+        let mut queue = VecDeque::new();
+        for (i, &d) in in_degrees.iter().enumerate() {
+            if d == 0 {
+                queue.push_back(i);
+            }
+        }
+        while let Some(v) = queue.pop_front() {
+            result.push(v);
+            for &u in &adj[v] {
+                in_degrees[u] -= 1;
+                if in_degrees[u] == 0 {
+                    queue.push_back(u);
+                }
+            }
+        }
+        if result.len() != n {
+            return vec![]; // cycle found
+        }
+        result
+            .into_iter()
+            .map(|x| (x as u8 + b'a') as char)
+            .collect()
+    }
+
+    fn dfs_topological_sort(n: usize, deps: Vec<(char, char)>) -> Vec<char> {
+        fn dfs(
+            v: usize,
+            adj: &Vec<Vec<usize>>,
+            visited: &mut Vec<usize>,
+            result: &mut Vec<usize>,
+        ) -> bool {
+            if visited[v] == 1 {
+                return true;
+            }
+            visited[v] = 1;
+            for &u in &adj[v] {
+                if visited[u] != 2 && dfs(u, adj, visited, result) {
+                    // if has cycle
+                    return true;
+                }
+            }
+            visited[v] = 2;
+            result.push(v);
+            false
+        }
+        let mut result = vec![];
+        let mut adj = vec![vec![]; n];
+        let mut visited = vec![0; n]; // 0 not visited, 1 visiting, 2 visited
+        for (from, to) in deps {
+            adj[from as usize - 'a' as usize].push(to as usize - 'a' as usize);
+        }
+        for i in 0..n {
+            if visited[i] == 0 && dfs(i, &adj, &mut visited, &mut result) {
+                return vec![]; // has cycle
+            }
+        }
+        result
+            .into_iter()
+            .rev()
+            .map(|x| (x as u8 + b'a') as char)
+            .collect()
+    }
+    // dfs_topological_sort(n, deps)
+    khan_topological_sort(n, deps)
+}
 
 #[cfg(test)]
 mod test {
@@ -369,5 +445,23 @@ mod test {
         r.unwrap().borrow_mut().right = right;
 
         println!("{:?}", task_4_6(left));
+    }
+
+    #[test]
+    fn test_task_4_7() {
+        println!(
+            "{:?}",
+            task_4_7(
+                6,
+                vec![
+                    ('d', 'a'),
+                    ('b', 'f'),
+                    ('d', 'b'),
+                    ('a', 'f'),
+                    ('c', 'd'),
+                    // ('f', 'c') // cycle
+                ]
+            )
+        ); // ['e', 'c', 'd', 'b', 'a', 'f'] or ['c', 'e', 'd', 'a', 'b', 'f']
     }
 }
