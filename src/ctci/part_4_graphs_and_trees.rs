@@ -62,19 +62,19 @@ fn task_4_1(edges: Vec<(usize, usize)>, start: usize, end: usize) -> bool {
 // напишите алгоритм создания бинарного дерева с минимальной высотой из отсортированного (по возрастанию)
 // массива с уникальными целочисленными элементами
 #[derive(Debug)]
-struct Node {
+struct TreeNode {
     val: i32,
-    left: Option<Rc<RefCell<Node>>>,
-    right: Option<Rc<RefCell<Node>>>,
+    left: Option<Rc<RefCell<TreeNode>>>,
+    right: Option<Rc<RefCell<TreeNode>>>,
 }
 
-fn task_4_2(arr: Vec<i32>) -> Option<Rc<RefCell<Node>>> {
-    fn create_minimal_bst(arr: &[i32], left: i32, right: i32) -> Option<Rc<RefCell<Node>>> {
+fn task_4_2(arr: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+    fn create_minimal_bst(arr: &[i32], left: i32, right: i32) -> Option<Rc<RefCell<TreeNode>>> {
         if left > right {
             return None;
         }
         let mid = (left + right) / 2;
-        let mut root = Node {
+        let mut root = TreeNode {
             val: arr[mid as usize],
             left: None,
             right: None,
@@ -94,8 +94,12 @@ struct ListNode {
 
 // Для бинарного дерева разработайте алгоритм, который создает связный список всех узлов, находящихся
 // на каждой глубине (для дерева высоты Д должно получится Д связных списков
-fn task_4_3(root: Option<Rc<RefCell<Node>>>) -> Vec<Option<Box<ListNode>>> {
-    fn dfs(root: Option<Rc<RefCell<Node>>>, ans: &mut Vec<Option<Box<ListNode>>>, height: usize) {
+fn task_4_3(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Option<Box<ListNode>>> {
+    fn dfs(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        ans: &mut Vec<Option<Box<ListNode>>>,
+        height: usize,
+    ) {
         if let Some(r) = root {
             let r = r.borrow();
             if ans.len() == height {
@@ -119,6 +123,73 @@ fn task_4_3(root: Option<Rc<RefCell<Node>>>) -> Vec<Option<Box<ListNode>>> {
     ans
 }
 
+// Реализуйте функцию проверяющую сбалансированность бинарного дерева.
+// Будем считать дерево сбалансированным,
+// если разницы высот двух поддеревьев любого узла не превышает 1
+fn task_4_4(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    fn check_height(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        if let Some(r) = root {
+            let r = r.borrow();
+            let left_height = check_height(r.left.clone());
+            if left_height == i32::MIN {
+                return i32::MIN;
+            }
+            let right_height = check_height(r.right.clone());
+            if right_height == i32::MIN {
+                return i32::MIN;
+            }
+            if left_height.abs_diff(right_height) > 1 {
+                i32::MIN
+            } else {
+                left_height.max(right_height) + 1
+            }
+        } else {
+            -1
+        }
+    }
+    check_height(root) != i32::MIN
+}
+
+// Реализуйте функцию проверки того, является ли бинарное дерево бинарным деревом поиска
+fn task_4_5(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    fn check_bst_inorder(root: Option<Rc<RefCell<TreeNode>>>, prev: &mut Option<i32>) -> bool {
+        if let Some(r) = root {
+            let r = r.borrow();
+            if !check_bst_inorder(r.left.clone(), prev) {
+                return false;
+            }
+            if prev.is_some() && prev.unwrap() >= r.val {
+                return false;
+            }
+            *prev = Some(r.val);
+            check_bst_inorder(r.right.clone(), prev)
+        } else {
+            true
+        }
+    }
+
+    fn check_bst_tree_props(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        min: Option<i32>,
+        max: Option<i32>,
+    ) -> bool {
+        if let Some(r) = root {
+            let r = r.borrow();
+            if min.is_some() && r.val <= min.unwrap() {
+                return false;
+            }
+            if max.is_some() && r.val > max.unwrap() {
+                return false;
+            }
+            check_bst_tree_props(r.left.clone(), min, Some(r.val))
+                && check_bst_tree_props(r.right.clone(), Some(r.val), max)
+        } else {
+            true
+        }
+    }
+    check_bst_tree_props(root, None, None)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -136,21 +207,21 @@ mod test {
 
     #[test]
     fn test_task_4_3() {
-        let root = Some(Rc::new(RefCell::new(Node {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
             val: 0,
-            left: Some(Rc::new(RefCell::new(Node {
+            left: Some(Rc::new(RefCell::new(TreeNode {
                 val: 1,
-                left: Some(Rc::new(RefCell::new(Node {
+                left: Some(Rc::new(RefCell::new(TreeNode {
                     val: 4,
                     left: None,
                     right: None,
                 }))),
                 right: None,
             }))),
-            right: Some(Rc::new(RefCell::new(Node {
+            right: Some(Rc::new(RefCell::new(TreeNode {
                 val: 2,
                 left: None,
-                right: Some(Rc::new(RefCell::new(Node {
+                right: Some(Rc::new(RefCell::new(TreeNode {
                     val: 5,
                     left: None,
                     right: None,
@@ -158,5 +229,66 @@ mod test {
             }))),
         })));
         println!("{:?}", task_4_3(root));
+    }
+
+    #[test]
+    fn test_task_4_4() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 0,
+            left: None,
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{:?}", task_4_4(root)); // false
+    }
+
+    #[test]
+    fn test_task_4_5() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 0,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 3,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+
+        println!("{:?}", task_4_5(root)); // true
+
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 0,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 0,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 1,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+
+        println!("{:?}", task_4_5(root)); // false
     }
 }
