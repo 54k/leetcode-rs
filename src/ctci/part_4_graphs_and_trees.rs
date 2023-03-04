@@ -1,7 +1,7 @@
-use std::cell::{Ref, RefCell};
+use std::cell::RefCell;
 use std::rc::Rc;
 
-// Для заданного направленного графа реализуйте алгоритм,
+// 4.1 Для заданного направленного графа реализуйте алгоритм,
 // проверяющий существование маршрута между двумя вершинами
 fn task_4_1(edges: Vec<(usize, usize)>, start: usize, end: usize) -> bool {
     fn bfs(edges: Vec<(usize, usize)>, start: usize, end: usize) -> bool {
@@ -59,7 +59,7 @@ fn task_4_1(edges: Vec<(usize, usize)>, start: usize, end: usize) -> bool {
     dfs(edges, start, end)
 }
 
-// напишите алгоритм создания бинарного дерева с минимальной высотой из отсортированного (по возрастанию)
+// 4.2 напишите алгоритм создания бинарного дерева с минимальной высотой из отсортированного (по возрастанию)
 // массива с уникальными целочисленными элементами
 #[derive(Debug)]
 struct TreeNode {
@@ -92,7 +92,7 @@ struct ListNode {
     next: Option<Box<ListNode>>,
 }
 
-// Для бинарного дерева разработайте алгоритм, который создает связный список всех узлов, находящихся
+// 4.3 Для бинарного дерева разработайте алгоритм, который создает связный список всех узлов, находящихся
 // на каждой глубине (для дерева высоты Д должно получится Д связных списков
 fn task_4_3(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Option<Box<ListNode>>> {
     fn dfs(
@@ -123,7 +123,7 @@ fn task_4_3(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Option<Box<ListNode>>> {
     ans
 }
 
-// Реализуйте функцию проверяющую сбалансированность бинарного дерева.
+// 4.4 Реализуйте функцию проверяющую сбалансированность бинарного дерева.
 // Будем считать дерево сбалансированным,
 // если разницы высот двух поддеревьев любого узла не превышает 1
 fn task_4_4(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
@@ -150,7 +150,7 @@ fn task_4_4(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
     check_height(root) != i32::MIN
 }
 
-// Реализуйте функцию проверки того, является ли бинарное дерево бинарным деревом поиска
+// 4.5 Реализуйте функцию проверки того, является ли бинарное дерево бинарным деревом поиска
 fn task_4_5(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
     fn check_bst_inorder(root: Option<Rc<RefCell<TreeNode>>>, prev: &mut Option<i32>) -> bool {
         if let Some(r) = root {
@@ -198,7 +198,7 @@ struct TreeNodeWithParent {
     right: Option<Rc<RefCell<TreeNodeWithParent>>>,
 }
 
-// Напишите алгоритм поиска "следующего" узла для заданного узла в бинарном дереве поиска.
+// 4.6 Напишите алгоритм поиска "следующего" узла для заданного узла в бинарном дереве поиска.
 // Считайте, что у каждого узла есть ссылка на его родителя.
 fn task_4_6(
     root: Option<Rc<RefCell<TreeNodeWithParent>>>,
@@ -221,7 +221,7 @@ fn task_4_6(
             if r.right.is_some() {
                 leftmost_child(r.right.clone())
             } else {
-                let mut q = root.clone();
+                let mut q = root;
                 let mut x = q.clone().unwrap().borrow().parent.clone();
                 while x.is_some() && x.clone().unwrap().borrow().left != q {
                     q = x.clone();
@@ -235,6 +235,13 @@ fn task_4_6(
     }
     inorder_successor(root)
 }
+
+// 4.7 Имеется список проектов и список зависимостей (список пар проектов,
+// для которого первый проект зависит от второго проекта). Проект может быть построен
+// только после построения всех его зависимостей. Найдите такой порядок построения,
+// который позволит построить все проекты. Если действительного порядка не существует,
+// верните признак ошибки.
+fn task_4_7() {}
 
 #[cfg(test)]
 mod test {
