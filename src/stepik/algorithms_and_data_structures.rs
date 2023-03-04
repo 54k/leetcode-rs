@@ -1,5 +1,3 @@
-use std::error::Error;
-
 fn task_1_1() {
     let stdin = std::io::stdin();
     let mut buf = String::new();
@@ -251,8 +249,8 @@ fn task_1_5_solver(arr: Vec<i32>, m: usize) -> Vec<i32> {
     ans
 }
 
-fn task_2_1() -> Result<(), Box<dyn Error>> {
-    let mut stdin = std::io::stdin();
+fn task_2_1() -> Result<(), Box<dyn std::error::Error>> {
+    let stdin = std::io::stdin();
     let mut buf = String::new();
     stdin.read_line(&mut buf)?;
     let n = buf.trim().parse::<i32>()?;
@@ -292,6 +290,88 @@ fn task_2_1_solver(arr: &mut Vec<i32>) -> Vec<(i32, i32)> {
     let mut ans = vec![];
     for i in (0..=(arr.len() - 1) / 2).rev() {
         ans.extend(sift_down(arr, i));
+    }
+    ans
+}
+
+fn task_2_2() -> Result<(), Box<dyn std::error::Error>> {
+    let mut buf = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut buf)?;
+    let v = buf
+        .trim()
+        .split(' ')
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    buf.clear();
+    let (n, m) = (v[0], v[1]);
+    stdin.read_line(&mut buf)?;
+    let v = buf
+        .trim()
+        .split(' ')
+        .map(|x| x.parse::<i64>().unwrap())
+        .collect::<Vec<_>>();
+    let res = task_2_2_solver(n, v);
+    for r in res {
+        println!("{} {}", r.0, r.1);
+    }
+    Ok(())
+}
+
+fn task_2_2_solver(n: i32, tasks: Vec<i64>) -> Vec<(i32, i64)> {
+    struct Heap(Vec<(i64, i32)>);
+    impl Heap {
+        fn new(n: i32) -> Self {
+            let mut v = vec![(-1, -1)];
+            for i in 0..n {
+                v.push((0i64, i));
+            }
+            Self(v)
+        }
+        fn push(&mut self, val: (i64, i32)) {
+            let arr = &mut self.0;
+            arr.push(val);
+            let n = arr.len() - 1;
+            self.sift_up(n);
+        }
+        fn pop(&mut self) -> (i64, i32) {
+            let arr = &mut self.0;
+            let res = arr[1];
+            let n = arr.len() - 1;
+            arr[1] = arr[n];
+            arr.pop();
+            self.sift_down(1);
+            res
+        }
+        fn sift_up(&mut self, mut i: usize) {
+            let arr = &mut self.0;
+            while i > 1 && arr[i] < arr[i / 2] {
+                arr.swap(i / 2, i);
+                i /= 2;
+            }
+        }
+        fn sift_down(&mut self, mut i: usize) {
+            let arr = &mut self.0;
+            let n = arr.len() - 1;
+            while 2 * i < n {
+                let mut j = 2 * i;
+                if j < n && arr[j + 1] <= arr[j] {
+                    j += 1;
+                }
+                if arr[i] <= arr[j] {
+                    break;
+                }
+                arr.swap(i, j);
+                i = j;
+            }
+        }
+    }
+    let mut ans = vec![];
+    let mut heap = Heap::new(n);
+    for t in tasks {
+        let (time, processor) = heap.pop();
+        ans.push((processor, time)); // num of processor, task time
+        heap.push((time + t, processor));
     }
     ans
 }
@@ -363,5 +443,11 @@ mod test {
         let mut arr = vec![5, 4, 3, 2, 1]; // 1-index based
         println!("{:?}", task_2_1_solver(&mut arr));
         println!("{:?}", arr);
+    }
+
+    #[test]
+    fn test_2_2() {
+        println!("{:?}", task_2_2_solver(2, vec![1, 2, 3, 4, 5]));
+        println!("{:?}", task_2_2_solver(4, vec![1; 20]));
     }
 }
