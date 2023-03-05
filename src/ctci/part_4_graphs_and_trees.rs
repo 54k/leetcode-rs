@@ -1,4 +1,4 @@
-use crate::day_25::is_same_tree;
+use rand::Rng;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -560,6 +560,121 @@ fn task_4_10(root1: Option<Rc<RefCell<TreeNode>>>, root2: Option<Rc<RefCell<Tree
 // узла дерева. Вероятность выбора всех узлов должна быть одинаковой.
 // Разработайте и реализуйте алгоритм getRandomNode; обьясните, как вы реализуете
 // остальные методы.
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct TreeNodeWithSize {
+    val: i32,
+    size: usize,
+    left: Option<Rc<RefCell<TreeNodeWithSize>>>,
+    right: Option<Rc<RefCell<TreeNodeWithSize>>>,
+}
+
+impl TreeNodeWithSize {
+    fn new(val: i32) -> Self {
+        Self {
+            val,
+            size: 1,
+            left: None,
+            right: None,
+        }
+    }
+
+    fn insert_inorder(&mut self, val: i32) {
+        if val <= self.val {
+            if self.left.is_none() {
+                self.left = Some(Rc::new(RefCell::new(TreeNodeWithSize {
+                    val,
+                    size: 1,
+                    left: None,
+                    right: None,
+                })));
+            } else {
+                self.left.clone().unwrap().borrow_mut().insert_inorder(val);
+            }
+        } else if self.right.is_none() {
+            self.right = Some(Rc::new(RefCell::new(TreeNodeWithSize {
+                val,
+                size: 1,
+                left: None,
+                right: None,
+            })));
+        } else {
+            self.right.clone().unwrap().borrow_mut().insert_inorder(val);
+        }
+        self.size += 1;
+    }
+
+    fn find(&self, val: i32) -> Option<Rc<RefCell<TreeNodeWithSize>>> {
+        if self.val == val {
+            Some(Rc::new(RefCell::new(self.clone())))
+        } else if val <= self.val {
+            if let Some(l) = self.left.clone() {
+                l.borrow().find(val)
+            } else {
+                None
+            }
+        } else if let Some(r) = self.right.clone() {
+            r.borrow().find(val)
+        } else {
+            None
+        }
+    }
+
+    fn get_by_idx(&self, idx: usize) -> Option<Rc<RefCell<TreeNodeWithSize>>> {
+        let left_size = if self.left.is_none() {
+            0
+        } else {
+            self.left.clone().unwrap().borrow().size
+        };
+
+        if idx < left_size {
+            if self.left.is_some() {
+                self.left.clone().unwrap().borrow().get_by_idx(idx)
+            } else {
+                None
+            }
+        } else if idx == left_size {
+            Some(Rc::new(RefCell::new(self.clone())))
+        } else if self.right.is_some() {
+            self.right
+                .clone()
+                .unwrap()
+                .borrow()
+                .get_by_idx(idx - (left_size + 1))
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+struct BinaryTree {
+    root: Option<Rc<RefCell<TreeNodeWithSize>>>,
+}
+
+impl BinaryTree {
+    fn new() -> Self {
+        Self { root: None }
+    }
+
+    fn insert_inorder(&mut self, val: i32) {
+        if self.root.is_none() {
+            self.root = Some(Rc::new(RefCell::new(TreeNodeWithSize::new(val))));
+        } else {
+            self.root.clone().unwrap().borrow_mut().insert_inorder(val);
+        }
+    }
+
+    fn get_random_node(&self) -> Option<Rc<RefCell<TreeNodeWithSize>>> {
+        if self.root.is_none() {
+            None
+        } else {
+            use rand;
+            let mut rng = rand::thread_rng();
+            let i = rng.gen::<usize>() % self.root.clone().unwrap().borrow().size;
+            self.root.clone().unwrap().borrow().get_by_idx(i)
+        }
+    }
+}
 
 #[cfg(test)]
 mod test {
@@ -821,5 +936,20 @@ mod test {
             }))),
         })));
         println!("{:?}", task_4_10(root1, root2)); // false
+    }
+
+    #[test]
+    fn test_task_4_11() {
+        let mut tree = BinaryTree::new();
+        tree.insert_inorder(3);
+        println!("{:?}", tree);
+        tree.insert_inorder(4);
+        println!("{:?}", tree);
+        tree.insert_inorder(1);
+        println!("{:?}", tree);
+        tree.insert_inorder(2);
+        println!("{:?}", tree);
+        println!("and random node:");
+        println!("{:?}", tree.get_random_node());
     }
 }
