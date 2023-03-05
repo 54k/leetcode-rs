@@ -226,22 +226,46 @@ pub fn find_unsorted_subarray(nums: Vec<i32>) -> i32 {
 }
 
 // https://leetcode.com/problems/min-stack/
-struct MinStack {}
+struct ListNode {
+    val: i32,
+    min: i32,
+    next: Option<Box<ListNode>>,
+}
+struct MinStack {
+    top: Option<Box<ListNode>>,
+}
 impl MinStack {
     fn new() -> Self {
-        Self {}
+        Self { top: None }
     }
 
-    fn push(&self, val: i32) {}
+    fn push(&mut self, val: i32) {
+        let mut new_top = ListNode {
+            val,
+            min: val,
+            next: None,
+        };
+        if let Some(h) = self.top.take() {
+            if h.min < new_top.min {
+                new_top.min = h.min;
+            }
+            new_top.next = Some(h);
+        }
+        self.top = Some(Box::new(new_top));
+    }
 
-    fn pop(&self) {}
+    fn pop(&mut self) {
+        if let Some(h) = self.top.take() {
+            self.top = h.next;
+        }
+    }
 
     fn top(&self) -> i32 {
-        todo!()
+        self.top.as_ref().map(|t| t.val).unwrap()
     }
 
     fn get_min(&self) -> i32 {
-        todo!()
+        self.top.as_ref().map(|t| t.min).unwrap()
     }
 }
 
@@ -274,5 +298,16 @@ mod test {
         println!("{}", find_unsorted_subarray(vec![1])); // 0
         println!("{}", find_unsorted_subarray(vec![2, 1])); // 2
         println!("{}", find_unsorted_subarray(vec![1, 3, 2, 3, 3])); // 2
+    }
+
+    #[test]
+    fn test321() {
+        let mut min_stack = MinStack::new();
+        min_stack.push(0);
+        min_stack.push(1);
+        min_stack.push(0);
+        println!("{}", min_stack.get_min());
+        min_stack.pop();
+        println!("{}", min_stack.get_min());
     }
 }
