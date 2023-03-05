@@ -683,6 +683,7 @@ impl BinaryTree {
 // сумма значений которых соответствует заданной величине. Обратите внимание, что
 // путь не обязан начинаться или заканчиваться в корневом или листовом узле, но
 // он должен идти вниз (переход только от родительских узлов дочерним)
+// https://leetcode.com/problems/path-sum-iii/description/
 
 fn task_4_12(root: Option<Rc<RefCell<TreeNode>>>, sum: i32) -> i32 {
     fn count_paths_with_sum(
