@@ -83,8 +83,146 @@ pub fn increasing_triplet(nums: Vec<i32>) -> bool {
 }
 
 // https://leetcode.com/problems/shortest-unsorted-continuous-subarray/description/
+// https://leetcode.com/problems/shortest-unsorted-continuous-subarray/editorial/
 pub fn find_unsorted_subarray(nums: Vec<i32>) -> i32 {
-    todo!()
+    // tle
+    fn brute_force(nums: Vec<i32>) -> i32 {
+        let mut ans = nums.len() as i32;
+        for i in 0..nums.len() {
+            for j in i..=nums.len() {
+                let mut min = i32::MAX;
+                let mut max = i32::MIN;
+                let mut prev = i32::MIN; // to check if [0..i] and [j..len] is sorted
+                for k in i..j {
+                    min = min.min(nums[k]);
+                    max = max.max(nums[k]);
+                }
+                if (i > 0 && nums[i - 1] > min) || (j < nums.len() && nums[j] < max) {
+                    continue;
+                }
+
+                let mut k = 0;
+                // check [0..i] is sorted
+                while k < i && prev <= nums[k] {
+                    prev = nums[k];
+                    k += 1;
+                }
+                if k != i {
+                    continue; // not sorted
+                }
+                k = j;
+                // check [j..k] is sorted
+                while k < nums.len() && prev <= nums[k] {
+                    prev = nums[k];
+                    k += 1;
+                }
+                if k == nums.len() {
+                    ans = ans.min((j - i) as i32);
+                }
+            }
+        }
+        ans
+    }
+
+    fn insertion_sort(nums: Vec<i32>) -> i32 {
+        let mut l = nums.len() as i32;
+        let mut r = 0 as i32;
+        for i in 0..nums.len() - 1 {
+            for j in i + 1..nums.len() {
+                if nums[i] > nums[j] {
+                    l = l.min(i as i32);
+                    r = r.max(j as i32);
+                }
+            }
+        }
+        if r - l < 0 {
+            0
+        } else {
+            r - l + 1
+        }
+    }
+
+    fn using_sorting(nums: Vec<i32>) -> i32 {
+        let mut sorted = nums.clone();
+        sorted.sort();
+        let mut r = 0 as i32;
+        let mut l = nums.len() as i32;
+        for i in 0..nums.len() {
+            if sorted[i] != nums[i] {
+                l = l.min(i as i32);
+                r = r.max(i as i32);
+            }
+        }
+        if r - l < 0 {
+            0
+        } else {
+            r - l + 1
+        }
+    }
+
+    fn using_stack(nums: Vec<i32>) -> i32 {
+        let mut l = nums.len() as i32;
+        let mut r = 0 as i32;
+        let mut stack = vec![];
+        for i in 0..nums.len() {
+            while !stack.is_empty() && nums[stack[stack.len() - 1]] > nums[i] {
+                let x = stack.pop().unwrap(); // insert position
+                l = l.min(x as i32);
+            }
+            stack.push(i);
+        }
+        stack.clear();
+        for i in (0..nums.len()).rev() {
+            while !stack.is_empty() && nums[stack[stack.len() - 1]] < nums[i] {
+                let x = stack.pop().unwrap();
+                r = r.max(x as i32);
+            }
+            stack.push(i);
+        }
+        if r - l < 0 {
+            0
+        } else {
+            r - l + 1
+        }
+    }
+
+    fn no_extra_space(nums: Vec<i32>) -> i32 {
+        let mut min = i32::MAX;
+        let mut max = i32::MIN;
+        let mut flag = false;
+        for i in 1..nums.len() {
+            if nums[i] < nums[i - 1] {
+                flag = true;
+            }
+            if flag {
+                min = min.min(nums[i]);
+            }
+        }
+        flag = false;
+        for i in (0..nums.len() - 1).rev() {
+            if nums[i] > nums[i + 1] {
+                flag = true;
+            }
+            if flag {
+                max = max.max(nums[i]);
+            }
+        }
+        let mut l = 0i32;
+        while l < nums.len() as i32 && min >= nums[l as usize] {
+            l += 1;
+        }
+        let mut r = nums.len() as i32 - 1;
+        while r >= 0 && max <= nums[r as usize] {
+            r -= 1;
+        }
+        if r - l < 0 {
+            0
+        } else {
+            r - l + 1
+        }
+    }
+
+    no_extra_space(nums)
 }
 
 // https://leetcode.com/problems/min-stack/
@@ -127,5 +265,14 @@ mod test {
         ); // true
         println!("{}", increasing_triplet(vec![5, 4, 3, 2, 1])); // false
         println!("{}", increasing_triplet(vec![20, 100, 10, 12, 5, 13])); // true
+    }
+
+    #[test]
+    fn test320() {
+        println!("{}", find_unsorted_subarray(vec![2, 6, 4, 8, 10, 9, 15])); // 5
+        println!("{}", find_unsorted_subarray(vec![1, 2, 3, 4])); // 0
+        println!("{}", find_unsorted_subarray(vec![1])); // 0
+        println!("{}", find_unsorted_subarray(vec![2, 1])); // 2
+        println!("{}", find_unsorted_subarray(vec![1, 3, 2, 3, 3])); // 2
     }
 }
