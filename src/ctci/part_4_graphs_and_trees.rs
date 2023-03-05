@@ -1,5 +1,6 @@
 use rand::Rng;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 // 4.1 Для заданного направленного графа реализуйте алгоритм,
@@ -640,6 +641,7 @@ impl TreeNodeWithSize {
                 .unwrap()
                 .borrow()
                 .get_by_idx(idx - (left_size + 1))
+            // пропускаются leftSize + 1 узлов, вычитаем их
         } else {
             None
         }
@@ -674,6 +676,43 @@ impl BinaryTree {
             self.root.clone().unwrap().borrow().get_by_idx(i)
         }
     }
+}
+
+// 4.12 Дано бинарное дерево, в котором каждый узел содержит целое число
+// (положительное или отрицательное). Разработайте алгоритм для подсчета всех путей,
+// сумма значений которых соответствует заданной величине. Обратите внимание, что
+// путь не обязан начинаться или заканчиваться в корневом или листовом узле, но
+// он должен идти вниз (переход только от родительских узлов дочерним)
+
+fn task_4_12(root: Option<Rc<RefCell<TreeNode>>>, sum: i32) -> i32 {
+    fn count_paths_with_sum(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        target_sum: i32,
+        mut running_sum: i32,
+        path_count: &mut HashMap<i32, i32>,
+    ) -> i32 {
+        if root.is_none() {
+            return 0;
+        }
+        let r = root.unwrap();
+        let r = r.borrow();
+        running_sum += r.val;
+        let sum = running_sum - target_sum;
+        let mut total_paths = *path_count.entry(sum).or_insert(0);
+
+        // если running_sum == target_sum,
+        // один дополнительный путь начинается от корня. Добавить этот путь.
+        if running_sum == target_sum {
+            total_paths += 1;
+        }
+
+        *path_count.entry(running_sum).or_insert(0) += 1;
+        total_paths += count_paths_with_sum(r.left.clone(), target_sum, running_sum, path_count);
+        total_paths += count_paths_with_sum(r.right.clone(), target_sum, running_sum, path_count);
+        *path_count.entry(running_sum).or_insert(0) -= 1;
+        total_paths
+    }
+    count_paths_with_sum(root, sum, 0, &mut HashMap::new())
 }
 
 #[cfg(test)]
@@ -951,5 +990,47 @@ mod test {
         println!("{:?}", tree);
         println!("and random node:");
         println!("{:?}", tree.get_random_node());
+    }
+
+    #[test]
+    fn test_task_4_12() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 10,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 5,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 3,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 3,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: -2,
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 1,
+                    left: None,
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 2,
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: -3,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 11,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{}", task_4_12(root, 8));
     }
 }
