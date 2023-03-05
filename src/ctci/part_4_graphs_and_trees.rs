@@ -1,3 +1,4 @@
+use crate::day_25::is_same_tree;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -473,6 +474,87 @@ fn task_4_9(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
     all_subsequences(root)
 }
 
+// 4.10 T1 и T2 два очень больших бинарных дерева, причем Т1 значительно больше Т2.
+// Создайте алгоритм, проверяющий является ли Т2 поддеревом Т1.
+// Дерево Т2 считается поддеревом Т1, если существует такой узел n в Т1, что
+// поддерево, "растущее" из n, идентично дереву Т2.
+// (Иначе говоря, если вырезать дерево у узле n, оно будет идентично Т2.
+fn task_4_10(root1: Option<Rc<RefCell<TreeNode>>>, root2: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    fn serialization_approach(
+        root1: Option<Rc<RefCell<TreeNode>>>,
+        root2: Option<Rc<RefCell<TreeNode>>>,
+    ) -> bool {
+        fn serialize_tree_preorder(root: Option<Rc<RefCell<TreeNode>>>) -> String {
+            if let Some(r) = root {
+                let r = r.borrow();
+                format!(
+                    "{}{}{}",
+                    r.val,
+                    serialize_tree_preorder(r.left.clone()),
+                    serialize_tree_preorder(r.right.clone())
+                )
+            } else {
+                "X".to_string()
+            }
+        }
+        let s1 = serialize_tree_preorder(root1);
+        let s2 = serialize_tree_preorder(root2);
+        println!("{} {}", s1, s2);
+        s1.contains(&s2)
+    }
+
+    fn find_same_tree_approach(
+        root1: Option<Rc<RefCell<TreeNode>>>,
+        root2: Option<Rc<RefCell<TreeNode>>>,
+    ) -> bool {
+        fn is_same_tree(
+            root1: Option<Rc<RefCell<TreeNode>>>,
+            root2: Option<Rc<RefCell<TreeNode>>>,
+        ) -> bool {
+            if root1.is_none() && root2.is_none() {
+                true
+            } else if (root1.is_some() && root2.is_none()) || (root1.is_none() && root2.is_some()) {
+                false
+            } else {
+                let r1 = root1.unwrap();
+                let r1 = r1.borrow();
+                let r2 = root2.unwrap();
+                let r2 = r2.borrow();
+
+                r1.val == r2.val
+                    && is_same_tree(r1.left.clone(), r2.left.clone())
+                    && is_same_tree(r1.right.clone(), r2.right.clone())
+            }
+        }
+        fn find(
+            root1: Option<Rc<RefCell<TreeNode>>>,
+            root2: Option<Rc<RefCell<TreeNode>>>,
+        ) -> bool {
+            if root2.is_none() || root1.is_none() {
+                false
+            } else {
+                let r1 = root1.clone().unwrap();
+                let r1 = r1.borrow();
+                let r2 = root2.clone().unwrap();
+                let r2 = r2.borrow();
+
+                if r1.val == r2.val && is_same_tree(root1, root2.clone()) {
+                    true
+                } else {
+                    find(r1.left.clone(), root2.clone()) || find(r1.right.clone(), root2)
+                }
+            }
+        }
+
+        find(root1, root2)
+    }
+    assert_eq!(
+        serialization_approach(root1.clone(), root2.clone()),
+        find_same_tree_approach(root1.clone(), root2.clone())
+    );
+    find_same_tree_approach(root1, root2)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -670,5 +752,68 @@ mod test {
             }))),
         })));
         println!("{:?}", task_4_9(root)); // [[2, 1, 3], [2, 3, 1]]
+    }
+
+    #[test]
+    fn test_task_4_10() {
+        let root1 = Some(Rc::new(RefCell::new(TreeNode {
+            val: 2,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 4,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        let root2 = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: None,
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 4,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{:?}", task_4_10(root1, root2)); // true
+
+        let root1 = Some(Rc::new(RefCell::new(TreeNode {
+            val: 2,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 4,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        let root2 = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: None,
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 4,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 5,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{:?}", task_4_10(root1, root2)); // false
     }
 }
