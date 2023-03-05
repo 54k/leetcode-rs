@@ -79,7 +79,7 @@ pub fn increasing_triplet(nums: Vec<i32>) -> bool {
         }
         max >= 3
     }
-    lis(nums)
+    leetcode(nums)
 }
 
 // https://leetcode.com/problems/shortest-unsorted-continuous-subarray/description/
