@@ -138,6 +138,7 @@ pub fn ways_to_reach_target(target: i32, types: Vec<Vec<i32>>) -> i32 {
 }
 
 // https://leetcode.com/problems/split-the-array-to-make-coprime-products/description/
+// https://leetcode.com/problems/split-the-array-to-make-coprime-products/solutions/3258292/java-map-sweep-line-solution/
 pub fn find_valid_split(nums: Vec<i32>) -> i32 {
     -1
 }
