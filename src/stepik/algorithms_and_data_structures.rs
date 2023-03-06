@@ -376,6 +376,177 @@ fn task_2_2_solver(n: i32, tasks: Vec<i64>) -> Vec<(i32, i64)> {
     ans
 }
 
+fn task_2_3() -> Result<(), Box<dyn std::error::Error>> {
+    let mut buf = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut buf)?;
+    let n_m = buf
+        .trim()
+        .split(' ')
+        .map(|x| x.parse::<usize>().unwrap())
+        .collect::<Vec<_>>();
+    buf.clear();
+    stdin.read_line(&mut buf)?;
+    let tables = buf
+        .trim()
+        .split(' ')
+        .map(|x| x.parse::<usize>().unwrap())
+        .collect::<Vec<_>>();
+    buf.clear();
+    let mut queries = vec![];
+    for _ in 0..n_m[1] {
+        stdin.read_line(&mut buf)?;
+        let q = buf
+            .trim()
+            .split(' ')
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
+        queries.push((q[0], q[1]));
+        buf.clear()
+    }
+    stdin.read_line(&mut buf)?;
+    task_2_3_solver(tables, queries).into_iter().for_each(|x| {
+        println!("{}", x);
+    });
+    Ok(())
+}
+
+fn task_2_3_solver(tables: Vec<usize>, queries: Vec<(usize, usize)>) -> Vec<usize> {
+    struct UF {
+        parents: Vec<usize>,
+        rank: Vec<usize>,
+        max_rank: usize,
+    }
+    impl UF {
+        fn new() -> Self {
+            Self {
+                parents: vec![],
+                rank: vec![],
+                max_rank: 0,
+            }
+        }
+        fn make_set(&mut self, i: usize, s: usize) {
+            self.parents.push(i);
+            self.rank.push(s);
+            self.max_rank = self.max_rank.max(s);
+        }
+        fn find(&mut self, i: usize) -> usize {
+            if i != self.parents[i] {
+                self.parents[i] = self.find(self.parents[i]);
+            }
+            self.parents[i]
+        }
+        fn union(&mut self, i: usize, j: usize) -> usize {
+            let mut p_i = self.find(i);
+            let mut p_j = self.find(j);
+            if p_i == p_j {
+                return self.max_rank;
+            }
+            if self.rank[p_i] < self.rank[p_j] {
+                std::mem::swap(&mut p_i, &mut p_j);
+            }
+            self.rank[p_i] += self.rank[p_j];
+            self.max_rank = self.max_rank.max(self.rank[p_i]);
+            self.parents[p_j] = p_i;
+            self.max_rank
+        }
+    }
+    let mut uf = UF::new();
+    for (i, s) in tables.into_iter().enumerate() {
+        uf.make_set(i, s);
+    }
+    let mut ans = vec![];
+    for (a, b) in queries {
+        ans.push(uf.union(a - 1, b - 1));
+    }
+    ans
+}
+
+fn task_2_4() -> Result<(), Box<dyn std::error::Error>> {
+    let mut buf = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut buf)?;
+    let n_e_d = buf
+        .trim()
+        .split(' ')
+        .map(|x| x.parse::<usize>().unwrap())
+        .collect::<Vec<_>>();
+    buf.clear();
+    let mut joins = vec![];
+    for _ in 0..n_e_d[1] {
+        stdin.read_line(&mut buf)?;
+        let pair = buf
+            .trim()
+            .split(' ')
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
+        joins.push((pair[0], pair[1]));
+        buf.clear()
+    }
+    let mut disjoints = vec![];
+    for _ in 0..n_e_d[2] {
+        stdin.read_line(&mut buf)?;
+        let pair = buf
+            .trim()
+            .split(' ')
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
+        disjoints.push((pair[0], pair[1]));
+        buf.clear()
+    }
+    stdin.read_line(&mut buf)?;
+    println!("{}", (task_2_4_solver(n_e_d[0], joins, disjoints) as i32));
+    Ok(())
+}
+
+fn task_2_4_solver(n: usize, joins: Vec<(usize, usize)>, disjoints: Vec<(usize, usize)>) -> bool {
+    // Решение:
+    // - строим parent для переменных на самих себя
+    //     - определим две функции
+    //     - корень(x) -- возвращает окончательный парент (корень) для x
+    //     - свернуть(x, p) -- заменяет всю цепочку от x до корня x на значение p
+    //     - для всех e -- корнем j сворачиваем ветки i и j
+    //     - для всех d -- ищем равенство корней; выходим с 0, если нашли
+    //     - пишем 1, если до этого не вышли с нулем
+    struct UF(Vec<usize>);
+    impl UF {
+        fn new(n: usize) -> Self {
+            let mut links = vec![];
+            for i in 0..n {
+                links.push(i);
+            }
+            Self(links)
+        }
+        fn find(&mut self, i: usize) -> usize {
+            if i != self.0[i] {
+                self.0[i] = self.find(self.0[i]);
+            }
+            self.0[i]
+        }
+        fn same(&mut self, i: usize, j: usize) -> bool {
+            self.find(i) == self.find(j)
+        }
+        fn union(&mut self, i: usize, j: usize) {
+            let i = self.find(i);
+            let j = self.find(j);
+            if i == j {
+                return;
+            }
+            self.0[i] = j
+        }
+    }
+    let mut uf = UF::new(n);
+    for (i, j) in joins {
+        uf.union(i - 1, j - 1);
+    }
+    for (i, j) in disjoints {
+        if uf.same(i - 1, j - 1) {
+            return false;
+        }
+    }
+    true
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -449,5 +620,28 @@ mod test {
     fn test_2_2() {
         println!("{:?}", task_2_2_solver(2, vec![1, 2, 3, 4, 5]));
         println!("{:?}", task_2_2_solver(4, vec![1; 20]));
+    }
+
+    #[test]
+    fn test_2_3() {
+        println!(
+            "{:?}",
+            task_2_3_solver(
+                vec![1, 1, 1, 1, 1],
+                vec![(3, 5), (2, 4), (1, 4), (5, 4), (5, 3)],
+            )
+        );
+    }
+
+    #[test]
+    fn test_2_4() {
+        println!(
+            "{}",
+            task_2_4_solver(
+                6,
+                vec![(2, 3), (1, 5), (2, 5), (3, 4), (4, 2)],
+                vec![(6, 1), (4, 6), (4, 5)],
+            )
+        );
     }
 }
