@@ -1,12 +1,6 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-// https://leetcode.com/problems/subarray-sum-equals-k/description/
-// https://leetcode.com/problems/subarray-sum-equals-k/editorial/
-pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
-    todo!()
-}
-
 // https://leetcode.com/problems/kth-missing-positive-number/description/
 pub fn find_kth_positive(arr: Vec<i32>, k: i32) -> i32 {
     let mut next = 1;
@@ -139,8 +133,6 @@ pub fn ways_to_reach_target(target: i32, types: Vec<Vec<i32>>) -> i32 {
 
 // https://leetcode.com/problems/split-the-array-to-make-coprime-products/description/
 // https://leetcode.com/problems/split-the-array-to-make-coprime-products/solutions/3263371/easiest-approach-commented-prime-factors-mapping/
-
-// todo https://leetcode.com/problems/replace-non-coprime-numbers-in-array/description/
 pub fn find_valid_split(nums: Vec<i32>) -> i32 {
     fn leetcode(nums: Vec<i32>) -> i32 {
         use std::collections::HashMap;
@@ -180,6 +172,47 @@ pub fn find_valid_split(nums: Vec<i32>) -> i32 {
     leetcode(nums)
 }
 
+// https://leetcode.com/problems/count-number-of-nice-subarrays/description/
+// https://leetcode.com/problems/count-number-of-nice-subarrays/solutions/419319/o-n-solution/
+pub fn number_of_subarrays(nums: Vec<i32>, k: i32) -> i32 {
+    fn tricky_method(nums: Vec<i32>, k: i32) -> i32 {
+        let mut count = 0;
+        let mut groups = vec![];
+        groups.push(1);
+        for i in 0..nums.len() {
+            if nums[i] % 2 == 1 {
+                groups.push(1);
+            } else {
+                let last = groups.len() - 1;
+                groups[last] += 1;
+            }
+        }
+        for i in k as usize..groups.len() {
+            count += groups[i - k as usize] * groups[i];
+        }
+        count
+    }
+    fn deque_method(nums: Vec<i32>, k: i32) -> i32 {
+        use std::collections::VecDeque;
+        let mut queue = VecDeque::new();
+        queue.push_back(-1);
+        let mut ans = 0;
+        for i in 0..nums.len() {
+            if nums[i] % 2 == 1 {
+                queue.push_back(i as i32);
+            }
+            if queue.len() > k as usize + 1 {
+                queue.pop_front();
+            }
+            if queue.len() == k as usize + 1 {
+                ans += queue[1] - queue[0]
+            }
+        }
+        ans
+    }
+    deque_method(nums, k)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -213,5 +246,15 @@ mod test {
     fn test325() {
         println!("{}", find_valid_split(vec![4, 7, 8, 15, 3, 5])); // 2
         println!("{}", find_valid_split(vec![4, 7, 15, 8, 3, 5])); // -1
+    }
+
+    #[test]
+    fn test326() {
+        println!(
+            "{}",
+            number_of_subarrays(vec![2, 2, 2, 1, 2, 2, 1, 2, 2, 2], 2)
+        ); // 16
+        println!("{}", number_of_subarrays(vec![2, 4, 6], 1)); // 0
+        println!("{}", number_of_subarrays(vec![1, 1, 2, 1, 1], 3)); // 2
     }
 }
