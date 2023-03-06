@@ -138,9 +138,46 @@ pub fn ways_to_reach_target(target: i32, types: Vec<Vec<i32>>) -> i32 {
 }
 
 // https://leetcode.com/problems/split-the-array-to-make-coprime-products/description/
-// https://leetcode.com/problems/split-the-array-to-make-coprime-products/solutions/3258292/java-map-sweep-line-solution/
+// https://leetcode.com/problems/split-the-array-to-make-coprime-products/solutions/3263371/easiest-approach-commented-prime-factors-mapping/
+
+// todo https://leetcode.com/problems/replace-non-coprime-numbers-in-array/description/
 pub fn find_valid_split(nums: Vec<i32>) -> i32 {
-    -1
+    fn leetcode(nums: Vec<i32>) -> i32 {
+        use std::collections::HashMap;
+        let mut pos = HashMap::new(); // stores last appearance of prime factors
+        let mut pf = vec![vec![]; nums.len()]; // stores all prime factors of each index
+        for i in 0..nums.len() {
+            let mut x = nums[i];
+            let mut j = 2;
+            while j * j <= x {
+                if x % j == 0 {
+                    pos.insert(j, i); // updating the last appearance of prime factor j to i
+                    pf[i].push(j);
+                    while x % j == 0 {
+                        x /= j;
+                    }
+                }
+                j += 1;
+            }
+            if x > 1 {
+                // what if x is still a prime number, we do the same for x
+                pos.insert(x, i);
+                pf[i].push(x);
+            }
+        }
+        let mut mx = -1; // maximum index for of any prime factor till now
+        for i in 0..nums.len() - 1 {
+            for &j in &pf[i] {
+                // updating the maximum position of all prime factors till index i
+                mx = mx.max(pos[&j] as i32);
+            }
+            if mx == i as i32 {
+                return i as i32;
+            }
+        }
+        -1
+    }
+    leetcode(nums)
 }
 
 #[cfg(test)]
@@ -170,5 +207,11 @@ mod test {
             "{}",
             ways_to_reach_target(5, vec![vec![50, 1], vec![50, 2], vec![50, 5]])
         ); // 4
+    }
+
+    #[test]
+    fn test325() {
+        println!("{}", find_valid_split(vec![4, 7, 8, 15, 3, 5])); // 2
+        println!("{}", find_valid_split(vec![4, 7, 15, 8, 3, 5])); // -1
     }
 }
