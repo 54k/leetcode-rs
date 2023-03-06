@@ -90,11 +90,6 @@ pub fn max_level_sum(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     sums[sums.len() - 1].1 as i32
 }
 
-// https://leetcode.com/problems/split-the-array-to-make-coprime-products/description/
-pub fn find_valid_split(nums: Vec<i32>) -> i32 {
-    -1
-}
-
 // https://leetcode.com/problems/number-of-ways-to-earn-points/
 // https://leetcode.com/problems/number-of-ways-to-earn-points/solutions/3258120/java-c-python-knapsack-dp/?orderBy=most_relevant
 pub fn ways_to_reach_target(target: i32, types: Vec<Vec<i32>>) -> i32 {
@@ -140,6 +135,11 @@ pub fn ways_to_reach_target(target: i32, types: Vec<Vec<i32>>) -> i32 {
         optimized_space(target, types.clone())
     );
     optimized_space(target, types)
+}
+
+// https://leetcode.com/problems/split-the-array-to-make-coprime-products/description/
+pub fn find_valid_split(nums: Vec<i32>) -> i32 {
+    -1
 }
 
 #[cfg(test)]
