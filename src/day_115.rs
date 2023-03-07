@@ -27,21 +27,21 @@ pub fn count_ways(mut ranges: Vec<Vec<i32>>) -> i32 {
     ranges.sort();
     const MOD: i32 = 1000000007;
     // We need to find total number of non-overlapping range i.e. total and possible ways will be 2^(total).
-    let mut total = 1;
-    let mut end = ranges[0][1];
+    let mut non_overlapping = 1;
+    let mut recent_end = ranges[0][1];
     for i in 1..ranges.len() {
-        if ranges[i][0] > end {
-            total += 1;
+        if ranges[i][0] > recent_end {
+            non_overlapping += 1;
         }
-        end = end.max(ranges[i][1]);
+        recent_end = recent_end.max(ranges[i][1]);
     }
 
-    let mut ans = 1;
-    while total > 0 {
-        ans = (ans * 2) % MOD;
-        total -= 1;
+    let mut ways_to_group = 1;
+    while non_overlapping > 0 {
+        ways_to_group = (ways_to_group * 2) % MOD;
+        non_overlapping -= 1;
     }
-    ans
+    ways_to_group
 }
 
 // https://leetcode.com/problems/subarray-sum-equals-k/description/
@@ -99,7 +99,32 @@ pub fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
 
 // https://leetcode.com/problems/array-partition/description/
 pub fn array_pair_sum(nums: Vec<i32>) -> i32 {
-    todo!()
+    fn with_sort(mut nums: Vec<i32>) -> i32 {
+        nums.sort();
+        let mut ans = 0;
+        for i in (1..nums.len()).step_by(2).rev() {
+            ans += nums[i - 1];
+        }
+        ans
+    }
+    with_sort(nums)
+}
+
+// https://leetcode.com/problems/battleships-in-a-board/
+// https://leetcode.com/problems/battleships-in-a-board/solutions/90909/c-3ms-6-lines-solution-with-runtime-o-n-and-space-o-1/?orderBy=most_relevant
+// Idea is to define upper left X as the head of battle ship. We simply need to count the number of heads.
+pub fn count_battleships(board: Vec<Vec<char>>) -> i32 {
+    let mut ships = 0;
+    for i in 0..board.len() {
+        for j in 0..board[0].len() {
+            if board[i][j] == 'X'
+                && ((i == 0 || board[i - 1][j] == '.') && (j == 0 || board[i][j - 1] == '.'))
+            {
+                ships += 1;
+            }
+        }
+    }
+    ships
 }
 
 // todo https://leetcode.com/problems/replace-non-coprime-numbers-in-array/description/
@@ -138,5 +163,25 @@ mod test {
         println!("{}", check_subarray_sum(vec![23, 2, 6, 4, 7], 13)); // false
         println!("{}", check_subarray_sum(vec![23, 6, 9], 6)); // false
         println!("{}", check_subarray_sum(vec![0, 0], 1)); // true
+    }
+
+    #[test]
+    fn test331() {
+        println!("{}", array_pair_sum(vec![6, 2, 6, 5, 1, 2])); // 9
+        println!("{}", array_pair_sum(vec![1, 4, 3, 2])); // 4
+    }
+
+    #[test]
+    fn test332() {
+        println!(
+            "{}",
+            count_battleships(vec![
+                vec!['X', '.', '.', 'X'],
+                vec!['.', '.', '.', 'X'],
+                vec!['.', '.', '.', 'X']
+            ])
+        ); // 2
+        println!("{}", count_battleships(vec![vec!['.'],])); // 0
+        println!("{}", count_battleships(vec![vec!['X'],])); // 1
     }
 }
