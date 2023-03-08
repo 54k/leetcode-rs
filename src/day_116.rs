@@ -89,6 +89,10 @@ pub fn get_distances(mut arr: Vec<i32>) -> Vec<i64> {
         for i in 0..arr.len() {
             val_locs.entry(arr[i]).or_insert(vec![]).push(i);
         }
+        // Effectively, after we filter out all the indices at which each number appears into a map of integer to vector,
+        // the problem essentially boils down to -
+        // Given an array of integers, for each integer, find the sum of absolute difference of itself
+        // with every other integer in the array
         let mut ans = vec![0; arr.len()];
         for locs in val_locs.values() {
             let mut left = 0i64;
@@ -109,6 +113,51 @@ pub fn get_distances(mut arr: Vec<i32>) -> Vec<i64> {
     line_sweep_approach(arr)
 }
 
+// https://leetcode.com/problems/longest-string-chain/
+pub fn longest_str_chain(mut words: Vec<String>) -> i32 {
+    use std::collections::HashMap;
+    // Instead of adding a character, try deleting a character to form a chain in reverse.
+    // For each word in order of length, for each word2 which is word with one character removed,
+    // length[word2] = max(length[word2], length[word] + 1).
+    words.sort_by_key(|b| std::cmp::Reverse(b.len()));
+    let mut dp = HashMap::new();
+    for i in 0..words.len() {
+        dp.entry(&words[i]).or_insert(1);
+    }
+    for i in 0..words.len() {
+        let w1 = &words[i];
+        for j in i..words.len() {
+            let w2 = &words[j];
+            if w1.len() - w2.len() != 1 {
+                continue;
+            }
+
+            let mut w1_it = w1.chars();
+            let mut w2_it = w2.chars();
+            let mut w1_next = w1_it.next();
+            let mut w2_next = w2_it.next();
+            loop {
+                if w1_next.is_some() && w2_next.is_some() {
+                    if w1_next.unwrap() == w2_next.unwrap() {
+                        w2_next = w2_it.next();
+                    }
+                    w1_next = w1_it.next();
+                } else if w2_next.is_none() {
+                    let d1 = *dp.get(&w1).unwrap();
+                    let d2 = dp.get_mut(&w2).unwrap();
+                    *d2 = (*d2).max(d1 + 1);
+                    break;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    // println!("{:?}", dp);
+    *dp.values().max().unwrap()
+}
+
+// todo https://leetcode.com/problems/find-and-replace-in-string/
 // todo https://leetcode.com/problems/find-all-k-distant-indices-in-an-array/description/
 // todo https://leetcode.com/problems/split-with-minimum-sum/description/
 // todo https://leetcode.com/problems/task-scheduler/description/
@@ -133,5 +182,48 @@ mod test {
     fn test335() {
         println!("{:?}", get_distances(vec![2, 1, 3, 1, 2, 3, 3])); // [4,2,7,2,4,4,5]
         println!("{:?}", get_distances(vec![10, 5, 10, 10])); // [5,0,3,4]
+    }
+
+    #[test]
+    fn test336() {
+        println!(
+            "{:?}",
+            longest_str_chain(vec![
+                "a".to_string(),
+                "b".to_string(),
+                "ba".to_string(),
+                "bca".to_string(),
+                "bda".to_string(),
+                "bdca".to_string()
+            ])
+        ); // 4
+
+        println!(
+            "{:?}",
+            longest_str_chain(vec![
+                "xbc".to_string(),
+                "pcxbcf".to_string(),
+                "xb".to_string(),
+                "cxbc".to_string(),
+                "pcxbc".to_string()
+            ])
+        ); // 5
+
+        println!(
+            "{:?}",
+            longest_str_chain(vec!["abcd".to_string(), "dbqca".to_string()])
+        ); // 1
+
+        println!(
+            "{:?}",
+            longest_str_chain(vec![
+                "a".to_string(),
+                "b".to_string(),
+                "ba".to_string(),
+                "abc".to_string(),
+                "abd".to_string(),
+                "bdca".to_string()
+            ])
+        ); // 2
     }
 }
