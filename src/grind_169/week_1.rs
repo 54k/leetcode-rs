@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 // https://leetcode.com/problems/two-sum/
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
     use std::collections::*;
@@ -105,6 +108,43 @@ pub fn is_palindrome(s: String) -> bool {
     true
 }
 
+// https://leetcode.com/problems/invert-binary-tree/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+    fn rec(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+        if let Some(r) = root.clone() {
+            let mut r = r.borrow_mut();
+            let t = r.left.take();
+            r.left = r.right.clone();
+            r.right = t;
+            rec(r.left.clone());
+            rec(r.right.clone());
+            root
+        } else {
+            None
+        }
+    }
+    rec(root)
+}
+
+// https://leetcode.com/problems/valid-anagram/description/
+pub fn is_anagram(s: String, t: String) -> bool {
+    let mut hash = vec![0; 26];
+    s.chars()
+        .map(|x| x as usize - 'a' as usize)
+        .for_each(|x| hash[x] += 1);
+    t.chars()
+        .map(|x| x as usize - 'a' as usize)
+        .for_each(|x| hash[x] -= 1);
+    hash.into_iter().filter(|x| *x != 0).count() == 0
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -161,5 +201,40 @@ mod test {
         println!("{}", is_palindrome("race a car".to_string())); // false
         println!("{}", is_palindrome(" ".to_string())); // true
         println!("{}", is_palindrome("0P".to_string())); // false
+    }
+
+    #[test]
+    fn test_invert_tree() {
+        println!(
+            "{:?}",
+            invert_tree(Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 3,
+                    left: None,
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 4,
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+            }))))
+        );
+    }
+
+    #[test]
+    fn test_is_anagram() {
+        println!(
+            "{}",
+            is_anagram("anagram".to_string(), "nagaram".to_string())
+        ); // true
+
+        println!("{}", is_anagram("rat".to_string(), "car".to_string())); // false
+        println!("{}", is_anagram("aa".to_string(), "bb".to_string())); // false
     }
 }
