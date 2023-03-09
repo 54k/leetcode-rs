@@ -116,6 +116,17 @@ pub struct TreeNode {
     pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
 pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
     fn rec(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
         if let Some(r) = root.clone() {
@@ -160,6 +171,78 @@ pub fn search(nums: Vec<i32>, target: i32) -> i32 {
         }
     }
     -1
+}
+
+// https://leetcode.com/problems/flood-fill/description/
+pub fn flood_fill(mut image: Vec<Vec<i32>>, sr: i32, sc: i32, color: i32) -> Vec<Vec<i32>> {
+    const DIR: [(i32, i32); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
+    fn dfs(
+        image: &mut Vec<Vec<i32>>,
+        visited: &mut Vec<Vec<i32>>,
+        pos_and_color: (i32, i32, i32),
+        color: i32,
+    ) {
+        if pos_and_color.0 < 0
+            || pos_and_color.1 < 0
+            || pos_and_color.0 >= image.len() as i32
+            || pos_and_color.1 >= image[0].len() as i32
+            || image[pos_and_color.0 as usize][pos_and_color.1 as usize] != pos_and_color.2
+            || visited[pos_and_color.0 as usize][pos_and_color.1 as usize] == 1
+        {
+            return;
+        }
+        image[pos_and_color.0 as usize][pos_and_color.1 as usize] = color;
+        visited[pos_and_color.0 as usize][pos_and_color.1 as usize] = 1;
+        for d in DIR {
+            dfs(
+                image,
+                visited,
+                (
+                    pos_and_color.0 + d.0,
+                    pos_and_color.1 + d.1,
+                    pos_and_color.2,
+                ),
+                color,
+            );
+        }
+    }
+    let starting_color = image[sr as usize][sc as usize];
+    let mut visited = vec![vec![0; image[0].len()]; image.len()];
+    dfs(&mut image, &mut visited, (sr, sc, starting_color), color);
+    image
+}
+
+// https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+// todo revisit for bst
+pub fn lowest_common_ancestor(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    p: Option<Rc<RefCell<TreeNode>>>,
+    q: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    fn rec(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if root.is_none() || root == p || root == q {
+            return root;
+        }
+        let r = root.clone().unwrap();
+        let r = r.borrow();
+        let left = rec(r.left.clone(), p.clone(), q.clone());
+        let right = rec(r.right.clone(), p, q);
+        if left.is_some() && right.is_some() {
+            return root;
+        }
+
+        if left.is_some() {
+            left
+        } else {
+            right
+        }
+    }
+
+    rec(root, p, q)
 }
 
 #[cfg(test)]
@@ -261,5 +344,44 @@ mod test {
         println!("{}", search(vec![-1, 0, 3, 5, 9, 12], 2)); // -1
         println!("{}", search(vec![5], 5)); // 0
         println!("{}", search(vec![5], -5)); // 0
+    }
+
+    #[test]
+    fn test_flood_fill() {
+        println!(
+            "{:?}",
+            flood_fill(vec![vec![1, 1, 1], vec![1, 1, 0], vec![1, 0, 1]], 1, 1, 2)
+        ); // [[2,2,2],[2,2,0],[2,0,1]]
+
+        println!(
+            "{:?}",
+            flood_fill(vec![vec![0, 0, 0], vec![0, 0, 0]], 0, 0, 0)
+        ); // [[0,0,0],[0,0,0]]
+
+        println!(
+            "{:?}",
+            flood_fill(vec![vec![0, 0, 0], vec![0, 0, 0]], 1, 0, 2)
+        ); // [[2,2,2],[2,2,2]]
+    }
+
+    #[test]
+    fn test_lowest_common_ancestor() {
+        let p = Some(Rc::new(RefCell::new(TreeNode::new(4))));
+        let q = Some(Rc::new(RefCell::new(TreeNode::new(3))));
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(3)))),
+                right: p.clone(),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: q.clone(),
+                val: 2,
+            }))),
+        })));
+
+        println!("{:?}", lowest_common_ancestor(root, p, q)); // return 1 root
     }
 }
