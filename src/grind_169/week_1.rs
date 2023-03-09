@@ -145,6 +145,23 @@ pub fn is_anagram(s: String, t: String) -> bool {
     hash.into_iter().filter(|x| *x != 0).count() == 0
 }
 
+// https://leetcode.com/problems/binary-search/description/
+pub fn search(nums: Vec<i32>, target: i32) -> i32 {
+    let mut lo = 0i32;
+    let mut hi = nums.len() as i32 - 1;
+    while lo <= hi {
+        let mid = lo + (hi - lo) / 2;
+        if nums[mid as usize] == target {
+            return mid as i32;
+        } else if nums[mid as usize] < target {
+            lo = mid + 1;
+        } else {
+            hi = mid - 1;
+        }
+    }
+    -1
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -236,5 +253,13 @@ mod test {
 
         println!("{}", is_anagram("rat".to_string(), "car".to_string())); // false
         println!("{}", is_anagram("aa".to_string(), "bb".to_string())); // false
+    }
+
+    #[test]
+    fn test_search() {
+        println!("{}", search(vec![-1, 0, 3, 5, 9, 12], 9)); // 4
+        println!("{}", search(vec![-1, 0, 3, 5, 9, 12], 2)); // -1
+        println!("{}", search(vec![5], 5)); // 0
+        println!("{}", search(vec![5], -5)); // 0
     }
 }
