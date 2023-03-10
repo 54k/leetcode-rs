@@ -1,4 +1,3 @@
-// todo https://leetcode.com/problems/task-scheduler-ii/
 // todo https://leetcode.com/problems/strong-password-checker/description/
 // todo https://leetcode.com/problems/replace-non-coprime-numbers-in-array/description/
 
@@ -123,6 +122,26 @@ pub fn least_interval(tasks: Vec<char>, n: i32) -> i32 {
     }
 }
 
+// https://leetcode.com/problems/task-scheduler-ii/
+// https://leetcode.com/problems/task-scheduler-ii/solutions/2388089/c-concise-with-comments/
+// https://leetcode.com/problems/task-scheduler-ii/solutions/2388101/hash-table-in-single-pass-with-explanation/?orderBy=most_relevant
+pub fn task_scheduler_ii(tasks: Vec<i32>, space: i32) -> i64 {
+    // Complete the task if the wait time is lower than the current day. Put the next day for it.
+    // Otherwise, skip the days to the time where it can be completed
+    // We could use a Hash table to see when we're allowed to do the task
+    use std::collections::*;
+    let mut last_day = HashMap::new();
+    let mut ans = 0i64;
+    for &t in &tasks {
+        if last_day.contains_key(&t) {
+            ans = ans.max(*last_day.get(&t).unwrap());
+        }
+        ans += 1;
+        *last_day.entry(t).or_insert(0i64) = ans + space as i64;
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -167,5 +186,11 @@ mod test {
             "{:?}",
             least_interval(vec!['A', 'A', 'A', 'B', 'B', 'B'], 0)
         ); // 6
+    }
+
+    #[test]
+    fn test342() {
+        println!("{:?}", task_scheduler_ii(vec![1, 2, 1, 2, 3, 1], 3)); // 9
+        println!("{:?}", task_scheduler_ii(vec![5, 8, 8, 5], 2)); // 6
     }
 }
