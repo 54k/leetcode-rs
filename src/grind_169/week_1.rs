@@ -562,7 +562,7 @@ pub fn backspace_compare(s: String, t: String) -> bool {
     let mut j = t.len() as i32 - 1;
     let mut skip_j = 0;
 
-    while i >= 0 && j >= 0 {
+    while i >= 0 || j >= 0 {
         while i >= 0 {
             if s[i as usize] == '#' {
                 i -= 1;
@@ -923,5 +923,10 @@ mod test {
         ); // true
 
         println!("{}", backspace_compare("a#c".to_string(), "b".to_string())); // true
+
+        println!(
+            "{}",
+            backspace_compare("bbbextm".to_string(), "bbb#extm".to_string())
+        ); // false
     }
 }
