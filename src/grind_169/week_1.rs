@@ -603,6 +603,11 @@ pub fn backspace_compare(s: String, t: String) -> bool {
     true
 }
 
+// https://leetcode.com/problems/single-number/
+pub fn single_number(nums: Vec<i32>) -> i32 {
+    nums.into_iter().fold(0, |acc, v| acc ^ v)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -928,5 +933,11 @@ mod test {
             "{}",
             backspace_compare("bbbextm".to_string(), "bbb#extm".to_string())
         ); // false
+    }
+
+    #[test]
+    fn test_single_number() {
+        println!("{}", single_number(vec![2, 2, 1])); // 1
+        println!("{}", single_number(vec![4, 1, 2, 1, 2])); // 4
     }
 }
