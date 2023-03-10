@@ -94,7 +94,10 @@ pub fn split_num(num: i32) -> i32 {
 pub fn least_interval(tasks: Vec<char>, n: i32) -> i32 {
     // There is one crucial point for you:
     // the ONLY thing you need to care is the max number of one task!
-    // We set apart each max task with interval n, and we hope to put all other tasks into those intervals. If the number of those tasks exceeds the interval space, then we don't need any idle interval at all. If not, the interval space plus the max tasks will be the least interval. Be care for the existent of multiple max tasks.
+    // We set apart each max task with interval n, and we hope to put all other tasks into those intervals.
+    // If the number of those tasks exceeds the interval space, then we don't need any idle interval at all.
+    // If not, the interval space plus the max tasks will be the least interval.
+    // Be care for the existent of multiple max tasks.
     let mut storage = vec![0; 26];
     for i in 0..tasks.len() {
         storage[tasks[i] as usize - 'A' as usize] += 1;
