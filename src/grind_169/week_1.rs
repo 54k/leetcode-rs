@@ -245,6 +245,242 @@ pub fn lowest_common_ancestor(
     rec(root, p, q)
 }
 
+// https://leetcode.com/problems/balanced-binary-tree/description/
+pub fn is_balanced(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    fn rec(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        if let Some(r) = root {
+            let r = r.borrow();
+            let height_left = rec(r.left.clone());
+            let height_right = rec(r.right.clone());
+            if height_left < 0 || height_right < 0 || (height_left - height_right).abs() > 1 {
+                -1
+            } else {
+                height_left.max(height_right) + 1
+            }
+        } else {
+            0
+        }
+    }
+    rec(root) > -1
+}
+
+// https://leetcode.com/problems/minimum-depth-of-binary-tree/description/
+pub fn min_depth(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    fn rec(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        if let Some(r) = root {
+            let r = r.borrow();
+            let left_height = rec(r.left.clone());
+            let right_height = rec(r.right.clone());
+            if left_height == 0 || right_height == 0 {
+                left_height + right_height + 1
+            } else {
+                left_height.min(right_height) + 1
+            }
+        } else {
+            0
+        }
+    }
+    rec(root)
+}
+
+// https://leetcode.com/problems/implement-queue-using-stacks/description/
+struct MyQueue {
+    put: Vec<i32>,
+    get: Vec<i32>,
+}
+impl MyQueue {
+    fn new() -> Self {
+        Self {
+            put: vec![],
+            get: vec![],
+        }
+    }
+
+    fn push(&mut self, x: i32) {
+        self.put.push(x);
+    }
+
+    fn pop(&mut self) -> i32 {
+        if self.get.is_empty() {
+            while let Some(e) = self.put.pop() {
+                self.get.push(e);
+            }
+        }
+        self.get.pop().unwrap()
+    }
+
+    fn peek(&mut self) -> i32 {
+        if self.get.is_empty() {
+            while let Some(e) = self.put.pop() {
+                self.get.push(e);
+            }
+        }
+        *self.get.last().unwrap()
+    }
+
+    fn empty(&self) -> bool {
+        self.put.is_empty() && self.get.is_empty()
+    }
+}
+
+// https://leetcode.com/problems/first-bad-version/description/
+// The API isBadVersion is defined for you.
+// isBadVersion(version:i32)-> bool;
+// to call it use self.isBadVersion(version)
+struct BadVersion(i32);
+
+impl BadVersion {
+    pub fn first_bad_version(&self, n: i32) -> i32 {
+        let mut lo = 1;
+        let mut hi = n;
+        while lo < hi {
+            let mid = lo + (hi - lo) / 2;
+            if self.isBadVersion(mid) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        lo
+    }
+
+    pub fn isBadVersion(&self, version: i32) -> bool {
+        version >= self.0
+    }
+}
+
+// https://leetcode.com/problems/ransom-note/description/
+pub fn can_construct(ransom_note: String, magazine: String) -> bool {
+    let mut dict = vec![0; 26];
+    for c in magazine.chars() {
+        dict[c as usize - 'a' as usize] += 1;
+    }
+    for c in ransom_note.chars() {
+        let d = &mut dict[c as usize - 'a' as usize];
+        if *d == 0 {
+            return false;
+        }
+        *d -= 1;
+    }
+    true
+}
+
+// https://leetcode.com/problems/climbing-stairs/
+pub fn climb_stairs(n: i32) -> i32 {
+    let mut a = 1;
+    let mut b = 1;
+    for _ in 2..=n + 1 {
+        let c = a + b;
+        a = b;
+        b = c;
+    }
+    a
+}
+
+// https://leetcode.com/problems/longest-palindrome/description/
+// https://leetcode.com/problems/longest-palindrome/editorial/
+pub fn longest_palindrome(s: String) -> i32 {
+    use std::collections::*;
+    let mut map = HashMap::new();
+    for c in s.chars() {
+        *map.entry(c).or_insert(0) += 1;
+    }
+    let mut ans = 0;
+    for &v in map.values() {
+        ans += v / 2 * 2;
+        if ans % 2 == 0 && v % 2 == 1 {
+            ans += 1;
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/reverse-linked-list/
+pub fn reverse_list(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    let mut prev = None;
+    while let Some(mut n) = head.take() {
+        let next = n.next.take();
+        n.next = prev;
+        prev = Some(n);
+        head = next;
+    }
+    prev
+}
+
+// https://leetcode.com/problems/majority-element/description/
+// https://leetcode.com/problems/majority-element/editorial/
+pub fn majority_element(nums: Vec<i32>) -> i32 {
+    let mut count = 1;
+    let mut candidate = nums[0];
+    for n in nums.into_iter().skip(1) {
+        if count == 0 {
+            candidate = n;
+        }
+        count += if candidate == n { 1 } else { -1 };
+    }
+    candidate
+}
+
+// https://leetcode.com/problems/add-binary/
+pub fn add_binary(a: String, b: String) -> String {
+    let a = a.chars().rev().collect::<Vec<_>>();
+    let b = b.chars().rev().collect::<Vec<_>>();
+    let mut ans = String::new();
+    let mut carry = 0;
+    let mut i = 0;
+    let mut j = 0;
+    loop {
+        let a_d = if i < a.len() {
+            a[j] as i32 - '0' as i32
+        } else {
+            0
+        };
+        let b_d = if j < b.len() {
+            b[j] as i32 - '0' as i32
+        } else {
+            0
+        };
+
+        i += 1;
+        j += 1;
+
+        let sum = a_d + b_d + carry;
+        ans.push_str(&(sum % 2).to_string());
+        carry = sum / 2;
+
+        if i >= a.len() && j >= b.len() {
+            if carry > 0 {
+                ans.push_str(&carry.to_string());
+            }
+            break;
+        }
+    }
+    ans.chars().rev().collect()
+}
+
+// https://leetcode.com/problems/diameter-of-binary-tree/
+pub fn diameter_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>, max_diameter: &mut i32) -> (i32, i32) {
+        if let Some(r) = root {
+            let r = r.borrow();
+            let left_path = dfs(r.left.clone(), max_diameter);
+            let right_path = dfs(r.right.clone(), max_diameter);
+            *max_diameter = (*max_diameter)
+                .max(left_path.0.max(left_path.1) + 1 + right_path.0.max(right_path.1));
+            (
+                left_path.0.max(left_path.1) + 1,
+                right_path.0.max(right_path.1) + 1,
+            )
+        } else {
+            (0, 0)
+        }
+    }
+
+    let mut max_diameter = 0;
+    dfs(root, &mut max_diameter);
+    max_diameter - 1 // num of edges
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -383,5 +619,127 @@ mod test {
         })));
 
         println!("{:?}", lowest_common_ancestor(root, p, q)); // return 1 root
+    }
+
+    #[test]
+    fn test_is_balanced() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(3)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(4)))).clone(),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(3)))).clone(),
+                val: 2,
+            }))),
+        })));
+
+        println!("{:?}", is_balanced(root)); // true
+    }
+
+    #[test]
+    fn test_min_depth() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(3)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(4)))).clone(),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(3)))).clone(),
+                val: 2,
+            }))),
+        })));
+
+        println!("{:?}", min_depth(root)); // 3
+    }
+
+    #[test]
+    fn test_my_queue() {
+        let mut q = MyQueue::new();
+        q.push(1);
+        q.push(2);
+        println!("{}", q.peek());
+        println!("{}", q.pop());
+        println!("{}", q.empty());
+    }
+
+    #[test]
+    fn test_first_bad_version() {
+        let bv = BadVersion(4);
+        println!("{}", bv.first_bad_version(5)); // 4
+        let bv = BadVersion(1);
+        println!("{}", bv.first_bad_version(1)); // 1
+        let bv = BadVersion(1702766719);
+        println!("{}", bv.first_bad_version(2126753390)); // 1702766719
+    }
+
+    #[test]
+    fn test_can_construct() {
+        println!("{}", can_construct("aa".to_string(), "aab".to_string())); // true
+        println!("{}", can_construct("aa".to_string(), "ab".to_string())); // false
+        println!("{}", can_construct("a".to_string(), "b".to_string())); // false
+    }
+
+    #[test]
+    fn test_climb_stairs() {
+        println!("{}", climb_stairs(2)); // 2
+        println!("{}", climb_stairs(3)); // 3
+    }
+
+    #[test]
+    fn test_longest_palindrome() {
+        println!("{}", longest_palindrome("abccccdd".to_string())); // 7
+        println!("{}", longest_palindrome("a".to_string())); // 1
+    }
+
+    #[test]
+    fn test_reverse_list() {
+        println!(
+            "{:?}",
+            reverse_list(Some(Box::new(ListNode {
+                next: Some(Box::new(ListNode {
+                    next: Some(Box::new(ListNode { next: None, val: 3 })),
+                    val: 2
+                })),
+                val: 1
+            })))
+        );
+    }
+
+    #[test]
+    fn test_majority_element() {
+        println!("{}", majority_element(vec![3, 2, 3])); // 3
+        println!("{}", majority_element(vec![2, 2, 1, 1, 1, 2, 2])); // 3
+    }
+
+    #[test]
+    fn test_add_binary() {
+        println!("{}", add_binary("11".to_string(), "1".to_string())); // 100
+        println!("{}", add_binary("1010".to_string(), "1011".to_string())); // 10101
+    }
+
+    #[test]
+    fn test_diameter_of_binary_tree() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(5)))),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: None,
+                right: None,
+                val: 3,
+            }))),
+        })));
+
+        println!("{}", diameter_of_binary_tree(root)); // 3
     }
 }
