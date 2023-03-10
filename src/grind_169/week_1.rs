@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 // https://leetcode.com/problems/two-sum/
@@ -481,6 +482,127 @@ pub fn diameter_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     max_diameter - 1 // num of edges
 }
 
+// https://leetcode.com/problems/middle-of-the-linked-list/
+pub fn middle_node(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    unsafe {
+        let mut slow = Box::into_raw(head.unwrap());
+        let mut fast = slow.as_ref();
+        while fast.is_some() && fast.unwrap().next.is_some() {
+            fast = fast.unwrap().next.as_ref().unwrap().next.as_deref();
+            slow = Box::into_raw((*slow).next.take().unwrap());
+        }
+        Some(Box::from_raw(slow))
+    }
+}
+
+// https://leetcode.com/problems/maximum-depth-of-binary-tree/
+pub fn max_depth(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        if let Some(r) = root {
+            let r = r.borrow();
+            dfs(r.left.clone()).max(dfs(r.right.clone())) + 1
+        } else {
+            0
+        }
+    }
+    dfs(root)
+}
+
+// https://leetcode.com/problems/contains-duplicate/description/
+pub fn contains_duplicate(mut nums: Vec<i32>) -> bool {
+    nums.sort();
+    for i in 0..nums.len() - 1 {
+        if nums[i] == nums[i + 1] {
+            return true;
+        }
+    }
+    false
+}
+
+// https://leetcode.com/problems/roman-to-integer/
+pub fn roman_to_int(s: String) -> i32 {
+    use std::collections::*;
+    let symbols = vec![
+        ('I', 1),
+        ('V', 5),
+        ('X', 10),
+        ('L', 50),
+        ('C', 100),
+        ('D', 500),
+        ('M', 1000),
+    ]
+    .into_iter()
+    .collect::<HashMap<char, i32>>();
+    let mut res = 0;
+    let s = s.chars().collect::<Vec<_>>();
+    let mut i = 0;
+    while i < s.len() {
+        let cur = symbols[&s[i]];
+        let next = if i < s.len() - 1 && symbols[&s[i + 1]] > cur {
+            let v = symbols[&s[i + 1]];
+            i += 1;
+            v
+        } else {
+            0
+        };
+        i += 1;
+        res += (next - cur).abs();
+    }
+    res
+}
+
+// https://leetcode.com/problems/backspace-string-compare/description/
+// https://leetcode.com/problems/backspace-string-compare/editorial/
+// Follow up: Can you solve it in O(n) time and O(1) space?
+pub fn backspace_compare(s: String, t: String) -> bool {
+    let s = s.chars().collect::<Vec<_>>();
+    let t = t.chars().collect::<Vec<_>>();
+    let mut i = s.len() as i32 - 1;
+    let mut skip_i = 0;
+    let mut j = t.len() as i32 - 1;
+    let mut skip_j = 0;
+
+    while i >= 0 && j >= 0 {
+        while i >= 0 {
+            if s[i as usize] == '#' {
+                i -= 1;
+                skip_i += 1;
+            } else if skip_i > 0 {
+                i -= 1;
+                skip_i -= 1;
+            } else {
+                break;
+            }
+        }
+
+        while j >= 0 {
+            if t[j as usize] == '#' {
+                j -= 1;
+                skip_j += 1;
+            } else if skip_j > 0 {
+                j -= 1;
+                skip_j -= 1;
+            } else {
+                break;
+            }
+        }
+
+        if i >= 0 && j >= 0 && s[i as usize] != t[j as usize] {
+            return false;
+        }
+
+        if (i >= 0) != (j >= 0) {
+            // empty vs full
+            return false;
+        }
+
+        i -= 1;
+        j -= 1;
+    }
+
+    true
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -741,5 +863,65 @@ mod test {
         })));
 
         println!("{}", diameter_of_binary_tree(root)); // 3
+    }
+
+    #[test]
+    fn test_middle_node() {
+        let list = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode { val: 4, next: None })),
+            })),
+        }));
+        println!("{:?}", middle_node(list)); // 2->4
+    }
+
+    #[test]
+    fn test_max_depth() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(5)))),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: None,
+                right: None,
+                val: 3,
+            }))),
+        })));
+
+        println!("{}", max_depth(root)); // 3
+    }
+
+    #[test]
+    fn test_contains_duplicate() {
+        println!("{}", contains_duplicate(vec![1, 2, 3, 1])); // true
+        println!("{}", contains_duplicate(vec![1, 2, 3, 4])); // false
+        println!("{}", contains_duplicate(vec![1, 1, 1, 3, 3, 4, 3, 2, 4, 2])); // true
+    }
+
+    #[test]
+    fn test_roman_to_int() {
+        println!("{}", roman_to_int("III".to_string())); // 3
+        println!("{}", roman_to_int("LVIII".to_string())); // 58
+        println!("{}", roman_to_int("MCMXCIV".to_string())); // 1994
+    }
+
+    #[test]
+    fn test_backspace_compare() {
+        println!(
+            "{}",
+            backspace_compare("ab#c".to_string(), "ad#c".to_string())
+        ); // true
+
+        println!(
+            "{}",
+            backspace_compare("ab##".to_string(), "c#d#".to_string())
+        ); // true
+
+        println!("{}", backspace_compare("a#c".to_string(), "b".to_string())); // true
     }
 }
