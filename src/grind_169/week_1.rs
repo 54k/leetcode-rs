@@ -603,9 +603,84 @@ pub fn backspace_compare(s: String, t: String) -> bool {
     true
 }
 
+// https://leetcode.com/problems/counting-bits/description/
+pub fn count_bits(n: i32) -> Vec<i32> {
+    let mut ans = vec![0i32; n as usize + 1];
+    for i in 1..=n as usize {
+        ans[i] = ans[i / 2] + (i % 2) as i32;
+    }
+    ans
+}
+
+// https://leetcode.com/problems/same-tree/description/
+pub fn is_same_tree(p: Option<Rc<RefCell<TreeNode>>>, q: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    fn rec(p: Option<Rc<RefCell<TreeNode>>>, q: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        if p.is_none() && q.is_none() {
+            true
+        } else if (p.is_none() && q.is_some()) || (p.is_some() && q.is_none()) {
+            false
+        } else {
+            let p = p.unwrap();
+            let p = p.borrow();
+            let q = q.unwrap();
+            let q = q.borrow();
+            p.val == q.val
+                && rec(p.left.clone(), q.left.clone())
+                && rec(p.right.clone(), q.right.clone())
+        }
+    }
+    rec(p, q)
+}
+
+// https://leetcode.com/problems/number-of-1-bits/
+pub fn hammingWeight(mut n: u32) -> i32 {
+    let mut ans = n & 1;
+    while n > 0 {
+        ans += (n >> 1) & 1;
+        n >>= 1;
+    }
+    ans as i32
+}
+
 // https://leetcode.com/problems/single-number/
 pub fn single_number(nums: Vec<i32>) -> i32 {
     nums.into_iter().fold(0, |acc, v| acc ^ v)
+}
+
+// https://leetcode.com/problems/longest-common-prefix/description/
+// https://leetcode.com/problems/longest-common-prefix/editorial/
+pub fn longest_common_prefix(strs: Vec<String>) -> String {
+    if strs.is_empty() {
+        return "".to_string();
+    }
+    let mut prefix = strs[0].as_str();
+    for i in 1..strs.len() {
+        while strs[i].find(prefix).unwrap_or(strs[i].len() + 1) != 0 {
+            prefix = &prefix[0..prefix.len() - 1];
+            if prefix.is_empty() {
+                return "".to_string();
+            }
+        }
+    }
+    prefix.to_owned()
+}
+
+// https://leetcode.com/problems/palindrome-linked-list/
+pub fn is_palindrome_linked_list(mut head: Option<Box<ListNode>>) -> bool {
+    let mut prev = None;
+    while let Some(mut c) = head.take() {
+        let next = c.next.take();
+        if prev == next {
+            return true;
+        }
+        c.next = prev;
+        prev = Some(c);
+        if prev == next {
+            return true;
+        }
+        head = next;
+    }
+    false
 }
 
 #[cfg(test)]
@@ -936,8 +1011,145 @@ mod test {
     }
 
     #[test]
+    fn test_count_bits() {
+        println!("{:?}", count_bits(2)); // [0,1,1]
+        println!("{:?}", count_bits(5)); // [0,1,1,2,1,2]
+    }
+
+    #[test]
+    fn test_is_same_tree() {
+        let p = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(5)))),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: None,
+                right: None,
+                val: 3,
+            }))),
+        })));
+        let q = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(5)))),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: None,
+                right: None,
+                val: 3,
+            }))),
+        })));
+        println!("{}", is_same_tree(p, q));
+
+        let p = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: Some(Rc::new(RefCell::new(TreeNode::new(5)))),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: None,
+                right: None,
+                val: 3,
+            }))),
+        })));
+        let q = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode::new(4)))),
+                right: None,
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: None,
+                right: None,
+                val: 3,
+            }))),
+        })));
+        println!("{}", is_same_tree(p, q));
+    }
+
+    #[test]
+    fn test_hammingWeight() {
+        println!("{}", hammingWeight(4)); // 1
+        println!("{}", hammingWeight(3)); // 2
+        println!("{}", hammingWeight(2)); // 1
+        println!("{}", hammingWeight(1)); // 1
+    }
+
+    #[test]
+    fn test_longest_common_prefix() {
+        println!(
+            "{}",
+            longest_common_prefix(vec![
+                "flower".to_string(),
+                "flow".to_string(),
+                "flight".to_string()
+            ])
+        );
+        println!(
+            "{}",
+            longest_common_prefix(vec![
+                "dog".to_string(),
+                "racecar".to_string(),
+                "car".to_string()
+            ])
+        );
+
+        println!(
+            "{}",
+            longest_common_prefix(vec!["c".to_string(), "acc".to_string(), "ccc".to_string()])
+        );
+    }
+
+    #[test]
     fn test_single_number() {
         println!("{}", single_number(vec![2, 2, 1])); // 1
         println!("{}", single_number(vec![4, 1, 2, 1, 2])); // 4
+    }
+
+    #[test]
+    fn test_is_palindrome_linked_list() {
+        println!(
+            "{}",
+            is_palindrome_linked_list(Some(Box::new(ListNode {
+                next: Some(Box::new(ListNode {
+                    next: Some(Box::new(ListNode { next: None, val: 3 })),
+                    val: 2
+                })),
+                val: 1
+            })))
+        );
+
+        println!(
+            "{}",
+            is_palindrome_linked_list(Some(Box::new(ListNode {
+                next: Some(Box::new(ListNode {
+                    next: Some(Box::new(ListNode { next: None, val: 1 })),
+                    val: 2
+                })),
+                val: 1
+            })))
+        );
+
+        println!(
+            "{}",
+            is_palindrome_linked_list(Some(Box::new(ListNode {
+                val: 1,
+                next: Some(Box::new(ListNode {
+                    val: 2,
+                    next: Some(Box::new(ListNode {
+                        val: 2,
+                        next: Some(Box::new(ListNode { val: 1, next: None }))
+                    })),
+                })),
+            })))
+        );
     }
 }
