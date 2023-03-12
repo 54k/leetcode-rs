@@ -369,6 +369,120 @@ pub fn length_of_longest_substring(s: String) -> i32 {
     optimized_sliding_window(s)
 }
 
+// https://leetcode.com/problems/3sum/
+pub fn three_sum(nums: Vec<i32>) -> Vec<Vec<i32>> {
+    fn approach_with_set(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        use std::collections::*;
+        let mut set = HashSet::new();
+        let mut ans = HashSet::new();
+        for i in 0..nums.len() - 1 {
+            let a = nums[i];
+            set.clear();
+            for j in i + 1..nums.len() {
+                let b = nums[j];
+                if set.contains(&-(a + b)) {
+                    let c = *set.get(&-(a + b)).unwrap();
+                    let mut triplet = vec![a, b, c];
+                    triplet.sort();
+                    ans.insert(triplet);
+                }
+                set.insert(b);
+            }
+        }
+        ans.into_iter().collect()
+    }
+
+    fn approach_with_two_pointers(mut nums: Vec<i32>) -> Vec<Vec<i32>> {
+        use std::cmp::*;
+        nums.sort();
+        let mut ans = vec![];
+        for i in 0..nums.len() - 2 {
+            if i > 0 && nums[i] == nums[i - 1] {
+                continue;
+            }
+            let mut left = i + 1;
+            let mut right = nums.len() - 1;
+            while left < right {
+                let sum = nums[i] + nums[left] + nums[right];
+                match sum.cmp(&0) {
+                    Ordering::Greater => {
+                        right -= 1;
+                    }
+                    Ordering::Less => {
+                        left += 1;
+                    }
+                    _ => {
+                        ans.push(vec![nums[i], nums[left], nums[right]]);
+                        while left < right && nums[left] == nums[left + 1] {
+                            left += 1;
+                        }
+                        while left < right && nums[right] == nums[right - 1] {
+                            right -= 1;
+                        }
+                        left += 1;
+                        right -= 1;
+                    }
+                }
+            }
+        }
+        ans
+    }
+
+    approach_with_two_pointers(nums)
+}
+
+// https://leetcode.com/problems/binary-tree-level-order-traversal/
+pub fn level_order(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        fn dfs(root: Option<Rc<RefCell<TreeNode>>>, depth: usize, levels: &mut Vec<Vec<i32>>) {
+            if let Some(r) = root {
+                if levels.len() == depth {
+                    levels.push(vec![]);
+                }
+                let r = r.borrow();
+                levels[depth].push(r.val);
+                dfs(r.left.clone(), depth + 1, levels);
+                dfs(r.right.clone(), depth + 1, levels);
+            }
+        }
+        let mut levels = vec![];
+        dfs(root, 0, &mut levels);
+        levels
+    }
+
+    fn bfs(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        use std::collections::VecDeque;
+        let mut levels = vec![];
+        let mut queue = VecDeque::new();
+        if root.is_some() {
+            queue.push_back(root);
+        }
+        let mut lvl = 0;
+        while !queue.is_empty() {
+            let mut k = queue.len();
+            if levels.len() == lvl {
+                levels.push(vec![]);
+            }
+            while k > 0 {
+                k -= 1;
+                if let Some(Some(n)) = queue.pop_front() {
+                    let n = n.borrow();
+                    levels[lvl].push(n.val);
+                    if n.left.is_some() {
+                        queue.push_back(n.left.clone());
+                    }
+                    if n.right.is_some() {
+                        queue.push_back(n.right.clone());
+                    }
+                }
+            }
+            lvl += 1;
+        }
+        levels
+    }
+    bfs(root)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -512,5 +626,41 @@ mod test {
         println!("{}", length_of_longest_substring("abcabcbb".to_string())); // 3
         println!("{}", length_of_longest_substring("bbbbb".to_string())); // 1
         println!("{}", length_of_longest_substring("pwwkew".to_string())); // 3
+    }
+
+    #[test]
+    fn test_three_sum() {
+        println!("{:?}", three_sum(vec![-2, 0, 0, 2, 2])); // [[-2, 0, 2]]
+        println!("{:?}", three_sum(vec![1, -1, -1, 0])); // [[0,0,0]]
+        println!("{:?}", three_sum(vec![0, 0, 0, 0])); // [[0,0,0]]
+        println!("{:?}", three_sum(vec![-1, 0, 1, 2, -1, -4])); // [[-1,-1,2],[-1,0,1]]
+        println!("{:?}", three_sum(vec![0, 1, 1])); // []
+    }
+
+    #[test]
+    fn test_level_order() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 9,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 20,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 15,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 7,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+
+        println!("{:?}", level_order(root));
     }
 }
