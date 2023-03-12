@@ -726,7 +726,21 @@ pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
 
 // https://leetcode.com/problems/product-of-array-except-self
 pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+    let mut prefix_left = vec![0; nums.len() + 1];
+    prefix_left[0] = 1;
+    let mut prefix_right = vec![0; nums.len() + 1];
+    prefix_right[nums.len()] = 1;
+
+    for i in 0..nums.len() {
+        prefix_left[i + 1] = prefix_left[i] * nums[i];
+    }
+    for i in (0..nums.len()).rev() {
+        prefix_right[i] = prefix_right[i + 1] * nums[i];
+    }
     let mut ans = vec![0; nums.len()];
+    for i in 0..nums.len() {
+        ans[i] = prefix_left[i] * prefix_right[i + 1];
+    }
     ans
 }
 
