@@ -681,6 +681,29 @@ impl Trie {
 // https://leetcode.com/problems/coin-change/description/
 // https://leetcode.com/problems/coin-change/editorial/
 pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
+    fn dp_top_down(coins: Vec<i32>, amount: i32) -> i32 {
+        fn rec(coins: &Vec<i32>, amount: i32, amounts_per_sum: &mut Vec<i32>) -> i32 {
+            if amount < 0 {
+                return -1;
+            }
+            if amount == 0 {
+                return 0;
+            }
+            if amounts_per_sum[amount as usize - 1] == 0 {
+                let mut min = i32::MAX;
+                for &coin in coins {
+                    let amt = rec(coins, amount - coin, amounts_per_sum);
+                    if amt >= 0 && amt < min {
+                        min = amt + 1;
+                    }
+                }
+                amounts_per_sum[amount as usize - 1] = if min == i32::MAX { -1 } else { min };
+            }
+            amounts_per_sum[amount as usize - 1]
+        }
+        let mut memo = vec![0; amount as usize];
+        rec(&coins, amount, &mut memo)
+    }
     fn dp_bottom_up(coins: Vec<i32>, amount: i32) -> i32 {
         let max = amount + 1;
         let mut dp = vec![max; max as usize];
@@ -698,7 +721,13 @@ pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
             dp[amount as usize]
         }
     }
-    dp_bottom_up(coins, amount)
+    dp_top_down(coins, amount)
+}
+
+// https://leetcode.com/problems/product-of-array-except-self
+pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+    let mut ans = vec![0; nums.len()];
+    ans
 }
 
 #[cfg(test)]
@@ -928,5 +957,11 @@ mod test {
         println!("{}", coin_change(vec![1, 2, 5], 11)); // 3
         println!("{}", coin_change(vec![2], 3)); // -1
         println!("{}", coin_change(vec![1], 0)); // 0
+    }
+
+    #[test]
+    fn test_product_except_self() {
+        println!("{:?}", product_except_self(vec![1, 2, 3, 4])); // [24,12,8,6]
+        println!("{:?}", product_except_self(vec![-1, 1, 0, -3, 3])); // [0,0,9,0,0]
     }
 }
