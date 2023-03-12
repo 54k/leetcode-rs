@@ -483,6 +483,201 @@ pub fn level_order(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
     bfs(root)
 }
 
+// https://leetcode.com/problems/evaluate-reverse-polish-notation/
+pub fn eval_rpn(tokens: Vec<String>) -> i32 {
+    let mut stack = vec![];
+    for t in tokens {
+        match t.as_str() {
+            "+" => {
+                let a = stack.pop().unwrap();
+                let b = stack.pop().unwrap();
+                stack.push(a + b);
+            }
+            "*" => {
+                let a = stack.pop().unwrap();
+                let b = stack.pop().unwrap();
+                stack.push(a * b);
+            }
+            "-" => {
+                let b = stack.pop().unwrap();
+                let a = stack.pop().unwrap();
+                stack.push(a - b);
+            }
+            "/" => {
+                let b = stack.pop().unwrap();
+                let a = stack.pop().unwrap();
+                stack.push(a / b);
+            }
+            _ => {
+                let mut sign = 1;
+                let mut num = 0;
+                for ch in t.chars() {
+                    match ch {
+                        '-' => sign *= -1,
+                        _ => num = num * 10 + ch as i32 - '0' as i32,
+                    }
+                }
+                stack.push(sign * num)
+            }
+        }
+    }
+    stack.pop().unwrap()
+}
+
+// https://leetcode.com/problems/course-schedule/
+pub fn can_finish(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> bool {
+    fn dfs_topological_sort(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> bool {
+        fn dfs(
+            v: usize,
+            adj: &Vec<Vec<usize>>,
+            visited: &mut Vec<u8>,
+            courses_order: &mut Vec<usize>,
+        ) -> bool {
+            if visited[v] == 1 {
+                return false;
+            }
+            visited[v] = 1;
+            for &u in &adj[v] {
+                if visited[u] != 2 && !dfs(u, adj, visited, courses_order) {
+                    return false;
+                }
+            }
+            visited[v] = 2;
+            courses_order.push(v);
+            true
+        }
+        let mut visited = vec![0; num_courses as usize];
+        let mut adj = vec![vec![]; num_courses as usize];
+        for p in prerequisites {
+            let (from, to) = (p[0], p[1]);
+            adj[from as usize].push(to as usize);
+        }
+        let mut courses_order = vec![];
+        for course in 0..num_courses as usize {
+            if visited[course] == 0 && !dfs(course, &adj, &mut visited, &mut courses_order) {
+                return false;
+            }
+        }
+        courses_order.reverse();
+        println!("{:?}", courses_order);
+        true
+    }
+
+    fn khan_topological_sort(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> bool {
+        use std::collections::*;
+        let mut queue = VecDeque::new();
+        let mut in_degrees = vec![0; num_courses as usize];
+        let mut adj = vec![vec![]; num_courses as usize];
+
+        for p in prerequisites {
+            let (from, to) = (p[0], p[1]);
+            in_degrees[to as usize] += 1;
+            adj[from as usize].push(to as usize);
+        }
+
+        let mut courses_order = vec![];
+        for (course, &degree) in in_degrees.iter().enumerate() {
+            if degree == 0 {
+                queue.push_back(course);
+            }
+        }
+
+        while let Some(course) = queue.pop_front() {
+            courses_order.push(course);
+            for &next_course in &adj[course] {
+                in_degrees[next_course] -= 1;
+                if in_degrees[next_course] == 0 {
+                    queue.push_back(next_course);
+                }
+            }
+        }
+
+        println!("{:?}", courses_order);
+        courses_order.len() == num_courses as usize
+    }
+    khan_topological_sort(num_courses, prerequisites)
+}
+
+// https://leetcode.com/problems/implement-trie-prefix-tree/
+// https://leetcode.com/problems/implement-trie-prefix-tree/editorial/
+#[derive(Debug, Clone)]
+struct TrieNode {
+    links: Vec<Option<TrieNode>>,
+    is_end: bool,
+}
+
+impl TrieNode {
+    fn new() -> Self {
+        Self {
+            links: vec![None; 26],
+            is_end: false,
+        }
+    }
+
+    fn contains_key(&self, ch: char) -> bool {
+        self.links[ch as usize - 'a' as usize].is_some()
+    }
+
+    fn get(&self, ch: char) -> Option<&TrieNode> {
+        self.links[ch as usize - 'a' as usize].as_ref()
+    }
+
+    fn get_mut(&mut self, ch: char) -> Option<&mut TrieNode> {
+        self.links[ch as usize - 'a' as usize].as_mut()
+    }
+
+    fn put(&mut self, ch: char, node: TrieNode) {
+        self.links[ch as usize - 'a' as usize] = Some(node);
+    }
+}
+
+struct Trie {
+    root: TrieNode,
+}
+
+impl Trie {
+    fn new() -> Self {
+        Self {
+            root: TrieNode::new(),
+        }
+    }
+
+    fn insert(&mut self, word: String) {
+        let mut node = &mut self.root;
+        for ch in word.chars() {
+            if !node.contains_key(ch) {
+                node.put(ch, TrieNode::new());
+            }
+            node = node.get_mut(ch).unwrap();
+        }
+        node.is_end = true;
+    }
+
+    fn search(&self, word: String) -> bool {
+        let mut node = &self.root;
+        for ch in word.chars() {
+            if node.contains_key(ch) {
+                node = node.get(ch).unwrap();
+            } else {
+                return false;
+            }
+        }
+        node.is_end
+    }
+
+    fn starts_with(&self, prefix: String) -> bool {
+        let mut node = &self.root;
+        for ch in prefix.chars() {
+            if node.contains_key(ch) {
+                node = node.get(ch).unwrap();
+            } else {
+                return false;
+            }
+        }
+        true
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -662,5 +857,46 @@ mod test {
         })));
 
         println!("{:?}", level_order(root));
+    }
+
+    #[test]
+    fn test_eval_rpn() {
+        println!(
+            "{}",
+            eval_rpn(vec![
+                "2".to_string(),
+                "1".to_string(),
+                "+".to_string(),
+                "3".to_string(),
+                "*".to_string()
+            ])
+        ); // 9
+
+        println!(
+            "{}",
+            eval_rpn(
+                vec!["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]
+                    .into_iter()
+                    .map(|x| x.to_string())
+                    .collect()
+            )
+        ); // 22
+    }
+
+    #[test]
+    fn test_can_finish() {
+        println!("{}", can_finish(2, vec![vec![1, 0]])); // true
+        println!("{}", can_finish(2, vec![vec![1, 0], vec![0, 1]])); // false
+    }
+
+    #[test]
+    fn test_trie() {
+        let mut trie = Trie::new();
+        trie.insert("apple".to_string());
+        println!("{}", trie.search("apple".to_string()));
+        println!("{}", trie.search("app".to_string()));
+        println!("{}", trie.starts_with("app".to_string()));
+        trie.insert("app".to_string());
+        println!("{}", trie.search("app".to_string()));
     }
 }
