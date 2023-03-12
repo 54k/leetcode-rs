@@ -102,7 +102,7 @@ pub fn reverse_bits(x: u32) -> u32 {
     for i in 0..=31 {
         let bit_left = x >> i & 1;
         let bit_pos = 31 - i;
-        ans |= bit_left << (bit_pos);
+        ans |= bit_left << bit_pos;
     }
     ans
 }
@@ -212,6 +212,163 @@ pub fn sorted_squares(nums: Vec<i32>) -> Vec<i32> {
     approach2(nums)
 }
 
+// https://leetcode.com/problems/maximum-subarray/
+fn max_sub_array(nums: Vec<i32>) -> i32 {
+    let mut ans = nums[0];
+    let mut running_sum = 0;
+    for n in nums {
+        running_sum += n;
+        ans = ans.max(running_sum);
+        if running_sum < 0 {
+            running_sum = 0;
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/insert-interval/
+pub fn insert(mut intervals: Vec<Vec<i32>>, new_interval: Vec<i32>) -> Vec<Vec<i32>> {
+    let mut ans = vec![];
+    intervals.push(new_interval);
+    intervals.sort();
+
+    let mut start = intervals[0][0];
+    let mut end = intervals[0][1];
+
+    for i in intervals.into_iter().skip(1) {
+        if i[0] <= end {
+            end = end.max(i[1]);
+        } else {
+            ans.push(vec![start, end]);
+            start = i[0];
+            end = i[1];
+        }
+    }
+    ans.push(vec![start, end]);
+    ans
+}
+
+pub fn update_matrix(mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    fn dp(mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut dist = vec![vec![i32::MAX - 10000; mat[0].len()]; mat.len()];
+        for i in 0..mat.len() {
+            for j in 0..mat[0].len() {
+                if mat[i][j] == 0 {
+                    dist[i][j] = 0;
+                } else {
+                    if i > 0 {
+                        dist[i][j] = dist[i][j].min(dist[i - 1][j] + 1);
+                    }
+                    if j > 0 {
+                        dist[i][j] = dist[i][j].min(dist[i][j - 1] + 1);
+                    }
+                }
+            }
+        }
+
+        for i in (0..mat.len()).rev() {
+            for j in (0..mat[0].len()).rev() {
+                if i < mat.len() - 1 {
+                    dist[i][j] = dist[i][j].min(dist[i + 1][j] + 1);
+                }
+                if j < mat[0].len() - 1 {
+                    dist[i][j] = dist[i][j].min(dist[i][j + 1] + 1);
+                }
+            }
+        }
+
+        dist
+    }
+
+    fn bfs(mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        use std::collections::*;
+        const DIR: [(i32, i32); 4] = [(-1, 0), (0, -1), (1, 0), (0, 1)];
+        let mut queue = VecDeque::new();
+        let mut dist = vec![vec![i32::MAX; mat[0].len()]; mat.len()];
+
+        for i in 0..mat.len() {
+            for j in 0..mat[0].len() {
+                if mat[i][j] == 0 {
+                    dist[i][j] = 0;
+                    queue.push_back((i as i32, j as i32));
+                }
+            }
+        }
+
+        while let Some((i, j)) = queue.pop_front() {
+            for d in DIR {
+                let i1 = i + d.0;
+                let j1 = j + d.1;
+                if (i1 >= 0 && i1 < mat.len() as i32)
+                    && (j1 >= 0 && j1 < mat[0].len() as i32)
+                    && dist[i as usize][j as usize] + 1 < dist[i1 as usize][j1 as usize]
+                {
+                    dist[i1 as usize][j1 as usize] = dist[i as usize][j as usize] + 1;
+                    queue.push_back((i1, j1));
+                }
+            }
+        }
+        dist
+    }
+
+    bfs(mat)
+}
+
+// https://leetcode.com/problems/k-closest-points-to-origin/description/
+pub fn k_closest(points: Vec<Vec<i32>>, mut k: i32) -> Vec<Vec<i32>> {
+    use std::cmp::*;
+    use std::collections::*;
+    let mut ans = vec![];
+    let mut pq = points
+        .into_iter()
+        .map(|p| Reverse((p[0] * p[0] + p[1] * p[1], vec![p[0], p[1]]))) // (distance, point)
+        .collect::<BinaryHeap<Reverse<(i32, Vec<i32>)>>>();
+    while k > 0 && !pq.is_empty() {
+        ans.push(pq.pop().unwrap().0 .1);
+        k -= 1;
+    }
+    ans
+}
+
+// https://leetcode.com/problems/longest-substring-without-repeating-characters/
+// https://leetcode.com/problems/longest-substring-without-repeating-characters/editorial/
+pub fn length_of_longest_substring(s: String) -> i32 {
+    fn using_hashset(s: String) -> i32 {
+        use std::collections::*;
+        let s = s.chars().collect::<Vec<_>>();
+        let mut sliding_window = HashSet::new();
+        let mut ans = 0;
+        let mut start = 0;
+        for end in 0..s.len() {
+            while sliding_window.contains(&s[end]) {
+                sliding_window.remove(&s[start]);
+                start += 1;
+            }
+            sliding_window.insert(s[end]);
+            ans = ans.max(end - start + 1);
+        }
+        ans.max(s.len() - start) as i32
+    }
+
+    fn optimized_sliding_window(s: String) -> i32 {
+        use std::collections::HashMap;
+        let mut char_to_last_idx = HashMap::new();
+        let mut s = s.chars().collect::<Vec<_>>();
+        let mut ans = 0;
+        let mut left = 0;
+        for right in 0..s.len() {
+            if char_to_last_idx.contains_key(&s[right]) {
+                left = left.max(*char_to_last_idx.get(&s[right]).unwrap());
+            }
+            ans = ans.max(right - left + 1);
+            char_to_last_idx.insert(s[right], right + 1);
+        }
+        ans as i32
+    }
+
+    optimized_sliding_window(s)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -319,5 +476,41 @@ mod test {
     fn test_sorted_squares() {
         println!("{:?}", sorted_squares(vec![-4, -1, 0, 3, 10])); // [0,1,9,16,100]
         println!("{:?}", sorted_squares(vec![-7, -3, 2, 3, 11])); // [4,9,9,49,121]
+    }
+
+    #[test]
+    fn test_max_sub_array() {
+        println!("{}", max_sub_array(vec![-2, 1, -3, 4, -1, 2, 1, -5, 4])); // 6
+        println!("{}", max_sub_array(vec![5, 4, -1, 7, 8])); // 23
+        println!("{}", max_sub_array(vec![1])); // 1
+    }
+
+    #[test]
+    fn test_insert() {
+        println!("{:?}", insert(vec![vec![1, 3], vec![6, 9]], vec![2, 5]));
+    }
+
+    #[test]
+    fn test_update_matrix() {
+        println!(
+            "{:?}",
+            update_matrix(vec![vec![0, 0, 0], vec![0, 1, 0], vec![1, 1, 1]])
+        ); // [[0,0,0],[0,1,0],[1,2,1]]
+    }
+
+    #[test]
+    fn test_k_closest() {
+        println!("{:?}", k_closest(vec![vec![1, 3], vec![-2, 2]], 1)); // [-2, 2]
+        println!(
+            "{:?}",
+            k_closest(vec![vec![3, 3], vec![5, -1], vec![-2, 4]], 2) // [[3,3],[-2,4]]
+        );
+    }
+
+    #[test]
+    fn test_length_of_longest_substring() {
+        println!("{}", length_of_longest_substring("abcabcbb".to_string())); // 3
+        println!("{}", length_of_longest_substring("bbbbb".to_string())); // 1
+        println!("{}", length_of_longest_substring("pwwkew".to_string())); // 3
     }
 }
