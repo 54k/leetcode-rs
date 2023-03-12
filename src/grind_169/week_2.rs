@@ -921,6 +921,58 @@ pub fn num_islands(grid: Vec<Vec<char>>) -> i32 {
     iterative(grid)
 }
 
+// https://leetcode.com/problems/rotting-oranges/description/
+pub fn oranges_rotting(mut grid: Vec<Vec<i32>>) -> i32 {
+    use std::collections::*;
+    let mut fruites = 0;
+    let mut queue = VecDeque::new();
+    for i in 0..grid.len() {
+        for j in 0..grid[0].len() {
+            if grid[i][j] == 1 {
+                fruites += 1;
+            }
+            if grid[i][j] == 2 {
+                queue.push_back((i, j));
+            }
+        }
+    }
+
+    let mut ans = -1;
+    while !queue.is_empty() {
+        let mut k = queue.len();
+        while k > 0 {
+            k -= 1;
+            let (i, j) = queue.pop_front().unwrap();
+            if i > 0 && grid[i - 1][j] == 1 {
+                fruites -= 1;
+                grid[i - 1][j] = 2;
+                queue.push_back((i - 1, j));
+            }
+            if j > 0 && grid[i][j - 1] == 1 {
+                fruites -= 1;
+                grid[i][j - 1] = 2;
+                queue.push_back((i, j - 1));
+            }
+            if i < grid.len() - 1 && grid[i + 1][j] == 1 {
+                fruites -= 1;
+                grid[i + 1][j] = 2;
+                queue.push_back((i + 1, j));
+            }
+            if j < grid[0].len() - 1 && grid[i][j + 1] == 1 {
+                fruites -= 1;
+                grid[i][j + 1] = 2;
+                queue.push_back((i, j + 1));
+            }
+        }
+        ans += 1;
+    }
+    if fruites > 0 {
+        -1
+    } else {
+        ans.max(0)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1231,5 +1283,24 @@ mod test {
                 vec!['0', '0', '0', '1', '1']
             ])
         ); // 3
+    }
+
+    #[test]
+    fn test_oranges_rotting() {
+        println!(
+            "{}",
+            oranges_rotting(vec![vec![2, 1, 1], vec![1, 1, 0], vec![0, 1, 1]])
+        ); // 4
+        println!(
+            "{}",
+            oranges_rotting(vec![vec![2, 1, 1], vec![0, 1, 1], vec![1, 0, 1]])
+        ); // -1
+        println!("{}", oranges_rotting(vec![vec![0, 2]])); // 0
+        println!("{}", oranges_rotting(vec![vec![0]])); // 0
+        println!("{}", oranges_rotting(vec![vec![0, 1]])); // -1
+        println!(
+            "{}",
+            oranges_rotting(vec![vec![2, 2], vec![1, 1], vec![0, 0], vec![2, 0]])
+        ); // 1
     }
 }
