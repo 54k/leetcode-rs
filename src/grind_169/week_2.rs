@@ -744,6 +744,183 @@ pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
     ans
 }
 
+// https://leetcode.com/problems/min-stack/
+struct StackNode {
+    val: i32,
+    min: i32,
+    next: Option<Box<StackNode>>,
+}
+
+struct MinStack {
+    top: Option<Box<StackNode>>,
+}
+
+impl MinStack {
+    fn new() -> Self {
+        Self { top: None }
+    }
+
+    fn push(&mut self, val: i32) {
+        let mut new_top = Box::new(StackNode {
+            val,
+            min: val,
+            next: None,
+        });
+        if self.top.is_some() {
+            new_top.next = self.top.take().map(|x| {
+                new_top.min = new_top.val.min(x.min);
+                x
+            });
+        }
+        self.top = Some(new_top);
+    }
+
+    fn pop(&mut self) {
+        self.top = self.top.as_mut().and_then(|x| x.next.take());
+    }
+
+    fn top(&self) -> i32 {
+        self.top.as_ref().map(|x| x.val).unwrap()
+    }
+
+    fn get_min(&self) -> i32 {
+        self.top.as_ref().map(|x| x.min).unwrap()
+    }
+}
+
+// https://leetcode.com/problems/validate-binary-search-tree/
+pub fn is_valid_bst(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    fn tree_props(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        fn check(root: Option<Rc<RefCell<TreeNode>>>, lo: Option<i32>, hi: Option<i32>) -> bool {
+            if let Some(r) = root {
+                let r = r.borrow();
+                if lo.is_some() && r.val <= lo.unwrap() {
+                    return false;
+                }
+                if hi.is_some() && r.val > hi.unwrap() {
+                    return false;
+                }
+                check(r.left.clone(), lo, Some(r.val)) && check(r.right.clone(), Some(r.val), hi)
+            } else {
+                true
+            }
+        }
+        check(root, None, None)
+    }
+    fn inorder_check(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        fn inorder(root: Option<Rc<RefCell<TreeNode>>>, prev: &mut Option<i32>) -> bool {
+            if let Some(r) = root {
+                let r = r.borrow();
+                if !inorder(r.left.clone(), prev) {
+                    return false;
+                }
+                if prev.is_some() && prev.unwrap() > r.val {
+                    return false;
+                }
+                *prev = Some(r.val);
+                inorder(r.right.clone(), prev)
+            } else {
+                true
+            }
+        }
+        inorder(root, &mut None)
+    }
+    inorder_check(root)
+}
+
+// https://leetcode.com/problems/number-of-islands/
+pub fn num_islands(grid: Vec<Vec<char>>) -> i32 {
+    fn dfs1(grid: Vec<Vec<char>>) -> i32 {
+        const DIR: [(i32, i32); 4] = [(0, -1), (0, 1), (1, 0), (-1, 0)];
+        fn dfs(coord: (i32, i32), grid: &Vec<Vec<char>>, visited: &mut Vec<Vec<bool>>) {
+            if coord.0 < 0
+                || coord.0 >= grid.len() as i32
+                || coord.1 < 0
+                || coord.1 >= grid[0].len() as i32
+                || visited[coord.0 as usize][coord.1 as usize]
+                || grid[coord.0 as usize][coord.1 as usize] == '0'
+            {
+                return;
+            }
+            visited[coord.0 as usize][coord.1 as usize] = true;
+            for d in DIR {
+                dfs((coord.0 + d.0, coord.1 + d.1), grid, visited);
+            }
+        }
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        let mut components_count = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] == '1' && !visited[i][j] {
+                    dfs((i as i32, j as i32), &grid, &mut visited);
+                    components_count += 1;
+                }
+            }
+        }
+        components_count
+    }
+    fn dfs2(mut grid: Vec<Vec<char>>) -> i32 {
+        const DIR: [(i32, i32); 4] = [(0, -1), (0, 1), (1, 0), (-1, 0)];
+        fn dfs(coord: (i32, i32), grid: &mut Vec<Vec<char>>) -> bool {
+            if coord.0 < 0
+                || coord.0 >= grid.len() as i32
+                || coord.1 < 0
+                || coord.1 >= grid[0].len() as i32
+                || grid[coord.0 as usize][coord.1 as usize] == '0'
+            {
+                return false;
+            }
+            grid[coord.0 as usize][coord.1 as usize] = '0';
+            for d in DIR {
+                dfs((coord.0 + d.0, coord.1 + d.1), grid);
+            }
+            true
+        }
+        let mut ans = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if dfs((i as i32, j as i32), &mut grid) {
+                    ans += 1;
+                }
+            }
+        }
+        ans
+    }
+    fn iterative(mut grid: Vec<Vec<char>>) -> i32 {
+        let mut ans = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] == '0' {
+                    continue;
+                }
+                let mut stack = vec![];
+                stack.push((i, j));
+                while let Some((i, j)) = stack.pop() {
+                    if grid[i][j] == '0' {
+                        continue;
+                    }
+                    grid[i][j] = '0';
+                    if i > 0 {
+                        stack.push((i - 1, j));
+                    }
+                    if i < grid.len() - 1 {
+                        stack.push((i + 1, j));
+                    }
+                    if j > 0 {
+                        stack.push((i, j - 1));
+                    }
+                    if j < grid[0].len() - 1 {
+                        stack.push((i, j + 1));
+                    }
+                }
+                ans += 1;
+            }
+        }
+        ans
+    }
+    iterative(grid)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -977,5 +1154,82 @@ mod test {
     fn test_product_except_self() {
         println!("{:?}", product_except_self(vec![1, 2, 3, 4])); // [24,12,8,6]
         println!("{:?}", product_except_self(vec![-1, 1, 0, -3, 3])); // [0,0,9,0,0]
+    }
+
+    #[test]
+    fn test_min_stack() {
+        let mut min_stack = MinStack::new();
+        min_stack.push(1);
+        min_stack.push(2);
+        min_stack.push(3);
+        println!("{}", min_stack.get_min());
+        min_stack.pop();
+        println!("{}", min_stack.get_min());
+        min_stack.pop();
+        println!("{}", min_stack.get_min());
+        min_stack.pop();
+    }
+
+    #[test]
+    fn test_is_valid_bst() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 2,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{}", is_valid_bst(root)); // true
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 5,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 4,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 3,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 6,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{}", is_valid_bst(root)); // false
+    }
+
+    #[test]
+    fn test_num_islands() {
+        println!(
+            "{}",
+            num_islands(vec![
+                vec!['1', '1', '1', '1', '0'],
+                vec!['1', '1', '0', '1', '0'],
+                vec!['1', '1', '0', '0', '0'],
+                vec!['0', '0', '0', '0', '0'],
+            ])
+        ); // 1
+
+        println!(
+            "{}",
+            num_islands(vec![
+                vec!['1', '1', '0', '0', '0'],
+                vec!['1', '1', '0', '0', '0'],
+                vec!['0', '0', '1', '0', '0'],
+                vec!['0', '0', '0', '1', '1']
+            ])
+        ); // 3
     }
 }
