@@ -678,6 +678,29 @@ impl Trie {
     }
 }
 
+// https://leetcode.com/problems/coin-change/description/
+// https://leetcode.com/problems/coin-change/editorial/
+pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
+    fn dp_bottom_up(coins: Vec<i32>, amount: i32) -> i32 {
+        let max = amount + 1;
+        let mut dp = vec![max; max as usize];
+        dp[0] = 0;
+        for i in 1..max as usize {
+            for j in 0..coins.len() {
+                if coins[j] as usize <= i {
+                    dp[i] = dp[i].min(dp[i - coins[j] as usize] + 1);
+                }
+            }
+        }
+        if dp[amount as usize] > amount {
+            -1
+        } else {
+            dp[amount as usize]
+        }
+    }
+    dp_bottom_up(coins, amount)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -898,5 +921,12 @@ mod test {
         println!("{}", trie.starts_with("app".to_string()));
         trie.insert("app".to_string());
         println!("{}", trie.search("app".to_string()));
+    }
+
+    #[test]
+    fn test_coin_change() {
+        println!("{}", coin_change(vec![1, 2, 5], 11)); // 3
+        println!("{}", coin_change(vec![2], 3)); // -1
+        println!("{}", coin_change(vec![1], 0)); // 0
     }
 }
