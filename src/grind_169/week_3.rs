@@ -1,4 +1,6 @@
 use crate::day_58::recover_tree;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 // https://leetcode.com/problems/search-in-rotated-sorted-array/description/
 // https://leetcode.com/problems/search-in-rotated-sorted-array/solutions/14425/concise-o-log-n-binary-search-solution/
@@ -197,6 +199,173 @@ pub fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
     permute_recursive(nums)
 }
 
+// https://leetcode.com/problems/merge-intervals/
+// https://leetcode.com/problems/merge-intervals/editorial/
+pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    fn emre_solution(mut intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        intervals.sort();
+        let mut ans = vec![];
+        let mut start = intervals[0][0];
+        let mut end = intervals[0][1];
+        for interval in intervals.into_iter().skip(1) {
+            if interval[0] <= end {
+                end = end.max(interval[1]);
+            } else {
+                ans.push(vec![start, end]);
+                start = interval[0];
+                end = interval[1];
+            }
+        }
+        ans.push(vec![start, end]);
+        ans
+    }
+
+    fn leetcode_sort(mut intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        intervals.sort();
+        let mut merged: Vec<Vec<i32>> = vec![];
+        for interval in intervals {
+            // if the list of merged intervals is empty or if the current
+            // interval does not overlap with the previous, simply append it.
+            if merged.is_empty() || merged.last().unwrap()[1] < interval[0] {
+                merged.push(interval);
+            } else {
+                // otherwise, there is overlap, so we merge the current and previous intervals.
+                merged.last_mut().unwrap()[1] = merged.last().unwrap()[1].max(interval[1]);
+            }
+        }
+        merged
+    }
+    leetcode_sort(intervals)
+}
+
+// https://leetcode.com/problems/teemo-attacking/description/
+// https://leetcode.com/problems/teemo-attacking/editorial/
+pub fn find_poisoned_duration(time_series: Vec<i32>, duration: i32) -> i32 {
+    let mut ans = 0;
+    for i in 0..time_series.len() {
+        if i < time_series.len() - 1 {
+            ans += duration.min(time_series[i + 1] - time_series[i]);
+        } else {
+            ans += duration;
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/dota2-senate/description/
+pub fn predict_party_victory(senate: String) -> String {
+    use std::collections::VecDeque;
+    let mut queue = VecDeque::new();
+    let mut radiant_banned = 0;
+    let mut dire_banned = 0;
+    let mut radiant_in_queue = 0;
+    let mut dire_in_queue = 0;
+
+    for senator in senate.chars() {
+        if senator == 'R' {
+            radiant_in_queue += 1;
+        } else {
+            dire_in_queue += 1;
+        }
+        queue.push_back(senator);
+    }
+
+    while radiant_in_queue > 0 && dire_in_queue > 0 {
+        if let Some('R') = queue.pop_front() {
+            if radiant_banned > 0 {
+                radiant_banned -= 1;
+                radiant_in_queue -= 1;
+                continue;
+            }
+            dire_banned += 1;
+            queue.push_back('R');
+        } else {
+            if dire_banned > 0 {
+                dire_banned -= 1;
+                dire_in_queue -= 1;
+                continue;
+            }
+            radiant_banned += 1;
+            queue.push_back('D');
+        }
+    }
+
+    if let Some('R') = queue.front() {
+        "Radiant".to_string()
+    } else {
+        "Dire".to_string()
+    }
+}
+
+// https://leetcode.com/problems/2-keys-keyboard/description/
+// https://leetcode.com/problems/2-keys-keyboard/editorial/
+pub fn min_steps(mut n: i32) -> i32 {
+    fn leetcode_min_steps(mut n: i32) -> i32 {
+        let mut ans = 0;
+        let mut i = 2;
+        while n > 1 {
+            while n % i == 0 {
+                ans += i;
+                n /= i;
+            }
+            i += 1;
+        }
+        ans
+    }
+    fn laakonsen_cp_min_steps(mut n: i32) -> i32 {
+        let mut ans = 0;
+        let mut i = 2;
+        while i * i <= n {
+            while n % i == 0 {
+                ans += i;
+                n /= i;
+            }
+            i += 1;
+        }
+        if n > 1 {
+            ans += n;
+        }
+        ans
+    }
+    laakonsen_cp_min_steps(n)
+}
+
+// https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn lowest_common_ancestor(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    p: Option<Rc<RefCell<TreeNode>>>,
+    q: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    fn lowest_common_ancestor_postorder(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if root.is_none() || root == p || root == q {
+            return root;
+        }
+        let r = root.clone()?;
+        let r = r.borrow();
+        let lcp_left = lowest_common_ancestor_postorder(r.left.clone(), p.clone(), q.clone());
+        let lcp_right = lowest_common_ancestor_postorder(r.right.clone(), p, q);
+        if lcp_left.is_some() && lcp_right.is_some() {
+            root
+        } else if lcp_left.is_some() {
+            lcp_left
+        } else {
+            lcp_right
+        }
+    }
+    lowest_common_ancestor_postorder(root, p, q)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -227,9 +396,9 @@ mod test {
 
     #[test]
     fn test_combination_sum() {
-        // println!("{:?}", combination_sum(vec![2, 3, 6, 7], 7)); // [[2,2,3],[7]]
-        // println!("{:?}", combination_sum(vec![2, 3, 5], 8)); // [[2,2,2,2],[2,3,3],[3,5]]
-        // println!("{:?}", combination_sum(vec![2], 1)); // [[2,2,2,2],[2,3,3],[3,5]]
+        println!("{:?}", combination_sum(vec![2, 3, 6, 7], 7)); // [[2,2,3],[7]]
+        println!("{:?}", combination_sum(vec![2, 3, 5], 8)); // [[2,2,2,2],[2,3,3],[3,5]]
+        println!("{:?}", combination_sum(vec![2], 1)); // [[2,2,2,2],[2,3,3],[3,5]]
 
         println!("{:?}", combination_sum2(vec![10, 1, 2, 7, 6, 1, 5], 8)); // [[1,1,6],[1,2,5],[1,7],[2,6]]
         println!("{:?}", combination_sum2(vec![2, 5, 2, 1, 2], 5)); // [[1,2,2],[5]]
@@ -238,5 +407,73 @@ mod test {
     #[test]
     fn test_permute() {
         println!("{:?}", permute(vec![1, 2, 3]));
+    }
+
+    #[test]
+    fn test_merge() {
+        println!(
+            "{:?}",
+            merge(vec![vec![1, 3], vec![2, 6], vec![8, 10], vec![15, 18]])
+        ); // [[1,6],[8,10],[15,18]]
+    }
+
+    #[test]
+    fn test_find_poisoned_duration() {
+        println!("{}", find_poisoned_duration(vec![1, 4], 2)); // 4
+        println!("{}", find_poisoned_duration(vec![1, 2], 2)); // 3
+    }
+
+    #[test]
+    fn test_predict_party_victory() {
+        println!("{}", predict_party_victory("RD".to_string())); // Radiant
+        println!("{}", predict_party_victory("DR".to_string())); // Dire
+        println!("{}", predict_party_victory("RDD".to_string())); // Dire
+        println!("{}", predict_party_victory("DDRRR".to_string())); // Dire
+    }
+
+    #[test]
+    fn test_min_steps() {
+        println!("{}", min_steps(9));
+
+        println!("{}", min_steps(3));
+        println!("{}", min_steps(10));
+        println!("{}", min_steps(17));
+    }
+
+    #[test]
+    fn test_lowest_common_ancestor() {
+        let p = Some(Rc::new(RefCell::new(TreeNode {
+            val: 4,
+            left: None,
+            right: None,
+        })));
+        let q = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: None,
+            right: None,
+        })));
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 3,
+                    left: None,
+                    right: None,
+                }))),
+                right: p.clone(),
+                val: 2,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 4,
+                    left: None,
+                    right: None,
+                }))),
+                right: q.clone(),
+                val: 2,
+            }))),
+        })));
+
+        println!("{:?}", lowest_common_ancestor(root, p, q)); // 1
     }
 }
