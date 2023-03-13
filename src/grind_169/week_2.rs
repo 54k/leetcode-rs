@@ -973,6 +973,44 @@ pub fn oranges_rotting(mut grid: Vec<Vec<i32>>) -> i32 {
     }
 }
 
+// https://leetcode.com/problems/search-in-rotated-sorted-array/description/
+// https://leetcode.com/problems/search-in-rotated-sorted-array/solutions/14425/concise-o-log-n-binary-search-solution/
+// https://leetcode.com/problems/search-in-rotated-sorted-array/solutions/14419/pretty-short-c-java-ruby-python/?orderBy=most_relevant
+pub fn search(nums: Vec<i32>, target: i32) -> i32 {
+    fn find_pivot(nums: &Vec<i32>) -> usize {
+        let mut lo = 0;
+        let mut hi = nums.len() - 1;
+        while lo < hi {
+            let mid = lo + (hi - lo) / 2;
+            if nums[mid] > nums[hi] {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        lo
+    }
+    fn bin_search(nums: &Vec<i32>, target: i32, rot: usize) -> i32 {
+        let mut lo = 0_i32;
+        let mut hi = nums.len() as i32 - 1;
+
+        while lo <= hi {
+            let mid = lo + (hi - lo) / 2;
+            let real_mid = (mid as usize + rot) % nums.len();
+            if nums[real_mid] < target {
+                lo = mid + 1;
+            } else if nums[real_mid] > target {
+                hi = mid - 1;
+            } else {
+                return real_mid as i32;
+            }
+        }
+        -1
+    }
+    let rot = find_pivot(&nums);
+    bin_search(&nums, target, rot)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1302,5 +1340,21 @@ mod test {
             "{}",
             oranges_rotting(vec![vec![2, 2], vec![1, 1], vec![0, 0], vec![2, 0]])
         ); // 1
+    }
+
+    #[test]
+    fn test_search() {
+        println!("{}", search(vec![4, 5, 6, 7, 0, 1, 2], 0)); // 4
+        println!("{}", search(vec![1, 3], 1)); // 0
+        println!("{}", search(vec![3, 1], 1)); // 1
+        println!("{}", search(vec![3, 1], 3)); // 0
+
+        println!("{}", search(vec![3, 5, 1], 1)); // 2
+        println!("{}", search(vec![3, 5, 1], 3)); // 0
+        println!("{}", search(vec![5, 1, 3], 1)); // 1
+        println!("{}", search(vec![5, 1, 3], 5)); // 0
+        println!("{}", search(vec![5, 1, 3], 3)); // 2
+
+        println!("{}", search(vec![7, 8, 1, 2, 3, 4, 5, 6], 2)); // 3
     }
 }
