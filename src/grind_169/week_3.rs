@@ -1,3 +1,5 @@
+use crate::day_58::recover_tree;
+
 // https://leetcode.com/problems/search-in-rotated-sorted-array/description/
 // https://leetcode.com/problems/search-in-rotated-sorted-array/solutions/14425/concise-o-log-n-binary-search-solution/
 // https://leetcode.com/problems/search-in-rotated-sorted-array/solutions/14419/pretty-short-c-java-ruby-python/?orderBy=most_relevant
@@ -93,7 +95,7 @@ pub fn search_ii(nums: Vec<i32>, target: i32) -> bool {
 }
 
 // https://leetcode.com/problems/combination-sum/description/
-pub fn combination_sum(mut candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+pub fn combination_sum(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
     fn rec(
         candidates: &Vec<i32>,
         target: i32,
@@ -126,9 +128,73 @@ pub fn combination_sum(mut candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
 }
 
 // https://leetcode.com/problems/combination-sum-ii/description/
-pub fn combination_sum2(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
-    let mut res = vec![];
-    res
+pub fn combination_sum2(mut candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+    fn rec(
+        candidates: &Vec<i32>,
+        target: i32,
+        start: usize,
+        current_combination: &mut Vec<i32>,
+        combinations: &mut Vec<Vec<i32>>,
+    ) {
+        if target < 0 {
+            return;
+        }
+        if target == 0 {
+            combinations.push(current_combination.clone());
+            return;
+        }
+
+        for i in start..candidates.len() {
+            let picked_num = candidates[i];
+            if i > start && picked_num == candidates[i - 1] {
+                continue;
+            }
+            current_combination.push(picked_num);
+            rec(
+                candidates,
+                target - picked_num,
+                i + 1,
+                current_combination,
+                combinations,
+            );
+            current_combination.pop();
+        }
+    }
+
+    candidates.sort();
+    let mut result = vec![];
+    rec(&candidates, target, 0, &mut vec![], &mut result);
+    result
+}
+
+// https://leetcode.com/problems/permutations/
+pub fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
+    fn permute_recursive(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        fn rec(
+            nums: &Vec<i32>,
+            mut occupied: i32,
+            current_permutation: &mut Vec<i32>,
+            result: &mut Vec<Vec<i32>>,
+        ) {
+            if current_permutation.len() == nums.len() {
+                result.push(current_permutation.clone());
+                return;
+            }
+            for i in 0..nums.len() {
+                if (occupied & (1 << i)) == 0 {
+                    occupied |= 1 << i;
+                    current_permutation.push(nums[i]);
+                    rec(nums, occupied, current_permutation, result);
+                    current_permutation.pop();
+                    occupied ^= 1 << i;
+                }
+            }
+        }
+        let mut result = vec![];
+        rec(&nums, 0, &mut vec![], &mut result);
+        result
+    }
+    permute_recursive(nums)
 }
 
 #[cfg(test)]
@@ -161,11 +227,16 @@ mod test {
 
     #[test]
     fn test_combination_sum() {
-        println!("{:?}", combination_sum(vec![2, 3, 6, 7], 7)); // [[2,2,3],[7]]
-        println!("{:?}", combination_sum(vec![2, 3, 5], 8)); // [[2,2,2,2],[2,3,3],[3,5]]
-        println!("{:?}", combination_sum(vec![2], 1)); // [[2,2,2,2],[2,3,3],[3,5]]
+        // println!("{:?}", combination_sum(vec![2, 3, 6, 7], 7)); // [[2,2,3],[7]]
+        // println!("{:?}", combination_sum(vec![2, 3, 5], 8)); // [[2,2,2,2],[2,3,3],[3,5]]
+        // println!("{:?}", combination_sum(vec![2], 1)); // [[2,2,2,2],[2,3,3],[3,5]]
 
         println!("{:?}", combination_sum2(vec![10, 1, 2, 7, 6, 1, 5], 8)); // [[1,1,6],[1,2,5],[1,7],[2,6]]
         println!("{:?}", combination_sum2(vec![2, 5, 2, 1, 2], 5)); // [[1,2,2],[5]]
+    }
+
+    #[test]
+    fn test_permute() {
+        println!("{:?}", permute(vec![1, 2, 3]));
     }
 }
