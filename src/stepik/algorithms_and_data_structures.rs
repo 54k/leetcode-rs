@@ -719,23 +719,23 @@ mod test {
 
     #[test]
     fn test_3_1() {
-        // println!(
-        //     "{:?}",
-        //     task_3_1_solver(vec![
-        //         vec!["add".to_string(), "911".to_string(), "police".to_string()],
-        //         vec!["add".to_string(), "76213".to_string(), "Mom".to_string()],
-        //         vec!["add".to_string(), "17239".to_string(), "Bob".to_string()],
-        //         vec!["find".to_string(), "76213".to_string()],
-        //         vec!["find".to_string(), "910".to_string()],
-        //         vec!["find".to_string(), "911".to_string()],
-        //         vec!["del".to_string(), "910".to_string()],
-        //         vec!["del".to_string(), "911".to_string()],
-        //         vec!["find".to_string(), "911".to_string()],
-        //         vec!["find".to_string(), "76213".to_string()],
-        //         vec!["add".to_string(), "76213".to_string(), "daddy".to_string()],
-        //         vec!["find".to_string(), "76213".to_string()],
-        //     ])
-        // );
+        println!(
+            "{:?}",
+            task_3_1_solver(vec![
+                vec!["add".to_string(), "911".to_string(), "police".to_string()],
+                vec!["add".to_string(), "76213".to_string(), "Mom".to_string()],
+                vec!["add".to_string(), "17239".to_string(), "Bob".to_string()],
+                vec!["find".to_string(), "76213".to_string()],
+                vec!["find".to_string(), "910".to_string()],
+                vec!["find".to_string(), "911".to_string()],
+                vec!["del".to_string(), "910".to_string()],
+                vec!["del".to_string(), "911".to_string()],
+                vec!["find".to_string(), "911".to_string()],
+                vec!["find".to_string(), "76213".to_string()],
+                vec!["add".to_string(), "76213".to_string(), "daddy".to_string()],
+                vec!["find".to_string(), "76213".to_string()],
+            ])
+        );
 
         println!(
             "{:?}",
