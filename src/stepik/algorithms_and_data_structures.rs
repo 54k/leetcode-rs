@@ -547,6 +547,78 @@ fn task_2_4_solver(n: usize, joins: Vec<(usize, usize)>, disjoints: Vec<(usize, 
     true
 }
 
+fn task_3_1() -> Result<(), Box<dyn std::error::Error>> {
+    let mut buf = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut buf)?;
+    let queries_len = buf.trim().parse::<usize>().unwrap();
+    buf.clear();
+    let mut queries = vec![];
+    for _ in 0..queries_len {
+        stdin.read_line(&mut buf)?;
+        queries.push(buf.trim().split(' ').map(|x| x.to_string()).collect());
+        buf.clear();
+    }
+    for x in task_3_1_solver(queries) {
+        println!("{}", x);
+    }
+    Ok(())
+}
+
+fn task_3_1_solver(queries: Vec<Vec<String>>) -> Vec<String> {
+    #[derive(Debug, Clone)]
+    struct Entry(usize, String);
+    struct PhoneBook(Vec<Option<Entry>>);
+    impl PhoneBook {
+        fn new(size: usize) -> Self {
+            Self(vec![None; size])
+        }
+        fn add(&mut self, num: usize, name: String) {
+            let idx = self.find_idx(num);
+            let _ = self.0[idx].insert(Entry(num, name));
+        }
+        fn del(&mut self, num: usize) {
+            let idx = self.find_idx(num);
+            self.0[idx].take();
+        }
+        fn find(&self, num: usize) -> Option<&String> {
+            let idx = self.find_idx(num);
+            self.0[idx].as_ref().map(|x| &x.1)
+        }
+        fn find_idx(&self, num: usize) -> usize {
+            let mut idx = self.get_idx(num);
+            while self.0[idx].is_some() && self.0[idx].as_ref().unwrap().0 != num {
+                idx = (idx + 1) % self.0.len();
+            }
+            idx
+        }
+        fn get_idx(&self, num: usize) -> usize {
+            num % self.0.len()
+        }
+    }
+    let mut query_answer = vec![];
+    let mut phone_book = PhoneBook::new(10_000_000);
+    for query in queries {
+        match query[0].as_str() {
+            "add" => {
+                phone_book.add(query[1].parse::<usize>().unwrap(), query[2].to_string());
+            }
+            "del" => {
+                phone_book.del(query[1].parse::<usize>().unwrap());
+            }
+            "find" => {
+                if let Some(t) = phone_book.find(query[1].parse::<usize>().unwrap()) {
+                    query_answer.push(t.clone());
+                } else {
+                    query_answer.push("not found".to_string());
+                }
+            }
+            _ => panic!("Unknown command"),
+        }
+    }
+    query_answer
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -642,6 +714,39 @@ mod test {
                 vec![(2, 3), (1, 5), (2, 5), (3, 4), (4, 2)],
                 vec![(6, 1), (4, 6), (4, 5)],
             )
+        );
+    }
+
+    #[test]
+    fn test_3_1() {
+        // println!(
+        //     "{:?}",
+        //     task_3_1_solver(vec![
+        //         vec!["add".to_string(), "911".to_string(), "police".to_string()],
+        //         vec!["add".to_string(), "76213".to_string(), "Mom".to_string()],
+        //         vec!["add".to_string(), "17239".to_string(), "Bob".to_string()],
+        //         vec!["find".to_string(), "76213".to_string()],
+        //         vec!["find".to_string(), "910".to_string()],
+        //         vec!["find".to_string(), "911".to_string()],
+        //         vec!["del".to_string(), "910".to_string()],
+        //         vec!["del".to_string(), "911".to_string()],
+        //         vec!["find".to_string(), "911".to_string()],
+        //         vec!["find".to_string(), "76213".to_string()],
+        //         vec!["add".to_string(), "76213".to_string(), "daddy".to_string()],
+        //         vec!["find".to_string(), "76213".to_string()],
+        //     ])
+        // );
+
+        println!(
+            "{:?}",
+            task_3_1_solver(vec![
+                vec!["add".to_string(), "5".to_string(), "police".to_string()],
+                vec!["add".to_string(), "11".to_string(), "Mom".to_string()],
+                vec!["add".to_string(), "17".to_string(), "Bob".to_string()],
+                vec!["find".to_string(), "17".to_string()],
+                vec!["find".to_string(), "11".to_string()],
+                vec!["find".to_string(), "5".to_string()],
+            ])
         );
     }
 }
