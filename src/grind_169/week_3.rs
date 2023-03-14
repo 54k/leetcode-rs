@@ -447,51 +447,125 @@ impl TimeMap {
 // https://leetcode.com/problems/accounts-merge/description/
 // https://leetcode.com/problems/accounts-merge/editorial/
 pub fn accounts_merge(accounts: Vec<Vec<String>>) -> Vec<Vec<String>> {
-    use std::collections::{HashMap, HashSet};
-    fn dfs(
-        v: String,
-        adj: &HashMap<String, Vec<String>>,
-        visited: &mut HashSet<String>,
-        components: &mut Vec<String>,
-    ) {
-        if visited.contains(&v) {
-            return;
-        }
-        visited.insert(v.clone());
-        components.push(v.to_string());
+    fn using_dfs(accounts: Vec<Vec<String>>) -> Vec<Vec<String>> {
+        use std::collections::{HashMap, HashSet};
+        fn dfs(
+            v: String,
+            adj: &HashMap<String, Vec<String>>,
+            visited: &mut HashSet<String>,
+            components: &mut Vec<String>,
+        ) {
+            if visited.contains(&v) {
+                return;
+            }
+            visited.insert(v.clone());
+            components.push(v.to_string());
 
-        for u in &adj[&v] {
-            if !visited.contains(u) {
-                dfs(u.clone(), adj, visited, components);
+            for u in &adj[&v] {
+                if !visited.contains(u) {
+                    dfs(u.clone(), adj, visited, components);
+                }
             }
         }
+
+        let mut visited = HashSet::new();
+        let mut adj = HashMap::new();
+
+        for account in &accounts {
+            let first_email = &account[1];
+            adj.entry(first_email.clone()).or_insert(vec![]);
+            for email in account.iter().skip(2) {
+                adj.get_mut(first_email).unwrap().push(email.clone());
+                adj.entry(email.clone())
+                    .or_insert(vec![])
+                    .push(first_email.clone());
+            }
+        }
+
+        let mut merged_accounts = vec![];
+        for account in &accounts {
+            let first_email = &account[1];
+            if !visited.contains(first_email) {
+                let mut components = vec![account[0].clone()];
+                dfs(first_email.clone(), &adj, &mut visited, &mut components);
+                components[1..].sort();
+                merged_accounts.push(components);
+            }
+        }
+        merged_accounts
     }
+    fn using_union_find(accounts: Vec<Vec<String>>) -> Vec<Vec<String>> {
+        use std::collections::HashMap;
+        struct UnionFind {
+            links: Vec<usize>,
+            sizes: Vec<usize>,
+        }
+        impl UnionFind {
+            fn new(size: usize) -> Self {
+                let mut links = vec![0; size];
+                for i in 0..size {
+                    links[i] = i;
+                }
+                let sizes = vec![1; size];
+                Self { links, sizes }
+            }
+            fn find(&mut self, x: usize) -> usize {
+                if self.links[x] != x {
+                    self.links[x] = self.find(self.links[x]);
+                }
+                self.links[x]
+            }
+            fn union(&mut self, x: usize, y: usize) {
+                let mut x = self.find(x);
+                let mut y = self.find(y);
+                if x == y {
+                    return;
+                }
+                if self.sizes[x] < self.sizes[y] {
+                    std::mem::swap(&mut x, &mut y);
+                }
+                self.links[y] = x;
+                self.sizes[x] += self.sizes[y];
+            }
+        }
+        let mut dsu = UnionFind::new(accounts.len());
 
-    let mut visited = HashSet::new();
-    let mut adj = HashMap::new();
+        // Maps email to their component index
+        let mut email_groups = HashMap::new();
+        for i in 0..accounts.len() {
+            for j in 1..accounts[i].len() {
+                let email = &accounts[i][j];
+                if !email_groups.contains_key(email) {
+                    email_groups.insert(email.clone(), i);
+                } else {
+                    dsu.union(i, email_groups[email]);
+                }
+            }
+        }
 
-    for account in &accounts {
-        let first_email = &account[1];
-        adj.entry(first_email.clone()).or_insert(vec![]);
-        for email in account.iter().skip(2) {
-            adj.get_mut(first_email).unwrap().push(email.clone());
-            adj.entry(email.clone())
+        // Store emails corresponding to the component's representative
+        let mut components = HashMap::new();
+        for email in email_groups.keys() {
+            let group_representative = dsu.find(email_groups[email]);
+            components
+                .entry(group_representative)
                 .or_insert(vec![])
-                .push(first_email.clone());
+                .push(email.clone());
         }
+
+        // Sort the components and add the account name
+        let mut merged_accounts = vec![];
+        for group in components.keys() {
+            let mut component = components[group].clone();
+            component.sort();
+            component.insert(0, accounts[*group][0].clone());
+            merged_accounts.push(component);
+        }
+
+        merged_accounts
     }
 
-    let mut merged_accounts = vec![];
-    for account in &accounts {
-        let first_email = &account[1];
-        if !visited.contains(first_email) {
-            let mut components = vec![account[0].clone()];
-            dfs(first_email.clone(), &adj, &mut visited, &mut components);
-            components[1..].sort();
-            merged_accounts.push(components);
-        }
-    }
-    merged_accounts
+    using_union_find(accounts)
 }
 
 // https://leetcode.com/problems/sort-colors/
@@ -599,24 +673,41 @@ pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
 
 // https://leetcode.com/problems/partition-equal-subset-sum/
 pub fn can_partition(nums: Vec<i32>) -> bool {
-    let mut sum = nums.iter().sum::<i32>() as usize;
-    if sum % 2 == 1 {
-        return false;
-    }
-    sum /= 2;
-    let mut dp = vec![vec![false; sum + 1]; nums.len() + 1];
-    dp[0][0] = true;
+    fn classic_knapsack(nums: Vec<i32>) -> bool {
+        let mut sum = nums.iter().sum::<i32>() as usize;
+        if sum % 2 == 1 {
+            return false;
+        }
+        sum /= 2;
+        let mut dp = vec![vec![false; sum + 1]; nums.len() + 1];
+        dp[0][0] = true;
 
-    for i in 1..=nums.len() {
-        for j in 1..=sum {
-            dp[i][j] |= dp[i - 1][j];
-            if j >= nums[i - 1] as usize {
-                dp[i][j] |= dp[i - 1][j - nums[i - 1] as usize];
+        for i in 1..=nums.len() {
+            for j in 1..=sum {
+                dp[i][j] |= dp[i - 1][j];
+                if j >= nums[i - 1] as usize {
+                    dp[i][j] |= dp[i - 1][j - nums[i - 1] as usize];
+                }
             }
         }
+        dp[nums.len()][sum]
     }
-
-    dp[nums.len()][sum]
+    fn mem_optimized_knapsack(nums: Vec<i32>) -> bool {
+        let mut sum = nums.iter().copied().sum::<i32>() as usize;
+        if sum % 2 == 1 {
+            return false;
+        }
+        sum /= 2;
+        let mut dp = vec![false; sum + 1];
+        dp[0] = true;
+        for i in 0..nums.len() {
+            for j in (0..=sum - nums[i] as usize).rev() {
+                dp[j + nums[i] as usize] |= dp[j];
+            }
+        }
+        dp[sum]
+    }
+    mem_optimized_knapsack(nums)
 }
 
 #[cfg(test)]
