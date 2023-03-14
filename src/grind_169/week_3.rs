@@ -39,7 +39,38 @@ pub fn search(nums: Vec<i32>, target: i32) -> i32 {
         let rot = find_pivot(&nums);
         bin_search(&nums, target, rot)
     }
-    two_bin_search(nums, target)
+    fn one_bin_search(nums: Vec<i32>, target: i32) -> i32 {
+        let mut lo = 0;
+        let mut hi = nums.len() - 1;
+
+        while lo <= hi {
+            let mid = lo + (hi - lo) / 2;
+
+            let mut mid_element = nums[mid];
+
+            let mid_in_second = mid_element < nums[0]; // false -> left arr, true -> right arr
+            let target_in_second = target < nums[0]; // false -> left arr, true -> right arr
+
+            if mid_in_second ^ target_in_second {
+                // mid and target in different arrays
+                if target_in_second {
+                    mid_element = i32::MIN;
+                } else {
+                    mid_element = i32::MAX;
+                }
+            }
+
+            if mid_element == target {
+                return mid as i32;
+            } else if mid_element < target {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        -1
+    }
+    one_bin_search(nums, target)
 }
 
 // https://leetcode.com/problems/search-in-rotated-sorted-array-ii/description/
