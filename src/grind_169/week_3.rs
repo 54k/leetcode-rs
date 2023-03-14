@@ -486,8 +486,106 @@ pub fn sort_colors(nums: &mut Vec<i32>) {
 }
 
 // https://leetcode.com/problems/word-break/
+// https://leetcode.com/problems/word-break/editorial/
 pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
-    false
+    fn brute_memo(s: String, word_dict: Vec<String>) -> bool {
+        use std::collections::HashSet;
+        fn rec(
+            s: &[char],
+            start: usize,
+            word_dict: &HashSet<String>,
+            memo: &mut [Option<bool>],
+        ) -> bool {
+            if start == s.len() {
+                return true;
+            }
+
+            if memo[start].is_some() {
+                return memo[start].unwrap();
+            }
+            for end in start + 1..=s.len() {
+                if word_dict.contains(&s[start..end].iter().copied().collect::<String>())
+                    && rec(s, end, word_dict, memo)
+                {
+                    memo[start] = Some(true);
+                    return memo[start].unwrap();
+                }
+            }
+            memo[start] = Some(false);
+            memo[start].unwrap()
+        }
+
+        let s = s.chars().collect::<Vec<_>>();
+        let mut memo = vec![None; s.len()];
+        let word_dict = word_dict.into_iter().collect::<HashSet<String>>();
+        rec(&s, 0, &word_dict, &mut memo)
+    }
+
+    fn bfs(s: String, word_dict: Vec<String>) -> bool {
+        use std::collections::{HashSet, VecDeque};
+        let s = s.chars().collect::<Vec<_>>();
+        let word_dict = word_dict.into_iter().collect::<HashSet<String>>();
+        let mut visited = vec![false; s.len()];
+        let mut queue = VecDeque::new();
+        queue.push_back(0);
+        while let Some(start) = queue.pop_front() {
+            if visited[start] {
+                continue;
+            }
+            visited[start] = true;
+            for end in start + 1..=s.len() {
+                if word_dict.contains(&s[start..end].iter().copied().collect::<String>()) {
+                    queue.push_back(end);
+                    if end == s.len() {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    fn dp(s: String, word_dict: Vec<String>) -> bool {
+        use std::collections::HashSet;
+        let s = s.chars().collect::<Vec<_>>();
+        let word_dict = word_dict.into_iter().collect::<HashSet<String>>();
+        let mut dp = vec![false; s.len() + 1];
+        dp[0] = true;
+        for start in 0..s.len() {
+            for end in start + 1..=s.len() {
+                if word_dict.contains(&s[start..end].iter().copied().collect::<String>())
+                    && dp[start]
+                {
+                    dp[end] = true;
+                }
+            }
+        }
+        dp[s.len()]
+    }
+
+    dp(s, word_dict)
+}
+
+// https://leetcode.com/problems/partition-equal-subset-sum/
+pub fn can_partition(nums: Vec<i32>) -> bool {
+    let mut sum = nums.iter().sum::<i32>() as usize;
+    if sum % 2 == 1 {
+        return false;
+    }
+    sum /= 2;
+    let mut dp = vec![vec![false; sum + 1]; nums.len() + 1];
+    dp[0][0] = true;
+
+    for i in 1..=nums.len() {
+        for j in 1..=sum {
+            dp[i][j] |= dp[i - 1][j];
+            if j >= nums[i - 1] as usize {
+                dp[i][j] |= dp[i - 1][j - nums[i - 1] as usize];
+            }
+        }
+    }
+
+    dp[nums.len()][sum]
 }
 
 #[cfg(test)]
@@ -679,5 +777,30 @@ mod test {
         let mut v = vec![2, 0, 2, 1, 1, 0];
         sort_colors(&mut v);
         println!("{:?}", v);
+    }
+
+    #[test]
+    fn test_word_break() {
+        println!(
+            "{}",
+            word_break(
+                "leetcode".to_string(),
+                vec!["leet".to_string(), "code".to_string()]
+            )
+        ); // true
+        println!(
+            "{}",
+            word_break(
+                "applepenapple".to_string(),
+                vec!["apple".to_string(), "pen".to_string()]
+            )
+        ); // true
+    }
+
+    #[test]
+    fn test_can_partition() {
+        println!("{}", can_partition(vec![1, 5, 11, 5])); // true
+        println!("{}", can_partition(vec![1, 2, 3, 5])); // false
+        println!("{}", can_partition(vec![1, 5, 3])); // false
     }
 }
