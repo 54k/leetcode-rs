@@ -1,4 +1,3 @@
-use crate::day_58::recover_tree;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -366,6 +365,131 @@ pub fn lowest_common_ancestor(
     lowest_common_ancestor_postorder(root, p, q)
 }
 
+// https://leetcode.com/problems/time-based-key-value-store/
+// https://leetcode.com/problems/time-based-key-value-store/editorial/
+use std::collections::HashMap;
+
+struct TimeMap {
+    buckets: HashMap<String, Vec<(i32, String)>>,
+}
+impl TimeMap {
+    fn new() -> Self {
+        Self {
+            buckets: HashMap::new(),
+        }
+    }
+
+    fn set(&mut self, key: String, value: String, timestamp: i32) {
+        self.buckets
+            .entry(key)
+            .or_insert(vec![])
+            .push((timestamp, value));
+    }
+
+    fn get(&self, key: String, timestamp: i32) -> String {
+        if !self.buckets.contains_key(&key) {
+            return "".to_string();
+        }
+
+        let bucket = &self.buckets[&key];
+        let len = bucket.len();
+        let mut lo = 0;
+        let mut hi = len;
+
+        while lo < hi {
+            let mid = lo + (hi - lo) / 2;
+            if bucket[mid].0 <= timestamp {
+                lo = mid + 1;
+            } else {
+                hi = mid
+            }
+        }
+
+        if hi == 0 {
+            // no timestamp <= exists
+            return "".to_string();
+        }
+        bucket[hi - 1].1.clone()
+    }
+}
+
+// https://leetcode.com/problems/accounts-merge/description/
+// https://leetcode.com/problems/accounts-merge/editorial/
+pub fn accounts_merge(accounts: Vec<Vec<String>>) -> Vec<Vec<String>> {
+    use std::collections::{HashMap, HashSet};
+    fn dfs(
+        v: String,
+        adj: &HashMap<String, Vec<String>>,
+        visited: &mut HashSet<String>,
+        components: &mut Vec<String>,
+    ) {
+        if visited.contains(&v) {
+            return;
+        }
+        visited.insert(v.clone());
+        components.push(v.to_string());
+
+        for u in &adj[&v] {
+            if !visited.contains(u) {
+                dfs(u.clone(), adj, visited, components);
+            }
+        }
+    }
+
+    let mut visited = HashSet::new();
+    let mut adj = HashMap::new();
+
+    for account in &accounts {
+        let first_email = &account[1];
+        adj.entry(first_email.clone()).or_insert(vec![]);
+        for email in account.iter().skip(2) {
+            adj.get_mut(first_email).unwrap().push(email.clone());
+            adj.entry(email.clone())
+                .or_insert(vec![])
+                .push(first_email.clone());
+        }
+    }
+
+    let mut merged_accounts = vec![];
+    for account in &accounts {
+        let first_email = &account[1];
+        if !visited.contains(first_email) {
+            let mut components = vec![account[0].clone()];
+            dfs(first_email.clone(), &adj, &mut visited, &mut components);
+            components[1..].sort();
+            merged_accounts.push(components);
+        }
+    }
+    merged_accounts
+}
+
+// https://leetcode.com/problems/sort-colors/
+pub fn sort_colors(nums: &mut Vec<i32>) {
+    use std::cmp::Ordering;
+    let (mut lt, mut gt, mut i) = (0, nums.len(), 0);
+    while i < gt {
+        match nums[i].cmp(&1) {
+            Ordering::Less => {
+                nums.swap(lt, i);
+                lt += 1;
+                i += 1;
+            }
+            Ordering::Equal => {
+                i += 1;
+            }
+            Ordering::Greater => {
+                gt -= 1;
+                nums.swap(gt, i);
+            }
+        }
+    }
+}
+
+// https://leetcode.com/problems/word-break/
+pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
+    false
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -475,5 +599,85 @@ mod test {
         })));
 
         println!("{:?}", lowest_common_ancestor(root, p, q)); // 1
+    }
+
+    #[test]
+    fn test_time_map() {
+        let mut time_map = TimeMap::new();
+        time_map.set("foo".to_string(), "bar".to_string(), 1);
+        println!("{}", time_map.get("foo".to_string(), 1));
+        println!("{}", time_map.get("foo".to_string(), 3));
+        time_map.set("foo".to_string(), "bar2".to_string(), 4);
+        println!("{}", time_map.get("foo".to_string(), 4));
+        println!("{}", time_map.get("foo".to_string(), 5));
+    }
+
+    #[test]
+    fn test_accounts_merge() {
+        println!(
+            "{:?}",
+            accounts_merge(vec![
+                vec![
+                    "John".to_string(),
+                    "johnsmith@mail.com".to_string(),
+                    "john_newyork@mail.com".to_string(),
+                ],
+                vec![
+                    "John".to_string(),
+                    "johnsmith@mail.com".to_string(),
+                    "john00@mail.com".to_string(),
+                ],
+                vec!["Mary".to_string(), "mary@mail.com".to_string()],
+                vec!["John".to_string(), "johnnybravo@mail.com".to_string()],
+            ])
+        ); // [["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],
+           // ["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+
+        println!(
+            "{:?}",
+            accounts_merge(vec![
+                vec![
+                    "Gabe".to_string(),
+                    "Gabe0@m.co".to_string(),
+                    "Gabe3@m.co".to_string(),
+                    "Gabe1@m.co".to_string()
+                ],
+                vec![
+                    "Kevin".to_string(),
+                    "Kevin3@m.co".to_string(),
+                    "Kevin5@m.co".to_string(),
+                    "Kevin0@m.co".to_string()
+                ],
+                vec![
+                    "Ethan".to_string(),
+                    "Ethan5@m.co".to_string(),
+                    "Ethan4@m.co".to_string(),
+                    "Ethan0@m.co".to_string()
+                ],
+                vec![
+                    "Hanzo".to_string(),
+                    "Hanzo3@m.co".to_string(),
+                    "Hanzo1@m.co".to_string(),
+                    "Hanzo0@m.co".to_string()
+                ],
+                vec![
+                    "Fern".to_string(),
+                    "Fern5@m.co".to_string(),
+                    "Fern1@m.co".to_string(),
+                    "Fern0@m.co".to_string()
+                ],
+            ])
+        ); // [["Ethan","Ethan0@m.co","Ethan4@m.co","Ethan5@m.co"],
+           // ["Gabe","Gabe0@m.co","Gabe1@m.co","Gabe3@m.co"],
+           // ["Hanzo","Hanzo0@m.co","Hanzo1@m.co","Hanzo3@m.co"],
+           // ["Kevin","Kevin0@m.co","Kevin3@m.co","Kevin5@m.co"],
+           // ["Fern","Fern0@m.co","Fern1@m.co","Fern5@m.co"]]
+    }
+
+    #[test]
+    fn test_sort_colors() {
+        let mut v = vec![2, 0, 2, 1, 1, 0];
+        sort_colors(&mut v);
+        println!("{:?}", v);
     }
 }

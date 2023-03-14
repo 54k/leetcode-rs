@@ -1,5 +1,6 @@
 // todo https://leetcode.com/problems/strong-password-checker/description/
 // todo https://leetcode.com/problems/replace-non-coprime-numbers-in-array/description/
+// todo https://leetcode.com/problems/successful-pairs-of-spells-and-potions/description/
 
 // https://leetcode.com/problems/sum-root-to-leaf-numbers/
 use std::cell::RefCell;
