@@ -58,7 +58,54 @@ pub fn strong_password_checker_ii(password: String) -> bool {
 
 // https://leetcode.com/problems/validate-ip-address/description/
 pub fn valid_ip_address(query_ip: String) -> String {
-    "".to_string()
+    fn validate_ip_v4(query_ip: String) -> bool {
+        fn is_valid_num(token: &str) -> bool {
+            if token.is_empty() || token.len() > 3 || (token.len() > 1 && token.starts_with('0')) {
+                return false;
+            }
+            token.chars().all(|c| c.is_ascii_digit()) && token.parse::<i32>().unwrap_or(256) <= 255
+        }
+
+        let parts = query_ip.split('.').collect::<Vec<_>>();
+        if parts.len() != 4 {
+            return false;
+        }
+        parts.into_iter().all(is_valid_num)
+    }
+
+    fn validate_ip_v6(query_ip: String) -> bool {
+        fn is_valid_hex(token: &str) -> bool {
+            if token.is_empty() || token.len() > 4 {
+                return false;
+            }
+            token.chars().all(|c| {
+                c.is_ascii_digit()
+                    || matches!(
+                        c.to_lowercase().next().unwrap(),
+                        'a' | 'b' | 'c' | 'd' | 'e' | 'f'
+                    )
+            })
+        }
+
+        let parts = query_ip.split(':').collect::<Vec<_>>();
+        if parts.len() != 8 {
+            return false;
+        }
+        parts.into_iter().all(is_valid_hex)
+    }
+
+    if query_ip.contains('.') {
+        // ipv4 possible
+        if validate_ip_v4(query_ip) {
+            return "IPv4".to_string();
+        }
+    } else if query_ip.contains(':') {
+        // ipv6 possible
+        if validate_ip_v6(query_ip) {
+            return "IPv6".to_string();
+        }
+    }
+    "Neither".to_string()
 }
 
 #[cfg(test)]
@@ -92,5 +139,24 @@ mod test {
             "{}",
             strong_password_checker_ii("IloveLe3tcode!".to_string())
         ); // true
+    }
+
+    #[test]
+    fn test348() {
+        println!("{}", valid_ip_address("172.16.254.1".to_string())); // IPv4
+        println!(
+            "{}",
+            valid_ip_address("2001:0db8:85a3:0:0:8A2E:0370:7334".to_string())
+        ); // IPv6
+        println!("{}", valid_ip_address("256.256.256.256".to_string())); // Neither
+        println!("{}", valid_ip_address("1.1.1.".to_string())); // Neither
+        println!(
+            "{}",
+            valid_ip_address("2001:db8:85a3:0::8a2E:0370:7334".to_string())
+        ); // Neither
+        println!(
+            "{}",
+            valid_ip_address("2001:0db8:85a3:0000:0:8A2E:0370:733a".to_string())
+        ); // IPv6
     }
 }
