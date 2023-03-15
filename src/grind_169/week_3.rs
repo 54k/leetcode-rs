@@ -398,6 +398,7 @@ pub fn lowest_common_ancestor(
 
 // https://leetcode.com/problems/time-based-key-value-store/
 // https://leetcode.com/problems/time-based-key-value-store/editorial/
+use crate::day_85::find_anagrams;
 use std::collections::HashMap;
 
 struct TimeMap {
@@ -994,6 +995,61 @@ pub fn letter_combinations(digits: String) -> Vec<String> {
     result
 }
 
+// https://leetcode.com/problems/word-search/
+pub fn exist(board: Vec<Vec<char>>, word: String) -> bool {
+    const DIR: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
+    fn dfs(
+        board: &[Vec<char>],
+        word: &[char],
+        word_idx: usize,
+        coord: (i32, i32),
+        visited: &mut Vec<Vec<bool>>,
+    ) -> bool {
+        if word_idx == word.len() {
+            return true;
+        }
+
+        if coord.0 < 0
+            || coord.0 >= board.len() as i32
+            || coord.1 < 0
+            || coord.1 >= board[0].len() as i32
+            || visited[coord.0 as usize][coord.1 as usize]
+        {
+            return false;
+        }
+
+        let i = coord.0 as usize;
+        let j = coord.1 as usize;
+        let mut found = false;
+
+        if board[i][j] == word[word_idx] {
+            for d in DIR {
+                visited[i][j] = true;
+                found |= dfs(
+                    board,
+                    word,
+                    word_idx + 1,
+                    (coord.0 + d.0, coord.1 + d.1),
+                    visited,
+                );
+                visited[i][j] = false;
+            }
+        }
+        found
+    }
+    let mut found = false;
+    let word = word.chars().collect::<Vec<_>>();
+    for i in 0..board.len() {
+        for j in 0..board[0].len() {
+            if board[i][j] == word[0] {
+                let mut visited = vec![vec![false; board[0].len()]; board.len()];
+                found |= dfs(&board, &word, 0, (i as i32, j as i32), &mut visited);
+            }
+        }
+    }
+    found
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1297,5 +1353,49 @@ mod test {
         println!("{:?}", letter_combinations("23".to_string())); // ["ad","ae","af","bd","be","bf","cd","ce","cf"]
         println!("{:?}", letter_combinations("".to_string())); // []
         println!("{:?}", letter_combinations("2".to_string())); // ["a", "b", "c"]
+    }
+
+    #[test]
+    fn test_exists() {
+        println!(
+            "{}",
+            exist(vec![vec!['a', 'b'], vec!['c', 'd']], "acdb".to_string())
+        ); // true
+
+        println!(
+            "{}",
+            exist(
+                vec![
+                    vec!['A', 'B', 'C', 'E'],
+                    vec!['S', 'F', 'C', 'S'],
+                    vec!['A', 'D', 'E', 'E']
+                ],
+                "SEE".to_string()
+            )
+        ); // true
+
+        println!(
+            "{}",
+            exist(
+                vec![
+                    vec!['A', 'B', 'C', 'E'],
+                    vec!['S', 'F', 'C', 'S'],
+                    vec!['A', 'D', 'E', 'E']
+                ],
+                "ABCCED".to_string()
+            )
+        ); // true
+
+        println!(
+            "{}",
+            exist(
+                vec![
+                    vec!['A', 'B', 'C', 'E'],
+                    vec!['S', 'F', 'C', 'S'],
+                    vec!['A', 'D', 'E', 'E']
+                ],
+                "ABCB".to_string()
+            )
+        ); // false
     }
 }
