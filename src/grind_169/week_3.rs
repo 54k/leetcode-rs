@@ -710,6 +710,98 @@ pub fn can_partition(nums: Vec<i32>) -> bool {
     mem_optimized_knapsack(nums)
 }
 
+// https://leetcode.com/problems/string-to-integer-atoi/
+pub fn my_atoi(s: String) -> i32 {
+    let s = s.trim();
+    let mut num = 0;
+    let mut sign = 1;
+    let mut sign_seen = false;
+
+    for ch in s.chars() {
+        match ch {
+            _ if ch.is_ascii_digit() => {
+                sign_seen = true;
+                let digit = ch as i32 - 48;
+                if num > i32::MAX / 10 {
+                    return if sign < 0 { i32::MIN } else { i32::MAX };
+                }
+                if num * sign == i32::MAX / 10 && digit > i32::MAX % 10 {
+                    return i32::MAX;
+                } else if num * sign == i32::MIN / 10 && digit >= -(i32::MIN % 10) {
+                    return i32::MIN;
+                }
+                num = num * 10 + digit;
+            }
+            '+' if !sign_seen => {
+                sign_seen = true;
+            }
+            '-' if !sign_seen => {
+                sign_seen = true;
+                sign *= -1;
+            }
+            _ => break,
+        }
+    }
+    num * sign
+}
+// https://leetcode.com/problems/spiral-matrix/
+
+// We go boundary by boundary and move inwards.
+// That is the essential operation.
+// First row, last column, last row, first column, and then we move inwards by 1 and repeat.
+// That's all. That is all the simulation that we need.
+pub fn spiral_order(matrix: Vec<Vec<i32>>) -> Vec<i32> {
+    const DIRS: [(i32, i32); 4] = [(0, 1), (1, 0), (0, -1), (-1, 0)];
+    fn simulate_step(
+        matrix: &[Vec<i32>],
+        coord: &mut (i32, i32),
+        dir_idx: &mut usize,
+        row: &mut (i32, i32),
+        col: &mut (i32, i32),
+        path: &mut Vec<i32>,
+    ) {
+        if coord.1 == col.1 && (*dir_idx % 4) == 0 {
+            *col = (col.0, col.1 - 1);
+            *dir_idx += 1;
+        }
+        if coord.1 == col.0 && (*dir_idx % 4) == 2 {
+            *col = (col.0 + 1, col.1);
+            *dir_idx += 1;
+        }
+        if coord.0 == row.1 && (*dir_idx % 4) == 1 {
+            *row = (row.0 + 1, row.1);
+            *dir_idx += 1;
+        }
+        if coord.0 == row.0 && (*dir_idx % 4) == 3 {
+            *row = (row.0, row.1 - 1);
+            *dir_idx += 1;
+        }
+
+        path.push(matrix[coord.0 as usize][coord.1 as usize]);
+
+        let dir = DIRS[*dir_idx % 4];
+        *coord = (coord.0 + dir.0, coord.1 + dir.1);
+    }
+
+    let mut path = vec![];
+    let mut row = (0_i32, matrix.len() as i32 - 1);
+    let mut col = (0_i32, matrix[0].len() as i32 - 1);
+    let mut coord = (0, 0);
+    let mut dir_idx = 0;
+
+    while path.len() != matrix.len() * matrix[0].len() {
+        simulate_step(
+            &matrix,
+            &mut coord,
+            &mut dir_idx,
+            &mut row,
+            &mut col,
+            &mut path,
+        );
+    }
+    path
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -924,5 +1016,26 @@ mod test {
         println!("{}", can_partition(vec![1, 5, 11, 5])); // true
         println!("{}", can_partition(vec![1, 2, 3, 5])); // false
         println!("{}", can_partition(vec![1, 5, 3])); // false
+    }
+
+    #[test]
+    fn test_my_atoi() {
+        println!("{}", my_atoi("-2147483647".to_string())); // -2147483647
+        println!("{}", my_atoi(i32::MIN.to_string())); // -2147483648
+        println!("{}", my_atoi(i32::MAX.to_string())); // 2147483647
+
+        println!("{}", my_atoi("   -42".to_string())); // -42
+        println!("{}", my_atoi("4193 with words".to_string())); // 4193
+    }
+
+    #[test]
+    fn test_spiral_order() {
+        println!(
+            "{:?}",
+            spiral_order(vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]])
+        ); // [1,2,3,6,9,8,7,4,5]
+
+        println!("{:?}", spiral_order(vec![vec![1, 2, 3]])); // [1,2,3]
+        println!("{:?}", spiral_order(vec![vec![1], vec![2], vec![3]])); // [1,2,3]
     }
 }
