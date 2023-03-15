@@ -856,10 +856,47 @@ pub fn right_side_view(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
     result
 }
 
+// https://leetcode.com/problems/longest-palindromic-substring/
+// https://leetcode.com/problems/longest-palindromic-substring/editorial/
+pub fn longest_palindrome(s: String) -> String {
+    fn expand_around_center(s: &[char], left: i32, right: i32) -> i32 {
+        let mut l = left;
+        let mut r = right;
+        while l >= 0 && r < s.len() as i32 && s[l as usize] == s[r as usize] {
+            l -= 1;
+            r += 1;
+        }
+        r - l - 1
+    }
+    let s = s.chars().collect::<Vec<_>>();
+    let mut start = 0;
+    let mut end = 0;
+    for i in 0..s.len() {
+        let len1 = expand_around_center(&s, i as i32, i as i32);
+        let len2 = expand_around_center(&s, i as i32, i as i32 + 1);
+        let len = len1.max(len2);
+        if len > (end - start) {
+            start = i as i32 - (len - 1) / 2;
+            end = i as i32 + len / 2;
+        }
+    }
+    s[(start as usize)..=end as usize].iter().copied().collect()
+}
+
+// https://leetcode.com/problems/unique-paths/
+pub fn unique_paths(m: i32, n: i32) -> i32 {
+    let mut dp = vec![vec![1; n as usize]; m as usize];
+    for i in 1..dp.len() {
+        for j in 1..dp[0].len() {
+            dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+        }
+    }
+    dp[m as usize - 1][n as usize - 1]
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::cell::Ref;
 
     #[test]
     fn test_search() {
@@ -1096,7 +1133,7 @@ mod test {
 
     #[test]
     fn test_subsets() {
-        println!("{:?}", subsets(vec![1, 2, 3]));
+        println!("{:?}", subsets(vec![1, 2, 3])); // [[1, 2, 3], [1, 2], [1, 3], [1], [2, 3], [2], [3], []]
     }
 
     #[test]
@@ -1127,5 +1164,17 @@ mod test {
             }))),
         })));
         println!("{:?}", right_side_view(root));
+    }
+
+    #[test]
+    fn test_longest_palindrome() {
+        println!("{}", longest_palindrome("babad".to_string())); // aba or bad
+        println!("{}", longest_palindrome("cbbd".to_string())); // bb
+    }
+
+    #[test]
+    fn test_unique_paths() {
+        println!("{}", unique_paths(3, 7)); // 28
+        println!("{}", unique_paths(3, 2)); // 3
     }
 }
