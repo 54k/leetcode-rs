@@ -55,6 +55,32 @@ pub fn is_complete_tree(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
     bfs_approach(root)
 }
 
+// https://leetcode.com/problems/count-square-submatrices-with-all-ones/description/
+// https://leetcode.com/problems/count-square-submatrices-with-all-ones/solutions/441306/java-c-python-dp-solution/
+// Explanation
+//
+// dp[i][j] means the size of biggest square with A[i][j] as bottom-right corner.
+// dp[i][j] also means the number of squares with A[i][j] as bottom-right corner.
+//
+// If A[i][j] == 0, no possible square.
+// If A[i][j] == 1,
+// we compare the size of square dp[i-1][j-1], dp[i-1][j] and dp[i][j-1].
+// min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]) + 1 is the maximum size of square that we can find.
+pub fn count_squares(mut matrix: Vec<Vec<i32>>) -> i32 {
+    let mut ans = 0;
+    for i in 0..matrix.len() {
+        for j in 0..matrix[0].len() {
+            if matrix[i][j] > 0 && i > 0 && j > 0 {
+                matrix[i][j] = 1 + matrix[i - 1][j]
+                    .min(matrix[i][j - 1])
+                    .min(matrix[i - 1][j - 1]);
+            }
+            ans += matrix[i][j];
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -114,5 +140,17 @@ mod test {
             }))),
         })));
         println!("{}", is_complete_tree(root));
+    }
+
+    #[test]
+    fn test350() {
+        println!(
+            "{}",
+            count_squares(vec![vec![0, 1, 1, 1], vec![1, 1, 1, 1], vec![0, 1, 1, 1]])
+        ); // 15
+        println!(
+            "{}",
+            count_squares(vec![vec![1, 0, 1], vec![1, 1, 0], vec![1, 1, 0]])
+        ); // 7
     }
 }

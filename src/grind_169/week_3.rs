@@ -1,5 +1,4 @@
 use std::cell::RefCell;
-use std::cmp::max;
 use std::rc::Rc;
 
 // https://leetcode.com/problems/search-in-rotated-sorted-array/description/
@@ -894,6 +893,87 @@ pub fn unique_paths(m: i32, n: i32) -> i32 {
     dp[m as usize - 1][n as usize - 1]
 }
 
+// https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/
+pub fn build_tree(preorder: Vec<i32>, inorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+    use std::collections::HashMap;
+    let mut inorder_map = inorder
+        .iter()
+        .copied()
+        .enumerate()
+        .map(|(i, x)| (x, i as i32))
+        .collect::<HashMap<i32, i32>>();
+
+    fn build_tree(
+        preorder: &Vec<i32>,
+        inorder_map: &HashMap<i32, i32>,
+        preorder_idx: &mut usize,
+        left: i32,
+        right: i32,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if left > right {
+            return None;
+        }
+
+        let mut root = TreeNode {
+            val: preorder[*preorder_idx],
+            left: None,
+            right: None,
+        };
+        *preorder_idx += 1;
+
+        root.left = build_tree(
+            preorder,
+            inorder_map,
+            preorder_idx,
+            left,
+            inorder_map[&root.val] - 1,
+        );
+
+        root.right = build_tree(
+            preorder,
+            inorder_map,
+            preorder_idx,
+            inorder_map[&root.val] + 1,
+            right,
+        );
+
+        Some(Rc::new(RefCell::new(root)))
+    }
+
+    build_tree(
+        &preorder,
+        &inorder_map,
+        &mut 0,
+        0,
+        preorder.len() as i32 - 1,
+    )
+}
+
+// https://leetcode.com/problems/container-with-most-water/description/
+// https://leetcode.com/problems/container-with-most-water/editorial/
+
+// We have to maximize the Area that can be formed between the vertical lines
+// using the shorter line as length and the distance between the lines
+// as the width of the rectangle forming the area.
+pub fn max_area(height: Vec<i32>) -> i32 {
+    let mut ans = 0;
+    let mut i = 0;
+    let mut j = height.len() - 1;
+    let mut height_left = 0;
+    let mut height_right = 0;
+    while i < j {
+        height_left = height_left.max(height[i]);
+        height_right = height_right.max(height[j]);
+        ans = ans.max(height_left.min(height_right) * (j as i32 - i as i32));
+        if height_left <= height_right {
+            i += 1;
+        } else {
+            j -= 1;
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1176,5 +1256,19 @@ mod test {
     fn test_unique_paths() {
         println!("{}", unique_paths(3, 7)); // 28
         println!("{}", unique_paths(3, 2)); // 3
+    }
+
+    #[test]
+    fn test_build_tree() {
+        println!(
+            "{:?}",
+            build_tree(vec![3, 9, 20, 15, 7], vec![9, 3, 15, 20, 7])
+        ); // [3,9,20,null,null,15,7]
+    }
+
+    #[test]
+    fn test_max_area() {
+        println!("{}", max_area(vec![1, 8, 6, 2, 5, 4, 8, 3, 7])); // 49
+        println!("{}", max_area(vec![1, 1])); // 1
     }
 }
