@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::cmp::max;
 use std::rc::Rc;
 
 // https://leetcode.com/problems/search-in-rotated-sorted-array/description/
@@ -744,12 +745,8 @@ pub fn my_atoi(s: String) -> i32 {
     }
     num * sign
 }
-// https://leetcode.com/problems/spiral-matrix/
 
-// We go boundary by boundary and move inwards.
-// That is the essential operation.
-// First row, last column, last row, first column, and then we move inwards by 1 and repeat.
-// That's all. That is all the simulation that we need.
+// https://leetcode.com/problems/spiral-matrix/
 pub fn spiral_order(matrix: Vec<Vec<i32>>) -> Vec<i32> {
     const DIRS: [(i32, i32); 4] = [(0, 1), (1, 0), (0, -1), (-1, 0)];
     fn simulate_step(
@@ -802,9 +799,67 @@ pub fn spiral_order(matrix: Vec<Vec<i32>>) -> Vec<i32> {
     path
 }
 
+// https://leetcode.com/problems/subsets/description/
+pub fn subsets(nums: Vec<i32>) -> Vec<Vec<i32>> {
+    fn bit_mask(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut result = vec![];
+        for i in 0..1 << nums.len() {
+            let mut subset = vec![];
+            for j in 0..nums.len() {
+                if (i >> j) & 1 == 1 {
+                    subset.push(nums[j]);
+                }
+            }
+            result.push(subset);
+        }
+        result
+    }
+    fn recursive(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut result = vec![];
+        let mut cur = vec![];
+        fn rec(nums: &[i32], i: usize, cur: &mut Vec<i32>, result: &mut Vec<Vec<i32>>) {
+            if i == nums.len() {
+                result.push(cur.clone());
+                return;
+            }
+            cur.push(nums[i]);
+            rec(nums, i + 1, cur, result);
+            cur.pop();
+            rec(nums, i + 1, cur, result);
+        }
+        rec(&nums, 0, &mut cur, &mut result);
+        result
+    }
+    recursive(nums)
+}
+
+// https://leetcode.com/problems/binary-tree-right-side-view/
+pub fn right_side_view(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
+    fn preorder_inverted(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        depth: i32,
+        max_depth: &mut i32,
+        result: &mut Vec<i32>,
+    ) {
+        if let Some(r) = root {
+            let r = r.borrow();
+            if depth > *max_depth {
+                result.push(r.val);
+            }
+            *max_depth = (*max_depth).max(depth);
+            preorder_inverted(r.right.clone(), depth + 1, max_depth, result);
+            preorder_inverted(r.left.clone(), depth + 1, max_depth, result);
+        }
+    }
+    let mut result = vec![];
+    preorder_inverted(root, 0, &mut -1, &mut result);
+    result
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::cell::Ref;
 
     #[test]
     fn test_search() {
@@ -1037,5 +1092,40 @@ mod test {
 
         println!("{:?}", spiral_order(vec![vec![1, 2, 3]])); // [1,2,3]
         println!("{:?}", spiral_order(vec![vec![1], vec![2], vec![3]])); // [1,2,3]
+    }
+
+    #[test]
+    fn test_subsets() {
+        println!("{:?}", subsets(vec![1, 2, 3]));
+    }
+
+    #[test]
+    fn test_right_side_view() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 5,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 6,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: None,
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 4,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{:?}", right_side_view(root));
     }
 }
