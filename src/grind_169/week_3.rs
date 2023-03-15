@@ -951,10 +951,6 @@ pub fn build_tree(preorder: Vec<i32>, inorder: Vec<i32>) -> Option<Rc<RefCell<Tr
 
 // https://leetcode.com/problems/container-with-most-water/description/
 // https://leetcode.com/problems/container-with-most-water/editorial/
-
-// We have to maximize the Area that can be formed between the vertical lines
-// using the shorter line as length and the distance between the lines
-// as the width of the rectangle forming the area.
 pub fn max_area(height: Vec<i32>) -> i32 {
     let mut ans = 0;
     let mut i = 0;
@@ -972,6 +968,30 @@ pub fn max_area(height: Vec<i32>) -> i32 {
         }
     }
     ans
+}
+
+// https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+pub fn letter_combinations(digits: String) -> Vec<String> {
+    const MAPPING: [&str; 11] = [
+        "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz", " ",
+    ];
+    fn rec(digits: &Vec<char>, cur_digit: usize, cur: &mut String, result: &mut Vec<String>) {
+        if cur_digit == digits.len() {
+            if !cur.is_empty() {
+                result.push(cur.clone());
+            }
+            return;
+        }
+        for ch in MAPPING[digits[cur_digit] as usize - 48].chars() {
+            cur.push(ch);
+            rec(digits, cur_digit + 1, cur, result);
+            cur.pop();
+        }
+    }
+    let digits = digits.chars().collect::<Vec<_>>();
+    let mut result = vec![];
+    rec(&digits, 0, &mut String::new(), &mut result);
+    result
 }
 
 #[cfg(test)]
@@ -1270,5 +1290,12 @@ mod test {
     fn test_max_area() {
         println!("{}", max_area(vec![1, 8, 6, 2, 5, 4, 8, 3, 7])); // 49
         println!("{}", max_area(vec![1, 1])); // 1
+    }
+
+    #[test]
+    fn test_letter_combinations() {
+        println!("{:?}", letter_combinations("23".to_string())); // ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+        println!("{:?}", letter_combinations("".to_string())); // []
+        println!("{:?}", letter_combinations("2".to_string())); // ["a", "b", "c"]
     }
 }
