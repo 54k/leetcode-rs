@@ -398,7 +398,6 @@ pub fn lowest_common_ancestor(
 
 // https://leetcode.com/problems/time-based-key-value-store/
 // https://leetcode.com/problems/time-based-key-value-store/editorial/
-use crate::day_85::find_anagrams;
 use std::collections::HashMap;
 
 struct TimeMap {
@@ -1050,6 +1049,32 @@ pub fn exist(board: Vec<Vec<char>>, word: String) -> bool {
     found
 }
 
+// https://leetcode.com/problems/find-all-anagrams-in-a-string/
+pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
+    let mut result = vec![];
+    let s = s.chars().collect::<Vec<_>>();
+    let p = p.chars().collect::<Vec<_>>();
+
+    let mut p_map = vec![0; 26];
+    for &ch in &p {
+        p_map[ch as usize - 'a' as usize] += 1;
+    }
+
+    let mut s_map = vec![0; 26];
+    let mut start = 0;
+    for end in 0..s.len() {
+        s_map[s[end] as usize - 'a' as usize] += 1;
+        if end - start + 1 == p.len() {
+            if s_map == p_map {
+                result.push(start as i32);
+            }
+            s_map[s[start] as usize - 'a' as usize] -= 1;
+            start += 1;
+        }
+    }
+    result
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1397,5 +1422,14 @@ mod test {
                 "ABCB".to_string()
             )
         ); // false
+    }
+
+    #[test]
+    fn test_find_anagrams() {
+        println!(
+            "{:?}",
+            find_anagrams("cbaebabacd".to_string(), "abc".to_string())
+        ); // [0,6]
+        println!("{:?}", find_anagrams("abab".to_string(), "ab".to_string())); // [0,1,2]
     }
 }
