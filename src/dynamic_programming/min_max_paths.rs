@@ -178,7 +178,37 @@ pub fn num_squares(n: i32) -> i32 {
 }
 
 // https://leetcode.com/problems/last-stone-weight-ii/
-pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {}
+// https://leetcode.com/problems/last-stone-weight-ii/solutions/294888/java-c-python-easy-knapsacks-dp/
+// Think of the final answer as a sum of weights with + or - sign symbols infront of each weight.
+// Actually, all sums with 1 of each sign symbol are possible.
+
+// Use dynamic programming:
+// for every possible sum with N stones, those sums +x or -x is possible with N+1 stones,
+// where x is the value of the newest stone.
+// (This overcounts sums that are all positive or all negative, but those don't matter.)
+pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {
+    const HALF_SUM: usize = 1501usize;
+    let mut dp = vec![false; HALF_SUM]; // max sum of all stones is 3000
+    dp[0] = true;
+    let mut sum = 0;
+    for i in 0..stones.len() {
+        sum += stones[i] as usize;
+        for j in (stones[i] as usize..=(HALF_SUM - 1).min(sum)).rev() {
+            dp[j] |= dp[j - stones[i] as usize];
+        }
+    }
+    for i in (0..=sum / 2).rev() {
+        if dp[i] {
+            return (sum - i - i) as i32;
+        }
+    }
+    0
+}
+
+// https://leetcode.com/problems/ones-and-zeroes/
+pub fn find_max_form(strs: Vec<String>, m: i32, n: i32) -> i32 {
+    0
+}
 
 #[cfg(test)]
 mod test {
@@ -242,7 +272,26 @@ mod test {
 
     #[test]
     fn test_last_stone_weight_ii() {
+        println!("{}", last_stone_weight_ii(vec![1, 2])); // 1
         println!("{}", last_stone_weight_ii(vec![2, 7, 4, 1, 8, 1])); // 1
         println!("{}", last_stone_weight_ii(vec![31, 26, 33, 21, 40])); // 5
+    }
+
+    #[test]
+    fn test_find_max_form() {
+        println!(
+            "{}",
+            find_max_form(
+                vec![
+                    "10".to_string(),
+                    "0001".to_string(),
+                    "111001".to_string(),
+                    "1".to_string(),
+                    "0".to_string()
+                ],
+                5,
+                3
+            )
+        ); // 4
     }
 }
