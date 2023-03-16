@@ -242,6 +242,16 @@ pub fn daily_temperatures(temperatures: Vec<i32>) -> Vec<i32> {
     ans
 }
 
+// House robber
+// The non-recursive solution to the house robber problem uses an iterative approach to solve the problem, rather than a recursive approach.
+// Instead of calling a function recursively to solve the problem, it uses a loop to iterate over the input data and update the solution as it goes.
+// The key to this solution is the use of two variables, prev and last, to store the maximum amount of money that can be robbed so far. At each iteration of the loop, the solution updates these variables based on the current value of curr, which represents the value of the current house.
+// The solution uses the following logic:
+// If the current house is not robbed, then last is set to the maximum of prev (the maximum amount of money that can be robbed so far, excluding the current house) and last (the maximum amount of money that can be robbed so far, including the previous house but not the current one).
+// If the current house is robbed, then last is set to prev + curr, which represents the maximum amount of money that can be robbed so far, including the current house.
+// This approach allows the solution to compute the maximum amount of money that can be robbed so far in a single pass through the input data, without the need for recursive function calls.
+// The recursive solution, on the other hand, uses a recursive function to compute the maximum amount of money that can be robbed so far by calling itself with different combinations of the input data and intermediate results. This can be less efficient than an iterative approach, especially for larger inputs, because it requires a function call for each element in the input data.
+
 #[cfg(test)]
 mod test {
     use super::*;
