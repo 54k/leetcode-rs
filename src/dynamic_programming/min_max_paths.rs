@@ -70,6 +70,94 @@ pub fn maximal_square(matrix: Vec<Vec<char>>) -> i32 {
     max_square * max_square
 }
 
+// https://leetcode.com/problems/minimum-cost-for-tickets/
+// https://leetcode.com/problems/minimum-cost-for-tickets/editorial/
+pub fn mincost_tickets(days: Vec<i32>, costs: Vec<i32>) -> i32 {
+    fn day_based_top_down(days: Vec<i32>, costs: Vec<i32>) -> i32 {
+        use std::collections::HashSet;
+        fn calc(day: usize, days: &HashSet<usize>, costs: &Vec<i32>, memo: &mut [i32]) -> i32 {
+            if day > 365 {
+                return 0;
+            }
+            if memo[day] == -1 {
+                if days.contains(&day) {
+                    memo[day] = (calc(day + 1, days, costs, memo) + costs[0])
+                        .min(calc(day + 7, days, costs, memo) + costs[1])
+                        .min(calc(day + 30, days, costs, memo) + costs[2]);
+                } else {
+                    memo[day] = calc(day + 1, days, costs, memo);
+                }
+            }
+            memo[day]
+        }
+        let mut memo = vec![-1; 366];
+        let days_set = days
+            .iter()
+            .copied()
+            .map(|x| x as usize)
+            .collect::<HashSet<usize>>();
+        calc(1, &days_set, &costs, &mut memo)
+    }
+
+    fn day_based_bottom_up(days: Vec<i32>, costs: Vec<i32>) -> i32 {
+        use std::collections::HashSet;
+        let mut dp = vec![0; *days.last().unwrap() as usize + 1];
+        let days_set = days
+            .iter()
+            .copied()
+            .map(|x| x as usize)
+            .collect::<HashSet<usize>>();
+
+        for i in 1..dp.len() {
+            if days_set.contains(&i) {
+                dp[i] = (dp[0.max(i as i32 - 1) as usize] + costs[0])
+                    .min(dp[0.max(i as i32 - 7) as usize] + costs[1])
+                    .min(dp[0.max(i as i32 - 30) as usize] + costs[2]);
+            } else {
+                dp[i] = dp[i - 1];
+            }
+        }
+        *dp.last().unwrap()
+    }
+
+    fn window_based_approach(days: Vec<i32>, costs: Vec<i32>) -> i32 {
+        const DURATIONS: [i32; 3] = [1, 7, 30];
+        fn calc(i: usize, days: &[i32], costs: &[i32], memo: &mut [i32]) -> i32 {
+            if i >= days.len() {
+                return 0;
+            }
+            if memo[i] > -1 {
+                return memo[i];
+            }
+            let mut ans = i32::MAX;
+            let mut j = i;
+            for k in 0..DURATIONS.len() {
+                while j < days.len() && days[j] < days[i] + DURATIONS[k] {
+                    j += 1;
+                }
+                ans = ans.min(calc(j, days, costs, memo) + costs[k]);
+            }
+            memo[i] = ans;
+            memo[i]
+        }
+        let mut memo = vec![-1; days.len()];
+        calc(0, &days, &costs, &mut memo)
+    }
+
+    window_based_approach(days, costs)
+}
+
+// https://leetcode.com/problems/2-keys-keyboard/
+// https://leetcode.com/problems/2-keys-keyboard/editorial/
+pub fn min_steps(mut n: i32) -> i32 {
+    0
+}
+
+// https://leetcode.com/problems/perfect-squares/
+pub fn num_squares(n: i32) -> i32 {
+    0
+}
+
 #[cfg(test)]
 mod test {
     // todo https://leetcode.com/list/55ac4kuc/
@@ -104,5 +192,30 @@ mod test {
                 vec!['1', '1', '1', '1', '1']
             ])
         ); // 4
+    }
+
+    #[test]
+    fn test_mincost_tickets() {
+        println!(
+            "{}",
+            mincost_tickets(vec![1, 4, 6, 7, 8, 20], vec![2, 7, 15])
+        ); // 11
+
+        println!(
+            "{}",
+            mincost_tickets(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31], vec![2, 7, 15])
+        ); // 17
+    }
+
+    #[test]
+    fn test_min_steps() {
+        println!("{}", min_steps(1)); // 0
+        println!("{}", min_steps(3)); // 3
+    }
+
+    #[test]
+    fn test_num_squares() {
+        println!("{}", num_squares(12)); // 3
+        println!("{}", num_squares(13)); // 2
     }
 }
