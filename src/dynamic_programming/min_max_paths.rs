@@ -164,12 +164,24 @@ pub fn min_steps(mut n: i32) -> i32 {
 
 // https://leetcode.com/problems/perfect-squares/
 pub fn num_squares(n: i32) -> i32 {
-    0
+    let mut dp = vec![0; (n + 1) as usize];
+    for i in 1..=n {
+        let mut min = i32::MAX;
+        let mut j = 1;
+        while i - j * j >= 0 {
+            min = min.min(dp[(i - j * j) as usize] + 1);
+            j += 1
+        }
+        dp[i as usize] = min;
+    }
+    dp[n as usize]
 }
+
+// https://leetcode.com/problems/last-stone-weight-ii/
+pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {}
 
 #[cfg(test)]
 mod test {
-    // todo https://leetcode.com/list/55ac4kuc/
     use super::*;
 
     #[test]
@@ -226,5 +238,11 @@ mod test {
     fn test_num_squares() {
         println!("{}", num_squares(12)); // 3
         println!("{}", num_squares(13)); // 2
+    }
+
+    #[test]
+    fn test_last_stone_weight_ii() {
+        println!("{}", last_stone_weight_ii(vec![2, 7, 4, 1, 8, 1])); // 1
+        println!("{}", last_stone_weight_ii(vec![31, 26, 33, 21, 40])); // 5
     }
 }
