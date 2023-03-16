@@ -193,7 +193,7 @@ pub fn compute_area(
 
 #[cfg(test)]
 mod test {
-    use crate::day_5::*;
+    use super::*;
 
     #[test]
     fn test39() {

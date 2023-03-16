@@ -25,7 +25,7 @@ pub fn word_pattern(pattern: String, s: String) -> bool {
 
 #[cfg(test)]
 mod test {
-    use crate::day_50::*;
+    use super::*;
 
     #[test]
     fn test137() {

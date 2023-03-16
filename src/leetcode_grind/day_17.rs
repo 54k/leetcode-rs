@@ -74,7 +74,7 @@ pub fn num_enclaves(mut grid: Vec<Vec<i32>>) -> i32 {
 
 #[cfg(test)]
 mod test {
-    use crate::day_17::*;
+    use super::*;
 
     #[test]
     fn test86() {

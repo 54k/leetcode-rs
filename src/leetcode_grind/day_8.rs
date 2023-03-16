@@ -94,7 +94,7 @@ pub fn is_symmetric(root: TN) -> bool {
 
 #[cfg(test)]
 mod test {
-    use crate::day_8::*;
+    use super::*;
 
     #[test]
     fn test52() {

@@ -86,7 +86,7 @@ impl MyQueue {
 
 #[cfg(test)]
 mod test {
-    use crate::day_34::*;
+    use super::*;
 
     #[test]
     fn test118() {

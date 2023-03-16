@@ -354,7 +354,7 @@ pub fn is_palindrome(mut x: i32) -> bool {
 
 #[cfg(test)]
 mod test {
-    use crate::day_1::*;
+    use super::*;
 
     #[test]
     fn test1() {

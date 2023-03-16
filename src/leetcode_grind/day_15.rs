@@ -122,7 +122,7 @@ pub fn max_profit2(prices: Vec<i32>) -> i32 {
 
 #[cfg(test)]
 mod test {
-    use crate::day_15::*;
+    use super::*;
 
     #[test]
     fn test80() {

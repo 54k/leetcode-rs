@@ -107,7 +107,7 @@ pub fn delete_duplicates_distinct(head: Option<Box<ListNode>>) -> Option<Box<Lis
 
 #[cfg(test)]
 mod test {
-    use crate::day_9::*;
+    use super::*;
 
     #[test]
     fn test55() {

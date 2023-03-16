@@ -153,7 +153,7 @@ pub fn rotate_right(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>
 
 #[cfg(test)]
 mod test {
-    use crate::day_7::*;
+    use super::*;
 
     #[test]
     fn test48() {

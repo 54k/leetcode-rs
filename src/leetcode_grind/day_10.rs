@@ -138,7 +138,7 @@ fn password_cracker(len: usize) {
 
 #[cfg(test)]
 mod test {
-    use crate::day_10::*;
+    use super::*;
 
     #[test]
     fn test59() {

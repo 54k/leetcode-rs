@@ -72,7 +72,7 @@ pub fn count_and_say(n: i32) -> String {
 
 #[cfg(test)]
 mod test {
-    use crate::day_44::*;
+    use super::*;
 
     #[test]
     fn test128() {

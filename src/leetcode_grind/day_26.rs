@@ -128,7 +128,7 @@ pub fn build_tree_ii(inorder: Vec<i32>, postorder: Vec<i32>) -> Option<Rc<RefCel
 
 #[cfg(test)]
 mod test {
-    use crate::day_26::*;
+    use super::*;
 
     #[test]
     fn test102() {

@@ -168,7 +168,7 @@ pub fn reverse_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 
 #[cfg(test)]
 mod test {
-    use crate::day_6::*;
+    use super::*;
 
     #[test]
     fn test44() {

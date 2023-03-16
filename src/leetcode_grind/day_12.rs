@@ -265,7 +265,7 @@ pub fn search_range(nums: Vec<i32>, target: i32) -> Vec<i32> {
 
 #[cfg(test)]
 mod test {
-    use crate::day_12::*;
+    use super::*;
 
     #[test]
     fn test69() {

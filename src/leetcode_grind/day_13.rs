@@ -280,7 +280,7 @@ pub fn find_substring(s: String, words: Vec<String>) -> Vec<i32> {
 
 #[cfg(test)]
 mod test {
-    use crate::day_13::*;
+    use super::*;
 
     #[test]
     fn test75() {

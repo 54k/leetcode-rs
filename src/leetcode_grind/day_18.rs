@@ -96,7 +96,7 @@ pub fn search(nums: Vec<i32>, target: i32) -> i32 {
 
 #[cfg(test)]
 mod test {
-    use crate::day_18::*;
+    use super::*;
 
     #[test]
     fn test89() {

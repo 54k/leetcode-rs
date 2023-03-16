@@ -245,7 +245,7 @@ pub fn is_valid_bst(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
 
 #[cfg(test)]
 mod test {
-    use crate::day_3::*;
+    use super::*;
 
     #[test]
     fn test_24() {

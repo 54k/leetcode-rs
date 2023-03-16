@@ -61,7 +61,7 @@ pub fn my_pow(x: f64, n: i32) -> f64 {
 
 #[cfg(test)]
 mod test {
-    use crate::day_29::my_pow;
+    use super::*;
 
     #[test]
     fn test104() {

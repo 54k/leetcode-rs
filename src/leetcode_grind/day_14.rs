@@ -63,7 +63,7 @@ pub fn climb_stairs(n: i32) -> i32 {
 
 #[cfg(test)]
 mod test {
-    use crate::day_14::*;
+    use super::*;
 
     #[test]
     fn test78() {

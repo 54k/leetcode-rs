@@ -56,7 +56,7 @@ impl RandomizedSet {
 
 #[cfg(test)]
 mod test {
-    use crate::insert_delete_get_random_day17::*;
+    use super::*;
 
     #[test]
     fn test() {

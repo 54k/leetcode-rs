@@ -192,7 +192,7 @@ impl Codec {
 
 #[cfg(test)]
 mod test {
-    use crate::day_59::*;
+    use super::*;
     use std::cell::RefCell;
     use std::rc::Rc;
 

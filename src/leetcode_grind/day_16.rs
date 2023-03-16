@@ -94,7 +94,7 @@ pub fn next_permutation(nums: &mut Vec<i32>) {
 
 #[cfg(test)]
 mod test {
-    use crate::day_16::*;
+    use super::*;
 
     #[test]
     fn test83() {

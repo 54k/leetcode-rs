@@ -150,7 +150,16 @@ pub fn mincost_tickets(days: Vec<i32>, costs: Vec<i32>) -> i32 {
 // https://leetcode.com/problems/2-keys-keyboard/
 // https://leetcode.com/problems/2-keys-keyboard/editorial/
 pub fn min_steps(mut n: i32) -> i32 {
-    0
+    let mut ans = 0;
+    let mut d = 2;
+    while n > 1 {
+        while n % d == 0 {
+            ans += d;
+            n /= d;
+        }
+        d += 1;
+    }
+    ans
 }
 
 // https://leetcode.com/problems/perfect-squares/

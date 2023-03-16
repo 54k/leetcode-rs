@@ -84,7 +84,7 @@ pub fn swap_pairs(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
 
 #[cfg(test)]
 mod test {
-    use crate::day_11::*;
+    use super::*;
 
     #[test]
     fn test64() {
