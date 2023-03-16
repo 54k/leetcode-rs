@@ -56,9 +56,11 @@ pub fn least_interval(tasks: Vec<char>, n: i32) -> i32 {
     (total_jobs as i32).max((n + 1) * (max_freq - 1) + max_freq_count)
 }
 
+use std::cell::RefCell;
 // https://leetcode.com/problems/lru-cache/description/
 use std::collections::HashMap;
 use std::ptr::null_mut;
+use std::rc::Rc;
 
 struct ListNode {
     val: i32,
@@ -175,6 +177,71 @@ impl LRUCache {
     }
 }
 
+// https://leetcode.com/problems/kth-smallest-element-in-a-bst/description/
+// https://leetcode.com/problems/kth-smallest-element-in-a-bst/editorial/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn kth_smallest(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> i32 {
+    fn iterative(mut root: Option<Rc<RefCell<TreeNode>>>, mut k: i32) -> i32 {
+        let mut stack = vec![];
+        loop {
+            while root.is_some() {
+                stack.push(root.clone());
+                let left = root.as_ref().unwrap().borrow().left.clone();
+                root = left;
+            }
+            if let Some(Some(r)) = stack.pop() {
+                let r = r.borrow();
+                k -= 1;
+                if k == 0 {
+                    return r.val;
+                }
+                root = r.right.clone();
+            }
+        }
+    }
+    fn recursive(root: Option<Rc<RefCell<TreeNode>>>, mut k: i32) -> i32 {
+        fn inorder(root: Option<Rc<RefCell<TreeNode>>>, k: &mut i32, ans: &mut i32) {
+            if let Some(r) = root {
+                let r = r.borrow();
+                inorder(r.left.clone(), k, ans);
+                *k -= 1;
+                if *k == 0 {
+                    *ans = r.val;
+                    return;
+                }
+                inorder(r.right.clone(), k, ans);
+            }
+        }
+        let mut ans = 0;
+        inorder(root, &mut k, &mut ans);
+        ans
+    }
+    assert_eq!(iterative(root.clone(), k), recursive(root.clone(), k));
+    iterative(root, k)
+}
+
+// https://leetcode.com/problems/daily-temperatures/
+pub fn daily_temperatures(temperatures: Vec<i32>) -> Vec<i32> {
+    let mut ans = vec![0; temperatures.len()];
+    let mut mono_stack = vec![];
+    for i in 0..temperatures.len() {
+        while !mono_stack.is_empty()
+            && temperatures[mono_stack[mono_stack.len() - 1]] < temperatures[i]
+        {
+            let j = mono_stack.pop().unwrap();
+            ans[j] = (i - j) as i32;
+        }
+        mono_stack.push(i);
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -218,5 +285,45 @@ mod test {
         lru_cache.put(1, 2);
         println!("{}", lru_cache.get(1)); // 2
         println!("{}", lru_cache.get(2)); // 6
+    }
+
+    #[test]
+    fn test_kth_smallest() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 5,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 1,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 4,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 6,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{}", kth_smallest(root, 3)); // 3
+    }
+
+    #[test]
+    fn test_daily_temperatures() {
+        println!(
+            "{:?}",
+            daily_temperatures(vec![73, 74, 75, 71, 69, 72, 76, 73])
+        ); // [1,1,4,2,1,1,0,0]
+
+        println!("{:?}", daily_temperatures(vec![30, 40, 50, 60])); // [1,1,1,0]
     }
 }
