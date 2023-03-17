@@ -1,3 +1,10 @@
+use std::cell::RefCell;
+// https://leetcode.com/problems/lru-cache/description/
+use crate::grind_169::week_3::find_anagrams;
+use std::collections::{HashMap, VecDeque};
+use std::ptr::null_mut;
+use std::rc::Rc;
+
 // https://leetcode.com/problems/minimum-height-trees/
 // https://leetcode.com/problems/minimum-height-trees/editorial/
 pub fn find_min_height_trees(n: i32, edges: Vec<Vec<i32>>) -> Vec<i32> {
@@ -55,13 +62,6 @@ pub fn least_interval(tasks: Vec<char>, n: i32) -> i32 {
     }
     (total_jobs as i32).max((n + 1) * (max_freq - 1) + max_freq_count)
 }
-
-use std::cell::RefCell;
-// https://leetcode.com/problems/lru-cache/description/
-use std::collections::{HashMap, HashSet};
-use std::path::Component::ParentDir;
-use std::ptr::null_mut;
-use std::rc::Rc;
 
 struct ListNode {
     val: i32,
@@ -395,6 +395,85 @@ pub fn max_product(nums: Vec<i32>) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/design-add-and-search-words-data-structure/
+#[derive(Clone, Debug)]
+struct TrieNode {
+    links: Vec<Option<TrieNode>>,
+    is_end: bool,
+}
+impl TrieNode {
+    fn new() -> Self {
+        Self {
+            links: vec![None; 26],
+            is_end: false,
+        }
+    }
+    fn contains(&self, key: char) -> bool {
+        self.links[key as usize - 'a' as usize].is_some()
+    }
+    fn get_mut(&mut self, key: char) -> Option<&mut TrieNode> {
+        self.links[key as usize - 'a' as usize].as_mut()
+    }
+    fn get(&self, key: char) -> Option<&TrieNode> {
+        self.links[key as usize - 'a' as usize].as_ref()
+    }
+    fn put(&mut self, key: char, value: TrieNode) {
+        self.links[key as usize - 'a' as usize] = Some(value);
+    }
+}
+
+struct WordDictionary {
+    root: TrieNode,
+}
+impl WordDictionary {
+    fn new() -> Self {
+        Self {
+            root: TrieNode::new(),
+        }
+    }
+    fn add_word(&mut self, word: String) {
+        let mut root = &mut self.root;
+        for ch in word.chars() {
+            if !root.contains(ch) {
+                root.put(ch, TrieNode::new());
+            }
+            root = root.get_mut(ch).unwrap();
+        }
+        root.is_end = true;
+    }
+    fn search(&self, word: String) -> bool {
+        self.search_node(word.as_str(), &self.root)
+    }
+    fn search_node(&self, word: &str, from: &TrieNode) -> bool {
+        if word.len() == 1 {
+            let ch = word.chars().next().unwrap();
+            return if ch == '.' {
+                from.links.iter().flatten().filter(|x| x.is_end).count() > 0
+            } else {
+                from.contains(ch) && from.get(ch).unwrap().is_end
+            };
+        }
+        let mut found = false;
+        let ch = word.chars().next().unwrap();
+        if ch == '.' {
+            for n in from.links.iter().flatten() {
+                found |= self.search_node(&word[1..], n)
+            }
+        } else {
+            found |= from.contains(ch) && self.search_node(&word[1..], from.get(ch).unwrap());
+        }
+        found
+    }
+}
+
+// https://leetcode.com/problems/pacific-atlantic-water-flow/
+pub fn pacific_atlantic(heights: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    todo!();
+    const DIR: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
+    let mut ans = vec![];
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -565,5 +644,61 @@ mod test {
         println!("{}", max_product(vec![-2, 0, -1])); // 0
         println!("{}", max_product(vec![0, 2])); // 2
         println!("{}", max_product(vec![1, 2, -1, -2, 2, 1, -2, 1, 4, -5, 4])); // 1280
+    }
+
+    #[test]
+    fn test_search_words() {
+        let mut ws = WordDictionary::new();
+        ws.add_word("bad".to_string());
+        ws.add_word("dad".to_string());
+        ws.add_word("mad".to_string());
+
+        println!("{}", ws.search("b..".to_string()));
+        println!("{}", ws.search("pad".to_string()));
+        println!("{}", ws.search("bad".to_string()));
+        println!("{}", ws.search(".ad".to_string()));
+
+        let mut ws = WordDictionary::new();
+        ws.add_word("a".to_string());
+        ws.add_word("a".to_string());
+        println!("{}", ws.search(".".to_string()));
+        println!("{}", ws.search("a".to_string()));
+        println!("{}", ws.search("aa".to_string()));
+        println!("{}", ws.search("a".to_string()));
+        println!("{}", ws.search(".a".to_string()));
+        println!("{}", ws.search("a.".to_string()));
+
+        let mut ws = WordDictionary::new();
+        ws.add_word("at".to_string());
+        ws.add_word("and".to_string());
+        ws.add_word("an".to_string());
+        ws.add_word("add".to_string());
+
+        println!("{}", ws.search("a".to_string()));
+        println!("{}", ws.search(".at".to_string()));
+
+        ws.add_word("bat".to_string());
+
+        println!("{}", ws.search(".at".to_string()));
+        println!("{}", ws.search("an.".to_string()));
+        println!("{}", ws.search("a.d.".to_string()));
+        println!("{}", ws.search("d.".to_string()));
+        println!("{}", ws.search("d.".to_string()));
+        println!("{}", ws.search("a.d".to_string()));
+        println!("{}", ws.search(".".to_string()));
+    }
+
+    #[test]
+    fn test_pacific_atlantic() {
+        println!(
+            "{:?}",
+            pacific_atlantic(vec![
+                vec![1, 2, 2, 3, 5],
+                vec![3, 2, 3, 4, 4],
+                vec![2, 4, 5, 3, 1],
+                vec![6, 7, 1, 4, 5],
+                vec![5, 1, 1, 2, 4]
+            ])
+        ); // [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]
     }
 }

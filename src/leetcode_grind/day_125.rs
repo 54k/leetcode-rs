@@ -65,6 +65,35 @@ impl Trie {
     }
 }
 
+// https://leetcode.com/problems/is-graph-bipartite/
+// https://leetcode.com/submissions/detail/844787319/
+pub fn is_bipartite(graph: Vec<Vec<i32>>) -> bool {
+    use std::collections::HashMap;
+    fn dfs(v: i32, graph: &Vec<Vec<i32>>, color: &mut HashMap<i32, i32>) -> bool {
+        for u in &graph[v as usize] {
+            if color.contains_key(u) {
+                if color.get(u).unwrap() == color.get(&v).unwrap() {
+                    return false;
+                }
+            } else {
+                color.insert(*u, 1 - *color.get(&v).unwrap());
+                if !dfs(*u, graph, color) {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+    let mut color = HashMap::new();
+    for node in 0..graph.len() {
+        color.entry(node as i32).or_insert(0);
+        if !dfs(node as i32, &graph, &mut color) {
+            return false;
+        }
+    }
+    true
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -78,5 +107,18 @@ mod test {
         println!("{}", trie.starts_with("app".to_string())); // true
         trie.insert("app".to_string());
         println!("{}", trie.search("app".to_string())); // true
+    }
+
+    #[test]
+    fn test353() {
+        println!(
+            "{}",
+            is_bipartite(vec![vec![1, 2, 3], vec![0, 2], vec![0, 1, 3], vec![0, 2]])
+        ); // false
+
+        println!(
+            "{}",
+            is_bipartite(vec![vec![1, 3], vec![0, 2], vec![1, 3], vec![0, 2]])
+        ); // true
     }
 }
