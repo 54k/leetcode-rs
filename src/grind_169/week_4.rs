@@ -560,8 +560,20 @@ pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<Li
 
 // https://leetcode.com/problems/find-the-duplicate-number/description/
 // https://leetcode.com/problems/find-the-duplicate-number/editorial/
-pub fn find_duplicate(mut nums: Vec<i32>) -> i32 {
-    todo!()
+pub fn find_duplicate(nums: Vec<i32>) -> i32 {
+    let mut slow = nums[0];
+    let mut fast = nums[0];
+    while {
+        slow = nums[slow as usize];
+        fast = nums[nums[fast as usize] as usize];
+        slow != fast
+    } {}
+    slow = nums[0];
+    while slow != fast {
+        slow = nums[slow as usize];
+        fast = nums[fast as usize];
+    }
+    slow
 }
 
 #[cfg(test)]
@@ -812,7 +824,7 @@ mod test {
 
     #[test]
     fn test_find_duplicate() {
-        println!("{}", find_duplicate(vec![1, 3, 4, 2, 2]));
-        println!("{}", find_duplicate(vec![3, 1, 3, 4, 2]));
+        println!("{}", find_duplicate(vec![1, 3, 4, 2, 2])); // 2
+        println!("{}", find_duplicate(vec![3, 1, 3, 4, 2])); // 3
     }
 }
