@@ -561,19 +561,97 @@ pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<Li
 // https://leetcode.com/problems/find-the-duplicate-number/description/
 // https://leetcode.com/problems/find-the-duplicate-number/editorial/
 pub fn find_duplicate(nums: Vec<i32>) -> i32 {
-    let mut slow = nums[0];
-    let mut fast = nums[0];
-    while {
-        slow = nums[slow as usize];
-        fast = nums[nums[fast as usize] as usize];
-        slow != fast
-    } {}
-    slow = nums[0];
-    while slow != fast {
-        slow = nums[slow as usize];
-        fast = nums[fast as usize];
+    fn using_sorting(mut nums: Vec<i32>) -> i32 {
+        nums.sort();
+        for i in 1..nums.len() {
+            if nums[i] == nums[i - 1] {
+                return i as i32;
+            }
+        }
+        -1
     }
-    slow
+    fn using_set(nums: Vec<i32>) -> i32 {
+        use std::collections::HashSet;
+        let mut set = HashSet::new();
+        for i in 0..nums.len() {
+            if !set.insert(nums[i]) {
+                return nums[i];
+            }
+        }
+        -1
+    }
+    fn using_negative_marking(mut nums: Vec<i32>) -> i32 {
+        let mut duplicate = -1;
+        for i in 0..nums.len() {
+            let cur = nums[i].unsigned_abs() as usize;
+            if nums[cur] < 0 {
+                // if nums[cur] is negative it has been marked before
+                duplicate = cur as i32;
+                break;
+            }
+            nums[cur] *= -1;
+        }
+        // restore numbers
+        for i in 0..nums.len() {
+            nums[i] = nums[i].abs();
+        }
+        duplicate
+    }
+    fn using_array_as_hashmap_rec(mut nums: Vec<i32>) -> i32 {
+        fn store(nums: &mut Vec<i32>, cur: i32) -> i32 {
+            if cur == nums[cur as usize] {
+                return cur;
+            }
+            let next = nums[cur as usize];
+            nums[cur as usize] = cur;
+            store(nums, next)
+        }
+        store(&mut nums, 0)
+    }
+    fn using_array_as_hashmap_iterative(mut nums: Vec<i32>) -> i32 {
+        while nums[0] != nums[nums[0] as usize] {
+            let idx = nums[0] as usize;
+            nums.swap(idx, 0);
+        }
+        nums[0]
+    }
+    fn using_binsearch(nums: Vec<i32>) -> i32 {
+        let mut lo = 1;
+        let mut hi = nums.len() - 1;
+        let mut duplicate = -1;
+        while lo <= hi {
+            let mid = (lo + hi) / 2;
+            let mut count = 0;
+            for i in 0..nums.len() {
+                if (nums[i] as usize) <= mid {
+                    count += 1;
+                }
+                if count > mid {
+                    duplicate = mid as i32;
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+        }
+        duplicate
+    }
+    fn using_floyd_algorithm(nums: Vec<i32>) -> i32 {
+        let mut slow = nums[0];
+        let mut fast = nums[0];
+        while {
+            slow = nums[slow as usize];
+            fast = nums[nums[fast as usize] as usize];
+            slow != fast
+        } {}
+        slow = nums[0];
+        while slow != fast {
+            slow = nums[slow as usize];
+            fast = nums[fast as usize];
+        }
+        slow
+    }
+    using_binsearch(nums)
 }
 
 #[cfg(test)]
