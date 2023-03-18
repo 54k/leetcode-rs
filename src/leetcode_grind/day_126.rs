@@ -148,10 +148,10 @@ mod test {
             "{:?}",
             find_duplicates(vec![10, 2, 5, 10, 9, 1, 1, 4, 3, 7])
         ); // [10,1]
-           //
-           // println!("{:?}", find_duplicates(vec![4, 3, 2, 7, 8, 2, 3, 1])); // [2,3]
-           // println!("{:?}", find_duplicates(vec![1, 1, 2])); // [1]
-           // println!("{:?}", find_duplicates(vec![1])); // []
+
+        println!("{:?}", find_duplicates(vec![4, 3, 2, 7, 8, 2, 3, 1])); // [2,3]
+        println!("{:?}", find_duplicates(vec![1, 1, 2])); // [1]
+        println!("{:?}", find_duplicates(vec![1])); // []
     }
 
     #[test]
