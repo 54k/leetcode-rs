@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 // https://leetcode.com/problems/lru-cache/description/
 use crate::grind_169::week_3::find_anagrams;
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::ptr::null_mut;
 use std::rc::Rc;
 
@@ -468,9 +468,68 @@ impl WordDictionary {
 
 // https://leetcode.com/problems/pacific-atlantic-water-flow/
 pub fn pacific_atlantic(heights: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-    todo!();
+    use std::collections::HashSet;
+
+    type Coord = (i32, i32);
     const DIR: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
+
+    fn dfs(heights: &Vec<Vec<i32>>, coord: Coord, visited: &mut HashSet<Coord>) {
+        if visited.contains(&coord) {
+            return;
+        }
+        visited.insert(coord);
+        for d in DIR {
+            let next_coord = (coord.0 + d.0, coord.1 + d.1);
+            if next_coord.0 < 0
+                || next_coord.1 < 0
+                || next_coord.0 >= heights.len() as i32
+                || next_coord.1 >= heights[0].len() as i32
+            {
+                continue;
+            }
+            if heights[next_coord.0 as usize][next_coord.1 as usize]
+                >= heights[coord.0 as usize][coord.1 as usize]
+            {
+                dfs(heights, next_coord, visited);
+            }
+        }
+    }
+
+    fn pacific(heights: &Vec<Vec<i32>>) -> HashSet<Coord> {
+        let mut visited = HashSet::new();
+        for i in 0..heights.len() {
+            dfs(heights, (i as i32, 0), &mut visited);
+        }
+        for i in 0..heights[0].len() {
+            dfs(heights, (0, i as i32), &mut visited);
+        }
+        visited
+    }
+
+    fn atlantic(heights: &Vec<Vec<i32>>) -> HashSet<Coord> {
+        let mut visited = HashSet::new();
+        for i in 0..heights.len() {
+            dfs(
+                heights,
+                (i as i32, heights[0].len() as i32 - 1),
+                &mut visited,
+            );
+        }
+        for i in 0..heights[0].len() {
+            dfs(heights, (heights.len() as i32 - 1, i as i32), &mut visited);
+        }
+        visited
+    }
+
+    let p_visited = pacific(&heights);
+    let a_visited = atlantic(&heights);
+
     let mut ans = vec![];
+    for p in p_visited {
+        if a_visited.contains(&p) {
+            ans.push(vec![p.0, p.1]);
+        }
+    }
     ans
 }
 
