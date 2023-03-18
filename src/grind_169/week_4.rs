@@ -63,14 +63,14 @@ pub fn least_interval(tasks: Vec<char>, n: i32) -> i32 {
     (total_jobs as i32).max((n + 1) * (max_freq - 1) + max_freq_count)
 }
 
-struct ListNode {
+struct DLLListNode {
     val: i32,
     key: i32,
-    prev: *mut ListNode,
-    next: *mut ListNode,
+    prev: *mut DLLListNode,
+    next: *mut DLLListNode,
 }
-impl ListNode {
-    fn evict(&mut self) -> *mut ListNode {
+impl DLLListNode {
+    fn evict(&mut self) -> *mut DLLListNode {
         unsafe {
             let prev = self.prev;
             let next = self.next;
@@ -82,19 +82,19 @@ impl ListNode {
 }
 
 struct DoublyLinkedList {
-    head: *mut ListNode,
-    tail: *mut ListNode,
+    head: *mut DLLListNode,
+    tail: *mut DLLListNode,
 }
 impl DoublyLinkedList {
     fn new() -> Self {
         unsafe {
-            let dummy_head = Box::into_raw(Box::new(ListNode {
+            let dummy_head = Box::into_raw(Box::new(DLLListNode {
                 key: i32::MIN,
                 val: i32::MIN,
                 prev: null_mut(),
                 next: null_mut(),
             }));
-            let dummy_tail = Box::into_raw(Box::new(ListNode {
+            let dummy_tail = Box::into_raw(Box::new(DLLListNode {
                 key: i32::MAX,
                 val: i32::MAX,
                 prev: null_mut(),
@@ -110,9 +110,9 @@ impl DoublyLinkedList {
             }
         }
     }
-    fn push_back(&self, key: i32, val: i32) -> *mut ListNode {
+    fn push_back(&self, key: i32, val: i32) -> *mut DLLListNode {
         unsafe {
-            let new_node = Box::into_raw(Box::new(ListNode {
+            let new_node = Box::into_raw(Box::new(DLLListNode {
                 key,
                 val,
                 prev: null_mut(),
@@ -126,7 +126,7 @@ impl DoublyLinkedList {
             new_node
         }
     }
-    fn pop_front(&self) -> *mut ListNode {
+    fn pop_front(&self) -> *mut DLLListNode {
         unsafe {
             let next = (*self.head).next;
             (*next).evict()
@@ -135,7 +135,7 @@ impl DoublyLinkedList {
 }
 
 struct LRUCache {
-    key_to_node: HashMap<i32, *mut ListNode>,
+    key_to_node: HashMap<i32, *mut DLLListNode>,
     linked_list_lru: DoublyLinkedList,
     capacity: usize,
 }
@@ -533,6 +533,37 @@ pub fn pacific_atlantic(heights: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     ans
 }
 
+// https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+
+pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<ListNode>> {
+    fn rec(head: Option<Box<ListNode>>, n: i32) -> (Option<Box<ListNode>>, i32) {
+        match head {
+            None => (None, 1),
+            Some(mut h) => {
+                let (prev, num) = rec(h.next.take(), n);
+                if n == num {
+                    (prev, num + 1)
+                } else {
+                    h.next = prev;
+                    (Some(h), num + 1)
+                }
+            }
+        }
+    }
+    rec(head, n).0
+}
+
+// https://leetcode.com/problems/find-the-duplicate-number/description/
+// https://leetcode.com/problems/find-the-duplicate-number/editorial/
+pub fn find_duplicate(mut nums: Vec<i32>) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -759,5 +790,29 @@ mod test {
                 vec![5, 1, 1, 2, 4]
             ])
         ); // [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]
+    }
+
+    #[test]
+    fn test_remove_nth_from_end() {
+        let list = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode {
+                    val: 3,
+                    next: Some(Box::new(ListNode {
+                        val: 4,
+                        next: Some(Box::new(ListNode { val: 5, next: None })),
+                    })),
+                })),
+            })),
+        }));
+        println!("{:?}", remove_nth_from_end(list, 2));
+    }
+
+    #[test]
+    fn test_find_duplicate() {
+        println!("{}", find_duplicate(vec![1, 3, 4, 2, 2]));
+        println!("{}", find_duplicate(vec![3, 1, 3, 4, 2]));
     }
 }

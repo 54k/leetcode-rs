@@ -75,3 +75,19 @@ mod two_stacks {
         }
     }
 }
+
+// https://leetcode.com/problems/find-all-duplicates-in-an-array/
+pub fn find_duplicates(mut nums: Vec<i32>) -> Vec<i32> {
+    todo!()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn test354() {
+        println!("{:?}", find_duplicates(vec![4, 3, 2, 7, 8, 2, 3, 1])); // [2,3]
+        println!("{:?}", find_duplicates(vec![1, 1, 2])); // [1]
+        println!("{:?}", find_duplicates(vec![1])); // []
+    }
+}
