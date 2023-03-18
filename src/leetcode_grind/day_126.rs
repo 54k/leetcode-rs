@@ -79,23 +79,19 @@ mod two_stacks {
 // https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/description/
 pub fn find_disappeared_numbers(mut nums: Vec<i32>) -> Vec<i32> {
     fn negation_approach(mut nums: Vec<i32>) -> Vec<i32> {
-        // let mut nums = nums;
-        // let mut result = vec![];
-        // for i in 0..nums.len() {
-        //     let new_index = (nums[i].abs() - 1) as usize;
-        //     if 0 < nums[new_index] {
-        //         nums[new_index] = -nums[new_index];
-        //     }
-        // }
-        //
-        // for (i, val) in nums.iter().enumerate() {
-        //     if 0 < nums[i] {
-        //         result.push(i as i32 + 1);
-        //     }
-        // }
-        //
-        // result
-        todo!()
+        let mut dups = vec![];
+        for i in 0..nums.len() {
+            let next = nums[i].unsigned_abs();
+            if nums[next as usize - 1] > 0 {
+                nums[next as usize - 1] *= -1;
+            }
+        }
+        for i in 0..nums.len() {
+            if nums[i] > 0 {
+                dups.push(i as i32 + 1);
+            }
+        }
+        dups
     }
     fn cyclic_sort_approach(mut nums: Vec<i32>) -> Vec<i32> {
         let mut ans = vec![];
@@ -116,12 +112,31 @@ pub fn find_disappeared_numbers(mut nums: Vec<i32>) -> Vec<i32> {
         }
         ans
     }
-    cyclic_sort_approach(nums)
+    negation_approach(nums)
 }
 
 // https://leetcode.com/problems/find-all-duplicates-in-an-array/
-pub fn find_duplicates(mut nums: Vec<i32>) -> Vec<i32> {
-    todo!()
+pub fn find_duplicates(nums: Vec<i32>) -> Vec<i32> {
+    fn cyclic_sort_approach(mut nums: Vec<i32>) -> Vec<i32> {
+        let mut duplicates = vec![];
+        let mut i = 0;
+        while i < nums.len() {
+            let correct_idx = nums[i] as usize - 1;
+            if nums[correct_idx] != nums[i] {
+                nums.swap(correct_idx, i);
+            } else {
+                i += 1;
+            }
+        }
+
+        for i in 0..nums.len() {
+            if nums[i] as usize - 1 != i {
+                duplicates.push(nums[i]);
+            }
+        }
+        duplicates
+    }
+    cyclic_sort_approach(nums)
 }
 
 #[cfg(test)]
@@ -129,9 +144,14 @@ mod test {
     use super::*;
     #[test]
     fn test354() {
-        println!("{:?}", find_duplicates(vec![4, 3, 2, 7, 8, 2, 3, 1])); // [2,3]
-        println!("{:?}", find_duplicates(vec![1, 1, 2])); // [1]
-        println!("{:?}", find_duplicates(vec![1])); // []
+        println!(
+            "{:?}",
+            find_duplicates(vec![10, 2, 5, 10, 9, 1, 1, 4, 3, 7])
+        ); // [10,1]
+           //
+           // println!("{:?}", find_duplicates(vec![4, 3, 2, 7, 8, 2, 3, 1])); // [2,3]
+           // println!("{:?}", find_duplicates(vec![1, 1, 2])); // [1]
+           // println!("{:?}", find_duplicates(vec![1])); // []
     }
 
     #[test]
