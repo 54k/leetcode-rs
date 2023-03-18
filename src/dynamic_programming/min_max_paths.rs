@@ -206,6 +206,7 @@ pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {
 }
 
 // https://leetcode.com/problems/ones-and-zeroes/
+// https://leetcode.com/problems/ones-and-zeroes/solutions/95806/0-1-knapsack-bottom-up-java-solution/?orderBy=most_relevant
 pub fn find_max_form(strs: Vec<String>, m: i32, n: i32) -> i32 {
     todo!()
 }
