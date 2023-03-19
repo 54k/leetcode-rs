@@ -784,6 +784,54 @@ pub fn length_of_lis(nums: Vec<i32>) -> i32 {
     dp.into_iter().max().unwrap()
 }
 
+// https://leetcode.com/problems/swap-nodes-in-pairs/description/
+pub fn swap_pairs(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    fn rec(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        let mut node = &mut head;
+        for _ in 0..2 {
+            if let Some(n) = node {
+                node = &mut n.next;
+            } else {
+                return head;
+            }
+        }
+        let mut ret = rec(node.take());
+        while let Some(h) = head.take() {
+            ret = Some(Box::new(ListNode {
+                val: h.val,
+                next: ret,
+            }));
+            head = h.next;
+        }
+        ret
+    }
+    rec(head)
+}
+
+// https://leetcode.com/problems/reverse-nodes-in-k-group/description/
+pub fn reverse_k_group(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
+    fn rec(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
+        let mut node = &mut head;
+        for _ in 0..k {
+            if let Some(n) = node {
+                node = &mut n.next;
+            } else {
+                return head;
+            }
+        }
+        let mut ret = rec(node.take(), k);
+        while let Some(n) = head.take() {
+            ret = Some(Box::new(ListNode {
+                val: n.val,
+                next: ret,
+            }));
+            head = n.next;
+        }
+        ret
+    }
+    rec(head, k)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1077,5 +1125,35 @@ mod test {
         println!("{}", length_of_lis(vec![10, 9, 2, 5, 3, 7, 101, 18])); // 4
         println!("{}", length_of_lis(vec![0, 1, 0, 3, 2, 3])); // 4
         println!("{}", length_of_lis(vec![7, 7, 7, 7, 7, 7, 7])); // 1
+    }
+
+    #[test]
+    fn test_swap_pairs() {
+        let root = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode {
+                    val: 3,
+                    next: Some(Box::new(ListNode { val: 4, next: None })),
+                })),
+            })),
+        }));
+        println!("{:?}", swap_pairs(root)); // [2,1,4,3]
+    }
+
+    #[test]
+    fn test_reverse_k_group() {
+        let root = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode {
+                    val: 3,
+                    next: Some(Box::new(ListNode { val: 4, next: None })),
+                })),
+            })),
+        }));
+        println!("{:?}", reverse_k_group(root, 2)); // [2,1,4,3]
     }
 }
