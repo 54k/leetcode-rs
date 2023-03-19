@@ -1,7 +1,5 @@
 use std::cell::RefCell;
-// https://leetcode.com/problems/lru-cache/description/
-use crate::grind_169::week_3::find_anagrams;
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
 use std::ptr::null_mut;
 use std::rc::Rc;
 
@@ -63,6 +61,7 @@ pub fn least_interval(tasks: Vec<char>, n: i32) -> i32 {
     (total_jobs as i32).max((n + 1) * (max_freq - 1) + max_freq_count)
 }
 
+// https://leetcode.com/problems/lru-cache/description/
 struct DLLListNode {
     val: i32,
     key: i32,
@@ -651,6 +650,7 @@ pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<Li
 
 // https://leetcode.com/problems/find-the-duplicate-number/description/
 // https://leetcode.com/problems/find-the-duplicate-number/editorial/
+// todo revistit for approach #6 (bit sets)
 pub fn find_duplicate(nums: Vec<i32>) -> i32 {
     fn using_sorting(mut nums: Vec<i32>) -> i32 {
         nums.sort();
@@ -743,6 +743,31 @@ pub fn find_duplicate(nums: Vec<i32>) -> i32 {
         slow
     }
     using_binsearch(nums)
+}
+
+// https://leetcode.com/problems/top-k-frequent-words/
+pub fn top_k_frequent(words: Vec<String>, k: i32) -> Vec<String> {
+    use std::cmp::*;
+    use std::collections::*;
+    let mut counter = HashMap::new();
+    let mut heap = BinaryHeap::new();
+    for word in words {
+        *counter.entry(word).or_insert(0) += 1;
+    }
+
+    for (word, count) in counter {
+        heap.push(Reverse((count, Reverse(word))));
+        if heap.len() > k as usize {
+            heap.pop();
+        }
+    }
+
+    let mut ans = vec![];
+    while let Some(Reverse((_, Reverse(word)))) = heap.pop() {
+        ans.push(word);
+    }
+    ans.reverse();
+    ans
 }
 
 #[cfg(test)]
@@ -995,5 +1020,41 @@ mod test {
     fn test_find_duplicate() {
         println!("{}", find_duplicate(vec![1, 3, 4, 2, 2])); // 2
         println!("{}", find_duplicate(vec![3, 1, 3, 4, 2])); // 3
+    }
+
+    #[test]
+    fn test_top_k_frequent() {
+        println!(
+            "{:?}",
+            top_k_frequent(
+                vec![
+                    "i".to_string(),
+                    "love".to_string(),
+                    "leetcode".to_string(),
+                    "i".to_string(),
+                    "love".to_string(),
+                    "coding".to_string()
+                ],
+                2
+            )
+        ); // ["i","love"]
+        println!(
+            "{:?}",
+            top_k_frequent(
+                vec![
+                    "the".to_string(),
+                    "day".to_string(),
+                    "is".to_string(),
+                    "sunny".to_string(),
+                    "the".to_string(),
+                    "the".to_string(),
+                    "the".to_string(),
+                    "sunny".to_string(),
+                    "is".to_string(),
+                    "is".to_string()
+                ],
+                4
+            )
+        ); // ["the","is","sunny","day"]
     }
 }
