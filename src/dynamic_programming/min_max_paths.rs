@@ -208,7 +208,28 @@ pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {
 // https://leetcode.com/problems/ones-and-zeroes/
 // https://leetcode.com/problems/ones-and-zeroes/solutions/95806/0-1-knapsack-bottom-up-java-solution/?orderBy=most_relevant
 pub fn find_max_form(strs: Vec<String>, m: i32, n: i32) -> i32 {
-    todo!()
+    fn get_count(strs: &str) -> (usize, usize) {
+        let mut zeros = 0;
+        let mut ones = 0;
+        for ch in strs.chars() {
+            if ch == '0' {
+                zeros += 1;
+            } else {
+                ones += 1;
+            }
+        }
+        (zeros, ones)
+    }
+    let mut dp = vec![vec![0; m as usize + 1]; n as usize + 1];
+    for str in strs {
+        let (z, o) = get_count(str.as_str());
+        for ones in (o..=n as usize).rev() {
+            for zeros in (z..=m as usize).rev() {
+                dp[ones][zeros] = dp[ones][zeros].max(dp[ones - o][zeros - z] + 1);
+            }
+        }
+    }
+    dp[n as usize][m as usize]
 }
 
 // https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/
