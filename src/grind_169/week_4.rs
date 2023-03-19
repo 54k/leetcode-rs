@@ -770,6 +770,20 @@ pub fn top_k_frequent(words: Vec<String>, k: i32) -> Vec<String> {
     ans
 }
 
+// https://leetcode.com/problems/longest-increasing-subsequence/
+pub fn length_of_lis(nums: Vec<i32>) -> i32 {
+    let mut dp = vec![0; nums.len()];
+    for i in 0..nums.len() {
+        dp[i] = 1;
+        for j in 0..i {
+            if nums[j] < nums[i] {
+                dp[i] = dp[i].max(dp[j] + 1);
+            }
+        }
+    }
+    dp.into_iter().max().unwrap()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1056,5 +1070,12 @@ mod test {
                 4
             )
         ); // ["the","is","sunny","day"]
+    }
+
+    #[test]
+    fn test_length_of_lis() {
+        println!("{}", length_of_lis(vec![10, 9, 2, 5, 3, 7, 101, 18])); // 4
+        println!("{}", length_of_lis(vec![0, 1, 0, 3, 2, 3])); // 4
+        println!("{}", length_of_lis(vec![7, 7, 7, 7, 7, 7, 7])); // 1
     }
 }
