@@ -808,6 +808,46 @@ pub fn swap_pairs(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     rec(head)
 }
 
+// https://leetcode.com/problems/course-schedule-ii/
+pub fn find_order(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> Vec<i32> {
+    fn khan_topological_sort(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> Vec<i32> {
+        use std::collections::*;
+        let mut adj = vec![vec![]; num_courses as usize];
+        let mut in_degree = vec![0; num_courses as usize];
+        for to_from in prerequisites {
+            let from = to_from[1] as usize;
+            let to = to_from[0] as usize;
+            adj[from].push(to);
+            in_degree[to] += 1;
+        }
+        let mut queue = VecDeque::new();
+        for i in 0..num_courses as usize {
+            if in_degree[i] == 0 {
+                queue.push_back(i);
+            }
+        }
+        let mut ans = vec![];
+        while let Some(v) = queue.pop_front() {
+            ans.push(v as i32);
+            for &u in &adj[v] {
+                in_degree[u] -= 1;
+                if in_degree[u] == 0 {
+                    queue.push_back(u);
+                }
+            }
+        }
+        if ans.len() != num_courses as usize {
+            return vec![];
+        }
+        ans
+    }
+    fn dfs_topological_sort(num_courses: i32, prerequisites: Vec<Vec<i32>>) -> Vec<i32> {
+        let mut ans = vec![];
+        ans
+    }
+    khan_topological_sort(num_courses, prerequisites)
+}
+
 // https://leetcode.com/problems/reverse-nodes-in-k-group/description/
 pub fn reverse_k_group(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
     fn rec(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
@@ -1155,5 +1195,10 @@ mod test {
             })),
         }));
         println!("{:?}", reverse_k_group(root, 2)); // [2,1,4,3]
+    }
+
+    #[test]
+    fn test_find_order() {
+        println!("{:?}", find_order(2, vec![vec![1, 0]])); // [0,1]
     }
 }
