@@ -645,7 +645,6 @@ fn task_4_1() -> Result<(), Box<dyn std::error::Error>> {
 
 fn task_4_1_solver(m: usize, queries: Vec<Vec<String>>) -> Vec<String> {
     use std::ptr::null_mut;
-    #[derive(Debug, Clone)]
     struct DLLNode {
         val: String,
         prev: *mut DLLNode,
@@ -661,7 +660,6 @@ fn task_4_1_solver(m: usize, queries: Vec<Vec<String>>) -> Vec<String> {
             }
         }
     }
-    #[derive(Debug, Clone)]
     struct DLL {
         head: *mut DLLNode,
         tail: *mut DLLNode,
@@ -716,9 +714,8 @@ fn task_4_1_solver(m: usize, queries: Vec<Vec<String>>) -> Vec<String> {
     }
     impl Mapping {
         fn new(m: usize) -> Self {
-            Self {
-                buckets: vec![DLL::new(); m],
-            }
+            let buckets = (0..m).map(|_| DLL::new()).collect::<Vec<_>>();
+            Self { buckets }
         }
         fn add(&mut self, key: String) {
             if self.find(&key) == *"yes" {
@@ -921,28 +918,28 @@ mod test {
 
     #[test]
     fn test_4_1() {
-        // println!(
-        //     "{:?}",
-        //     task_4_1_solver(
-        //         25,
-        //         vec![
-        //             vec!["add".to_string(), "qaxndhusptgrewo".to_string()],
-        //             vec!["check".to_string(), "7".to_string()],
-        //         ]
-        //     )
-        // );
-        //
-        // println!(
-        //     "{:?}",
-        //     task_4_1_solver(
-        //         250,
-        //         vec![
-        //             vec!["add".to_string(), "uiljkwhypgmfdst".to_string()],
-        //             vec!["check".to_string(), "72".to_string()],
-        //         ]
-        //     )
-        // );
-        //
+        println!(
+            "{:?}",
+            task_4_1_solver(
+                25,
+                vec![
+                    vec!["add".to_string(), "qaxndhusptgrewo".to_string()],
+                    vec!["check".to_string(), "7".to_string()],
+                ]
+            )
+        );
+
+        println!(
+            "{:?}",
+            task_4_1_solver(
+                250,
+                vec![
+                    vec!["add".to_string(), "uiljkwhypgmfdst".to_string()],
+                    vec!["check".to_string(), "72".to_string()],
+                ]
+            )
+        );
+
         // println!(
         //     "{:?}",
         //     task_4_1_solver(
@@ -997,49 +994,49 @@ mod test {
         //         ]
         //     )
         // );
-        //
-        // println!(
-        //     "{:?}",
-        //     task_4_1_solver(1, vec![vec!["check".to_string(), "0".to_string()],])
-        // );
-        //
-        // println!(
-        //     "{:?}",
-        //     task_4_1_solver(
-        //         5,
-        //         vec![
-        //             vec!["add".to_string(), "world".to_string()],
-        //             vec!["add".to_string(), "HellO".to_string()],
-        //             vec!["check".to_string(), "4".to_string()],
-        //             vec!["find".to_string(), "World".to_string()],
-        //             vec!["find".to_string(), "world".to_string()],
-        //             vec!["del".to_string(), "world".to_string()],
-        //             vec!["check".to_string(), "4".to_string()],
-        //             vec!["del".to_string(), "HellO".to_string()],
-        //             vec!["add".to_string(), "luck".to_string()],
-        //             vec!["add".to_string(), "GooD".to_string()],
-        //             vec!["check".to_string(), "2".to_string()],
-        //             vec!["del".to_string(), "good".to_string()],
-        //         ]
-        //     )
-        // );
-        //
-        // println!(
-        //     "{:?}",
-        //     task_4_1_solver(
-        //         4,
-        //         vec![
-        //             vec!["add".to_string(), "test".to_string()],
-        //             vec!["add".to_string(), "test".to_string()],
-        //             vec!["find".to_string(), "test".to_string()],
-        //             vec!["del".to_string(), "test".to_string()],
-        //             vec!["find".to_string(), "test".to_string()],
-        //             vec!["find".to_string(), "Test".to_string()],
-        //             vec!["add".to_string(), "Test".to_string()],
-        //             vec!["find".to_string(), "Test".to_string()],
-        //         ]
-        //     )
-        // );
+
+        println!(
+            "{:?}",
+            task_4_1_solver(1, vec![vec!["check".to_string(), "0".to_string()],])
+        );
+
+        println!(
+            "{:?}",
+            task_4_1_solver(
+                5,
+                vec![
+                    vec!["add".to_string(), "world".to_string()],
+                    vec!["add".to_string(), "HellO".to_string()],
+                    vec!["check".to_string(), "4".to_string()],
+                    vec!["find".to_string(), "World".to_string()],
+                    vec!["find".to_string(), "world".to_string()],
+                    vec!["del".to_string(), "world".to_string()],
+                    vec!["check".to_string(), "4".to_string()],
+                    vec!["del".to_string(), "HellO".to_string()],
+                    vec!["add".to_string(), "luck".to_string()],
+                    vec!["add".to_string(), "GooD".to_string()],
+                    vec!["check".to_string(), "2".to_string()],
+                    vec!["del".to_string(), "good".to_string()],
+                ]
+            )
+        );
+
+        println!(
+            "{:?}",
+            task_4_1_solver(
+                4,
+                vec![
+                    vec!["add".to_string(), "test".to_string()],
+                    vec!["add".to_string(), "test".to_string()],
+                    vec!["find".to_string(), "test".to_string()],
+                    vec!["del".to_string(), "test".to_string()],
+                    vec!["find".to_string(), "test".to_string()],
+                    vec!["find".to_string(), "Test".to_string()],
+                    vec!["add".to_string(), "Test".to_string()],
+                    vec!["find".to_string(), "Test".to_string()],
+                ]
+            )
+        );
 
         println!(
             "{:?}",
@@ -1054,6 +1051,9 @@ mod test {
                     vec!["find".to_string(), "add".to_string()],
                     vec!["find".to_string(), "del".to_string()],
                     vec!["del".to_string(), "del".to_string()],
+                    vec!["check".to_string(), "0".to_string()],
+                    vec!["check".to_string(), "1".to_string()],
+                    vec!["check".to_string(), "2".to_string()],
                 ]
             )
         );
