@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 // https://leetcode.com/problems/can-place-flowers/description/
 // https://leetcode.com/problems/can-place-flowers/editorial/
 pub fn can_place_flowers(mut flowerbed: Vec<i32>, n: i32) -> bool {
@@ -22,7 +24,61 @@ pub fn can_place_flowers(mut flowerbed: Vec<i32>, n: i32) -> bool {
 // https://leetcode.com/problems/number-of-atoms/description/
 // https://leetcode.com/problems/number-of-atoms/editorial/
 pub fn count_of_atoms(formula: String) -> String {
-    todo!()
+    fn using_recursion(formula: String) -> String {
+        use std::collections::BTreeMap;
+        fn parse_formula(formula: &Vec<char>, i: &mut usize) -> BTreeMap<String, i32> {
+            let len = formula.len();
+            let mut count = BTreeMap::new();
+            while *i < len && formula[*i] != ')' {
+                if formula[*i] == '(' {
+                    *i += 1;
+                    for (atom, mul) in parse_formula(formula, i) {
+                        *count.entry(atom).or_insert(0) += mul.max(1);
+                    }
+                } else {
+                    let i_start = *i;
+                    *i += 1;
+                    while *i < len && formula[*i].is_lowercase() {
+                        *i += 1;
+                    }
+                    let name = formula[i_start..*i].iter().copied().collect::<String>();
+
+                    let i_start = *i;
+                    while *i < len && formula[*i].is_ascii_digit() {
+                        *i += 1;
+                    }
+                    let multiplicity = (i_start..*i)
+                        .map(|i| formula[i])
+                        .fold(0, |num, val| num * 10 + (val as i32 - '0' as i32));
+                    *count.entry(name).or_insert(0) += multiplicity.max(1);
+                }
+            }
+            *i += 1;
+            let i_start = *i;
+            while *i < len && formula[*i].is_ascii_digit() {
+                *i += 1;
+            }
+            let multiplicity = (i_start..*i)
+                .map(|i| formula[i])
+                .fold(0, |num, val| num * 10 + (val as i32 - 'a' as i32));
+            count
+                .iter_mut()
+                .for_each(|(k, v)| *v *= multiplicity.max(1));
+            count
+        }
+
+        let formula = formula.chars().collect::<Vec<_>>();
+        let count = parse_formula(&formula, &mut 0);
+        println!("{:?}", count);
+        count.into_iter().fold(String::new(), |mut res, (k, v)| {
+            res.push_str(k.as_str());
+            if v > 1 {
+                res.push_str(v.to_string().as_str());
+            }
+            res
+        })
+    }
+    using_recursion(formula)
 }
 
 #[cfg(test)]
@@ -38,6 +94,6 @@ mod test {
     #[test]
     fn test358() {
         println!("{}", count_of_atoms("Mg(OH)2".to_string())); // "H2MgO2"
-        println!("{}", count_of_atoms("K4(ON(SO3)2)2".to_string())); // "K4(ON(SO3)2)2"
+        println!("{}", count_of_atoms("K4(ON(SO3)2)2".to_string())); // "K4N2O14S4"
     }
 }
