@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 // https://leetcode.com/problems/can-place-flowers/description/
 // https://leetcode.com/problems/can-place-flowers/editorial/
 pub fn can_place_flowers(mut flowerbed: Vec<i32>, n: i32) -> bool {
