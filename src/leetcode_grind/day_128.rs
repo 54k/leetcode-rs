@@ -1,3 +1,5 @@
+use std::ptr::hash;
+
 // https://leetcode.com/problems/can-place-flowers/description/
 // https://leetcode.com/problems/can-place-flowers/editorial/
 pub fn can_place_flowers(mut flowerbed: Vec<i32>, n: i32) -> bool {
@@ -140,6 +142,20 @@ pub fn count_of_atoms(formula: String) -> String {
     using_stack(formula)
 }
 
+// https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/
+// https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/editorial/
+pub fn str_str(haystack: String, needle: String) -> i32 {
+    fn using_rabin_karp(haystack: String, needle: String) -> i32 {
+        if haystack.len() < needle.len() {
+            return -1;
+        }
+        const RADIX: i32 = 22;
+        const MOD: i32 = 1000033;
+        -1
+    }
+    using_rabin_karp(haystack, needle)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -154,5 +170,15 @@ mod test {
     fn test358() {
         println!("{}", count_of_atoms("Mg(OH)2".to_string())); // "H2MgO2"
         println!("{}", count_of_atoms("K4(ON(SO3)2)2".to_string())); // "K4N2O14S4"
+    }
+
+    #[test]
+    fn test359() {
+        println!("{}", str_str("a".to_string(), "a".to_string())); // 0
+        println!("{}", str_str("sadbutsad".to_string(), "but".to_string())); // 3
+        println!(
+            "{}",
+            str_str("ababcaababcaabc".to_string(), "ababcaabc".to_string())
+        ); // 6
     }
 }

@@ -1,3 +1,6 @@
+use crate::grind_169::week_4::kth_smallest;
+use std::iter::Map;
+
 fn task_1_1() {
     let stdin = std::io::stdin();
     let mut buf = String::new();
@@ -619,6 +622,172 @@ fn task_3_1_solver(queries: Vec<Vec<String>>) -> Vec<String> {
     query_answer
 }
 
+fn task_4_1() -> Result<(), Box<dyn std::error::Error>> {
+    let mut buf = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut buf)?;
+    let m = buf.trim().parse::<usize>().unwrap();
+    buf.clear();
+    stdin.read_line(&mut buf)?;
+    let queries_len = buf.trim().parse::<usize>().unwrap();
+    buf.clear();
+    let mut queries = vec![];
+    for _ in 0..queries_len {
+        stdin.read_line(&mut buf)?;
+        queries.push(buf.trim().split(' ').map(|x| x.to_string()).collect());
+        buf.clear();
+    }
+    for x in task_4_1_solver(m, queries) {
+        println!("{}", x);
+    }
+    Ok(())
+}
+
+fn task_4_1_solver(m: usize, queries: Vec<Vec<String>>) -> Vec<String> {
+    use std::ptr::null_mut;
+    #[derive(Debug, Clone)]
+    struct DLLNode {
+        val: String,
+        prev: *mut DLLNode,
+        next: *mut DLLNode,
+    }
+    impl DLLNode {
+        fn evict(&mut self) {
+            unsafe {
+                let prev = self.prev;
+                let next = self.next;
+                (*prev).next = next;
+                (*next).prev = prev;
+            }
+        }
+    }
+    #[derive(Debug, Clone)]
+    struct DLL {
+        head: *mut DLLNode,
+        tail: *mut DLLNode,
+    }
+    impl DLL {
+        fn new() -> Self {
+            unsafe {
+                let dummy_head = Box::into_raw(Box::new(DLLNode {
+                    val: "head".to_string(),
+                    prev: null_mut(),
+                    next: null_mut(),
+                }));
+                let dummy_tail = Box::into_raw(Box::new(DLLNode {
+                    val: "tail".to_string(),
+                    prev: null_mut(),
+                    next: null_mut(),
+                }));
+                (*dummy_head).prev = dummy_head;
+                (*dummy_head).next = dummy_tail;
+                (*dummy_tail).prev = dummy_head;
+                (*dummy_tail).next = dummy_tail;
+                Self {
+                    head: dummy_head,
+                    tail: dummy_tail,
+                }
+            }
+        }
+        fn find(&self, key: &String) -> *mut DLLNode {
+            unsafe {
+                let mut node = self.head;
+                while &(*node).val != key && node != self.tail {
+                    node = (*node).next
+                }
+                node
+            }
+        }
+        fn push_front(&self, key: String) {
+            unsafe {
+                let next = (*self.head).next;
+                let new_node = Box::into_raw(Box::new(DLLNode {
+                    val: key,
+                    prev: self.head,
+                    next,
+                }));
+                (*self.head).next = new_node;
+                (*next).prev = new_node;
+            }
+        }
+    }
+    struct Mapping {
+        buckets: Vec<DLL>,
+    }
+    impl Mapping {
+        fn new(m: usize) -> Self {
+            Self {
+                buckets: vec![DLL::new(); m],
+            }
+        }
+        fn add(&mut self, key: String) {
+            if self.find(&key) == *"yes" {
+                return;
+            }
+            self.buckets[self.hash(&key)].push_front(key);
+        }
+        fn del(&mut self, key: String) {
+            unsafe {
+                let found = self.buckets[self.hash(&key)].find(&key);
+                if (*found).val == key {
+                    (*found).evict()
+                }
+            }
+        }
+        fn check(&mut self, i: usize) -> String {
+            unsafe {
+                let mut result = vec![];
+                let mut next = (*self.buckets[i].head).next;
+                while next != self.buckets[i].tail {
+                    result.push((*next).val.as_str());
+                    next = (*next).next;
+                }
+                result.join(" ")
+            }
+        }
+        fn find(&self, key: &String) -> String {
+            unsafe {
+                let node = self.buckets[self.hash(key)].find(key);
+                if &(*node).val == key {
+                    "yes".to_string()
+                } else {
+                    "no".to_string()
+                }
+            }
+        }
+        fn hash(&self, key: &str) -> usize {
+            const X: usize = 263;
+            const MOD: usize = 1000000007;
+            let mut hash = 0;
+            let mut factor = 1;
+            let key = key.chars().map(|x| x as usize).collect::<Vec<usize>>();
+
+            for i in 0..key.len() {
+                hash = (hash % MOD + ((key[i] * factor) % MOD)) % MOD;
+                factor = (factor * X) % MOD;
+            }
+            hash % self.buckets.len()
+        }
+    }
+
+    let mut query_ans = vec![];
+    let mut mapping = Mapping::new(m);
+    for query in queries {
+        match query[0].as_str() {
+            "add" => {
+                mapping.add(query[1].to_string());
+            }
+            "del" => {
+                mapping.del(query[1].to_string());
+            }
+            "check" => query_ans.push(mapping.check(query[1].parse::<usize>().unwrap())),
+            "find" => query_ans.push(mapping.find(&query[1].to_string())),
+            _ => panic!(),
+        }
+    }
+    query_ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -747,6 +916,49 @@ mod test {
                 vec!["find".to_string(), "11".to_string()],
                 vec!["find".to_string(), "5".to_string()],
             ])
+        );
+    }
+
+    #[test]
+    fn test_4_1() {
+        todo!("fix me");
+
+        println!(
+            "{:?}",
+            task_4_1_solver(
+                5,
+                vec![
+                    vec!["add".to_string(), "world".to_string()],
+                    vec!["add".to_string(), "HellO".to_string()],
+                    vec!["check".to_string(), "4".to_string()],
+                    vec!["find".to_string(), "World".to_string()],
+                    vec!["find".to_string(), "world".to_string()],
+                    vec!["del".to_string(), "world".to_string()],
+                    vec!["check".to_string(), "4".to_string()],
+                    vec!["del".to_string(), "HellO".to_string()],
+                    vec!["add".to_string(), "luck".to_string()],
+                    vec!["add".to_string(), "GooD".to_string()],
+                    vec!["check".to_string(), "2".to_string()],
+                    vec!["del".to_string(), "good".to_string()],
+                ]
+            )
+        );
+
+        println!(
+            "{:?}",
+            task_4_1_solver(
+                4,
+                vec![
+                    vec!["add".to_string(), "test".to_string()],
+                    vec!["add".to_string(), "test".to_string()],
+                    vec!["find".to_string(), "test".to_string()],
+                    vec!["del".to_string(), "test".to_string()],
+                    vec!["find".to_string(), "test".to_string()],
+                    vec!["find".to_string(), "Test".to_string()],
+                    vec!["add".to_string(), "Test".to_string()],
+                    vec!["find".to_string(), "Test".to_string()],
+                ]
+            )
         );
     }
 }
