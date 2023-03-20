@@ -7,7 +7,7 @@ pub fn can_place_flowers(mut flowerbed: Vec<i32>, n: i32) -> bool {
             continue;
         }
         let left_empty = i == 0 || flowerbed[i - 1] == 0;
-        let right_empty = i < flowerbed.len() - 1 || flowerbed[i + 1] == 0;
+        let right_empty = i == flowerbed.len() - 1 || flowerbed[i + 1] == 0;
         if left_empty && right_empty {
             placed += 1;
             flowerbed[i] = 1;
