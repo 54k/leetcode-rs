@@ -163,6 +163,82 @@ pub fn odd_even_list(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     odd_head
 }
 
+// https://leetcode.com/problems/decode-string/
+// https://leetcode.com/problems/decode-string/solutions/941553/rust-stack-solution/
+pub fn decode_string(s: String) -> String {
+    fn my_decode_string(s: String) -> String {
+        fn rec_parse(s: &Vec<char>, mut i: usize, parts: &mut Vec<String>) {
+            if i >= s.len() {
+                return;
+            }
+            match s[i] {
+                _ if s[i].is_alphabetic() => {
+                    let d_start = i;
+                    while i < s.len() && s[i].is_alphabetic() {
+                        i += 1;
+                    }
+                    let string = s[d_start..i].iter().copied().collect::<String>();
+                    parts.push(string);
+                    rec_parse(s, i, parts);
+                }
+                _ if s[i].is_ascii_digit() => {
+                    let d_start = i;
+                    while i < s.len() && s[i].is_ascii_digit() {
+                        i += 1;
+                    }
+                    let repeat_num = s[d_start..i].iter().copied().collect::<String>();
+                    parts.push(repeat_num);
+                    rec_parse(s, i + 1, parts);
+                }
+                '[' => {
+                    rec_parse(s, i + 1, parts);
+                }
+                ']' => {
+                    let mut string = "".to_string();
+                    while parts.last().unwrap().parse::<usize>().is_err() {
+                        string = format!("{}{}", parts.pop().unwrap().as_str(), string);
+                    }
+                    let num = parts.pop().unwrap().parse::<usize>().unwrap();
+                    parts.push(string.repeat(num));
+                    rec_parse(s, i + 1, parts);
+                }
+                _ => panic!(),
+            }
+        }
+
+        let mut parts = vec![];
+        let s = s.chars().collect::<Vec<_>>();
+        rec_parse(&s, 0, &mut parts);
+        parts.join("")
+    }
+    fn short_decode_string(s: String) -> String {
+        let mut stack = vec![];
+        let (mut n, mut str) = (0, String::new()); // result and current expression
+        for ch in s.chars() {
+            match ch {
+                '[' => {
+                    stack.push((n, str.clone()));
+                    n = 0;
+                    str.clear();
+                }
+                ']' => {
+                    if let Some(last) = stack.pop() {
+                        str = last.1 + str.repeat(last.0).as_str();
+                    }
+                }
+                '0'..='9' => {
+                    n = 10 * n + (ch as u8 - b'0') as usize;
+                }
+                _ => {
+                    str.push(ch);
+                }
+            }
+        }
+        str
+    }
+    short_decode_string(s)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -248,5 +324,12 @@ mod test {
             })),
         }));
         println!("{:?}", odd_even_list(root));
+    }
+
+    #[test]
+    fn test_decode_string() {
+        println!("{}", decode_string("3[a]2[bc]".to_string())); // aaabcbc
+        println!("{}", decode_string("3[a2[c]]".to_string())); // accaccacc
+        println!("{}", decode_string("2[abc]3[cd]ef".to_string())); // abcabccdcdcdef
     }
 }
