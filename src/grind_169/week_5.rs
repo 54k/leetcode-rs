@@ -142,8 +142,25 @@ pub struct ListNode {
     pub next: Option<Box<ListNode>>,
 }
 
-pub fn odd_even_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
-    todo!()
+pub fn odd_even_list(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    let mut odd_head = None;
+    let mut odd_tail = &mut odd_head;
+    let mut even_head = None;
+    let mut even_tail = &mut even_head;
+    let mut i = 0;
+    while let Some(mut node) = head.take() {
+        head = node.next.take();
+        if i % 2 == 0 {
+            odd_tail = &mut odd_tail.insert(node).next;
+        } else {
+            even_tail = &mut even_tail.insert(node).next;
+        }
+        i += 1;
+    }
+    if let Some(eh) = even_head {
+        let _ = odd_tail.insert(eh);
+    }
+    odd_head
 }
 
 #[cfg(test)]
@@ -216,5 +233,20 @@ mod test {
     }
 
     #[test]
-    fn test_odd_even_list() {}
+    fn test_odd_even_list() {
+        let root = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode {
+                    val: 3,
+                    next: Some(Box::new(ListNode {
+                        val: 4,
+                        next: Some(Box::new(ListNode { val: 5, next: None })),
+                    })),
+                })),
+            })),
+        }));
+        println!("{:?}", odd_even_list(root));
+    }
 }
