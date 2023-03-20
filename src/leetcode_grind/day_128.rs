@@ -49,8 +49,10 @@ pub fn count_of_atoms(formula: String) -> String {
                     }
                     let multiplicity = (i_start..*i)
                         .map(|i| formula[i])
-                        .fold(0, |num, val| num * 10 + (val as i32 - '0' as i32));
-                    *count.entry(name).or_insert(0) += multiplicity.max(1);
+                        .fold(0, |num, val| num * 10 + (val as i32 - '0' as i32))
+                        .max(1);
+
+                    *count.entry(name).or_insert(0) += multiplicity;
                 }
             }
             *i += 1;
@@ -60,16 +62,14 @@ pub fn count_of_atoms(formula: String) -> String {
             }
             let multiplicity = (i_start..*i)
                 .map(|i| formula[i])
-                .fold(0, |num, val| num * 10 + (val as i32 - 'a' as i32));
-            count
-                .iter_mut()
-                .for_each(|(k, v)| *v *= multiplicity.max(1));
+                .fold(0, |num, val| num * 10 + (val as i32 - '0' as i32))
+                .max(1);
+            count.iter_mut().for_each(|(_, v)| *v *= multiplicity);
             count
         }
 
         let formula = formula.chars().collect::<Vec<_>>();
         let count = parse_formula(&formula, &mut 0);
-        println!("{:?}", count);
         count.into_iter().fold(String::new(), |mut res, (k, v)| {
             res.push_str(k.as_str());
             if v > 1 {
@@ -78,7 +78,68 @@ pub fn count_of_atoms(formula: String) -> String {
             res
         })
     }
-    using_recursion(formula)
+
+    fn using_stack(formula: String) -> String {
+        use std::collections::BTreeMap;
+        let formula = formula.chars().collect::<Vec<_>>();
+        let mut stack = vec![];
+        stack.push(BTreeMap::new());
+        let mut i = 0;
+        while i < formula.len() {
+            match formula[i] {
+                '(' => {
+                    i += 1;
+                    stack.push(BTreeMap::new());
+                }
+                ')' => {
+                    let top = stack.pop().unwrap();
+                    i += 1;
+                    let i_start = i;
+                    while i < formula.len() && formula[i].is_ascii_digit() {
+                        i += 1;
+                    }
+                    let multiplier = formula[i_start..i]
+                        .iter()
+                        .collect::<String>()
+                        .parse::<i32>()
+                        .unwrap_or(0)
+                        .max(1);
+                    for (k, v) in top {
+                        *stack.last_mut().unwrap().entry(k).or_insert(0) += v * multiplier;
+                    }
+                }
+                _ => {
+                    let i_start = i;
+                    i += 1;
+                    while i < formula.len() && formula[i].is_lowercase() {
+                        i += 1;
+                    }
+                    let name = formula[i_start..i].iter().collect::<String>();
+                    let i_start = i;
+                    while i < formula.len() && formula[i].is_ascii_digit() {
+                        i += 1;
+                    }
+                    let multiplier = formula[i_start..i]
+                        .iter()
+                        .collect::<String>()
+                        .parse::<i32>()
+                        .unwrap_or(0)
+                        .max(1);
+                    *stack.last_mut().unwrap().entry(name).or_insert(0) += multiplier;
+                }
+            }
+        }
+
+        let count = stack.pop().unwrap();
+        count.into_iter().fold(String::new(), |mut res, (k, v)| {
+            res.push_str(k.as_str());
+            if v > 1 {
+                res.push_str(v.to_string().as_str());
+            }
+            res
+        })
+    }
+    using_stack(formula)
 }
 
 #[cfg(test)]
