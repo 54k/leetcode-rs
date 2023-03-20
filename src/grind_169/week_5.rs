@@ -109,7 +109,7 @@ pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
 
 // https://leetcode.com/problems/rotate-array/description/
 // https://leetcode.com/problems/rotate-array/solutions/54249/3-line-using-reverse/
-pub fn rotate(nums: &mut Vec<i32>, k: i32) {
+fn rotate(nums: &mut Vec<i32>, k: i32) {
     fn short(nums: &mut Vec<i32>, k: i32) {
         let len = nums.len();
         let k = k as usize % len;
@@ -132,6 +132,18 @@ pub fn rotate(nums: &mut Vec<i32>, k: i32) {
         reverse(nums, k, len - 1);
     }
     using_reverse(nums, k)
+}
+
+// https://leetcode.com/problems/odd-even-linked-list/
+// https://leetcode.com/problems/odd-even-linked-list/editorial/
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+
+pub fn odd_even_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    todo!()
 }
 
 #[cfg(test)]
@@ -202,4 +214,7 @@ mod test {
         rotate(&mut arr, 3);
         println!("{:?}", arr); // [-1]
     }
+
+    #[test]
+    fn test_odd_even_list() {}
 }
