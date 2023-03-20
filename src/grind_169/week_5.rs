@@ -110,12 +110,26 @@ pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
 // https://leetcode.com/problems/rotate-array/description/
 // https://leetcode.com/problems/rotate-array/solutions/54249/3-line-using-reverse/
 pub fn rotate(nums: &mut Vec<i32>, k: i32) {
-    fn using_reverse(nums: &mut Vec<i32>, k: i32) {
-        let k = k as usize;
+    fn short(nums: &mut Vec<i32>, k: i32) {
         let len = nums.len();
+        let k = k as usize % len;
         nums.reverse();
-        nums[0..k % len].reverse();
-        nums[k % len..].reverse();
+        nums[0..k].reverse();
+        nums[k..].reverse();
+    }
+    fn using_reverse(nums: &mut Vec<i32>, k: i32) {
+        fn reverse(nums: &mut [i32], mut from: i32, mut to: i32) {
+            while from < to {
+                nums.swap(from as usize, to as usize);
+                from += 1;
+                to -= 1;
+            }
+        }
+        let len = nums.len() as i32;
+        let k = k % len;
+        reverse(nums, 0, len - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, len - 1);
     }
     using_reverse(nums, k)
 }
