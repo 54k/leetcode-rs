@@ -921,42 +921,139 @@ mod test {
 
     #[test]
     fn test_4_1() {
-        todo!("fix me");
-
-        println!(
-            "{:?}",
-            task_4_1_solver(
-                5,
-                vec![
-                    vec!["add".to_string(), "world".to_string()],
-                    vec!["add".to_string(), "HellO".to_string()],
-                    vec!["check".to_string(), "4".to_string()],
-                    vec!["find".to_string(), "World".to_string()],
-                    vec!["find".to_string(), "world".to_string()],
-                    vec!["del".to_string(), "world".to_string()],
-                    vec!["check".to_string(), "4".to_string()],
-                    vec!["del".to_string(), "HellO".to_string()],
-                    vec!["add".to_string(), "luck".to_string()],
-                    vec!["add".to_string(), "GooD".to_string()],
-                    vec!["check".to_string(), "2".to_string()],
-                    vec!["del".to_string(), "good".to_string()],
-                ]
-            )
-        );
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         25,
+        //         vec![
+        //             vec!["add".to_string(), "qaxndhusptgrewo".to_string()],
+        //             vec!["check".to_string(), "7".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         250,
+        //         vec![
+        //             vec!["add".to_string(), "uiljkwhypgmfdst".to_string()],
+        //             vec!["check".to_string(), "72".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         2500,
+        //         vec![
+        //             vec!["add".to_string(), "pweiknqgcxazjyh".to_string()],
+        //             vec!["check".to_string(), "263".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         25000,
+        //         vec![
+        //             vec!["add".to_string(), "ilvpygszwdeurjn".to_string()],
+        //             vec!["check".to_string(), "9134".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         250000,
+        //         vec![
+        //             vec!["add".to_string(), "xnzrvwcutfgbqje".to_string()],
+        //             vec!["check".to_string(), "170995".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         25000000,
+        //         vec![
+        //             vec!["add".to_string(), "zhjutqslrpyfcoa".to_string()],
+        //             vec!["check".to_string(), "9581368".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         250000000,
+        //         vec![
+        //             vec!["add".to_string(), "kxlcfgpezjmuynv".to_string()],
+        //             vec!["check".to_string(), "127141737".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(1, vec![vec!["check".to_string(), "0".to_string()],])
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         5,
+        //         vec![
+        //             vec!["add".to_string(), "world".to_string()],
+        //             vec!["add".to_string(), "HellO".to_string()],
+        //             vec!["check".to_string(), "4".to_string()],
+        //             vec!["find".to_string(), "World".to_string()],
+        //             vec!["find".to_string(), "world".to_string()],
+        //             vec!["del".to_string(), "world".to_string()],
+        //             vec!["check".to_string(), "4".to_string()],
+        //             vec!["del".to_string(), "HellO".to_string()],
+        //             vec!["add".to_string(), "luck".to_string()],
+        //             vec!["add".to_string(), "GooD".to_string()],
+        //             vec!["check".to_string(), "2".to_string()],
+        //             vec!["del".to_string(), "good".to_string()],
+        //         ]
+        //     )
+        // );
+        //
+        // println!(
+        //     "{:?}",
+        //     task_4_1_solver(
+        //         4,
+        //         vec![
+        //             vec!["add".to_string(), "test".to_string()],
+        //             vec!["add".to_string(), "test".to_string()],
+        //             vec!["find".to_string(), "test".to_string()],
+        //             vec!["del".to_string(), "test".to_string()],
+        //             vec!["find".to_string(), "test".to_string()],
+        //             vec!["find".to_string(), "Test".to_string()],
+        //             vec!["add".to_string(), "Test".to_string()],
+        //             vec!["find".to_string(), "Test".to_string()],
+        //         ]
+        //     )
+        // );
 
         println!(
             "{:?}",
             task_4_1_solver(
                 4,
                 vec![
-                    vec!["add".to_string(), "test".to_string()],
-                    vec!["add".to_string(), "test".to_string()],
-                    vec!["find".to_string(), "test".to_string()],
-                    vec!["del".to_string(), "test".to_string()],
-                    vec!["find".to_string(), "test".to_string()],
-                    vec!["find".to_string(), "Test".to_string()],
-                    vec!["add".to_string(), "Test".to_string()],
-                    vec!["find".to_string(), "Test".to_string()],
+                    vec!["check".to_string(), "0".to_string()],
+                    vec!["find".to_string(), "help".to_string()],
+                    vec!["add".to_string(), "help".to_string()],
+                    vec!["add".to_string(), "del".to_string()],
+                    vec!["add".to_string(), "add".to_string()],
+                    vec!["find".to_string(), "add".to_string()],
+                    vec!["find".to_string(), "del".to_string()],
+                    vec!["del".to_string(), "del".to_string()],
                 ]
             )
         );
