@@ -1,4 +1,6 @@
 use std::cell::RefCell;
+use std::cmp::max;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 // https://leetcode.com/problems/path-sum-ii/description/
@@ -239,6 +241,93 @@ pub fn decode_string(s: String) -> String {
     short_decode_string(s)
 }
 
+// https://leetcode.com/problems/contiguous-array/description/
+// https://leetcode.com/problems/contiguous-array/editorial/
+// todo revisit
+pub fn find_max_length(nums: Vec<i32>) -> i32 {
+    use std::collections::HashMap;
+    let mut max_len = 0;
+    let mut count = 0;
+    let mut map = vec![(0, -1)].into_iter().collect::<HashMap<i32, i32>>();
+    for i in 0..nums.len() {
+        count += if nums[i] == 0 { -1 } else { 1 };
+        if let std::collections::hash_map::Entry::Vacant(e) = map.entry(count) {
+            e.insert(i as i32);
+        } else {
+            max_len = max_len.max(i as i32 - map[&count]);
+        }
+    }
+    max_len
+}
+
+// https://leetcode.com/problems/maximum-width-of-binary-tree/description/
+// https://leetcode.com/problems/maximum-width-of-binary-tree/solutions/106645/c-java-bfs-dfs-3liner-clean-code-with-explanation/
+pub fn width_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    fn using_dfs_indicies(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        fn dfs_record_indicies(
+            root: Option<Rc<RefCell<TreeNode>>>,
+            height: usize,
+            idx: usize,
+            indicies: &mut Vec<Vec<usize>>,
+        ) {
+            if height == indicies.len() {
+                indicies.push(vec![]);
+            }
+            if let Some(r) = root {
+                indicies[height].push(idx);
+                dfs_record_indicies(
+                    r.as_ref().borrow().left.clone(),
+                    height + 1,
+                    idx * 2 + 1,
+                    indicies,
+                );
+                dfs_record_indicies(
+                    r.as_ref().borrow().right.clone(),
+                    height + 1,
+                    idx * 2 + 2,
+                    indicies,
+                );
+            }
+        }
+        let mut indicies = vec![];
+        let mut ans = 0;
+        dfs_record_indicies(root, 0, 0, &mut indicies);
+
+        for id in indicies {
+            if id.len() > 1 {
+                ans = ans.max(id[id.len() - 1] as i32 - id[0] as i32 + 1);
+            } else {
+                ans = ans.max(1);
+            }
+        }
+        ans
+    }
+    fn using_bfs(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        let mut ans = 0;
+        let mut queue = vec![(root, 0)]; // node, idx
+        while !queue.is_empty() {
+            let mut next = vec![];
+            let mut min = 0;
+            let mut max = 0;
+
+            for (node, idx) in queue {
+                if let Some(n) = node {
+                    if next.is_empty() {
+                        min = idx;
+                    }
+                    max = idx;
+                    next.push((n.as_ref().borrow().left.clone(), idx * 2));
+                    next.push((n.as_ref().borrow().right.clone(), idx * 2 + 1));
+                }
+            }
+            ans = ans.max(max - min + 1);
+            queue = next;
+        }
+        ans
+    }
+    using_bfs(root)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -331,5 +420,63 @@ mod test {
         println!("{}", decode_string("3[a]2[bc]".to_string())); // aaabcbc
         println!("{}", decode_string("3[a2[c]]".to_string())); // accaccacc
         println!("{}", decode_string("2[abc]3[cd]ef".to_string())); // abcabccdcdcdef
+    }
+
+    #[test]
+    fn test_find_max_length() {
+        println!("{}", find_max_length(vec![0, 1, 0])); // 2
+    }
+
+    #[test]
+    fn test_width_of_binary_tree() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 5,
+                    left: None,
+                    right: None,
+                }))),
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: None,
+            }))),
+        })));
+        println!("{}", width_of_binary_tree(root));
+
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 1,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 3,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 5,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 6,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: None,
+                }))),
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
+                left: None,
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 9,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 7,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{}", width_of_binary_tree(root));
     }
 }
