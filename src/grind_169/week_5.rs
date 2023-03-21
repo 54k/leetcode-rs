@@ -437,6 +437,21 @@ pub fn character_replacement(s: String, k: i32) -> i32 {
     using_sliding_window(s, k)
 }
 
+// https://leetcode.com/problems/jump-game/
+pub fn can_jump(nums: Vec<i32>) -> bool {
+    let mut prev = nums[0] as usize;
+    let mut cur = prev;
+    for i in 1..nums.len() {
+        cur = if prev >= i {
+            (nums[i] as usize + i).max(prev)
+        } else {
+            return false;
+        };
+        prev = cur;
+    }
+    cur >= nums.len() - 1
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -599,5 +614,10 @@ mod test {
         println!("{}", character_replacement("AABA".to_string(), 0)); // 2
         println!("{}", character_replacement("ABAB".to_string(), 2)); // 4
         println!("{}", character_replacement("AABABBA".to_string(), 1)); // 4
+    }
+    #[test]
+    fn test_can_jump() {
+        can_jump(vec![2, 3, 1, 1, 4]); // true
+        can_jump(vec![3, 2, 1, 0, 4]); // false
     }
 }
