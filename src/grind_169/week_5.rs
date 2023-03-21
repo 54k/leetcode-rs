@@ -1,6 +1,7 @@
+use crate::grind_169::week_3::find_anagrams;
 use std::cell::RefCell;
 use std::cmp::max;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 // https://leetcode.com/problems/path-sum-ii/description/
@@ -243,7 +244,7 @@ pub fn decode_string(s: String) -> String {
 
 // https://leetcode.com/problems/contiguous-array/description/
 // https://leetcode.com/problems/contiguous-array/editorial/
-// todo revisit
+// TODO revisit
 pub fn find_max_length(nums: Vec<i32>) -> i32 {
     use std::collections::HashMap;
     let mut max_len = 0;
@@ -326,6 +327,96 @@ pub fn width_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         ans
     }
     using_bfs(root)
+}
+
+// https://leetcode.com/problems/find-k-closest-elements/
+// https://leetcode.com/problems/find-k-closest-elements/solutions/106419/o-log-n-java-1-line-o-log-n-k-ruby/
+// https://leetcode.com/problems/find-k-closest-elements/solutions/106422/concise-c-solution-5-lines-o-k-logn-time/
+pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+    // I binary-search for where the resulting elements start in the array.
+    // It's the first index i so that arr[i] is better than arr[i+k] (with "better" meaning closer to or equally close to x).
+    // Then I just return the k elements starting there.
+    let mut lo = 0;
+    let mut hi = arr.len() - k as usize;
+    while lo < hi {
+        let mid = (lo + hi) / 2;
+        if x - arr[mid] > arr[mid + k as usize] - x {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    arr[lo..hi + k as usize].to_vec()
+}
+
+// https://leetcode.com/problems/longest-repeating-character-replacement/description/
+// https://leetcode.com/problems/longest-repeating-character-replacement/editorial/
+pub fn character_replacement(s: String, k: i32) -> i32 {
+    fn using_bin_search(s: String, k: i32) -> i32 {
+        fn has_valid_sting_of_len(s: &[char], len: usize, k: usize) -> bool {
+            let mut freq = vec![0; 26];
+            let mut max_freq = 0;
+
+            let mut start = 0;
+            for end in 0..s.len() {
+                freq[s[end] as usize - 'A' as usize] += 1;
+
+                if end + 1 - start > len {
+                    freq[s[start] as usize - 'A' as usize] -= 1;
+                    start += 1;
+                }
+
+                max_freq = max_freq.max(freq[s[end] as usize - 'A' as usize]);
+                if len - max_freq <= k {
+                    return true;
+                }
+            }
+            false
+        }
+        // binary search over the length of substring
+        // lo contains the valid value, and hi contains the
+        // invalid value
+        let s = s.chars().collect::<Vec<_>>();
+        let mut lo = 1usize;
+        let mut hi = s.len() + 1;
+        while lo + 1 < hi {
+            let mid = lo + (hi - lo) / 2;
+            if has_valid_sting_of_len(&s, mid, k as usize) {
+                lo = mid;
+            } else {
+                hi = mid;
+            }
+        }
+        lo as i32
+    }
+    fn using_sliding_window_slow(s: String, k: i32) -> i32 {
+        use std::collections::HashSet;
+        fn is_window_valid(start: i32, end: i32, count: i32, k: i32) -> bool {
+            end + 1 - start - count <= k
+        }
+        let mut ans = 0;
+        let s = s.chars().collect::<Vec<_>>();
+        let set = s.iter().copied().collect::<HashSet<_>>();
+        for ch in set {
+            let mut start = 0;
+            let mut count = 0;
+            // initialize a sliding window for each unique letter
+            for end in 0..s.len() {
+                if s[end] == ch {
+                    count += 1;
+                }
+                while !is_window_valid(start as i32, end as i32, count, k) {
+                    if s[start] == ch {
+                        count -= 1;
+                    }
+                    start += 1;
+                }
+                ans = ans.max(end as i32 + 1 - start as i32);
+            }
+        }
+        ans
+    }
+    using_sliding_window_slow(s, k)
 }
 
 #[cfg(test)]
@@ -478,5 +569,17 @@ mod test {
             }))),
         })));
         println!("{}", width_of_binary_tree(root));
+    }
+
+    #[test]
+    fn test_find_closest_elements() {
+        println!("{:?}", find_closest_elements(vec![1, 2, 3, 4, 5], 4, 3)); // [1,2,3,4]
+    }
+
+    #[test]
+    fn test_character_replacement() {
+        println!("{}", character_replacement("AABA".to_string(), 0)); // 2
+        println!("{}", character_replacement("ABAB".to_string(), 2)); // 4
+        println!("{}", character_replacement("AABABBA".to_string(), 1)); // 4
     }
 }
