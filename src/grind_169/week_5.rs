@@ -416,7 +416,25 @@ pub fn character_replacement(s: String, k: i32) -> i32 {
         }
         ans
     }
-    using_sliding_window_slow(s, k)
+    fn using_sliding_window(s: String, k: i32) -> i32 {
+        let s = s.chars().collect::<Vec<_>>();
+        let mut freq = vec![0; 26];
+        let mut max_frequency = 0;
+        let mut start = 0;
+        let mut longest_substring_len = 0;
+
+        for end in 0..s.len() {
+            freq[s[end] as usize - 'A' as usize] += 1;
+            max_frequency = max_frequency.max(freq[s[end] as usize - 'A' as usize]);
+            if end + 1 - start - max_frequency > k as usize {
+                freq[s[start] as usize - 'A' as usize] -= 1;
+                start += 1;
+            }
+            longest_substring_len = end + 1 - start;
+        }
+        longest_substring_len as i32
+    }
+    using_sliding_window(s, k)
 }
 
 #[cfg(test)]
