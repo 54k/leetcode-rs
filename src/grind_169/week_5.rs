@@ -615,6 +615,7 @@ mod test {
         println!("{}", character_replacement("ABAB".to_string(), 2)); // 4
         println!("{}", character_replacement("AABABBA".to_string(), 1)); // 4
     }
+
     #[test]
     fn test_can_jump() {
         can_jump(vec![2, 3, 1, 1, 4]); // true
