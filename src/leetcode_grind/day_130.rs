@@ -55,8 +55,50 @@ pub fn min_score(n: i32, roads: Vec<Vec<i32>>) -> i32 {
 }
 
 // https://leetcode.com/problems/divide-array-in-sets-of-k-consecutive-numbers/description/
-pub fn is_possible_divide(nums: Vec<i32>, k: i32) -> bool {
-    false
+pub fn is_possible_divide(mut nums: Vec<i32>, k: i32) -> bool {
+    use std::collections::HashMap;
+    nums.sort();
+    let mut freq = nums.iter().copied().fold(HashMap::new(), |mut acc, x| {
+        *acc.entry(x).or_insert(0) += 1;
+        acc
+    });
+
+    for num in nums {
+        if *freq.get(&num).unwrap() == 0 {
+            continue;
+        }
+        for i in 0..k {
+            if freq.contains_key(&(num + i)) {
+                *freq.get_mut(&(num + i)).unwrap() -= 1;
+            } else {
+                return false;
+            }
+        }
+    }
+    true
+}
+
+// https://leetcode.com/problems/hand-of-straights/
+pub fn is_n_straight_hand(mut hand: Vec<i32>, group_size: i32) -> bool {
+    use std::collections::HashMap;
+    hand.sort();
+    let mut freq = hand.iter().copied().fold(HashMap::new(), |mut acc, x| {
+        *acc.entry(x).or_insert(0) += 1;
+        acc
+    });
+    for h in hand {
+        if *freq.get(&h).unwrap() == 0 {
+            continue;
+        }
+        for i in 0..group_size {
+            if freq.contains_key(&(h + i)) && *freq.get(&(h + i)).unwrap() > 0 {
+                *freq.get_mut(&(h + i)).unwrap() -= 1;
+            } else {
+                return false;
+            }
+        }
+    }
+    true
 }
 
 #[cfg(test)]
@@ -76,10 +118,21 @@ mod test {
 
     #[test]
     fn test_is_possible_divide() {
-        println!("{}", is_possible_divide(vec![1, 2, 3, 3, 4, 4, 5, 6], 4));
+        println!("{}", is_possible_divide(vec![1, 2, 3, 3, 4, 4, 5, 6], 4)); // true
         println!(
             "{}",
             is_possible_divide(vec![3, 2, 1, 2, 3, 4, 3, 4, 5, 9, 10, 11], 3)
-        );
+        ); // true
+        println!("{}", is_possible_divide(vec![1, 2, 3, 4], 3)); // false
+    }
+
+    #[test]
+    fn test_is_n_straight_hand() {
+        println!("{}", is_n_straight_hand(vec![1, 2, 3, 6, 2, 3, 4, 7, 8], 3)); // true
+        println!("{}", is_n_straight_hand(vec![1, 2, 3, 4, 5], 4)); // false
+        println!(
+            "{}",
+            is_n_straight_hand(vec![3, 4, 7, 4, 6, 3, 6, 5, 2, 8], 2)
+        ); // false
     }
 }
