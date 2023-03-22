@@ -1,5 +1,6 @@
 use crate::grind_169::week_4::kth_smallest;
 use std::iter::Map;
+use std::ptr::hash;
 
 fn task_1_1() {
     let stdin = std::io::stdin();
@@ -785,6 +786,57 @@ fn task_4_1_solver(m: usize, queries: Vec<Vec<String>>) -> Vec<String> {
     query_ans
 }
 
+fn task_4_2_solver(haystack: String, needle: String) -> bool {
+    if needle.len() > haystack.len() {
+        return false;
+    }
+    const X: i64 = 256;
+    const MOD: i64 = 1000000007;
+    let mut factors = vec![1];
+
+    fn hash(s: &[char], factors: &mut Vec<i64>) -> i64 {
+        let mut hash = 0;
+        for i in (0..s.len()).rev() {
+            if factors.len() == s.len() - i - 1 {
+                factors.push(factors[s.len() - i - 2] * X % MOD);
+            }
+            hash = (hash % MOD + s[i] as i64 * factors[s.len() - i - 1] % MOD) % MOD;
+        }
+        hash % MOD
+    }
+
+    let haystack = haystack.chars().collect::<Vec<_>>();
+    let mut haystack_hash = 0;
+    let needle = needle.chars().collect::<Vec<_>>();
+    let needle_hash = hash(&needle, &mut factors);
+
+    for window_start in 0..=haystack.len() - needle.len() {
+        if window_start == 0 {
+            haystack_hash = hash(&haystack[0..needle.len()], &mut factors);
+        } else {
+            // if (i < N - M) {
+            //     t = (d * (t - txt.charAt(i) * h) + txt.charAt(i + M)) % q;
+            //
+            //     // We might get negative value of t, converting it
+            //     // to positive
+            //     if (t < 0)
+            //     t = (t + q);
+            haystack_hash = (haystack_hash * X % MOD
+                - (haystack[window_start - 1] as i64 * factors[needle.len() - 1] % MOD)
+                + (haystack[window_start + needle.len() - 1] as i64 + MOD))
+                % MOD
+        }
+
+        if needle_hash == haystack_hash
+            && needle[0..] == haystack[window_start..window_start + needle.len()]
+        {
+            return true;
+        }
+    }
+
+    false
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1056,6 +1108,15 @@ mod test {
                     vec!["check".to_string(), "2".to_string()],
                 ]
             )
+        );
+    }
+
+    #[test]
+    fn test_task_4_2_solver() {
+        println!("{}", task_4_2_solver("hello".to_string(), "ll".to_string()));
+        println!(
+            "{}",
+            task_4_2_solver("testTesttesT".to_string(), "Test".to_string())
         );
     }
 }

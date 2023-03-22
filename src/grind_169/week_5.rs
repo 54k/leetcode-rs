@@ -452,6 +452,73 @@ pub fn can_jump(nums: Vec<i32>) -> bool {
     cur >= nums.len() - 1
 }
 
+// https://leetcode.com/problems/add-two-numbers/description/
+pub fn add_two_numbers(
+    mut l1: Option<Box<ListNode>>,
+    mut l2: Option<Box<ListNode>>,
+) -> Option<Box<ListNode>> {
+    // fn reverse(mut l: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    //     let mut prev = None;
+    //     while let Some(mut cur) = l.take() {
+    //         let next = cur.next.take();
+    //         cur.next = prev;
+    //         prev = Some(cur);
+    //         l = next;
+    //     }
+    //     prev
+    // }
+
+    let mut result_head: Option<Box<ListNode>> = None;
+    let mut result_tail = &mut result_head;
+
+    // let mut l1 = reverse(l1);
+    let mut l1_tail = l1.as_mut();
+    // let mut l2 = reverse(l2);
+    let mut l2_tail = l2.as_mut();
+    let mut carry = 0;
+    loop {
+        let num1 = if let Some(n) = l1_tail {
+            l1_tail = n.next.as_mut();
+            n.val
+        } else {
+            0
+        };
+        let num2 = if let Some(n) = l2_tail {
+            l2_tail = n.next.as_mut();
+            n.val
+        } else {
+            0
+        };
+
+        let sum = num1 + num2 + carry;
+        let x = result_tail.insert(Box::new(ListNode {
+            val: sum % 10,
+            next: None,
+        }));
+        result_tail = &mut x.next;
+        carry = sum / 10;
+
+        if l1_tail.is_none() && l2_tail.is_none() {
+            if carry > 0 {
+                let _ = result_tail.insert(Box::new(ListNode {
+                    val: carry,
+                    next: None,
+                }));
+            }
+            break;
+        }
+    }
+
+    result_head
+}
+
+// https://leetcode.com/problems/generate-parentheses/
+// https://leetcode.com/problems/generate-parentheses/editorial/
+pub fn generate_parenthesis(n: i32) -> Vec<String> {
+    let mut ans = vec![];
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -620,5 +687,65 @@ mod test {
     fn test_can_jump() {
         can_jump(vec![2, 3, 1, 1, 4]); // true
         can_jump(vec![3, 2, 1, 0, 4]); // false
+    }
+
+    #[test]
+    fn test_add_two_numbers() {
+        let l1 = Some(Box::new(ListNode {
+            val: 9,
+            next: Some(Box::new(ListNode {
+                val: 9,
+                next: Some(Box::new(ListNode {
+                    val: 9,
+                    next: Some(Box::new(ListNode {
+                        val: 9,
+                        next: Some(Box::new(ListNode {
+                            val: 9,
+                            next: Some(Box::new(ListNode {
+                                val: 9,
+                                next: Some(Box::new(ListNode { val: 9, next: None })),
+                            })),
+                        })),
+                    })),
+                })),
+            })),
+        }));
+        let l2 = Some(Box::new(ListNode {
+            val: 9,
+            next: Some(Box::new(ListNode {
+                val: 9,
+                next: Some(Box::new(ListNode {
+                    val: 9,
+                    next: Some(Box::new(ListNode { val: 9, next: None })),
+                })),
+            })),
+        }));
+        println!("{:?}", add_two_numbers(l1, l2));
+
+        let l1 = Some(Box::new(ListNode {
+            val: 2,
+            next: Some(Box::new(ListNode {
+                val: 4,
+                next: Some(Box::new(ListNode { val: 9, next: None })),
+            })),
+        }));
+        let l2 = Some(Box::new(ListNode {
+            val: 5,
+            next: Some(Box::new(ListNode {
+                val: 6,
+                next: Some(Box::new(ListNode {
+                    val: 4,
+                    next: Some(Box::new(ListNode { val: 9, next: None })),
+                })),
+            })),
+        }));
+
+        println!("{:?}", add_two_numbers(l1, l2)); // [7,0,4,0,1]
+    }
+
+    #[test]
+    fn test_generate_parenthesis() {
+        println!("{:?}", generate_parenthesis(3)); // ["((()))","(()())","(())()","()(())","()()()"]
+        println!("{:?}", generate_parenthesis(1)); // ["()"]
     }
 }
