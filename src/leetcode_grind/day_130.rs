@@ -101,6 +101,42 @@ pub fn is_n_straight_hand(mut hand: Vec<i32>, group_size: i32) -> bool {
     true
 }
 
+// https://leetcode.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/description/
+pub fn max_score_indices(nums: Vec<i32>) -> Vec<i32> {
+    let mut onex_prefix = vec![0; nums.len()];
+    for i in (0..nums.len()).rev() {
+        if nums[i] == 1 {
+            onex_prefix[i] += 1;
+        }
+        if i < nums.len() - 1 {
+            onex_prefix[i] += onex_prefix[i + 1];
+        }
+    }
+
+    let mut zeros_count = 0;
+    let mut scores = vec![0; nums.len() + 1];
+    let mut max_score = 0;
+    for i in 0..=nums.len() {
+        if i == nums.len() {
+            scores[i] = zeros_count;
+        } else {
+            scores[i] = (zeros_count + onex_prefix[i]);
+            if nums[i] == 0 {
+                zeros_count += 1;
+            }
+        }
+        max_score = max_score.max(scores[i]);
+    }
+    scores[nums.len()] = zeros_count;
+
+    scores
+        .into_iter()
+        .enumerate()
+        .filter(|(_, x)| *x == max_score)
+        .map(|(i, _)| i as i32)
+        .collect()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -134,5 +170,11 @@ mod test {
             "{}",
             is_n_straight_hand(vec![3, 4, 7, 4, 6, 3, 6, 5, 2, 8], 2)
         ); // false
+    }
+
+    #[test]
+    fn test_max_score_indices() {
+        println!("{:?}", max_score_indices(vec![0, 0, 1, 0])); // [2, 4]
+        println!("{:?}", max_score_indices(vec![0, 0, 0])); // [3]
     }
 }
