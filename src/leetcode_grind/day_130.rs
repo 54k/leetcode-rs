@@ -54,6 +54,11 @@ pub fn min_score(n: i32, roads: Vec<Vec<i32>>) -> i32 {
     using_dfs(n, roads)
 }
 
+// https://leetcode.com/problems/divide-array-in-sets-of-k-consecutive-numbers/description/
+pub fn is_possible_divide(nums: Vec<i32>, k: i32) -> bool {
+    false
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -67,5 +72,14 @@ mod test {
                 vec![vec![1, 2, 9], vec![2, 3, 6], vec![2, 4, 5], vec![1, 4, 7]]
             )
         ); // 5
+    }
+
+    #[test]
+    fn test_is_possible_divide() {
+        println!("{}", is_possible_divide(vec![1, 2, 3, 3, 4, 4, 5, 6], 4));
+        println!(
+            "{}",
+            is_possible_divide(vec![3, 2, 1, 2, 3, 4, 3, 4, 5, 9, 10, 11], 3)
+        );
     }
 }
