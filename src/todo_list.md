@@ -12,7 +12,5 @@ https://leetcode.com/problems/range-sum-of-bst/description/
 https://leetcode.com/problems/running-sum-of-1d-array/
 https://leetcode.com/problems/detonate-the-maximum-bombs/description/
 
-https://leetcode.com/problems/split-array-into-consecutive-subsequences/description/
-https://leetcode.com/problems/split-array-into-consecutive-subsequences/solutions/106495/java-o-n-time-o-1-space-solution-greedily-extending-shorter-subsequence/
-
+https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/description/
 
