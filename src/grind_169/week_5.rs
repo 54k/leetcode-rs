@@ -595,6 +595,72 @@ pub fn sort_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     sort_list(head)
 }
 
+// https://leetcode.com/problems/subarray-sum-equals-k/
+// https://leetcode.com/problems/subarray-sum-equals-k/editorial/
+pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
+    fn using_brute_force(nums: Vec<i32>, k: i32) -> i32 {
+        let mut count = 0;
+        for i in 0..nums.len() {
+            for j in i + 1..=nums.len() {
+                if nums[i..j].iter().copied().sum::<i32>() == k {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
+    fn using_prefix_sum(nums: Vec<i32>, k: i32) -> i32 {
+        let mut prefix = vec![0; nums.len() + 1];
+        for i in 1..=nums.len() {
+            prefix[i] += prefix[i - 1] + nums[i - 1];
+        }
+        let mut count = 0;
+        for i in 0..nums.len() {
+            for j in i + 1..=nums.len() {
+                if prefix[j] - prefix[i] == k {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
+    fn using_sum_without_space(nums: Vec<i32>, k: i32) -> i32 {
+        let mut count = 0;
+        for i in 0..nums.len() {
+            let mut sum = 0;
+            for j in i..nums.len() {
+                sum += nums[j];
+                if sum == k {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
+    fn using_hash_map(nums: Vec<i32>, k: i32) -> i32 {
+        use std::collections::HashMap;
+        let mut num_of_sum_occurrences = vec![(0, 1)].into_iter().collect::<HashMap<i32, i32>>();
+        let mut count = 0;
+        let mut running_sum = 0;
+        for i in 0..nums.len() {
+            running_sum += nums[i];
+            if num_of_sum_occurrences.contains_key(&(running_sum - k)) {
+                count += num_of_sum_occurrences[&(running_sum - k)];
+            }
+            *num_of_sum_occurrences.entry(running_sum).or_insert(0) += 1;
+        }
+        count
+    }
+    using_hash_map(nums, k)
+}
+
+// https://leetcode.com/problems/asteroid-collision/
+// https://leetcode.com/problems/asteroid-collision/editorial/
+pub fn asteroid_collision(asteroids: Vec<i32>) -> Vec<i32> {
+    let mut ans = vec![];
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -838,5 +904,17 @@ mod test {
             })),
         }));
         println!("{:?}", sort_list(head));
+    }
+
+    #[test]
+    fn test_subarray_sum() {
+        println!("{}", subarray_sum(vec![1, 1, 1], 2)); // 2
+        println!("{}", subarray_sum(vec![1, 2, 3], 3)); // 2
+    }
+
+    #[test]
+    fn test_asteroid_collision() {
+        println!("{:?}", asteroid_collision(vec![5, 10, -5])); // 5, 10
+        println!("{:?}", asteroid_collision(vec![8, -8])); // 0
     }
 }

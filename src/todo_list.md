@@ -13,4 +13,5 @@ https://leetcode.com/problems/running-sum-of-1d-array/
 https://leetcode.com/problems/detonate-the-maximum-bombs/description/
 
 https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/description/
+https://leetcode.com/problems/smallest-missing-non-negative-integer-after-operations/
 
