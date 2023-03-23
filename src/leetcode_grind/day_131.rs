@@ -229,6 +229,48 @@ mod rpi_reservoir_sampling {
     }
 }
 
+// https://leetcode.com/problems/data-stream-as-disjoint-intervals/description/
+// https://leetcode.com/problems/data-stream-as-disjoint-intervals/editorial/
+mod btreeset_approach {
+    use std::collections::BTreeSet;
+
+    pub struct SummaryRanges {
+        nums: BTreeSet<i32>,
+    }
+
+    impl SummaryRanges {
+        pub fn new() -> Self {
+            Self {
+                nums: BTreeSet::new(),
+            }
+        }
+
+        pub fn add_num(&mut self, value: i32) {
+            self.nums.insert(value);
+        }
+
+        pub fn get_intervals(&self) -> Vec<Vec<i32>> {
+            let mut ans = vec![];
+            if self.nums.is_empty() {
+                return ans;
+            }
+            let mut left = *self.nums.iter().take(1).next().unwrap();
+            let mut right = left;
+            for &num in self.nums.iter().skip(1) {
+                if num - right == 1 {
+                    right = num;
+                } else {
+                    ans.push(vec![left, right]);
+                    left = num;
+                    right = num;
+                }
+            }
+            ans.push(vec![left, right]);
+            ans
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -275,5 +317,20 @@ mod test {
         println!("{}", rpi.pick(3));
         println!("{}", rpi.pick(1));
         println!("{}", rpi.pick(3));
+    }
+
+    #[test]
+    fn test368() {
+        let mut sr = btreeset_approach::SummaryRanges::new();
+        sr.add_num(1);
+        println!("{:?}", sr.get_intervals()); // [1, 1]
+        sr.add_num(3);
+        println!("{:?}", sr.get_intervals()); // [1, 1], [3, 3]
+        sr.add_num(7);
+        println!("{:?}", sr.get_intervals()); // [[1, 1], [3, 3], [7, 7]]
+        sr.add_num(2);
+        println!("{:?}", sr.get_intervals()); // [[1, 3], [7, 7]]
+        sr.add_num(6);
+        println!("{:?}", sr.get_intervals()); // [[1, 3], [6, 7]]
     }
 }
