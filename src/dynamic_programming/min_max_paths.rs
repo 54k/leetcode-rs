@@ -233,9 +233,12 @@ pub fn find_max_form(strs: Vec<String>, m: i32, n: i32) -> i32 {
 }
 
 // https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/
-// https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/solutions/1513298/c-meet-in-middle/
+// https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/solutions/3213827/java-eli5-explanation-meet-in-the-middle-two-pointer/
 pub fn minimum_difference(nums: Vec<i32>) -> i32 {
-    todo!()
+    let n = nums.len();
+    let half = n / 2;
+
+    let sum1 = vec![0; half];
 }
 
 #[cfg(test)]
