@@ -1,5 +1,3 @@
-use crate::grind_169::week_5::odd_even_list;
-
 // https://leetcode.com/problems/number-of-operations-to-make-network-connected/description/
 pub fn make_connected(n: i32, connections: Vec<Vec<i32>>) -> i32 {
     fn make_adj(n: i32, connections: &Vec<Vec<i32>>) -> (Vec<Vec<usize>>, Vec<bool>) {
