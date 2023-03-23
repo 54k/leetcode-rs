@@ -153,7 +153,7 @@ mod test {
     }
 
     #[test]
-    fn test_is_possible_divide() {
+    fn test363() {
         println!("{}", is_possible_divide(vec![1, 2, 3, 3, 4, 4, 5, 6], 4)); // true
         println!(
             "{}",
@@ -163,7 +163,7 @@ mod test {
     }
 
     #[test]
-    fn test_is_n_straight_hand() {
+    fn test364() {
         println!("{}", is_n_straight_hand(vec![1, 2, 3, 6, 2, 3, 4, 7, 8], 3)); // true
         println!("{}", is_n_straight_hand(vec![1, 2, 3, 4, 5], 4)); // false
         println!(
@@ -173,7 +173,7 @@ mod test {
     }
 
     #[test]
-    fn test_max_score_indices() {
+    fn test365() {
         println!("{:?}", max_score_indices(vec![0, 0, 1, 0])); // [2, 4]
         println!("{:?}", max_score_indices(vec![0, 0, 0])); // [3]
     }
