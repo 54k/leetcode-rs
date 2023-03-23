@@ -235,10 +235,68 @@ pub fn find_max_form(strs: Vec<String>, m: i32, n: i32) -> i32 {
 // https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/
 // https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/solutions/3213827/java-eli5-explanation-meet-in-the-middle-two-pointer/
 pub fn minimum_difference(nums: Vec<i32>) -> i32 {
-    let n = nums.len();
-    let half = n / 2;
+    fn build_sums(nums: &[i32], from: usize, to: usize) -> HashMap<i32, Vec<i32>> {
+        let mut sum_by_count_of_elements = HashMap::new();
+        let n = to - from + 1;
+        for i in 0..1 << n {
+            let mut ones_count = 0;
+            let mut sum = 0;
+            for j in 0..n {
+                if (i >> j) & 1 == 1 {
+                    ones_count += 1;
+                    let idx = from + j;
+                    sum += nums[idx];
+                }
+            }
+            sum_by_count_of_elements
+                .entry(ones_count)
+                .or_insert(vec![])
+                .push(sum);
+        }
+        sum_by_count_of_elements
+    }
+    use std::collections::HashMap;
+    let half = nums.len() / 2;
+    let sum = nums.iter().copied().sum::<i32>();
 
-    let sum1 = vec![0; half];
+    let mut left = build_sums(&nums, 0, half - 1);
+    // println!("{:?}", left);
+    let mut right = build_sums(&nums, half, nums.len() - 1);
+    // println!("{:?}", right);
+
+    let mut min_diff = i32::MAX;
+
+    for i in 0..=half {
+        let l = left.get_mut(&(i as i32)).unwrap();
+        l.sort();
+        let r = right.get_mut(&(half as i32 - i as i32)).unwrap();
+        r.sort();
+
+        // println!(
+        //     "comparing l: {} {:?} r: {} {:?}",
+        //     i,
+        //     l,
+        //     half as i32 - i as i32,
+        //     r
+        // );
+
+        let mut lo = 0;
+        let mut hi = r.len() as i32 - 1;
+
+        while lo < l.len() as i32 && hi >= 0 {
+            let half_sum = l[lo as usize] + r[hi as usize];
+            let remaining = sum - half_sum;
+            let diff = (remaining - half_sum).abs();
+            min_diff = min_diff.min(diff);
+            if half_sum > sum / 2 {
+                hi -= 1;
+            } else {
+                lo += 1;
+            }
+        }
+    }
+
+    min_diff
 }
 
 #[cfg(test)]
@@ -324,5 +382,12 @@ mod test {
                 3
             )
         ); // 4
+    }
+
+    #[test]
+    fn test_minimum_difference() {
+        println!("{}", minimum_difference(vec![2, -1, 0, 4, -2, -9])); // 0
+        println!("{}", minimum_difference(vec![3, 9, 7, 3])); // 2
+        println!("{}", minimum_difference(vec![-36, 36])); // 72
     }
 }
