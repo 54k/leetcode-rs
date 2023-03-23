@@ -270,6 +270,51 @@ mod btreeset_approach {
         }
     }
 }
+mod btreemap_approach {
+    use std::collections::BTreeMap;
+
+    pub struct SummaryRanges {
+        intervals: BTreeMap<i32, i32>,
+    }
+    impl SummaryRanges {
+        pub fn new() -> Self {
+            Self {
+                intervals: BTreeMap::new(),
+            }
+        }
+
+        pub fn add_num(&mut self, value: i32) {
+            let mut left = value;
+            let mut right = value;
+
+            let floor_entry = self.intervals.range(..=value).last();
+            if let Some((l, r)) = floor_entry {
+                if *r >= value {
+                    return;
+                }
+                if r + 1 == value {
+                    left = *l;
+                }
+            }
+
+            let ceil_entry = self.intervals.range(value + 1..).take(1).last();
+            if let Some((l, r)) = ceil_entry {
+                if *l == value + 1 {
+                    right = *r;
+                    self.intervals.remove(&(value + 1));
+                }
+            }
+            self.intervals.insert(left, right);
+        }
+
+        pub fn get_intervals(&self) -> Vec<Vec<i32>> {
+            self.intervals
+                .iter()
+                .map(|(k, v)| vec![*k, *v])
+                .collect::<Vec<_>>()
+        }
+    }
+}
 
 #[cfg(test)]
 mod test {
@@ -321,7 +366,7 @@ mod test {
 
     #[test]
     fn test368() {
-        let mut sr = btreeset_approach::SummaryRanges::new();
+        let mut sr = btreemap_approach::SummaryRanges::new();
         sr.add_num(1);
         println!("{:?}", sr.get_intervals()); // [1, 1]
         sr.add_num(3);
