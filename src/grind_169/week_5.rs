@@ -718,6 +718,9 @@ mod rpw {
     }
 }
 
+// https://leetcode.com/problems/kth-largest-element-in-an-array/
+pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -987,5 +990,11 @@ mod test {
         println!("{}", picker.pick_index()); // 1
         println!("{}", picker.pick_index()); // 1
         println!("{}", picker.pick_index()); // 0
+    }
+
+    #[test]
+    fn test_find_kth_largest() {
+        println!("{}", find_kth_largest(vec![3, 2, 1, 5, 6, 4], 2)); // 5
+        println!("{}", find_kth_largest(vec![3, 2, 3, 1, 2, 4, 5, 5, 6], 4)); // 4
     }
 }
