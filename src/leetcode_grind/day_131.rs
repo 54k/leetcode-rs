@@ -1,3 +1,5 @@
+use crate::grind_169::week_5::odd_even_list;
+
 // https://leetcode.com/problems/number-of-operations-to-make-network-connected/description/
 pub fn make_connected(n: i32, connections: Vec<Vec<i32>>) -> i32 {
     fn make_adj(n: i32, connections: &Vec<Vec<i32>>) -> (Vec<Vec<usize>>, Vec<bool>) {
@@ -105,14 +107,173 @@ pub fn make_connected(n: i32, connections: Vec<Vec<i32>>) -> i32 {
     using_union_find(n, connections)
 }
 
+// https://leetcode.com/problems/reverse-nodes-in-k-group/
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+
+pub fn reverse_k_group(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
+    fn rec(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
+        let mut next = &mut head;
+        for _ in 0..k {
+            if let Some(n) = next {
+                next = &mut n.next;
+            } else {
+                return head;
+            }
+        }
+        let mut ret = rec(next.take(), k);
+        while let Some(n) = head.take() {
+            ret = Some(Box::new(ListNode {
+                val: n.val,
+                next: ret,
+            }));
+            head = n.next;
+        }
+        ret
+    }
+    rec(head, k)
+}
+
+// https://leetcode.com/problems/random-pick-index/description/
+// https://leetcode.com/problems/random-pick-index/editorial/
+mod rpi_brute_force {
+    use rand::rngs::ThreadRng;
+    use rand::Rng;
+
+    pub struct Solution {
+        nums: Vec<i32>,
+        rnd: ThreadRng,
+    }
+
+    impl Solution {
+        pub fn new(nums: Vec<i32>) -> Self {
+            Self {
+                nums,
+                rnd: rand::thread_rng(),
+            }
+        }
+        pub fn pick(&mut self, target: i32) -> i32 {
+            let mut indicies = vec![];
+            for (idx, &num) in self.nums.iter().enumerate() {
+                if num == target {
+                    indicies.push(idx as i32)
+                }
+            }
+            indicies[self.rnd.gen::<usize>() % indicies.len()]
+        }
+    }
+}
+
+mod rpi_hashmap_caching {
+    use rand::rngs::ThreadRng;
+    use rand::Rng;
+    use std::collections::HashMap;
+
+    pub struct Solution {
+        cache: HashMap<i32, Vec<i32>>,
+        rnd: ThreadRng,
+    }
+
+    impl Solution {
+        pub fn new(nums: Vec<i32>) -> Self {
+            let cache = nums
+                .into_iter()
+                .enumerate()
+                .fold(HashMap::new(), |mut acc, (i, num)| {
+                    acc.entry(num).or_insert(vec![]).push(i as i32);
+                    acc
+                });
+            Self {
+                cache,
+                rnd: rand::thread_rng(),
+            }
+        }
+        pub fn pick(&mut self, target: i32) -> i32 {
+            self.cache[&target][self.rnd.gen::<usize>() % self.cache[&target].len()]
+        }
+    }
+}
+
+mod rpi_reservoir_sampling {
+    use rand::rngs::ThreadRng;
+    use rand::Rng;
+
+    pub struct Solution {
+        nums: Vec<i32>,
+        rnd: ThreadRng,
+    }
+
+    impl Solution {
+        pub fn new(nums: Vec<i32>) -> Self {
+            Self {
+                nums,
+                rnd: rand::thread_rng(),
+            }
+        }
+        pub fn pick(&mut self, target: i32) -> i32 {
+            let mut idx = 0;
+            let mut count = 0;
+            for i in 0..self.nums.len() {
+                if self.nums[i] == target {
+                    count += 1;
+                    if self.rnd.gen::<i32>() % count == 0 {
+                        idx = i as i32;
+                    }
+                }
+            }
+            idx
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+
     #[test]
     fn test365() {
         println!(
             "{}",
             make_connected(4, vec![vec![0, 1], vec![0, 2], vec![1, 2]])
         ); // 1
+    }
+
+    #[test]
+    fn test366() {
+        let list = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode {
+                    val: 3,
+                    next: Some(Box::new(ListNode {
+                        val: 4,
+                        next: Some(Box::new(ListNode { val: 5, next: None })),
+                    })),
+                })),
+            })),
+        }));
+        println!("{:?}", reverse_k_group(list, 2));
+    }
+
+    #[test]
+    fn test367() {
+        let mut rpi = rpi_brute_force::Solution::new(vec![1, 2, 3, 3, 3]);
+        println!("{}", rpi.pick(3));
+        println!("{}", rpi.pick(1));
+        println!("{}", rpi.pick(3));
+
+        let mut rpi = rpi_hashmap_caching::Solution::new(vec![1, 2, 3, 3, 3]);
+        println!("{}", rpi.pick(3));
+        println!("{}", rpi.pick(1));
+        println!("{}", rpi.pick(3));
+
+        let mut rpi = rpi_reservoir_sampling::Solution::new(vec![1, 2, 3, 3, 3]);
+        println!("{}", rpi.pick(3));
+        println!("{}", rpi.pick(1));
+        println!("{}", rpi.pick(3));
     }
 }

@@ -15,3 +15,5 @@ https://leetcode.com/problems/detonate-the-maximum-bombs/description/
 https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/description/
 https://leetcode.com/problems/smallest-missing-non-negative-integer-after-operations/
 
+https://leetcode.com/problems/data-stream-as-disjoint-intervals/editorial/
+

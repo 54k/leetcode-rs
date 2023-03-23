@@ -657,8 +657,65 @@ pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
 // https://leetcode.com/problems/asteroid-collision/
 // https://leetcode.com/problems/asteroid-collision/editorial/
 pub fn asteroid_collision(asteroids: Vec<i32>) -> Vec<i32> {
-    let mut ans = vec![];
-    ans
+    let mut stack = vec![];
+    'ast_l: for ast in asteroids {
+        while !stack.is_empty() && 0 < *stack.last().unwrap() && ast < 0 {
+            let top = *stack.last().unwrap();
+            if top < -ast {
+                stack.pop();
+                continue;
+            } else if top == -ast {
+                stack.pop();
+            }
+            continue 'ast_l;
+        }
+        stack.push(ast);
+    }
+    stack
+}
+
+// https://leetcode.com/problems/random-pick-with-weight/
+// https://leetcode.com/problems/random-pick-with-weight/solutions/154006/o-n-memory-binary-search/
+mod rpw {
+    use rand::rngs::ThreadRng;
+    use rand::Rng;
+
+    pub struct Solution {
+        prefix: Vec<i32>,
+        max: i32,
+        rng: ThreadRng,
+    }
+
+    impl Solution {
+        pub fn new(w: Vec<i32>) -> Self {
+            let mut max = 0;
+            let mut prefix = vec![];
+            for wi in w {
+                max += wi;
+                prefix.push(max);
+            }
+            Self {
+                prefix,
+                max,
+                rng: rand::thread_rng(),
+            }
+        }
+
+        pub fn pick_index(&mut self) -> i32 {
+            let prob = self.rng.gen_range(0..self.max) + 1;
+            let mut lo = 0;
+            let mut hi = self.prefix.len() - 1;
+            while lo < hi {
+                let mid = lo + (hi - lo) / 2;
+                if self.prefix[mid] < prob {
+                    lo = mid + 1;
+                } else {
+                    hi = mid
+                }
+            }
+            lo as i32
+        }
+    }
 }
 
 #[cfg(test)]
@@ -916,5 +973,19 @@ mod test {
     fn test_asteroid_collision() {
         println!("{:?}", asteroid_collision(vec![5, 10, -5])); // 5, 10
         println!("{:?}", asteroid_collision(vec![8, -8])); // 0
+        println!("{:?}", asteroid_collision(vec![10, 2, -5])); // 10
+    }
+
+    #[test]
+    fn test_random_pick_with_weight() {
+        let mut picker = rpw::Solution::new(vec![1]);
+        println!("{}", picker.pick_index()); // 0
+
+        let mut picker = rpw::Solution::new(vec![1, 3]);
+        println!("{}", picker.pick_index()); // 1
+        println!("{}", picker.pick_index()); // 1
+        println!("{}", picker.pick_index()); // 1
+        println!("{}", picker.pick_index()); // 1
+        println!("{}", picker.pick_index()); // 0
     }
 }
