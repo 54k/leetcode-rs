@@ -746,6 +746,15 @@ pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {
     using_count_sort(nums, k)
 }
 
+// https://leetcode.com/problems/maximal-square/
+// https://leetcode.com/problems/maximal-square/editorial/
+pub fn maximal_square(matrix: Vec<Vec<char>>) -> i32 {
+    fn using_brute_force(matrix: Vec<Vec<char>>) -> i32 {
+        0
+    }
+    using_brute_force(matrix)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1021,5 +1030,18 @@ mod test {
     fn test_find_kth_largest() {
         println!("{}", find_kth_largest(vec![3, 2, 1, 5, 6, 4], 2)); // 5
         println!("{}", find_kth_largest(vec![3, 2, 3, 1, 2, 4, 5, 5, 6], 4)); // 4
+    }
+
+    #[test]
+    fn test_maximal_square() {
+        println!(
+            "{}",
+            maximal_square(vec![
+                vec!['1', '0', '1', '0', '0'],
+                vec!['1', '0', '1', '1', '1'],
+                vec!['1', '1', '1', '1', '1'],
+                vec!['1', '0', '0', '1', '0'],
+            ])
+        );
     }
 }
