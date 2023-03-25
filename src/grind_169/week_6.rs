@@ -201,6 +201,28 @@ pub fn search_matrix(matrix: Vec<Vec<i32>>, target: i32) -> bool {
     col_idx >= 0
 }
 
+// https://leetcode.com/problems/largest-number/
+// https://leetcode.com/problems/largest-number/editorial/
+pub fn largest_number(nums: Vec<i32>) -> String {
+    let mut nums = nums.into_iter().map(|x| x.to_string()).collect::<Vec<_>>();
+    nums.sort_by(|a, b| {
+        let o1 = format!("{}{}", a, b);
+        let o2 = format!("{}{}", b, a);
+        o1.cmp(&o2)
+    });
+    nums.reverse();
+    if nums[0] == "0" {
+        return "0".to_string();
+    }
+    nums.join("")
+}
+
+// https://leetcode.com/problems/decode-ways/description/
+// https://leetcode.com/problems/decode-ways/solutions/30451/evolve-from-recursion-to-dp/
+pub fn num_decodings(s: String) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -298,5 +320,18 @@ mod test {
                 13
             )
         ); // false
+    }
+
+    #[test]
+    fn test_largest_number() {
+        println!("{}", largest_number(vec![3, 30, 34, 5, 9])); // 9534330
+    }
+
+    #[test]
+    fn test_num_decodings() {
+        println!("{}", num_decodings("12".to_string())); // 2
+        println!("{}", num_decodings("226".to_string())); // 3
+        println!("{}", num_decodings("226".to_string())); // 3
+        println!("{}", num_decodings("06".to_string())); // 0
     }
 }
