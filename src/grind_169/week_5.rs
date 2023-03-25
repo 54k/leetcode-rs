@@ -816,6 +816,21 @@ pub fn maximal_square(matrix: Vec<Vec<char>>) -> i32 {
     using_dp_ii(matrix)
 }
 
+// https://leetcode.com/problems/rotate-image/
+// https://leetcode.com/problems/rotate-image/editorial/
+pub fn rotate_image(matrix: &mut Vec<Vec<i32>>) {
+    let len = matrix.len();
+    for i in 0..(len + 1) / 2 {
+        for j in 0..len / 2 {
+            let temp = matrix[len - 1 - j][i];
+            matrix[len - 1 - j][i] = matrix[len - 1 - i][len - j - 1];
+            matrix[len - 1 - i][len - j - 1] = matrix[j][len - 1 - i];
+            matrix[j][len - 1 - i] = matrix[i][j];
+            matrix[i][j] = temp;
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1117,5 +1132,12 @@ mod test {
                 vec!['0', '1', '1', '1', '1', '0', '0', '0'],
             ])
         ); // 16
+    }
+
+    #[test]
+    fn test_rotate_image() {
+        let mut vec = vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]];
+        rotate_image(&mut vec);
+        println!("{:?}", vec);
     }
 }
