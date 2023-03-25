@@ -28,3 +28,5 @@ https://leetcode.com/problems/decode-ways/solutions/30451/evolve-from-recursion-
 https://leetcode.com/problems/different-ways-to-add-parentheses/description/
 
 [//]: # (https://leetcode.com/problems/minimize-the-difference-between-target-and-chosen-elements/solutions/1418602/python-4-lines-solution-explained/)
+
+https://leetcode.com/problems/super-pow/description/
