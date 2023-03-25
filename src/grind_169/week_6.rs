@@ -204,7 +204,6 @@ pub fn search_matrix(matrix: Vec<Vec<i32>>, target: i32) -> bool {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::leetcode_grind::day_39::possible_bipartition;
 
     #[test]
     fn test_zigzag_level_order() {
