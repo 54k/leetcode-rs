@@ -261,6 +261,24 @@ pub fn num_decodings(s: String) -> i32 {
     bottom_up_approach(s)
 }
 
+// https://leetcode.com/problems/reverse-integer/description/
+// https://leetcode.com/problems/reverse-integer/editorial/
+pub fn reverse(mut x: i32) -> i32 {
+    let mut rev = 0;
+    while x != 0 {
+        let pop = x % 10;
+        x /= 10;
+        if rev > i32::MAX / 10 || (rev == i32::MAX / 10 && pop > 7) {
+            return 0;
+        }
+        if rev < i32::MIN / 10 || (rev == i32::MIN / 10 && pop < -8) {
+            return 0;
+        }
+        rev = 10 * rev + pop;
+    }
+    rev
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -373,5 +391,12 @@ mod test {
         println!("{}", num_decodings("06".to_string())); // 0
         println!("{}", num_decodings("10".to_string())); // 1
         println!("{}", num_decodings("2611055971756562".to_string())); // 4
+    }
+
+    #[test]
+    fn test_reverse() {
+        println!("{}", reverse(123)); // 321
+        println!("{}", reverse(-123)); // -321
+        println!("{}", reverse(120)); // 21
     }
 }
