@@ -220,7 +220,45 @@ pub fn largest_number(nums: Vec<i32>) -> String {
 // https://leetcode.com/problems/decode-ways/description/
 // https://leetcode.com/problems/decode-ways/solutions/30451/evolve-from-recursion-to-dp/
 pub fn num_decodings(s: String) -> i32 {
-    todo!()
+    fn top_down_approach(s: String) -> i32 {
+        fn rec(i: usize, s: &Vec<char>, memo: &mut Vec<i32>) -> i32 {
+            if i == s.len() {
+                return 1;
+            }
+            if s[i] == '0' {
+                return 0;
+            }
+            if memo[i] == -1 {
+                let mut res = 0;
+                res += rec(i + 1, s, memo);
+                if i < s.len() - 1
+                    && (s[i] == '1' || (s[i] == '2' && ('0'..='6').contains(&s[i + 1])))
+                {
+                    res += rec(i + 2, s, memo);
+                }
+                memo[i] = res
+            }
+            memo[i]
+        }
+        let mut memo = vec![-1; s.len()];
+        rec(0, &s.chars().collect(), &mut memo)
+    }
+    fn bottom_up_approach(s: String) -> i32 {
+        let mut dp1 = 1;
+        let mut dp2 = 0;
+        let mut s = s.chars().collect::<Vec<_>>();
+        for i in (0..s.len()).rev() {
+            let mut dp = if s[i] == '0' { 0 } else { dp1 };
+            if i < s.len() - 1 && (s[i] == '1' || (s[i] == '2' && ('0'..='6').contains(&s[i + 1])))
+            {
+                dp += dp2;
+            }
+            dp2 = dp1;
+            dp1 = dp;
+        }
+        dp1
+    }
+    bottom_up_approach(s)
 }
 
 #[cfg(test)]
@@ -333,5 +371,7 @@ mod test {
         println!("{}", num_decodings("226".to_string())); // 3
         println!("{}", num_decodings("226".to_string())); // 3
         println!("{}", num_decodings("06".to_string())); // 0
+        println!("{}", num_decodings("10".to_string())); // 1
+        println!("{}", num_decodings("2611055971756562".to_string())); // 4
     }
 }
