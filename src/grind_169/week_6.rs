@@ -246,7 +246,7 @@ pub fn num_decodings(s: String) -> i32 {
     fn bottom_up_approach(s: String) -> i32 {
         let mut dp1 = 1;
         let mut dp2 = 0;
-        let mut s = s.chars().collect::<Vec<_>>();
+        let s = s.chars().collect::<Vec<_>>();
         for i in (0..s.len()).rev() {
             let mut dp = if s[i] == '0' { 0 } else { dp1 };
             if i < s.len() - 1 && (s[i] == '1' || (s[i] == '2' && ('0'..='6').contains(&s[i + 1])))
