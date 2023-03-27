@@ -1,6 +1,6 @@
+use rand::distributions::uniform::SampleBorrow;
 use std::cell::RefCell;
-use std::collections::HashMap;
-use std::os::macos::raw::stat;
+use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
 // https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
@@ -400,6 +400,109 @@ pub fn reorder_list(head: &mut Option<Box<ListNode>>) {
     using_recursion(head)
 }
 
+// https://leetcode.com/problems/cheapest-flights-within-k-stops/description/
+// https://leetcode.com/problems/cheapest-flights-within-k-stops/editorial/
+pub fn find_cheapest_price(n: i32, flights: Vec<Vec<i32>>, src: i32, dst: i32, k: i32) -> i32 {
+    fn using_bfs_approach(n: i32, flights: Vec<Vec<i32>>, src: i32, dst: i32, k: i32) -> i32 {
+        use std::collections::VecDeque;
+        let mut adj = vec![vec![]; n as usize];
+        for flight in flights {
+            adj[flight[0] as usize].push((flight[1] as usize, flight[2]));
+        }
+        let mut lvl = 0;
+        let mut dist = vec![i32::MAX; n as usize];
+        let mut queue = VecDeque::new();
+        queue.push_back((src as usize, 0));
+        while !queue.is_empty() && lvl <= k {
+            let mut n = queue.len();
+            while n > 0 {
+                n -= 1;
+                let (from, from_dist) = queue.pop_front().unwrap();
+                for (to, to_dist) in &adj[from] {
+                    if from_dist + to_dist < dist[*to] {
+                        dist[*to] = from_dist + to_dist;
+                        queue.push_back((*to, dist[*to]));
+                    }
+                }
+            }
+            lvl += 1;
+        }
+        if dist[dst as usize] == i32::MAX {
+            -1
+        } else {
+            dist[dst as usize]
+        }
+    }
+    fn using_bellman_ford_approach(
+        n: i32,
+        flights: Vec<Vec<i32>>,
+        src: i32,
+        dst: i32,
+        k: i32,
+    ) -> i32 {
+        let mut dist = vec![i32::MAX; n as usize];
+        dist[src as usize] = 0;
+        for _ in 0..=k {
+            let mut tmp = dist.clone();
+            for flight in &flights {
+                if dist[flight[0] as usize] != i32::MAX {
+                    tmp[flight[1] as usize] =
+                        tmp[flight[1] as usize].min(dist[flight[0] as usize] + flight[2]);
+                }
+            }
+            dist = tmp;
+        }
+        if dist[dst as usize] == i32::MAX {
+            -1
+        } else {
+            dist[dst as usize]
+        }
+    }
+    fn using_dijkstra_approach(n: i32, flights: Vec<Vec<i32>>, src: i32, dst: i32, k: i32) -> i32 {
+        use std::cmp::Reverse;
+        use std::collections::BinaryHeap;
+        let mut adj = vec![vec![]; n as usize];
+        for flight in flights {
+            adj[flight[0] as usize].push((flight[1] as usize, flight[2]));
+        }
+        let mut stops = vec![i32::MAX; n as usize];
+        let mut queue = BinaryHeap::new();
+        queue.push(Reverse((0, src as usize, 0)));
+        while !queue.is_empty() {
+            let Reverse((dist, from, steps)) = queue.pop().unwrap();
+            if steps > stops[from] || steps > k + 1 {
+                continue;
+            }
+            stops[from] = steps;
+            if from as i32 == dst {
+                return dist;
+            }
+            for (to, to_dist) in &adj[from] {
+                queue.push(Reverse((dist + to_dist, *to, steps + 1)));
+            }
+        }
+        -1
+    }
+    using_dijkstra_approach(n, flights, src, dst, k)
+}
+
+// https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/
+// https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/editorial/
+pub fn distance_k(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    target: Option<Rc<RefCell<TreeNode>>>,
+    k: i32,
+) -> Vec<i32> {
+    fn percolate_distance_approach(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        target: Option<Rc<RefCell<TreeNode>>>,
+        k: i32,
+    ) -> Vec<i32> {
+        todo!()
+    }
+    percolate_distance_approach(root, target, k)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -558,5 +661,67 @@ mod test {
         }));
         reorder_list(&mut head);
         println!("{:?}", head);
+    }
+
+    #[test]
+    fn test_find_cheapest_price() {
+        println!(
+            "{}",
+            find_cheapest_price(
+                4,
+                vec![
+                    vec![0, 1, 100],
+                    vec![1, 2, 100],
+                    vec![2, 0, 100],
+                    vec![1, 3, 600],
+                    vec![2, 3, 200]
+                ],
+                0,
+                3,
+                1
+            )
+        ); // 700
+    }
+
+    #[test]
+    fn test_distance_k() {
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: Some(Rc::new(RefCell::new(TreeNode {
+                val: 5,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 6,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 2,
+                    left: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 7,
+                        left: None,
+                        right: None,
+                    }))),
+                    right: Some(Rc::new(RefCell::new(TreeNode {
+                        val: 4,
+                        left: None,
+                        right: None,
+                    }))),
+                }))),
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 1,
+                left: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 0,
+                    left: None,
+                    right: None,
+                }))),
+                right: Some(Rc::new(RefCell::new(TreeNode {
+                    val: 8,
+                    left: None,
+                    right: None,
+                }))),
+            }))),
+        })));
+        println!("{:?}", distance_k(root, 5, 2));
     }
 }
