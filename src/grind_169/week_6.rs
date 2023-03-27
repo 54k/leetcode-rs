@@ -377,26 +377,16 @@ pub fn reorder_list(head: &mut Option<Box<ListNode>>) {
         *head = new_head;
     }
     fn using_recursion(head: &mut Option<Box<ListNode>>) {
-        fn get_len(mut head: &mut Option<Box<ListNode>>) -> i32 {
-            let mut len = 0;
-            while let Some(h) = head {
-                head = &mut h.next;
-                len += 1;
-            }
-            len
-        }
-        fn weave(mut head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
-            if k <= 1 {
+        fn weave(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+            if head.is_none() || head.as_mut().unwrap().next.is_none() {
                 return head;
             }
-            let mut len = k;
             let mut tail = &mut head;
-            while len > 1 {
+            while tail.is_some() && tail.as_mut().unwrap().next.is_some() {
                 tail = &mut tail.as_mut().unwrap().next;
-                len -= 1;
             }
             let tail = tail.take();
-            let ret = weave(head.as_mut().unwrap().next.take(), k - 2);
+            let ret = weave(head.as_mut().unwrap().next.take());
             head.map(|mut x| {
                 x.next = tail.map(|mut x| {
                     x.next = ret;
@@ -405,8 +395,7 @@ pub fn reorder_list(head: &mut Option<Box<ListNode>>) {
                 x
             })
         }
-        let len = get_len(head);
-        *head = weave(head.take(), len);
+        *head = weave(head.take());
     }
     using_recursion(head)
 }
