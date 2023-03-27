@@ -49,3 +49,6 @@ https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/
 https://leetcode.com/problems/find-unique-binary-string/
 
 https://leetcode.com/problems/minimum-operations-to-make-all-array-elements-equal/description/
+https://leetcode.com/problems/remove-digit-from-number-to-maximize-result/description/
+https://leetcode.com/problems/minimum-consecutive-cards-to-pick-up/
+https://leetcode.com/problems/total-appeal-of-a-string/description/
