@@ -47,3 +47,5 @@ https://leetcode.com/problems/replace-all-digits-with-characters/
 https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/
 
 https://leetcode.com/problems/find-unique-binary-string/
+
+https://leetcode.com/problems/minimum-operations-to-make-all-array-elements-equal/description/
