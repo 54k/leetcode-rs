@@ -498,7 +498,67 @@ pub fn distance_k(
         target: Option<Rc<RefCell<TreeNode>>>,
         k: i32,
     ) -> Vec<i32> {
-        todo!()
+        fn subtree_add(root: Option<Rc<RefCell<TreeNode>>>, dist: i32, k: i32, ans: &mut Vec<i32>) {
+            if let Some(r) = root {
+                let r = r.borrow();
+                if dist == k {
+                    ans.push(r.val);
+                } else {
+                    subtree_add(r.left.clone(), dist + 1, k, ans);
+                    subtree_add(r.right.clone(), dist + 1, k, ans);
+                }
+            }
+        }
+        // Return vertex distance from node to target if exists, else -1
+        // Vertex distance: the number of vertices on the path from node to target
+        fn dfs(
+            root: Option<Rc<RefCell<TreeNode>>>,
+            target: Option<Rc<RefCell<TreeNode>>>,
+            k: i32,
+            ans: &mut Vec<i32>,
+        ) -> i32 {
+            if root.is_none() {
+                return -1;
+            }
+
+            if root == target {
+                subtree_add(root, 0, k, ans);
+                1
+            } else {
+                let l = dfs(
+                    root.as_ref().unwrap().borrow().left.clone(),
+                    target.clone(),
+                    k,
+                    ans,
+                );
+                let r = dfs(
+                    root.as_ref().unwrap().borrow().right.clone(),
+                    target,
+                    k,
+                    ans,
+                );
+
+                let root = root.as_ref().unwrap().borrow();
+                if l != -1 {
+                    if l == k {
+                        ans.push(root.val);
+                    }
+                    subtree_add(root.right.clone(), l + 1, k, ans);
+                    l + 1
+                } else if r != -1 {
+                    if r == k {
+                        ans.push(root.val);
+                    }
+                    subtree_add(root.left.clone(), r + 1, k, ans);
+                    r + 1
+                } else {
+                    -1
+                }
+            }
+        }
+        let mut ans = vec![];
+        dfs(root, target, k, &mut ans);
+        ans
     }
     percolate_distance_approach(root, target, k)
 }
@@ -685,29 +745,30 @@ mod test {
 
     #[test]
     fn test_distance_k() {
-        let root = Some(Rc::new(RefCell::new(TreeNode {
-            val: 3,
+        let target = Some(Rc::new(RefCell::new(TreeNode {
+            val: 5,
             left: Some(Rc::new(RefCell::new(TreeNode {
-                val: 5,
+                val: 6,
+                left: None,
+                right: None,
+            }))),
+            right: Some(Rc::new(RefCell::new(TreeNode {
+                val: 2,
                 left: Some(Rc::new(RefCell::new(TreeNode {
-                    val: 6,
+                    val: 7,
                     left: None,
                     right: None,
                 }))),
                 right: Some(Rc::new(RefCell::new(TreeNode {
-                    val: 2,
-                    left: Some(Rc::new(RefCell::new(TreeNode {
-                        val: 7,
-                        left: None,
-                        right: None,
-                    }))),
-                    right: Some(Rc::new(RefCell::new(TreeNode {
-                        val: 4,
-                        left: None,
-                        right: None,
-                    }))),
+                    val: 4,
+                    left: None,
+                    right: None,
                 }))),
             }))),
+        })));
+        let root = Some(Rc::new(RefCell::new(TreeNode {
+            val: 3,
+            left: target.clone(),
             right: Some(Rc::new(RefCell::new(TreeNode {
                 val: 1,
                 left: Some(Rc::new(RefCell::new(TreeNode {
@@ -722,6 +783,6 @@ mod test {
                 }))),
             }))),
         })));
-        println!("{:?}", distance_k(root, 5, 2));
+        println!("{:?}", distance_k(root, target, 2));
     }
 }

@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 // https://leetcode.com/problems/minimum-path-sum/
 pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     let mut dp = vec![vec![0; grid[0].len() + 1]; grid.len() + 1];
