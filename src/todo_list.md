@@ -45,3 +45,5 @@ https://leetcode.com/problems/rotated-digits/
 https://leetcode.com/problems/replace-all-digits-with-characters/
 
 https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/
+
+https://leetcode.com/problems/find-unique-binary-string/
