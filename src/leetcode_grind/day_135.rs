@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 // https://leetcode.com/problems/minimum-path-sum/
 pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     let mut dp = vec![vec![0; grid[0].len() + 1]; grid.len() + 1];
@@ -136,6 +138,32 @@ pub fn num_decodings(s: String) -> i32 {
     using_dynamic_programming_constant_space_approach(s)
 }
 
+// https://leetcode.com/problems/take-k-of-each-character-from-left-and-right/
+// https://leetcode.com/problems/take-k-of-each-character-from-left-and-right/solutions/2951643/sliding-exclusion-window/
+pub fn take_characters(s: String, k: i32) -> i32 {
+    let mut freq = [0; 3];
+    for ch in s.chars() {
+        freq[ch as usize - 'a' as usize] += 1;
+    }
+    if freq.iter().copied().min().unwrap() < k {
+        return -1;
+    }
+    let mut ans = -1;
+    let s = s.chars().collect::<Vec<_>>();
+    let mut j = 0;
+    for i in 0..s.len() {
+        freq[s[i] as usize - 'a' as usize] -= 1;
+        if freq[s[i] as usize - 'a' as usize] < k {
+            while freq[s[i] as usize - 'a' as usize] < k {
+                freq[s[j] as usize - 'a' as usize] += 1;
+                j += 1;
+            }
+        }
+        ans = ans.max(i as i32 - j as i32 + 1);
+    }
+    s.len() as i32 - ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -157,5 +185,12 @@ mod test {
             "{}",
             num_decodings("7*9*3*6*3*0*5*4*9*7*3*7*1*8*3*2*0*0*6*".to_string())
         ); // 196465252
+    }
+
+    #[test]
+    fn test380() {
+        // println!("{}", take_characters("abc".to_string(), 1)); // 3
+        println!("{}", take_characters("aabaaaacaabc".to_string(), 2)); // 8
+        println!("{}", take_characters("a".to_string(), 1)); // -1
     }
 }

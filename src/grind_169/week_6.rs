@@ -376,7 +376,7 @@ pub fn reorder_list(head: &mut Option<Box<ListNode>>) {
         *head = new_head;
     }
 
-    using_recursion(head)
+    using_stack(head)
 }
 
 #[cfg(test)]
