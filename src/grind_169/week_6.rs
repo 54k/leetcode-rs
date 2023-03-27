@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 // https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
@@ -279,6 +280,105 @@ pub fn reverse(mut x: i32) -> i32 {
     rev
 }
 
+// https://leetcode.com/problems/set-matrix-zeroes/
+// https://leetcode.com/problems/set-matrix-zeroes/editorial/
+pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
+    fn using_additional_memory(matrix: &mut Vec<Vec<i32>>) {
+        let mut rows = vec![false; matrix.len()];
+        let mut cols = vec![false; matrix[0].len()];
+        for i in 0..matrix.len() {
+            for j in 0..matrix[0].len() {
+                if matrix[i][j] == 0 {
+                    rows[i] = true;
+                    cols[j] = true;
+                }
+            }
+        }
+        for i in 0..matrix.len() {
+            for j in 0..matrix[0].len() {
+                if rows[i] || cols[j] {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+    }
+    fn using_constant_memory(matrix: &mut Vec<Vec<i32>>) {
+        let mut col = false;
+        for i in 0..matrix.len() {
+            if matrix[i][0] == 0 {
+                col = true
+            }
+            for j in 1..matrix[0].len() {
+                if matrix[i][j] == 0 {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+
+        for i in 1..matrix.len() {
+            for j in 1..matrix[0].len() {
+                if matrix[i][0] == 0 || matrix[0][j] == 0 {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        if matrix[0][0] == 0 {
+            for i in 0..matrix[0].len() {
+                matrix[0][i] = 0;
+            }
+        }
+
+        if col {
+            for i in 0..matrix.len() {
+                matrix[i][0] = 0;
+            }
+        }
+    }
+    using_constant_memory(matrix)
+}
+
+// https://leetcode.com/problems/reorder-list/
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+pub fn reorder_list(head: &mut Option<Box<ListNode>>) {
+    fn using_stack(head: &mut Option<Box<ListNode>>) {
+        let mut cur = head.take();
+        let mut stack = vec![];
+        while let Some(mut n) = cur.take() {
+            cur = n.next.take();
+            stack.push(Some(n));
+        }
+
+        let mut new_head = None;
+        let mut new_tail = &mut new_head;
+
+        let len = stack.len();
+        let half = if len % 2 == 1 { len / 2 } else { (len - 1) / 2 };
+        for i in 0..=half {
+            let mut h = stack[i].take();
+            let t = stack[len - 1 - i].take();
+            h = h.map(|mut x| {
+                x.next = t;
+                x
+            });
+            let node = new_tail.insert(h.take().unwrap());
+            if node.next.is_some() {
+                new_tail = &mut node.next.as_mut().unwrap().next;
+            } else {
+                new_tail = &mut node.next;
+            }
+        }
+        *head = new_head;
+    }
+
+    using_recursion(head)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -398,5 +498,44 @@ mod test {
         println!("{}", reverse(123)); // 321
         println!("{}", reverse(-123)); // -321
         println!("{}", reverse(120)); // 21
+    }
+
+    #[test]
+    fn test_set_zeroes() {
+        let mut mat = vec![vec![1, 1, 1], vec![1, 0, 1], vec![1, 1, 1]];
+        set_zeroes(&mut mat);
+        println!("{:?}", mat); // [[1,0,1],[0,0,0],[1,0,1]]
+    }
+
+    #[test]
+    fn test_reorder_list() {
+        let mut head = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode {
+                    val: 3,
+                    next: Some(Box::new(ListNode {
+                        val: 4,
+                        next: Some(Box::new(ListNode { val: 5, next: None })),
+                    })),
+                })),
+            })),
+        }));
+        reorder_list(&mut head);
+        println!("{:?}", head);
+
+        let mut head = Some(Box::new(ListNode {
+            val: 1,
+            next: Some(Box::new(ListNode {
+                val: 2,
+                next: Some(Box::new(ListNode {
+                    val: 3,
+                    next: Some(Box::new(ListNode { val: 4, next: None })),
+                })),
+            })),
+        }));
+        reorder_list(&mut head);
+        println!("{:?}", head);
     }
 }

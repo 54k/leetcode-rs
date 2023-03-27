@@ -28,3 +28,11 @@ https://leetcode.com/problems/different-ways-to-add-parentheses/description/
 [//]: # (https://leetcode.com/problems/minimize-the-difference-between-target-and-chosen-elements/solutions/1418602/python-4-lines-solution-explained/)
 
 https://leetcode.com/problems/super-pow/description/
+
+[//]: # (https://leetcode.com/problems/decode-ways-ii/editorial/)
+
+https://leetcode.com/problems/solve-the-equation/
+https://leetcode.com/problems/game-of-life/description/
+https://leetcode.com/problems/number-of-laser-beams-in-a-bank/
+
+https://leetcode.com/problems/take-k-of-each-character-from-left-and-right/
