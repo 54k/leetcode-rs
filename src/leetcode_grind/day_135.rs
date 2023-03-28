@@ -187,7 +187,7 @@ mod test {
 
     #[test]
     fn test380() {
-        // println!("{}", take_characters("abc".to_string(), 1)); // 3
+        println!("{}", take_characters("abc".to_string(), 1)); // 3
         println!("{}", take_characters("aabaaaacaabc".to_string(), 2)); // 8
         println!("{}", take_characters("a".to_string(), 1)); // -1
     }
