@@ -562,6 +562,28 @@ pub fn distance_k(
     percolate_distance_approach(root, target, k)
 }
 
+// https://leetcode.com/problems/3sum-closest/
+pub fn three_sum_closest(mut nums: Vec<i32>, target: i32) -> i32 {
+    let mut ans = nums[0] + nums[1] + nums[nums.len() - 1];
+    nums.sort();
+    for i in 0..nums.len() - 2 {
+        let mut left = i + 1;
+        let mut right = nums.len() - 1;
+        while left < right {
+            let sum = nums[i] + nums[left] + nums[right];
+            if sum > target {
+                right -= 1;
+            } else {
+                left += 1;
+            }
+            if (sum - target).abs() < (ans - target).abs() {
+                ans = sum;
+            }
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -783,5 +805,11 @@ mod test {
             }))),
         })));
         println!("{:?}", distance_k(root, target, 2));
+    }
+
+    #[test]
+    fn test_three_sum_closest() {
+        println!("{}", three_sum_closest(vec![-1, 2, 1, -4], 1)); // 2
+        println!("{}", three_sum_closest(vec![0, 0, 0], 1)); // 0
     }
 }
