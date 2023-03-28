@@ -640,7 +640,83 @@ pub fn rotate_right(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>
 // https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/description/
 // https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/editorial/
 pub fn find_min(nums: Vec<i32>) -> i32 {
-    0
+    if nums[0] < nums[nums.len() - 1] {
+        return nums[0];
+    }
+    let mut lo = 0;
+    let mut hi = nums.len() - 1;
+    while lo < hi {
+        let mid = (lo + hi) / 2;
+        if nums[mid] < nums[0] {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    nums[lo]
+}
+
+// https://leetcode.com/problems/basic-calculator-ii/description/
+// https://leetcode.com/problems/basic-calculator-ii/editorial/
+pub fn calculate(s: String) -> i32 {
+    fn stack_approach(s: String) -> i32 {
+        let s = s.chars().collect::<Vec<_>>();
+        let mut stack = vec![];
+        let mut cur_num = 0;
+        let mut operation = '+';
+        for i in 0..s.len() {
+            if s[i].is_ascii_digit() {
+                cur_num = cur_num * 10 + s[i].to_digit(10).unwrap() as i32;
+            }
+            if !s[i].is_ascii_digit() && s[i] != ' ' || i == s.len() - 1 {
+                if operation == '+' {
+                    stack.push(cur_num);
+                } else if operation == '-' {
+                    stack.push(-cur_num);
+                } else if operation == '*' {
+                    let top = stack.pop().unwrap();
+                    stack.push(top * cur_num);
+                } else if operation == '/' {
+                    let top = stack.pop().unwrap();
+                    stack.push(top / cur_num);
+                }
+                cur_num = 0;
+                operation = s[i];
+            }
+        }
+        let mut result = 0;
+        while let Some(num) = stack.pop() {
+            result += num;
+        }
+        result
+    }
+    fn optimized_approach(s: String) -> i32 {
+        let s = s.chars().collect::<Vec<_>>();
+        let mut last_num = 0;
+        let mut result = 0;
+        let mut cur_num = 0;
+        let mut operation = '+';
+        for i in 0..s.len() {
+            if s[i].is_ascii_digit() {
+                cur_num = cur_num * 10 + s[i].to_digit(10).unwrap() as i32;
+            }
+            if !s[i].is_ascii_digit() && s[i] != ' ' || i == s.len() - 1 {
+                if operation == '+' || operation == '-' {
+                    result += last_num;
+                    last_num = if operation == '+' { cur_num } else { -cur_num };
+                } else if operation == '*' {
+                    last_num *= cur_num;
+                } else if operation == '/' {
+                    last_num /= cur_num;
+                }
+                cur_num = 0;
+                operation = s[i];
+            }
+        }
+        result += last_num;
+        result
+    }
+    optimized_approach(s)
 }
 
 #[cfg(test)]
@@ -899,6 +975,14 @@ mod test {
 
     #[test]
     fn test_find_min() {
-        println!("{}", find_min(vec![]));
+        println!("{}", find_min(vec![3, 4, 5, 1, 2])); // 1
+        println!("{}", find_min(vec![4, 5, 6, 7, 0, 1, 2])); // 0
+    }
+
+    #[test]
+    fn test_calculate() {
+        println!("{}", calculate("3+2*2".to_string())); // 7
+        println!("{}", calculate(" 3/2 ".to_string())); // 1
+        println!("{}", calculate(" 3+5 / 2 ".to_string())); // 5
     }
 }
