@@ -780,8 +780,19 @@ impl RandomizedSet {
 }
 
 // https://leetcode.com/problems/non-overlapping-intervals/description/
+// https://leetcode.com/problems/non-overlapping-intervals/solutions/3271752/435-space-96-99-solution-with-step-by-step-explanation/
 pub fn erase_overlap_intervals(mut intervals: Vec<Vec<i32>>) -> i32 {
-    todo!()
+    intervals.sort_by(|x, y| x[1].cmp(&y[1]));
+    let mut end = intervals[0][1];
+    let mut count = 0;
+    for i in 1..intervals.len() {
+        if intervals[i][0] < end {
+            count += 1;
+        } else {
+            end = intervals[i][1];
+        }
+    }
+    count
 }
 
 #[cfg(test)]
@@ -1089,5 +1100,16 @@ mod test {
         ); // 2
 
         println!("{}", erase_overlap_intervals(vec![vec![1, 2], vec![2, 3]])); // 0
+
+        println!(
+            "{}",
+            erase_overlap_intervals(vec![
+                vec![0, 2],
+                vec![1, 3],
+                vec![2, 4],
+                vec![3, 5],
+                vec![4, 6]
+            ])
+        ); // 2
     }
 }
