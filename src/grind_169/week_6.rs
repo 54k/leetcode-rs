@@ -1,5 +1,4 @@
 use std::cell::RefCell;
-use std::collections::VecDeque;
 use std::rc::Rc;
 
 // https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
@@ -719,6 +718,72 @@ pub fn calculate(s: String) -> i32 {
     optimized_approach(s)
 }
 
+// https://leetcode.com/problems/combination-sum-iv/description/
+pub fn combination_sum4(nums: Vec<i32>, target: i32) -> i32 {
+    const MAX_SUM: usize = 1000 * 200 + 1;
+    let mut dp = vec![0; MAX_SUM];
+    dp[0] = 1;
+    for i in 0..=target as usize {
+        for j in 0..nums.len() {
+            if i as i32 >= nums[j] {
+                dp[i] += dp[i - nums[j] as usize];
+            }
+        }
+    }
+    dp[target as usize]
+}
+
+// https://leetcode.com/problems/insert-delete-getrandom-o1/
+use rand::rngs::ThreadRng;
+use rand::Rng;
+use std::collections::HashMap;
+
+struct RandomizedSet {
+    buf: Vec<i32>,
+    val_to_idx: HashMap<i32, usize>,
+    rnd: ThreadRng,
+}
+impl RandomizedSet {
+    fn new() -> Self {
+        Self {
+            buf: vec![],
+            val_to_idx: HashMap::new(),
+            rnd: rand::thread_rng(),
+        }
+    }
+    fn insert(&mut self, val: i32) -> bool {
+        if self.val_to_idx.contains_key(&val) {
+            return false;
+        }
+        self.buf.push(val);
+        self.val_to_idx.insert(val, self.buf.len() - 1);
+        true
+    }
+    fn remove(&mut self, val: i32) -> bool {
+        if self.buf.is_empty() || !self.val_to_idx.contains_key(&val) {
+            return false;
+        }
+        let len = self.buf.len();
+        let idx = self.val_to_idx.remove(&val).unwrap();
+        if idx == len - 1 {
+            self.buf.pop();
+            return true;
+        }
+        self.buf.swap(idx, len - 1);
+        self.buf.pop();
+        self.val_to_idx.insert(self.buf[idx], idx);
+        true
+    }
+    fn get_random(&mut self) -> i32 {
+        self.buf[self.rnd.gen::<usize>() % self.buf.len()]
+    }
+}
+
+// https://leetcode.com/problems/non-overlapping-intervals/description/
+pub fn erase_overlap_intervals(mut intervals: Vec<Vec<i32>>) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -984,5 +1049,45 @@ mod test {
         println!("{}", calculate("3+2*2".to_string())); // 7
         println!("{}", calculate(" 3/2 ".to_string())); // 1
         println!("{}", calculate(" 3+5 / 2 ".to_string())); // 5
+    }
+
+    #[test]
+    fn test_combination_sum4() {
+        println!("{}", combination_sum4(vec![1, 2, 3], 4)); // 7
+        println!("{}", combination_sum4(vec![9], 3)); // 0
+    }
+
+    #[test]
+    fn test_randomized_set() {
+        let mut rs = RandomizedSet::new();
+        println!("{}", rs.remove(0));
+        println!("{}", rs.remove(0));
+        println!("{}", rs.insert(0));
+        println!("{}", rs.get_random());
+        println!("{}", rs.remove(0));
+        println!("{}", rs.insert(0));
+
+        let mut rs = RandomizedSet::new();
+        println!("{}", rs.insert(0));
+        println!("{}", rs.insert(1));
+        println!("{}", rs.remove(0));
+        println!("{}", rs.insert(2));
+        println!("{}", rs.remove(1));
+        println!("{}", rs.get_random());
+    }
+
+    #[test]
+    fn test_erase_overlap_intervals() {
+        println!(
+            "{}",
+            erase_overlap_intervals(vec![vec![1, 2], vec![2, 3], vec![3, 4], vec![1, 3]])
+        ); // 1
+
+        println!(
+            "{}",
+            erase_overlap_intervals(vec![vec![1, 2], vec![1, 2], vec![1, 2]])
+        ); // 2
+
+        println!("{}", erase_overlap_intervals(vec![vec![1, 2], vec![2, 3]])); // 0
     }
 }
