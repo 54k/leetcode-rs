@@ -57,7 +57,6 @@ pub fn max_satisfaction(satisfaction: Vec<i32>) -> i32 {
 // https://leetcode.com/problems/determine-if-two-events-have-conflict/
 // https://leetcode.com/problems/determine-if-two-events-have-conflict/solutions/2735340/rust-one-liner/
 pub fn have_conflict(event1: Vec<String>, event2: Vec<String>) -> bool {
-    // event1[0] <= event2[1] && event1[1] >= event2[0]
     fn to_num(event: Vec<String>) -> Vec<i32> {
         event
             .into_iter()
@@ -71,9 +70,9 @@ pub fn have_conflict(event1: Vec<String>, event2: Vec<String>) -> bool {
             })
             .collect::<Vec<_>>()
     }
-    let mut v = vec![to_num(event1), to_num(event2)];
-    v.sort();
-    v[0][1] >= v[1][0]
+    let event1 = to_num(event1);
+    let event2 = to_num(event2);
+    event1[0] <= event2[1] && event1[1] >= event2[0]
 }
 
 #[cfg(test)]
