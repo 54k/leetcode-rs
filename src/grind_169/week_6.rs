@@ -795,6 +795,51 @@ pub fn erase_overlap_intervals(mut intervals: Vec<Vec<i32>>) -> i32 {
     count
 }
 
+// https://leetcode.com/problems/minimum-window-substring/
+// https://leetcode.com/problems/minimum-window-substring/editorial/
+pub fn min_window(s: String, t: String) -> String {
+    use std::collections::HashMap;
+    const INF: usize = usize::MAX;
+    let s = s.chars().collect::<Vec<_>>();
+    let t = t.chars().fold(HashMap::new(), |mut acc, v| {
+        *acc.entry(v).or_insert(0) += 1;
+        acc
+    });
+
+    let (desired, mut formed) = (t.len(), 0);
+    let mut ans = (INF, 0, 0); // len, start, end
+    let (mut start, mut end, mut current_chars) = (0, 0, HashMap::new());
+
+    while end < s.len() {
+        *current_chars.entry(s[end]).or_insert(0) += 1;
+        if t.contains_key(&s[end]) && t[&s[end]] == current_chars[&s[end]] {
+            formed += 1;
+        }
+
+        while start <= end && desired == formed {
+            if ans.0 > end - start + 1 {
+                ans = (end - start + 1, start, end);
+            }
+
+            let s_char = s[start];
+            current_chars.entry(s_char).and_modify(|count| *count -= 1);
+
+            if t.contains_key(&s_char) && t[&s[start]] > current_chars[&s[start]] {
+                formed -= 1;
+            }
+            start += 1;
+        }
+
+        end += 1;
+    }
+
+    if ans.0 == INF {
+        "".to_string()
+    } else {
+        s[ans.1..=ans.2].iter().collect()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -1111,5 +1156,17 @@ mod test {
                 vec![4, 6]
             ])
         ); // 2
+    }
+
+    #[test]
+    fn test_min_window() {
+        println!(
+            "{}",
+            min_window("ADOBECODEBANC".to_string(), "ABC".to_string())
+        ); // "BANC"
+
+        println!("{}", min_window("a".to_string(), "aa".to_string())); // ""
+
+        println!("{}", min_window("bba".to_string(), "ab".to_string())); // "ba"
     }
 }

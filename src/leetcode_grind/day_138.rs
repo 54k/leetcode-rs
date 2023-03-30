@@ -26,6 +26,48 @@ pub fn is_scramble(s1: String, s2: String) -> bool {
     dp[n][0][0]
 }
 
+// https://leetcode.com/problems/combinations/description/
+pub fn combine(n: i32, k: i32) -> Vec<Vec<i32>> {
+    fn rec(n: i32, k: i32, start: i32, current: &mut Vec<i32>, result: &mut Vec<Vec<i32>>) {
+        if current.len() == k as usize {
+            result.push(current.clone());
+            return;
+        }
+        for i in start..=n {
+            current.push(i);
+            rec(n, k, i + 1, current, result);
+            current.pop();
+        }
+    }
+    let mut result = vec![];
+    rec(n, k, 1, &mut vec![], &mut result);
+    result
+}
+
+// https://leetcode.com/problems/serialize-and-deserialize-bst/description/
+// Definition for a binary tree node.
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
+struct Codec {}
+impl Codec {
+    fn new() -> Self {
+        Self {}
+    }
+    fn serialize(&self, root: Option<Rc<RefCell<TreeNode>>>) -> String {
+        todo!()
+    }
+    fn deserialize(&self, data: String) -> Option<Rc<RefCell<TreeNode>>> {
+        todo!()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -36,4 +78,13 @@ mod test {
         println!("{}", is_scramble("abcde".to_string(), "caebd".to_string())); // false
         println!("{}", is_scramble("a".to_string(), "a".to_string())); // true
     }
+
+    #[test]
+    fn test385() {
+        println!("{:?}", combine(4, 2)); // [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+        println!("{:?}", combine(2, 2)); // [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+    }
+
+    #[test]
+    fn test386() {}
 }
