@@ -786,55 +786,62 @@ fn task_4_1_solver(m: usize, queries: Vec<Vec<String>>) -> Vec<String> {
     query_ans
 }
 
-fn task_4_2_solver(haystack: String, needle: String) -> bool {
-    if needle.len() > haystack.len() {
-        return false;
+fn task_4_2() -> Result<(), Box<dyn std::error::Error>> {
+    let mut buf = String::new();
+    let stdin = std::io::stdin();
+    stdin.read_line(&mut buf)?;
+    let needle = buf.trim().to_string();
+    buf.clear();
+    stdin.read_line(&mut buf)?;
+    let haystack = buf.trim().to_string();
+    buf.clear();
+    for x in task_4_2_solver(haystack, needle) {
+        print!("{} ", x);
     }
-    const X: i64 = 256;
-    const MOD: i64 = 1000000007;
+    Ok(())
+}
+
+fn task_4_2_solver(haystack: String, needle: String) -> Vec<usize> {
+    if needle.len() > haystack.len() {
+        return vec![];
+    }
+    let mut ans = vec![];
+    const X: i64 = 25;
+    const MOD: i64 = 107;
     let mut factors = vec![1];
 
-    fn hash(s: &[char], factors: &mut Vec<i64>) -> i64 {
+    let t = haystack.chars().collect::<Vec<_>>();
+    let p = needle.chars().collect::<Vec<_>>();
+
+    for _ in 0..p.len() {
+        factors.push(factors[factors.len() - 1] * X % MOD);
+    }
+
+    fn hash(s: &[char], factors: &mut [i64]) -> i64 {
         let mut hash = 0;
         for i in (0..s.len()).rev() {
-            if factors.len() == s.len() - i - 1 {
-                factors.push(factors[s.len() - i - 2] * X % MOD);
-            }
-            hash = (hash % MOD + s[i] as i64 * factors[s.len() - i - 1] % MOD) % MOD;
+            hash = (hash + (s[s.len() - 1 - i] as i64 * factors[i]) % MOD) % MOD;
         }
-        hash % MOD
+        hash
     }
 
-    let haystack = haystack.chars().collect::<Vec<_>>();
-    let mut haystack_hash = 0;
-    let needle = needle.chars().collect::<Vec<_>>();
-    let needle_hash = hash(&needle, &mut factors);
+    let hash_p = hash(&p, &mut factors);
+    let mut hash_t = 0;
 
-    for window_start in 0..=haystack.len() - needle.len() {
-        if window_start == 0 {
-            haystack_hash = hash(&haystack[0..needle.len()], &mut factors);
+    for start in 0..=t.len() - p.len() {
+        if start == 0 {
+            hash_t = hash(&t[0..p.len()], &mut factors);
         } else {
-            // if (i < N - M) {
-            //     t = (d * (t - txt.charAt(i) * h) + txt.charAt(i + M)) % q;
-            //
-            //     // We might get negative value of t, converting it
-            //     // to positive
-            //     if (t < 0)
-            //     t = (t + q);
-            haystack_hash = (haystack_hash * X % MOD
-                - (haystack[window_start - 1] as i64 * factors[needle.len() - 1] % MOD)
-                + (haystack[window_start + needle.len() - 1] as i64 + MOD))
-                % MOD
+            let prev_char = (t[start - 1] as i64 * factors[p.len() - 1]) % MOD;
+            let hash_mid = (hash_t - prev_char + MOD) * X % MOD;
+            let next_char = t[start + p.len() - 1];
+            hash_t = (hash_mid + next_char as i64) % MOD;
         }
-
-        if needle_hash == haystack_hash
-            && needle[0..] == haystack[window_start..window_start + needle.len()]
-        {
-            return true;
+        if hash_p == hash_t && p[0..] == t[start..start + p.len()] {
+            ans.push(start);
         }
     }
-
-    false
+    ans
 }
 
 #[cfg(test)]
@@ -1113,9 +1120,13 @@ mod test {
 
     #[test]
     fn test_task_4_2_solver() {
-        println!("{}", task_4_2_solver("hello".to_string(), "ll".to_string()));
+        println!("{:?}", task_4_2_solver("aba".to_string(), "a".to_string()));
         println!(
-            "{}",
+            "{:?}",
+            task_4_2_solver("hello".to_string(), "ll".to_string())
+        );
+        println!(
+            "{:?}",
             task_4_2_solver("testTesttesT".to_string(), "Test".to_string())
         );
     }
