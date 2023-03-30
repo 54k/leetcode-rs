@@ -61,10 +61,34 @@ impl Codec {
         Self {}
     }
     fn serialize(&self, root: Option<Rc<RefCell<TreeNode>>>) -> String {
-        todo!()
+        fn preorder_serialize(root: Option<Rc<RefCell<TreeNode>>>) -> String {
+            if let Some(r) = root {
+                format!(
+                    "{},{},{}",
+                    r.as_ref().borrow().val,
+                    preorder_serialize(r.as_ref().borrow().left.clone()),
+                    preorder_serialize(r.as_ref().borrow().right.clone())
+                )
+            } else {
+                "X".to_string()
+            }
+        }
+        preorder_serialize(root)
     }
     fn deserialize(&self, data: String) -> Option<Rc<RefCell<TreeNode>>> {
-        todo!()
+        fn preorder_deserialize(data: &Vec<&str>, i: &mut i32) -> Option<Rc<RefCell<TreeNode>>> {
+            *i += 1;
+            if data[*i as usize] == "X" {
+                None
+            } else {
+                Some(Rc::new(RefCell::new(TreeNode {
+                    val: data[*i as usize].parse().unwrap(),
+                    left: preorder_deserialize(data, i),
+                    right: preorder_deserialize(data, i),
+                })))
+            }
+        }
+        preorder_deserialize(&data.split(',').collect(), &mut -1)
     }
 }
 
@@ -86,5 +110,7 @@ mod test {
     }
 
     #[test]
-    fn test386() {}
+    fn test386() {
+        // it works
+    }
 }
