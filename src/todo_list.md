@@ -52,3 +52,7 @@ https://leetcode.com/problems/minimum-operations-to-make-all-array-elements-equa
 https://leetcode.com/problems/remove-digit-from-number-to-maximize-result/description/
 https://leetcode.com/problems/minimum-consecutive-cards-to-pick-up/
 https://leetcode.com/problems/total-appeal-of-a-string/description/
+
+[//]: # (https://leetcode.com/problems/range-sum-query-2d-immutable/description/)
+https://leetcode.com/problems/selling-pieces-of-wood/
+https://leetcode.com/problems/range-sum-query-immutable/

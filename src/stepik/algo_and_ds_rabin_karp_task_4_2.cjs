@@ -1,11 +1,4 @@
 // https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/
-// console.log(rabin_karp_str_str("hello", "ll")); // 2
-// console.log(rabin_karp_str_str("sadbutsad", "sad")); // 0, 6
-// console.log(rabin_karp_str_str("testTesttesT", "Test")); // 4
-// console.log(rabin_karp_str_str("aabaaabaaac", "aabaaac")); // 4
-// console.log(rabin_karp_str_str(Array(500).map(() => "a").join(), Array(300).map(() => "a").join())); // 4
-// console.log(rabin_karp_str_str(Array(500).map(() => "a").join(), Array(300).map(() => "a").join())); // 4
-
 const rabin_karp_str_str = (t, p) => {
 
     if (p.length === 0 || t.length === 0 || p.length > t.length) {
@@ -46,8 +39,9 @@ const rabin_karp_str_str = (t, p) => {
     return result
 }
 
-// process.stdin.on("data", (buf) => {
-//     let strings = new String(buf).split("\n")
-//     process.stdout.write(rabin_karp_str_str(strings[1], strings[0]).join(" "), "utf-8")
-//     process.exit(0)
-// })
+console.log(rabin_karp_str_str("hello", "ll")); // 2
+console.log(rabin_karp_str_str("sadbutsad", "sad")); // 0, 6
+console.log(rabin_karp_str_str("testTesttesT", "Test")); // 4
+console.log(rabin_karp_str_str("aabaaabaaac", "aabaaac")); // 4
+console.log(rabin_karp_str_str(Array(500).map(() => "a").join(), Array(300).map(() => "a").join())); // 4
+console.log(rabin_karp_str_str(Array(500).map(() => "a").join(), Array(300).map(() => "a").join())); // 4
