@@ -48,6 +48,13 @@ impl Codec {
     }
 }
 
+// https://leetcode.com/problems/trapping-rain-water/
+// https://leetcode.com/problems/trapping-rain-water/editorial/
+pub fn trap(height: Vec<i32>) -> i32 {
+    fn brute_force_approach(height: Vec<i32>) -> i32 {}
+    brute_force_approach(height)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
