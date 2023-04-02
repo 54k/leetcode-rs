@@ -30,7 +30,25 @@ pub fn successful_pairs(spells: Vec<i32>, potions: Vec<i32>, success: i64) -> Ve
         }
         ans
     }
-    bin_search_approach(spells, potions, success)
+    fn two_pointers_approach(spells: Vec<i32>, mut potions: Vec<i32>, success: i64) -> Vec<i32> {
+        let n = spells.len();
+        let m = potions.len();
+
+        let mut spells = spells.into_iter().enumerate().map(|(i, x)| (x as i64, i)).collect::<Vec<_>>();
+        spells.sort();
+        let mut potions = potions.into_iter().map(|x| x as i64).collect::<Vec<_>>();
+        potions.sort();
+        let mut ans = vec![0; n];
+        let mut potion_idx = m as i32 - 1;
+        for (spell, s_i) in spells {
+            while potion_idx >= 0 && spell * potions[potion_idx as usize] >= success {
+                potion_idx -= 1;
+            }
+            ans[s_i] = m as i32 - (potion_idx + 1);
+        }
+        ans
+    }
+    two_pointers_approach(spells, potions, success)
 }
 
 #[cfg(test)]
@@ -39,7 +57,7 @@ mod test {
 
     #[test]
     fn test390() {
-        println!("{:?}", successful_pairs(vec![1, 2, 3, 4, 5, 6, 7], vec![1, 2, 3, 4, 5, 6, 7], 25)); // [4,0,3]
+        println!("{:?}", successful_pairs(vec![1, 2, 3, 4, 5, 6, 7], vec![1, 2, 3, 4, 5, 6, 7], 25)); // [0, 0, 0, 1, 3, 3, 4]
         println!("{:?}", successful_pairs(vec![5, 1, 3], vec![1, 2, 3, 4, 5], 7)); // [4,0,3]
     }
 }
