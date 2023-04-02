@@ -281,6 +281,44 @@ pub fn ladder_length(begin_word: String, end_word: String, word_list: Vec<String
     bidi_search_bfs_approach(begin_word, end_word, word_list)
 }
 
+// https://leetcode.com/problems/basic-calculator/
+pub fn calculate(s: String) -> i32 {
+    let s = s.replace(' ', "");
+    let mut stack = vec![];
+    let (mut result, mut number, mut sign) = (0, 0, 1);
+    for ch in s.chars() {
+        match ch {
+            '(' => {
+                stack.push(result);
+                stack.push(sign);
+                sign = 1;
+                result = 0;
+            }
+            ')' => {
+                result += sign * number;
+                number = 0;
+                result *= stack.pop().unwrap();
+                result += stack.pop().unwrap();
+            }
+            '+' => {
+                result += sign * number;
+                number = 0;
+                sign = 1;
+            }
+            '-' => {
+                result += sign * number;
+                number = 0;
+                sign = -1;
+            }
+            _ => number = 10 * number + ch as i32 - 48,
+        }
+    }
+    if number != 0 {
+        result += sign * number;
+    }
+    result
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -346,5 +384,11 @@ mod test {
                 vec!["a".to_string(), "b".to_string(), "c".to_string()]
             )
         );
+    }
+
+    #[test]
+    fn test_calculate() {
+        println!("{}", calculate("1-(     -2)".to_string())); // 3
+        println!("{}", calculate("(1+(4+5+2)-3)+(6+8)".to_string())); // 23
     }
 }
