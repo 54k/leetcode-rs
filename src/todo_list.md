@@ -56,3 +56,4 @@ https://leetcode.com/problems/total-appeal-of-a-string/description/
 [//]: # (https://leetcode.com/problems/range-sum-query-2d-immutable/description/)
 https://leetcode.com/problems/selling-pieces-of-wood/
 https://leetcode.com/problems/range-sum-query-immutable/
+https://leetcode.com/problems/delete-columns-to-make-sorted-ii/description/
