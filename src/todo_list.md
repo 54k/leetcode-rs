@@ -57,3 +57,5 @@ https://leetcode.com/problems/total-appeal-of-a-string/description/
 https://leetcode.com/problems/selling-pieces-of-wood/
 https://leetcode.com/problems/range-sum-query-immutable/
 https://leetcode.com/problems/delete-columns-to-make-sorted-ii/description/
+https://leetcode.com/problems/mice-and-cheese/
+https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/description/

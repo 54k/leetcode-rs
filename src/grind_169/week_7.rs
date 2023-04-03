@@ -319,6 +319,28 @@ pub fn calculate(s: String) -> i32 {
     result
 }
 
+// https://leetcode.com/problems/maximum-profit-in-job-scheduling/description/
+// https://leetcode.com/problems/maximum-profit-in-job-scheduling/solutions/409009/java-c-python-dp-solution/
+pub fn job_scheduling(start_time: Vec<i32>, end_time: Vec<i32>, profit: Vec<i32>) -> i32 {
+    // Sort the elements by starting time, then define the dp[i] as the maximum profit
+    // taking elements from the suffix starting at i.
+    // Use binarySearch (lower_bound/upper_bound on C++) to get the next index for the DP transition.
+    let mut v: Vec<_> = end_time
+        .into_iter()
+        .zip(start_time)
+        .zip(profit)
+        .map(|((x, y), z)| (x, y, z))
+        .collect();
+    v.sort_unstable();
+    let mut dp = Vec::with_capacity(v.len() + 1);
+    dp.push(0);
+    for (i, &(_, s, p)) in v.iter().enumerate() {
+        let j = v[..i].partition_point(|&(e, _, _)| e <= s);
+        dp.push(dp[i].max(dp[j] + p));
+    }
+    *dp.last().unwrap()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -390,5 +412,21 @@ mod test {
     fn test_calculate() {
         println!("{}", calculate("1-(     -2)".to_string())); // 3
         println!("{}", calculate("(1+(4+5+2)-3)+(6+8)".to_string())); // 23
+    }
+
+    #[test]
+    fn test_job_scheduling() {
+        println!(
+            "{}",
+            job_scheduling(vec![1, 2, 3, 3], vec![3, 4, 5, 6], vec![50, 10, 40, 70])
+        ); // 120
+        println!(
+            "{}",
+            job_scheduling(
+                vec![1, 2, 3, 4, 6],
+                vec![3, 5, 10, 6, 9],
+                vec![20, 20, 100, 70, 60]
+            )
+        ); // 150
     }
 }
