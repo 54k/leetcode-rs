@@ -1,3 +1,5 @@
+use crate::leetcode_grind::day_2::roman_to_int;
+
 // https://leetcode.com/problems/boats-to-save-people/
 // https://leetcode.com/problems/boats-to-save-people/editorial/
 pub fn num_rescue_boats(mut people: Vec<i32>, limit: i32) -> i32 {
@@ -49,6 +51,30 @@ pub fn num_subarray_product_less_than_k(nums: Vec<i32>, k: i32) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/maximum-average-subarray-i/description/
+// https://leetcode.com/problems/maximum-average-subarray-i/editorial/
+pub fn find_max_average(nums: Vec<i32>, k: i32) -> f64 {
+    let mut cur = 0;
+    let mut left = 0;
+    let mut ans = 0;
+    for right in 0..nums.len() {
+        if right >= k as usize {
+            ans = ans.max(cur);
+            cur -= nums[left];
+            left += 1;
+        }
+        cur += nums[right];
+    }
+    ans = ans.max(cur);
+    ans as f64 / k as f64
+}
+
+// https://leetcode.com/problems/minimum-value-to-get-positive-step-by-step-sum/description/
+// https://leetcode.com/problems/minimum-value-to-get-positive-step-by-step-sum/description/
+pub fn min_start_value(nums: Vec<i32>) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -69,5 +95,16 @@ mod test {
             "{:?}",
             num_subarray_product_less_than_k(vec![10, 5, 2, 6], 100)
         );
+    }
+
+    #[test]
+    fn test394() {
+        // println!("{:?}", find_max_average(vec![1, 12, -5, -6, 50, 3], 4)); // 12.75
+        println!("{:?}", find_max_average(vec![5], 1)); // 12.75
+    }
+
+    #[test]
+    fn test395() {
+        println!("{}", min_start_value(vec![-3, 2, -3, 4, 2])); // 6
     }
 }
