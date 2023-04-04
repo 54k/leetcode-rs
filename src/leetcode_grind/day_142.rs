@@ -1,4 +1,5 @@
 use crate::leetcode_grind::day_2::roman_to_int;
+use std::cmp::min;
 
 // https://leetcode.com/problems/boats-to-save-people/
 // https://leetcode.com/problems/boats-to-save-people/editorial/
@@ -72,7 +73,13 @@ pub fn find_max_average(nums: Vec<i32>, k: i32) -> f64 {
 // https://leetcode.com/problems/minimum-value-to-get-positive-step-by-step-sum/description/
 // https://leetcode.com/problems/minimum-value-to-get-positive-step-by-step-sum/description/
 pub fn min_start_value(nums: Vec<i32>) -> i32 {
-    todo!()
+    let mut total = 0;
+    let mut min_val = 0;
+    for num in nums {
+        total += num;
+        min_val = min_val.min(total);
+    }
+    -min_val + 1
 }
 
 #[cfg(test)]
