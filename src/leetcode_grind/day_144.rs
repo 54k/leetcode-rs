@@ -77,6 +77,22 @@ pub fn intersection(nums: Vec<Vec<i32>>) -> Vec<i32> {
     ans
 }
 
+// https://leetcode.com/problems/largest-unique-number/description/
+pub fn largest_unique_number(mut nums: Vec<i32>) -> i32 {
+    use std::collections::HashMap;
+    let mut map = HashMap::new();
+    for i in 0..nums.len() {
+        *map.entry(nums[i]).or_insert(0) += 1;
+    }
+    let mut max_num = -1;
+    for (k, v) in map {
+        if v == 1 && k > max_num {
+            max_num = k;
+        }
+    }
+    max_num
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -114,5 +130,10 @@ mod test {
                 vec![3, 4, 5, 6]
             ])
         ); // 3,4
+    }
+
+    #[test]
+    fn test405() {
+        println!("{}", largest_unique_number(vec![5, 7, 3, 9, 4, 9, 8, 3, 1])); // 8
     }
 }
