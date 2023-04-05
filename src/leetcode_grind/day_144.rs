@@ -33,6 +33,32 @@ pub fn check_if_pangram(sentence: String) -> bool {
     set == (1 << 26) - 1
 }
 
+// https://leetcode.com/problems/missing-number/editorial/
+pub fn missing_number(nums: Vec<i32>) -> i32 {
+    let mut missing = nums.len() as i32;
+    for i in 0..nums.len() {
+        missing ^= i as i32 ^ nums[i];
+    }
+    missing
+}
+
+// https://leetcode.com/problems/counting-elements/description/
+// https://leetcode.com/problems/counting-elements/editorial/
+pub fn count_elements(arr: Vec<i32>) -> i32 {
+    use std::collections::HashSet;
+    let mut set = HashSet::new();
+    for i in 0..arr.len() {
+        set.insert(arr[i]);
+    }
+    let mut count = 0;
+    for i in 0..arr.len() {
+        if set.contains(&(arr[i] + 1)) {
+            count += 1;
+        }
+    }
+    count
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -53,5 +79,10 @@ mod test {
             "{}",
             check_if_pangram("thequickbrownfoxjumpsoverthelazydog".to_string())
         ); // true
+    }
+
+    #[test]
+    fn test403() {
+        println!("{}", count_elements(vec![1, 2, 3])); // 2
     }
 }
