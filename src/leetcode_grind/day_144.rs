@@ -59,6 +59,24 @@ pub fn count_elements(arr: Vec<i32>) -> i32 {
     count
 }
 
+// https://leetcode.com/problems/intersection-of-multiple-arrays/description/
+pub fn intersection(nums: Vec<Vec<i32>>) -> Vec<i32> {
+    use std::collections::BTreeMap;
+    let mut map = BTreeMap::new();
+    for i in 0..nums.len() {
+        for j in 0..nums[i].len() {
+            *map.entry(nums[i][j]).or_insert(0) += 1;
+        }
+    }
+    let mut ans = vec![];
+    for (k, v) in map.into_iter() {
+        if v == nums.len() {
+            ans.push(k);
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -84,5 +102,17 @@ mod test {
     #[test]
     fn test403() {
         println!("{}", count_elements(vec![1, 2, 3])); // 2
+    }
+
+    #[test]
+    fn test404() {
+        println!(
+            "{:?}",
+            intersection(vec![
+                vec![3, 1, 2, 4, 5],
+                vec![1, 2, 3, 4],
+                vec![3, 4, 5, 6]
+            ])
+        ); // 3,4
     }
 }
