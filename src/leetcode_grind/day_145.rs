@@ -1,5 +1,3 @@
-use std::path::Component::ParentDir;
-
 // https://leetcode.com/problems/number-of-closed-islands/description/
 pub fn closed_island(grid: Vec<Vec<i32>>) -> i32 {
     fn dfs_approach(grid: Vec<Vec<i32>>) -> i32 {
@@ -114,6 +112,55 @@ pub fn minimum_card_pickup(cards: Vec<i32>) -> i32 {
     }
 }
 
+// https://leetcode.com/problems/max-sum-of-a-pair-with-equal-sum-of-digits/
+pub fn maximum_sum(nums: Vec<i32>) -> i32 {
+    fn digit_sum(mut n: i32) -> i32 {
+        let mut sum = 0;
+        while n > 0 {
+            sum += n % 10;
+            n /= 10;
+        }
+        sum
+    }
+    use std::collections::HashMap;
+    let mut map = HashMap::new();
+    let mut ans = -1;
+    for num in nums {
+        let digit_sum = digit_sum(num);
+        if map.contains_key(&digit_sum) {
+            ans = ans.max(map[&digit_sum] + num);
+        }
+        if *map.get(&digit_sum).unwrap_or(&0) < num {
+            map.insert(digit_sum, num);
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/equal-row-and-column-pairs/
+pub fn equal_pairs(grid: Vec<Vec<i32>>) -> i32 {
+    use std::collections::HashMap;
+    let mut dict1 = HashMap::new();
+    for i in 0..grid.len() {
+        *dict1.entry(grid[i].clone()).or_insert(0) += 1;
+    }
+    let mut dict2 = HashMap::new();
+    for i in 0..grid[0].len() {
+        let mut col = vec![0; grid.len()];
+        for j in 0..grid.len() {
+            col[j] = grid[j][i];
+        }
+        *dict2.entry(col).or_insert(0) += 1;
+    }
+    let mut ans = 0;
+    for (k, v) in dict1 {
+        if dict2.contains_key(&k) {
+            ans += dict2[&k] * v
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -140,5 +187,30 @@ mod test {
     #[test]
     fn test408() {
         println!("{}", minimum_card_pickup(vec![3, 4, 2, 3, 4, 7]));
+    }
+
+    #[test]
+    fn test409() {
+        println!("{}", maximum_sum(vec![18, 43, 36, 13, 7])); // 54
+        println!(
+            "{}",
+            maximum_sum(vec![
+                279, 169, 463, 252, 94, 455, 423, 315, 288, 64, 494, 337, 409, 283, 283, 477, 248,
+                8, 89, 166, 188, 186, 128
+            ])
+        ); // 872
+    }
+
+    #[test]
+    fn test410() {
+        println!(
+            "{}",
+            equal_pairs(vec![
+                vec![3, 1, 2, 2],
+                vec![1, 4, 4, 5],
+                vec![2, 4, 2, 2],
+                vec![2, 4, 2, 2]
+            ])
+        ); // 3
     }
 }
