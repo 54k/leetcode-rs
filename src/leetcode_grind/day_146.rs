@@ -162,6 +162,62 @@ pub fn custom_sort_string(order: String, s: String) -> String {
     using_counting(order, s)
 }
 
+// https://leetcode.com/problems/isomorphic-strings/
+pub fn is_isomorphic(s: String, t: String) -> bool {
+    use std::collections::HashMap;
+    fn to_map(s: String) -> (HashMap<i32, i32>, Vec<char>) {
+        (HashMap::new(), s.chars().collect())
+    }
+    let (mut m1, s) = to_map(s);
+    let (mut m2, t) = to_map(t);
+    for i in 0..t.len() {
+        let c1 = s[i] as i32;
+        let c2 = t[i] as i32;
+
+        if !m1.contains_key(&c1) && !m2.contains_key(&c2) {
+            m1.insert(c1, c2);
+            m2.insert(c2, c1);
+        }
+        if !(*m1.get(&c1).unwrap_or(&c1) == c2 && *m2.get(&c2).unwrap_or(&c2) == c1) {
+            return false;
+        }
+    }
+    true
+}
+
+// https://leetcode.com/problems/unique-number-of-occurrences/
+pub fn unique_occurrences(arr: Vec<i32>) -> bool {
+    use std::collections::{HashMap, HashSet};
+    let mut freq = HashMap::<i32, i32>::new();
+    for i in 0..arr.len() {
+        *freq.entry(arr[i]).or_insert(0) += 1;
+    }
+    freq.values()
+        .clone()
+        .copied()
+        .collect::<HashSet<i32>>()
+        .len()
+        == freq.len()
+}
+
+// https://leetcode.com/problems/destination-city/description/
+pub fn dest_city(paths: Vec<Vec<String>>) -> String {
+    use std::collections::HashMap;
+    let mut map = HashMap::new();
+    for p in paths {
+        map.insert(p[0].clone(), Some(p[1].clone()));
+        if !map.contains_key(&p[1]) {
+            map.insert(p[1].clone(), None);
+        }
+    }
+    map.into_iter()
+        .filter(|(_, v)| v.is_none())
+        .map(|(k, _)| Some(k))
+        .next()
+        .unwrap()
+        .unwrap()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -207,5 +263,35 @@ mod test {
             "{}",
             custom_sort_string("cbafg".to_string(), "abcd".to_string())
         ); // "cbad"
+    }
+
+    #[test]
+    fn test414() {
+        println!("{}", is_isomorphic("egg".to_string(), "add".to_string())); // true
+        println!("{}", is_isomorphic("foo".to_string(), "bar".to_string())); // false
+        println!(
+            "{}",
+            is_isomorphic("paper".to_string(), "title".to_string())
+        ); // true
+    }
+
+    #[test]
+    fn test415() {
+        println!(
+            "{}",
+            unique_occurrences(vec![-3, 0, 1, -3, 1, 1, 1, -3, 10, 0])
+        ); // true
+    }
+
+    #[test]
+    fn test416() {
+        println!(
+            "{}",
+            dest_city(vec![
+                vec!["B".to_string(), "C".to_string()],
+                vec!["D".to_string(), "B".to_string()],
+                vec!["C".to_string(), "A".to_string()]
+            ])
+        ); // A
     }
 }
