@@ -73,8 +73,46 @@ pub fn insert_into_bst(
     root: Option<Rc<RefCell<TreeNode>>>,
     val: i32,
 ) -> Option<Rc<RefCell<TreeNode>>> {
-    todo!()
+    fn insert(root: Option<Rc<RefCell<TreeNode>>>, val: i32) -> Option<Rc<RefCell<TreeNode>>> {
+        if let Some(r) = root.clone() {
+            if val < r.as_ref().borrow().val {
+                let left = r.as_ref().borrow().left.clone();
+                r.borrow_mut().left = insert(left, val);
+            } else {
+                let right = r.as_ref().borrow().right.clone();
+                r.borrow_mut().right = insert(right, val);
+            }
+            root
+        } else {
+            Some(Rc::new(RefCell::new(TreeNode {
+                val,
+                left: None,
+                right: None,
+            })))
+        }
+    }
+    insert(root, val)
 }
+
+// https://leetcode.com/problems/closest-binary-search-tree-value/description/
+// https://leetcode.com/problems/closest-binary-search-tree-value/editorial/
+pub fn closest_value(mut root: Option<Rc<RefCell<TreeNode>>>, target: f64) -> i32 {
+    let mut node = root.clone();
+    let mut closest = root.as_ref().unwrap().borrow().val;
+    while let Some(n) = node {
+        if (n.borrow().val as f64 - target).abs() <= (closest as f64 - target).abs() {
+            closest = n.borrow().val;
+        }
+        if target < n.borrow().val as f64 {
+            node = n.borrow().left.clone();
+        } else {
+            node = n.borrow().right.clone();
+        }
+    }
+    closest
+}
+
+// https://leetcode.com/problems/basic-calculator-iii/description/
 
 #[cfg(test)]
 mod test {
