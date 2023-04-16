@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 // https://leetcode.com/problems/open-the-lock/
 pub fn open_lock(deadends: Vec<String>, target: String) -> i32 {
     fn get_neighbors(s: String) -> Vec<String> {
@@ -83,6 +85,30 @@ pub fn calc_equation(
         ans.push(search(q[0].clone(), q[1].clone(), &graph))
     }
     ans
+}
+
+// https://leetcode.com/problems/minimum-genetic-mutation/description/
+pub fn min_mutation(start_gene: String, end_gene: String, bank: Vec<String>) -> i32 {
+    use std::collections::{HashSet, VecDeque};
+    let mut seen = HashSet::new();
+    let mut queue = VecDeque::new();
+    queue.push_back((start_gene.clone(), 0));
+    seen.insert(start_gene);
+    while let Some((v, step)) = queue.pop_front() {
+        if v == end_gene {
+            return step;
+        }
+        for ch in ['A', 'C', 'G', 'T'] {
+            for i in 0..v.len() {
+                let gene = format!("{}{}{}", &v[0..i], ch, &v[i + 1..]);
+                if !seen.contains(&gene) && bank.contains(&gene) {
+                    seen.insert(gene.clone());
+                    queue.push_back((gene.clone(), step + 1));
+                }
+            }
+        }
+    }
+    -1
 }
 
 #[cfg(test)]
