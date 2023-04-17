@@ -170,7 +170,7 @@ pub fn most_booked(n: i32, mut meetings: Vec<Vec<i32>>) -> i32 {
     use std::cmp::Reverse;
     use std::collections::BinaryHeap;
     meetings.sort();
-    let mut ready = BinaryHeap::from((0..n).map(|x| Reverse(x)).collect::<Vec<_>>());
+    let mut ready = BinaryHeap::from((0..n).map(Reverse).collect::<Vec<_>>());
     let mut rooms: BinaryHeap<Reverse<(i64, i32)>> = BinaryHeap::new();
     let mut ans = vec![0; n as usize];
 
