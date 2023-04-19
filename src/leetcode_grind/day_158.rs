@@ -85,3 +85,24 @@ pub fn maximum_units(mut box_types: Vec<Vec<i32>>, mut truck_size: i32) -> i32 {
     }
     ans
 }
+
+// https://leetcode.com/problems/video-stitching/solutions/270036/java-c-python-greedy-solution-o-1-space/
+// https://leetcode.com/problems/video-stitching/
+pub fn video_stitching(mut clips: Vec<Vec<i32>>, time: i32) -> i32 {
+    clips.sort();
+    let mut dp = vec![101; 101];
+    dp[0] = 0;
+
+    for clip in clips {
+        let (s, e) = (clip[0] as usize, clip[1] as usize);
+        for i in s + 1..=e {
+            dp[i] = dp[i].min(dp[s] + 1);
+        }
+    }
+
+    if dp[time as usize] >= 100 {
+        -1
+    } else {
+        dp[time as usize]
+    }
+}
