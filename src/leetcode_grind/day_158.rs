@@ -70,3 +70,18 @@ pub fn max_number_of_apples(weight: Vec<i32>) -> i32 {
     }
     count as i32
 }
+
+// https://leetcode.com/problems/maximum-units-on-a-truck/description/
+pub fn maximum_units(mut box_types: Vec<Vec<i32>>, mut truck_size: i32) -> i32 {
+    box_types.sort_by_key(|x| x[1]);
+    let mut ans = 0;
+    for i in (0..box_types.len()).rev() {
+        let am = box_types[i][0].min(truck_size);
+        if am == 0 {
+            break;
+        }
+        ans += am * box_types[i][1];
+        truck_size -= am;
+    }
+    ans
+}
