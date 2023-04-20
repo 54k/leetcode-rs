@@ -126,6 +126,28 @@ pub fn maximize_sweetness(sweetness: Vec<i32>, k: i32) -> i32 {
     right
 }
 
+// https://leetcode.com/problems/minimize-max-distance-to-gas-station/description/
+pub fn minmax_gas_dist(stations: Vec<i32>, k: i32) -> f64 {
+    fn possible(d: f64, stations: &Vec<i32>, k: i32) -> bool {
+        let mut used = 0;
+        for i in 0..stations.len() - 1 {
+            used += ((stations[i + 1] as f64 - stations[i] as f64) / d) as i32;
+        }
+        used <= k
+    }
+    let mut lo = 0.0;
+    let mut hi = 1e8;
+    while hi - lo > 1e-6 {
+        let mid = (lo + hi) / 2.0;
+        if possible(mid, &stations, k) {
+            hi = mid;
+        } else {
+            lo = mid;
+        }
+    }
+    lo
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -153,5 +175,13 @@ mod test {
     #[test]
     fn test_447() {
         println!("{}", maximize_sweetness(vec![1, 2, 3, 4, 5, 6, 7, 8, 9], 5)); // 6
+    }
+
+    #[test]
+    fn test_448() {
+        println!(
+            "{}",
+            minmax_gas_dist(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 9)
+        ); // 0.5
     }
 }
