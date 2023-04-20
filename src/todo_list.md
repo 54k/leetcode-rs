@@ -60,3 +60,5 @@ https://leetcode.com/problems/delete-columns-to-make-sorted-ii/description/
 https://leetcode.com/problems/mice-and-cheese/
 https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/description/
 https://leetcode.com/problems/trapping-rain-water-ii/description/
+
+https://leetcode.com/problems/minimize-max-distance-to-gas-station/description/
