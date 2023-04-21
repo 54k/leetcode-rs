@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 // https://leetcode.com/problems/number-of-flowers-in-full-bloom/
 pub fn full_bloom_flowers(mut flowers: Vec<Vec<i32>>, people: Vec<i32>) -> Vec<i32> {
     // fn find_in_full_bloom(flowers: &Vec<Vec<i32>>, time: i32) -> i32 {
@@ -132,6 +130,51 @@ pub fn solve_n_queens(n: i32) -> Vec<Vec<String>> {
     ans
 }
 
+// https://leetcode.com/problems/combination-sum-iii/description/
+pub fn combination_sum3(k: i32, n: i32) -> Vec<Vec<i32>> {
+    fn backtrack(num: i32, current: &mut Vec<i32>, k: usize, n: i32, ans: &mut Vec<Vec<i32>>) {
+        if current.len() == k && current.iter().sum::<i32>() == n {
+            ans.push(current.clone());
+            return;
+        }
+        for i in num..=9 {
+            current.push(i);
+            backtrack(i + 1, current, k, n, ans);
+            current.pop();
+        }
+    }
+    let mut ans = vec![];
+    backtrack(1, &mut vec![], k as usize, n, &mut ans);
+    ans
+}
+
+// https://leetcode.com/problems/numbers-with-same-consecutive-differences/description/
+pub fn nums_same_consec_diff(n: i32, k: i32) -> Vec<i32> {
+    fn dfs(n: i32, k: i32, num: i32, ans: &mut Vec<i32>) {
+        if n == 0 {
+            ans.push(num);
+            return;
+        }
+        let mut next_digits = vec![];
+        let last_num = num % 10;
+        next_digits.push(last_num + k);
+        if k != 0 {
+            next_digits.push(last_num - k);
+        }
+
+        for d in next_digits {
+            if (0..=9).contains(&d) {
+                dfs(n - 1, k, num * 10 + d, ans);
+            }
+        }
+    }
+    let mut ans = vec![];
+    for i in 1..=9 {
+        dfs(n - 1, k, i, &mut ans);
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -159,5 +202,18 @@ mod test {
     #[test]
     fn test_451() {
         println!("{:?}", solve_n_queens(4)); // [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+    }
+
+    #[test]
+    fn test_452() {
+        println!("{:?}", combination_sum3(3, 7));
+    }
+
+    #[test]
+    fn test_453() {
+        println!("{:?}", nums_same_consec_diff(3, 7)); // [181,292,707,818,929]
+        println!("{:?}", nums_same_consec_diff(1, 1));
+        println!("{:?}", nums_same_consec_diff(1, 2));
+        println!("{:?}", nums_same_consec_diff(2, 0));
     }
 }
