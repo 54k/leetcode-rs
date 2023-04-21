@@ -54,6 +54,32 @@ pub fn full_bloom_flowers(mut flowers: Vec<Vec<i32>>, people: Vec<i32>) -> Vec<i
     ans
 }
 
+// https://leetcode.com/problems/profitable-schemes/description/
+pub fn profitable_schemes(n: i32, min_profit: i32, group: Vec<i32>, profits: Vec<i32>) -> i32 {
+    const MOD: i64 = 1000000007;
+    let mut dp = vec![vec![vec![0; 101]; 101]; 101];
+    for count in 0..=n as usize {
+        dp[group.len()][count][min_profit as usize] = 1;
+    }
+
+    for index in (0..group.len()).rev() {
+        for count in 0..=n as usize {
+            for profit in 0..=min_profit as usize {
+                // ways to get a profitable scheme without this crime
+                dp[index][count][profit] = dp[index + 1][count][profit];
+                if count as i32 + group[index] <= n {
+                    // adding ways to get profitable schemes, including this crime
+                    dp[index][count][profit] = (dp[index][count][profit]
+                        + dp[index + 1][count + group[index] as usize]
+                            [(min_profit as usize).min(profit + profits[index] as usize)])
+                        % MOD;
+                }
+            }
+        }
+    }
+    dp[0][0][0] as i32
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -71,5 +97,10 @@ mod test {
             "{:?}",
             full_bloom_flowers(vec![vec![1, 10], vec![3, 3]], vec![3, 3, 2])
         ); // 2,2,1
+    }
+
+    #[test]
+    fn test_450() {
+        println!("{}", profitable_schemes(5, 3, vec![2, 3], vec![2, 2]));
     }
 }
