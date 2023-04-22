@@ -51,7 +51,31 @@ pub fn find_longest_chain(mut pairs: Vec<Vec<i32>>) -> i32 {
 
 // https://leetcode.com/problems/solving-questions-with-brainpower/description/
 pub fn most_points(questions: Vec<Vec<i32>>) -> i64 {
-    todo!()
+    fn top_down(questions: Vec<Vec<i32>>) -> i64 {
+        let mut memo = vec![-1; questions.len() + 1];
+        fn rec(i: usize, questions: &Vec<Vec<i32>>, memo: &mut Vec<i64>) -> i64 {
+            if i >= questions.len() {
+                return 0;
+            }
+            if memo[i] == -1 {
+                memo[i] = rec(i + 1, questions, memo).max(
+                    questions[i][0] as i64 + rec(i + questions[i][1] as usize + 1, questions, memo),
+                );
+            }
+            memo[i]
+        }
+        rec(0, &questions, &mut memo)
+    }
+    fn bottom_up(questions: Vec<Vec<i32>>) -> i64 {
+        let mut dp = vec![0; questions.len() + 1];
+        for i in (0..questions.len()).rev() {
+            let n = questions.len() - 1;
+            let j = i + questions[i][1] as usize + 1;
+            dp[i] = dp[i + 1].max(dp[n.min(j)] + questions[i][0] as i64);
+        }
+        dp[0]
+    }
+    bottom_up(questions)
 }
 
 #[cfg(test)]
