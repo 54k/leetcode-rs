@@ -146,6 +146,58 @@ pub fn max_profit4(prices: Vec<i32>) -> i32 {
     dp[0][0][2]
 }
 
+// https://leetcode.com/problems/unique-paths-ii/editorial/
+pub fn unique_paths_with_obstacles(obstacle_grid: Vec<Vec<i32>>) -> i32 {
+    let n = obstacle_grid.len();
+    let m = obstacle_grid[0].len();
+    let mut dp = vec![vec![0; obstacle_grid[0].len()]; n];
+    if obstacle_grid[0][0] == 0 {
+        dp[0][0] = 1;
+    }
+    for i in 1..n {
+        if obstacle_grid[i][0] == 0 {
+            dp[i][0] = dp[i - 1][0];
+        }
+    }
+    for i in 1..m {
+        if obstacle_grid[0][i] == 0 {
+            dp[0][i] = dp[0][i - 1];
+        }
+    }
+    for i in 1..n {
+        for j in 1..m {
+            if obstacle_grid[i][j] == 0 {
+                dp[i][j] += dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+    }
+
+    dp[n - 1][m - 1]
+}
+
+// https://leetcode.com/problems/minimum-falling-path-sum/description/
+pub fn min_falling_path_sum(matrix: Vec<Vec<i32>>) -> i32 {
+    let mut dp = vec![0; matrix.len() + 1];
+    for row in (0..matrix.len()).rev() {
+        let mut current_row = vec![0; matrix.len() + 1];
+        for col in 0..matrix.len() {
+            if col == 0 {
+                current_row[col] = dp[col].min(dp[col + 1]) + matrix[row][col];
+            } else if col == matrix.len() - 1 {
+                current_row[col] = dp[col].min(dp[col - 1]) + matrix[row][col];
+            } else {
+                current_row[col] = dp[col].min(dp[col + 1].min(dp[col - 1])) + matrix[row][col];
+            }
+        }
+        dp = current_row;
+    }
+    let mut ans = i32::MAX;
+    for i in 0..matrix.len() {
+        ans = ans.min(dp[i]);
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -182,5 +234,13 @@ mod test {
         println!("{}", max_profit4(vec![3, 3, 5, 0, 0, 3, 1, 4])); // 6
         println!("{}", max_profit4(vec![1, 2, 3, 4, 5])); // 4
         println!("{}", max_profit4(vec![7, 6, 4, 3, 1])); // 0
+    }
+
+    #[test]
+    fn test461() {
+        println!(
+            "{}",
+            min_falling_path_sum(vec![vec![2, 1, 3], vec![6, 5, 4], vec![7, 8, 9]])
+        ); // 13
     }
 }
