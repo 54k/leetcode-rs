@@ -1,5 +1,3 @@
-use std::collections::BinaryHeap;
-
 // https://leetcode.com/problems/car-pooling/description/
 pub fn car_pooling(trips: Vec<Vec<i32>>, capacity: i32) -> bool {
     let max_right = trips.iter().map(|x| x[2]).max().unwrap();
