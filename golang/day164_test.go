@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"testing"
 )
 
 // https://leetcode.com/problems/implement-trie-prefix-tree/description/
@@ -69,7 +70,7 @@ func (this *Trie) StartsWith(prefix string) bool {
 	return true
 }
 
-func testTrie() {
+func TestTrie(_ *testing.T) {
 	trie := Constructor()
 	trie.Insert("apple")
 	println(trie.Search("apple"))
@@ -92,7 +93,7 @@ func canAttendMeetings(intervals [][]int) bool {
 	return true
 }
 
-func testCanAttendMeeting() {
+func TestCanAttendMeeting(_ *testing.T) {
 	println(canAttendMeetings([][]int{{0, 30}, {5, 10}, {15, 20}}))
 }
 
@@ -137,12 +138,6 @@ func insert(intervals [][]int, newInterval []int) [][]int {
 	return answer
 }
 
-func testInsert() {
+func TestInsert(_ *testing.T) {
 	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{2, 5}))
-}
-
-func main() {
-	testTrie()
-	testCanAttendMeeting()
-	testInsert()
 }
