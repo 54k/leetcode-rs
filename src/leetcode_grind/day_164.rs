@@ -186,13 +186,25 @@ pub fn suggested_products(products: Vec<String>, search_word: String) -> Vec<Vec
 
 // https://leetcode.com/problems/hamming-distance/description/
 pub fn hamming_distance(x: i32, y: i32) -> i32 {
-    let mut dist = 0;
-    for i in 0..31 {
-        if x >> i & 1 != y >> i & 1 {
-            dist += 1;
+    fn approach1(x: i32, y: i32) -> i32 {
+        let mut dist = 0;
+        for i in 0..31 {
+            if x >> i & 1 != y >> i & 1 {
+                dist += 1;
+            }
         }
+        dist
     }
-    dist
+    fn approach2(x: i32, y: i32) -> i32 {
+        let mut dist = 0;
+        let mut xor = x ^ y;
+        while xor != 0 {
+            dist += xor % 2;
+            xor /= 2;
+        }
+        dist
+    }
+    approach2(x, y)
 }
 
 #[cfg(test)]
