@@ -99,6 +99,101 @@ mod sis_leetcode_solution {
     }
 }
 
+// https://leetcode.com/problems/search-suggestions-system/description/
+pub fn suggested_products(products: Vec<String>, search_word: String) -> Vec<Vec<String>> {
+    #[derive(Clone)]
+    struct TrieNode {
+        children: Vec<Option<TrieNode>>,
+        is_end: bool,
+    }
+    impl TrieNode {
+        fn new() -> Self {
+            Self {
+                children: vec![None; 26],
+                is_end: false,
+            }
+        }
+        fn insert(&mut self, ch: char) {
+            self.children[ch as usize - 'a' as usize] = Some(TrieNode::new());
+        }
+        fn get(&self, ch: char) -> Option<&TrieNode> {
+            self.children[ch as usize - 'a' as usize].as_ref()
+        }
+        fn get_mut(&mut self, ch: char) -> Option<&mut TrieNode> {
+            self.children[ch as usize - 'a' as usize].as_mut()
+        }
+    }
+    struct Trie {
+        root: TrieNode,
+    }
+    impl Trie {
+        fn new() -> Self {
+            Trie {
+                root: TrieNode::new(),
+            }
+        }
+        fn insert(&mut self, word: String) {
+            let mut node = &mut self.root;
+            for ch in word.chars() {
+                if node.get_mut(ch).is_none() {
+                    node.insert(ch);
+                }
+                node = node.get_mut(ch).unwrap();
+            }
+            node.is_end = true;
+        }
+        fn search(&self, prefix: String) -> Vec<String> {
+            let mut result = vec![];
+            let mut node = &self.root;
+            for ch in prefix.chars() {
+                if node.get(ch).is_none() {
+                    return result;
+                }
+                node = node.get(ch).unwrap();
+            }
+            self.dfs(node, prefix, &mut result);
+            result
+        }
+        fn dfs(&self, node: &TrieNode, prefix: String, result: &mut Vec<String>) {
+            if result.len() == 3 {
+                return;
+            }
+            if node.is_end {
+                result.push(prefix.clone());
+            }
+            for ch in 'a'..='z' {
+                if let Some(child) = node.get(ch) {
+                    self.dfs(child, format!("{}{}", prefix, ch), result);
+                }
+            }
+        }
+    }
+
+    let mut trie = Trie::new();
+    for product in products {
+        trie.insert(product);
+    }
+
+    let mut ans = vec![];
+    let mut prefix = String::new();
+    for ch in search_word.chars() {
+        prefix.push(ch);
+        ans.push(trie.search(prefix.clone()));
+    }
+    ans
+}
+
+// https://leetcode.com/problems/hamming-distance/description/
+pub fn hamming_distance(x: i32, y: i32) -> i32 {
+    let mut dist = 0;
+    for i in 0..31 {
+        if x >> i & 1 != y >> i & 1 {
+            dist += 1;
+        }
+    }
+    dist
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -133,5 +228,28 @@ mod test {
         println!("{}", sis.pop_smallest());
         println!("{}", sis.pop_smallest());
         println!("{}", sis.pop_smallest());
+    }
+
+    #[test]
+    fn test447() {
+        println!(
+            "{:?}",
+            suggested_products(
+                vec![
+                    "mobile".to_string(),
+                    "mouse".to_string(),
+                    "moneypot".to_string(),
+                    "monitor".to_string(),
+                    "mousepad".to_string()
+                ],
+                "mouse".to_string()
+            )
+        );
+    }
+
+    #[test]
+    fn test448() {
+        println!("{}", hamming_distance(1, 4)); // 2
+        println!("{}", hamming_distance(1, 3)); // 1
     }
 }
