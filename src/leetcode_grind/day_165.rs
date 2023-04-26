@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::ops::{Add, Sub};
+
 // https://leetcode.com/problems/add-digits/
 pub fn add_digits(mut num: i32) -> i32 {
     let mut digital_root = 0;
@@ -124,6 +127,55 @@ pub fn minimum_teachings(n: i32, languages: Vec<Vec<i32>>, friendships: Vec<Vec<
     min_teach
 }
 
+// https://leetcode.com/problems/reverse-only-letters/description/
+pub fn reverse_only_letters(s: String) -> String {
+    let mut s = s.chars().collect::<Vec<_>>();
+    let mut i = 0;
+    let mut j = s.len() - 1;
+    while i < j {
+        while i < j && !s[i].is_alphabetic() {
+            i += 1;
+        }
+        while i < j && !s[j].is_alphabetic() {
+            j -= 1;
+        }
+        s.swap(i, j);
+        i += 1;
+        j -= 1;
+    }
+    s.into_iter().collect()
+}
+
+// https://leetcode.com/problems/path-crossing/
+pub fn is_path_crossing(path: String) -> bool {
+    use std::collections::{HashMap, HashSet};
+    let dir = HashMap::from([
+        ('N', Pos((0, 1))),
+        ('S', Pos((0, -1))),
+        ('E', Pos((1, 0))),
+        ('W', Pos((-1, 0))),
+    ]);
+    #[derive(Eq, PartialEq, Hash, Clone, Debug)]
+    struct Pos((i32, i32));
+    impl Add<&Self> for Pos {
+        type Output = Pos;
+        fn add(self, rhs: &Self) -> Self::Output {
+            Pos((self.0 .0 + rhs.0 .0, self.0 .1 + rhs.0 .1))
+        }
+    }
+    let mut pos = Pos((0, 0));
+    let mut vis = HashSet::from([pos.clone()]);
+    for p in path.chars() {
+        pos = pos + &dir[&p];
+        // println!("{:?}", pos);
+        if vis.contains(&pos) {
+            return true;
+        }
+        vis.insert(pos.clone());
+    }
+    false
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -171,5 +223,18 @@ mod test {
                 vec![vec![1, 2], vec![1, 3], vec![2, 3]]
             )
         ); // 1
+    }
+
+    #[test]
+    fn test456() {
+        println!(
+            "{}",
+            reverse_only_letters("Test1ng-Leet=code-Q!".to_string())
+        );
+    }
+    #[test]
+    fn test457() {
+        println!("{}", is_path_crossing("NESWW".to_string()));
+        println!("{}", is_path_crossing("NES".to_string()));
     }
 }
