@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 // https://leetcode.com/problems/implement-stack-using-queues/description/
 mod stack_2q {
     use std::collections::VecDeque;
@@ -265,6 +267,55 @@ pub fn find_numbers(nums: Vec<i32>) -> i32 {
         .map(|x| numd(x))
         .filter(|x| x % 2 == 0)
         .count() as i32
+}
+// https://leetcode.com/problems/even-odd-tree/description/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn is_even_odd_tree(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    let mut lvl = vec![];
+    lvl.push(root.clone());
+    let mut d = 0;
+
+    while !lvl.is_empty() {
+        let mut next = vec![];
+
+        for r in lvl.iter().map(|x| x.clone()).flatten() {
+            let r = r.borrow();
+            if r.left.is_some() {
+                next.push(r.left.clone());
+            }
+            if r.right.is_some() {
+                next.push(r.right.clone());
+            }
+        }
+
+        for i in 0..lvl.len() {
+            let v = lvl[i].as_ref().unwrap().borrow().val;
+            let good = if d % 2 == 0 { v % 2 == 1 } else { v % 2 == 0 };
+            if !good {
+                return false;
+            }
+
+            if i > 0 {
+                let p = lvl[i - 1].as_ref().unwrap().borrow().val;
+                if d % 2 == 0 && v <= p {
+                    return false;
+                } else if d % 2 == 1 && v >= p {
+                    return false;
+                }
+            }
+        }
+
+        lvl = next;
+        d += 1;
+    }
+
+    true
 }
 
 #[cfg(test)]
