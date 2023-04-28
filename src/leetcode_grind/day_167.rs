@@ -236,6 +236,37 @@ pub fn num_similar_groups(strs: Vec<String>) -> i32 {
     groups
 }
 
+// https://leetcode.com/problems/max-consecutive-ones/description/
+pub fn find_max_consecutive_ones(nums: Vec<i32>) -> i32 {
+    let mut ans = 0;
+    let mut cur = 0;
+    for n in nums {
+        if n == 0 {
+            cur = 0
+        } else {
+            cur += 1;
+            ans = ans.max(cur);
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/find-numbers-with-even-number-of-digits/
+pub fn find_numbers(nums: Vec<i32>) -> i32 {
+    fn numd(mut n: i32) -> i32 {
+        let mut ans = 0;
+        while n > 0 {
+            n /= 10;
+            ans += 1;
+        }
+        ans
+    }
+    nums.into_iter()
+        .map(|x| numd(x))
+        .filter(|x| x % 2 == 0)
+        .count() as i32
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
