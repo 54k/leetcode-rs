@@ -104,6 +104,20 @@ pub fn duplicate_zeros(arr: &mut Vec<i32>) {
     }
 }
 
+pub fn replace_elements(mut arr: Vec<i32>) -> Vec<i32> {
+    let mut max_so_far = i32::MIN;
+    for i in (0..arr.len()).rev() {
+        let tmp = arr[i];
+        if i < arr.len() - 1 {
+            arr[i] = max_so_far;
+        } else {
+            arr[i] = -1;
+        }
+        max_so_far = max_so_far.max(tmp);
+    }
+    arr
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -125,5 +139,10 @@ mod test {
         let mut v = vec![1, 0, 2, 3, 0, 4, 5, 0];
         duplicate_zeros(&mut v);
         println!("{:?}", v);
+    }
+
+    #[test]
+    fn test464() {
+        println!("{:?}", replace_elements(vec![17, 18, 5, 4, 6, 1])); // [18, 6, 6, 6, 1, -1]
     }
 }
