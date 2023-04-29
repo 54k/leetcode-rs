@@ -34,7 +34,7 @@ pub fn distance_limited_paths_exist(
             self.rank[x] += self.rank[y];
         }
         fn is_same(&mut self, x: usize, y: usize) -> bool {
-            self.`find(x) == self.find(y)
+            self.find(x) == self.find(y)
         }
     }
 
@@ -76,6 +76,34 @@ pub fn distance_limited_paths_exist(
     ans
 }
 
+// https://leetcode.com/problems/duplicate-zeros/description/
+pub fn duplicate_zeros(arr: &mut Vec<i32>) {
+    let mut len = arr.len() - 1;
+    let mut possible_dups = 0;
+    let mut left = 0;
+
+    while left <= len - possible_dups {
+        if arr[left] == 0 {
+            if left == len - possible_dups {
+                arr[len] = 0;
+                len -= 1;
+                break;
+            }
+            possible_dups += 1;
+        }
+        left += 1;
+    }
+
+    for i in (0..=len - possible_dups).rev() {
+        if arr[i] == 0 {
+            arr[i + possible_dups] = 0;
+            possible_dups -= 1;
+            arr[i + possible_dups] = 0;
+        }
+        arr[i + possible_dups] = arr[i];
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -90,5 +118,12 @@ mod test {
                 vec![vec![0, 1, 2], vec![0, 2, 5]],
             )
         ); // false, true
+    }
+
+    #[test]
+    fn test463() {
+        let mut v = vec![1, 0, 2, 3, 0, 4, 5, 0];
+        duplicate_zeros(&mut v);
+        println!("{:?}", v);
     }
 }
