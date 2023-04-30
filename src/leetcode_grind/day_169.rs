@@ -71,6 +71,22 @@ pub fn dominant_index(nums: Vec<i32>) -> i32 {
     ans as i32
 }
 
+// https://leetcode.com/problems/plus-one/description/
+pub fn plus_one(digits: Vec<i32>) -> Vec<i32> {
+    let mut carry = 1;
+    let mut ans = vec![];
+    for i in (0..digits.len()).rev() {
+        let sum = digits[i] + carry;
+        carry = sum / 10;
+        ans.push(sum % 10);
+    }
+    if carry > 0 {
+        ans.push(carry);
+    }
+    ans.reverse();
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -96,5 +112,11 @@ mod test {
     #[test]
     fn test468() {
         println!("{}", dominant_index(vec![3, 6, 1, 0])); // 1
+    }
+
+    #[test]
+    fn test469() {
+        println!("{:?}", plus_one(vec![4, 3, 2, 9])); // 4340
+        println!("{:?}", plus_one(vec![9])); // 10
     }
 }
