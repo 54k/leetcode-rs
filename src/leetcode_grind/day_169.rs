@@ -87,6 +87,24 @@ pub fn plus_one(digits: Vec<i32>) -> Vec<i32> {
     ans
 }
 
+// https://leetcode.com/problems/remove-duplicates-from-sorted-array-ii/
+pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
+    let (mut j, mut count) = (1, 1);
+    for i in 1..nums.len() {
+        if nums[i] == nums[i - 1] {
+            count += 1;
+        } else {
+            count = 1;
+        }
+
+        if count <= 2 {
+            nums[j] = nums[i];
+            j += 1;
+        }
+    }
+    j as i32
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -118,5 +136,11 @@ mod test {
     fn test469() {
         println!("{:?}", plus_one(vec![4, 3, 2, 9])); // 4340
         println!("{:?}", plus_one(vec![9])); // 10
+    }
+
+    #[test]
+    fn test470() {
+        let mut nums = vec![0, 0, 1, 1, 1, 1, 2, 3, 3];
+        print!("{}", remove_duplicates(&mut nums)); // 7
     }
 }
