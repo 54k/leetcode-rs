@@ -68,6 +68,64 @@ pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
     triangle
 }
 
+// https://leetcode.com/problems/pascals-triangle-ii/description/
+pub fn get_row(row_index: i32) -> Vec<i32> {
+    fn generate(rows: usize) -> Vec<i32> {
+        let mut last_row = vec![1];
+        for rn in 1..=rows {
+            let mut next_row = vec![1; rn + 1];
+            for j in 1..rn {
+                next_row[j] = last_row[j - 1] + last_row[j];
+            }
+            last_row = next_row;
+        }
+        last_row
+    }
+    generate(row_index as usize)
+}
+
+pub fn rotate(nums: &mut Vec<i32>, mut k: i32) {
+    nums.reverse();
+    k %= nums.len() as i32;
+    let k = k as usize;
+    nums[0..k].reverse();
+    nums[k..].reverse();
+}
+
+// https://leetcode.com/problems/reverse-words-in-a-string-ii/description/
+pub fn reverse_words_ii(s: &mut Vec<char>) {
+    fn reverse_words(s: &mut Vec<char>) {
+        let len = s.len();
+        let mut j = 0;
+        for i in 0..len {
+            if s[i] == ' ' || i == len - 1 {
+                s[j..if i == len - 1 { i + 1 } else { i }].reverse();
+                j = i + 1;
+            }
+        }
+    }
+    s.reverse();
+    reverse_words(s);
+}
+
+// https://leetcode.com/problems/reverse-words-in-a-string/description/
+pub fn reverse_words(s: String) -> String {
+    let s = s
+        .split_ascii_whitespace()
+        .filter_map(|x| {
+            let x = x.trim();
+            if x.is_empty() {
+                None
+            } else {
+                Some(format!("{} ", x))
+            }
+        })
+        .rev()
+        .flat_map(|x| x.chars().collect::<Vec<_>>())
+        .collect::<String>();
+    s.trim().to_string()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -101,5 +159,12 @@ mod test {
     #[test]
     fn test472() {
         println!("{:?}", generate(5)); // [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]
+    }
+
+    #[test]
+    fn test473() {
+        let mut s = "  hello world  ".chars().collect();
+        reverse_words_ii(&mut s);
+        println!("{:?}", s);s
     }
 }
