@@ -49,6 +49,25 @@ pub fn expressive_words(s: String, words: Vec<String>) -> i32 {
     cnt
 }
 
+pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
+    let mut triangle = vec![];
+    triangle.push(vec![1]);
+
+    for row_num in 1..num_rows as usize {
+        let mut row = vec![1];
+        let prev_row = triangle[row_num - 1].clone();
+
+        for j in 1..row_num {
+            row.push(prev_row[j - 1] + prev_row[j]);
+        }
+
+        row.push(1);
+        triangle.push(row);
+    }
+
+    triangle
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -77,5 +96,10 @@ mod test {
             "{:?}",
             expressive_words("aaa".to_string(), vec!["aaaa".to_string()])
         ); // 0
+    }
+
+    #[test]
+    fn test472() {
+        println!("{:?}", generate(5)); // [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]
     }
 }
