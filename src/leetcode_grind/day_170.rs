@@ -165,6 +165,6 @@ mod test {
     fn test473() {
         let mut s = "  hello world  ".chars().collect();
         reverse_words_ii(&mut s);
-        println!("{:?}", s);s
+        println!("{:?}", s);
     }
 }
