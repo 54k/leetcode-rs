@@ -158,10 +158,8 @@ pub fn longest_substring(s: String, k: i32) -> i32 {
             }
             true
         }
-
         let mut ans = 0;
         let s = s.chars().collect::<Vec<_>>();
-
         for i in 0..s.len() {
             let mut freq = vec![0; 26];
             for j in i..s.len() {
@@ -172,10 +170,29 @@ pub fn longest_substring(s: String, k: i32) -> i32 {
                 }
             }
         }
-
         ans as i32
     }
-    brute_force(s, k)
+    fn divide_and_conquer(s: String, k: i32) -> i32 {
+        fn go(s: &Vec<char>, start: usize, end: usize, k: i32) -> i32 {
+            let mut freq = vec![0; 26];
+            for i in start..end {
+                freq[s[i] as usize - 'a' as usize] += 1;
+            }
+            for mid in start..end {
+                if freq[s[mid] as usize - 'a' as usize] >= k {
+                    continue;
+                }
+                let mut mid_next = mid + 1;
+                while mid_next < s.len() && freq[s[mid_next] as usize - 'a' as usize] < k {
+                    mid_next += 1;
+                }
+                return go(s, start, mid, k).max(go(s, mid_next, end, k));
+            }
+            end as i32 - start as i32
+        }
+        go(&s.chars().collect(), 0, s.len(), k)
+    }
+    divide_and_conquer(s, k)
 }
 
 #[cfg(test)]
