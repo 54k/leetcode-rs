@@ -89,6 +89,26 @@ impl ATM {
     }
 }
 
+// https://leetcode.com/problems/target-sum/description/
+pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
+    fn dfs(nums: &Vec<i32>, target: i32, i: usize, ans: &mut i32) {
+        if i > nums.len() - 1 {
+            return;
+        }
+
+        if target == 0 {
+            *ans += 1;
+            return;
+        }
+        
+        dfs(nums, target + nums[i], i + 1, ans);
+        dfs(nums, target - nums[i], i + 1, ans);
+    }
+    let mut ans = 0;
+    dfs(&nums, target, 0, &mut ans);
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -122,5 +142,10 @@ mod test {
         let mut atm = ATM::new();
         atm.deposit(vec![0, 10, 0, 3, 0]);
         println!("{:?}", atm.withdraw(500)); // [0,2,0,2,0]
+    }
+
+    #[test]
+    fn test478() {
+        println!("{}", find_target_sum_ways(vec![1, 1, 1, 1, 1], 3)); // 5
     }
 }
