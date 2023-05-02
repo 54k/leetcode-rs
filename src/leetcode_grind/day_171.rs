@@ -47,6 +47,48 @@ pub fn walls_and_gates(rooms: &mut Vec<Vec<i32>>) {
     }
 }
 
+// https://leetcode.com/problems/design-an-atm-machine/
+struct ATM {
+    store: [(i32, i64); 5],
+}
+
+impl ATM {
+    fn new() -> Self {
+        Self {
+            store: [(500, 0), (200, 0), (100, 0), (50, 0), (20, 0)],
+        }
+    }
+
+    fn deposit(&mut self, banknotes_count: Vec<i32>) {
+        for (i, cnt) in banknotes_count.into_iter().rev().enumerate() {
+            self.store[i].1 += cnt as i64;
+        }
+    }
+
+    fn withdraw(&mut self, mut amount: i32) -> Vec<i32> {
+        let mut ans = vec![0; 5];
+        let mut store = self.store.clone();
+
+        for (i, (amt, amt_cnt)) in store.iter_mut().enumerate() {
+            if *amt > amount || *amt_cnt == 0 {
+                continue;
+            }
+
+            let cnt = (amount as i64 / *amt as i64).min(*amt_cnt);
+            *amt_cnt -= cnt;
+
+            ans[5 - i - 1] = cnt as i32;
+            amount -= cnt as i32 * *amt;
+        }
+
+        if amount > 0 {
+            return vec![-1];
+        }
+        self.store = store;
+        ans
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -66,5 +108,19 @@ mod test {
         ];
         walls_and_gates(&mut rooms);
         println!("{:?}", rooms);
+    }
+
+    #[test]
+    fn test476() {
+        let mut atm = ATM::new();
+        atm.deposit(vec![0, 0, 1, 2, 1]);
+        println!("{:?}", atm.withdraw(600));
+        atm.deposit(vec![0, 1, 0, 1, 1]);
+        println!("{:?}", atm.withdraw(600));
+        println!("{:?}", atm.withdraw(550));
+
+        let mut atm = ATM::new();
+        atm.deposit(vec![0, 10, 0, 3, 0]);
+        println!("{:?}", atm.withdraw(500)); // [0,2,0,2,0]
     }
 }
