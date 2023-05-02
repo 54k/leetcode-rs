@@ -91,22 +91,57 @@ impl ATM {
 
 // https://leetcode.com/problems/target-sum/description/
 pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
-    fn dfs(nums: &Vec<i32>, target: i32, i: usize, ans: &mut i32) {
-        if i > nums.len() - 1 {
-            return;
+    fn using_recursion(nums: Vec<i32>, target: i32) -> i32 {
+        fn dfs(
+            nums: &Vec<i32>,
+            target: i32,
+            sum: i32,
+            i: usize,
+            total: i32,
+            cache: &mut Vec<Vec<i32>>,
+        ) -> i32 {
+            if i == nums.len() {
+                if sum == target {
+                    1
+                } else {
+                    0
+                }
+            } else {
+                if cache[i][(sum + total) as usize] == i32::MIN {
+                    let ads = dfs(nums, target, sum + nums[i], i + 1, total, cache);
+                    let rems = dfs(nums, target, sum - nums[i], i + 1, total, cache);
+                    cache[i][(sum + total) as usize] = ads + rems;
+                }
+                cache[i][(sum + total) as usize]
+            }
+        }
+        let total = nums.iter().copied().sum::<i32>();
+        let mut cache = vec![vec![i32::MIN; total as usize * 2 + 1]; nums.len()];
+        dfs(&nums, target, 0, 0, total, &mut cache)
+    }
+
+    fn using_dp(nums: Vec<i32>, target: i32) -> i32 {
+        let total = nums.iter().copied().sum::<i32>();
+        let mut dp = vec![vec![0; total as usize * 2 + 1]; nums.len()];
+        dp[0][(nums[0] + total) as usize] = 1;
+        dp[0][(-nums[0] + total) as usize] += 1;
+
+        for i in 1..nums.len() {
+            for sum in -total..=total {
+                if dp[i - 1][(sum + total) as usize] > 0 {
+                    dp[i][(sum + nums[i] + total) as usize] += dp[i - 1][(sum + total) as usize];
+                    dp[i][(sum - nums[i] + total) as usize] += dp[i - 1][(sum + total) as usize];
+                }
+            }
         }
 
-        if target == 0 {
-            *ans += 1;
-            return;
+        if target.abs() > total {
+            0
+        } else {
+            dp[nums.len() - 1][(target + total) as usize]
         }
-        
-        dfs(nums, target + nums[i], i + 1, ans);
-        dfs(nums, target - nums[i], i + 1, ans);
     }
-    let mut ans = 0;
-    dfs(&nums, target, 0, &mut ans);
-    ans
+    using_dp(nums, target)
 }
 
 #[cfg(test)]
