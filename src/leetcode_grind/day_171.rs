@@ -144,6 +144,40 @@ pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
     using_dp(nums, target)
 }
 
+// https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/description/
+pub fn longest_substring(s: String, k: i32) -> i32 {
+    fn brute_force(s: String, k: i32) -> i32 {
+        fn is_okay(v: &Vec<i32>, k: i32) -> bool {
+            for i in 0..26 {
+                if v[i] == 0 {
+                    continue;
+                }
+                if v[i] < k {
+                    return false;
+                }
+            }
+            true
+        }
+
+        let mut ans = 0;
+        let s = s.chars().collect::<Vec<_>>();
+
+        for i in 0..s.len() {
+            let mut freq = vec![0; 26];
+            for j in i..s.len() {
+                freq[s[j] as usize - 'a' as usize] += 1;
+
+                if is_okay(&freq, k) {
+                    ans = ans.max(j - i + 1);
+                }
+            }
+        }
+
+        ans as i32
+    }
+    brute_force(s, k)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -182,5 +216,10 @@ mod test {
     #[test]
     fn test478() {
         println!("{}", find_target_sum_ways(vec![1, 1, 1, 1, 1], 3)); // 5
+    }
+
+    #[test]
+    fn test479() {
+        println!("{}", longest_substring("ababbc".to_string(), 2)); // 5
     }
 }
