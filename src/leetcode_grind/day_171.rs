@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 // https://leetcode.com/problems/sign-of-the-product-of-an-array/
 pub fn array_sign(nums: Vec<i32>) -> i32 {
     let mut min = 0;
@@ -192,7 +190,48 @@ pub fn longest_substring(s: String, k: i32) -> i32 {
         }
         go(&s.chars().collect(), 0, s.len(), k)
     }
-    divide_and_conquer(s, k)
+    fn sliding_window(s: String, k: i32) -> i32 {
+        let uniq = s.chars().collect::<std::collections::HashSet<char>>().len();
+        let s = s.chars().collect::<Vec<_>>();
+        let mut result = 0;
+        for curr_unique in 1..=uniq {
+            let mut freq = vec![0; 26];
+            let mut window_start = 0;
+            let mut window_end = 0;
+            let mut unique = 0;
+            let mut idx = 0;
+            let mut count_at_least_k = 0;
+
+            while window_end < s.len() {
+                if unique <= curr_unique {
+                    idx = s[window_end] as usize - 'a' as usize;
+                    if freq[idx] == 0 {
+                        unique += 1;
+                    }
+                    freq[idx] += 1;
+                    if freq[idx] == k {
+                        count_at_least_k += 1;
+                    }
+                    window_end += 1;
+                } else {
+                    idx = s[window_start] as usize - 'a' as usize;
+                    if freq[idx] == k {
+                        count_at_least_k -= 1;
+                    }
+                    freq[idx] -= 1;
+                    if freq[idx] == 0 {
+                        unique -= 1;
+                    }
+                    window_start += 1;
+                }
+                if unique == curr_unique && unique == count_at_least_k {
+                    result = result.max(window_end - window_start);
+                }
+            }
+        }
+        result as i32
+    }
+    sliding_window(s, k)
 }
 
 #[cfg(test)]
