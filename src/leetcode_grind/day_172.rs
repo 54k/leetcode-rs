@@ -300,7 +300,42 @@ pub fn furthest_building(heights: Vec<i32>, mut bricks: i32, ladders: i32) -> i3
         heights.len() as i32 - 1
     }
 
-    max_heap_approach(heights, bricks, ladders)
+    fn bin_search_approach(heights: Vec<i32>, bricks: i32, ladders: i32) -> i32 {
+        fn is_reachable(heights: &Vec<i32>, idx: usize, mut bricks: i32, mut ladders: i32) -> bool {
+            let mut climbs = vec![];
+            for i in 0..idx {
+                let climb = heights[i + 1] - heights[i];
+                if climb > 0 {
+                    climbs.push(climb);
+                }
+            }
+            climbs.sort();
+            for climb in climbs {
+                if bricks > climb {
+                    bricks -= climb;
+                } else if ladders > 0 {
+                    ladders -= 1;
+                } else {
+                    return false;
+                }
+            }
+            true
+        }
+
+        let mut lo = 0 as i32;
+        let mut hi = heights.len() as i32 - 1;
+        while lo < hi {
+            let mid = lo + (hi - lo + 1) / 2;
+            if is_reachable(&heights, mid as usize, bricks, ladders) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        lo
+    }
+
+    bin_search_approach(heights, bricks, ladders)
 }
 
 // https://leetcode.com/problems/find-median-from-data-stream/description/
