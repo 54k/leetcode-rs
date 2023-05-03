@@ -68,6 +68,59 @@ impl NestedIterator {
     }
 }
 
+// https://leetcode.com/problems/top-k-frequent-elements/description/
+pub fn top_k_frequent(nums: Vec<i32>, k: i32) -> Vec<i32> {
+    use std::collections::{BinaryHeap, HashMap};
+    let (mut map, mut heap) = (HashMap::new(), BinaryHeap::new());
+    for n in nums {
+        *map.entry(n).or_insert(0) += 1;
+    }
+    for (key, v) in map {
+        heap.push((-v, key));
+        if heap.len() > k as usize {
+            heap.pop();
+        }
+    }
+    heap.into_vec().into_iter().map(|(_, k)| k).collect()
+}
+
+// https://leetcode.com/problems/the-k-weakest-rows-in-a-matrix/description/
+pub fn k_weakest_rows(mat: Vec<Vec<i32>>, mut k: i32) -> Vec<i32> {
+    fn get_strength(mat: &Vec<i32>) -> i32 {
+        let mut lo = 0;
+        let mut hi = mat.len();
+        while lo < hi {
+            let mid = (lo + hi) / 2;
+            if mat[mid] == 1 {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        lo as i32
+    }
+
+    use std::collections::BinaryHeap;
+
+    let mut heap = BinaryHeap::new();
+    for (i, row) in mat.into_iter().enumerate() {
+        let strength = get_strength(&row);
+        let item = (strength, i as i32);
+
+        heap.push(item);
+        if heap.len() > k as usize {
+            heap.pop();
+        }
+    }
+
+    let mut res = vec![0; k as usize];
+    while let Some(v) = heap.pop() {
+        res[k as usize - 1] = v.1;
+        k -= 1;
+    }
+    res
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -89,5 +142,22 @@ mod test {
         println!("{}", it.next()); // 1
         println!("{}", it.next()); // 2
         println!("{}", it.next()); // 3
+    }
+
+    #[test]
+    fn test482() {
+        println!(
+            "{:?}",
+            k_weakest_rows(
+                vec![
+                    vec![1, 1, 1, 0, 0, 0, 0],
+                    vec![1, 1, 1, 1, 1, 1, 0],
+                    vec![0, 0, 0, 0, 0, 0, 0],
+                    vec![1, 1, 1, 0, 0, 0, 0],
+                    vec![1, 1, 1, 1, 1, 1, 1]
+                ],
+                4
+            )
+        ); // 2,0,3,1
     }
 }
