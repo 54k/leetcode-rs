@@ -121,6 +121,192 @@ pub fn k_weakest_rows(mat: Vec<Vec<i32>>, mut k: i32) -> Vec<i32> {
     res
 }
 
+// https://leetcode.com/problems/last-stone-weight/description/
+pub fn last_stone_weight(stones: Vec<i32>) -> i32 {
+    use std::collections::BinaryHeap;
+    let mut heap = BinaryHeap::new();
+    for s in stones {
+        heap.push(s);
+    }
+
+    while heap.len() > 1 {
+        let f = heap.pop().unwrap();
+        let s = heap.pop().unwrap();
+        if f != s {
+            heap.push(f - s);
+        }
+    }
+
+    heap.pop().unwrap_or(0)
+}
+
+// https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/description/
+pub fn kth_smallest(matrix: Vec<Vec<i32>>, k: i32) -> i32 {
+    fn using_heap(matrix: Vec<Vec<i32>>, mut k: i32) -> i32 {
+        use std::collections::BinaryHeap;
+        let mut heap = BinaryHeap::new();
+        for i in 0..matrix.len() {
+            heap.push((-matrix[i][0], i, 0));
+        }
+        let mut element = *heap.peek().unwrap();
+        while k > 0 {
+            element = heap.pop().unwrap();
+            let (r, c) = (element.1, element.2);
+            if c < matrix.len() - 1 {
+                heap.push((-matrix[r][c + 1], r, c + 1));
+            }
+
+            k -= 1;
+        }
+        -element.0
+    }
+    fn using_binsearch(matrix: Vec<Vec<i32>>, k: i32) -> i32 {
+        fn count_less_equal(
+            matrix: &Vec<Vec<i32>>,
+            mid: i32,
+            small_large_pair: &mut (i32, i32),
+        ) -> i32 {
+            let mut count = 0;
+            let n = matrix.len() as i32;
+            let mut row = n - 1;
+            let mut col = 0;
+
+            while row >= 0 && col < n {
+                if matrix[row as usize][col as usize] > mid {
+                    small_large_pair.1 = small_large_pair.1.min(matrix[row as usize][col as usize]);
+                    row -= 1;
+                } else {
+                    small_large_pair.0 = small_large_pair.0.max(matrix[row as usize][col as usize]);
+                    count += row + 1;
+                    col += 1;
+                }
+            }
+            count
+        }
+        let n = matrix.len();
+        let mut left = matrix[0][0];
+        let mut right = matrix[n - 1][n - 1];
+        while left < right {
+            let mid = left + (right - left) / 2;
+            let mut small_large_pair = (matrix[0][0], matrix[n - 1][n - 1]);
+            let count = count_less_equal(&matrix, mid, &mut small_large_pair);
+            if count == k {
+                return small_large_pair.0;
+            }
+            if count < k {
+                left = small_large_pair.1;
+            } else {
+                right = small_large_pair.0;
+            }
+        }
+        left
+    }
+    using_binsearch(matrix, k)
+}
+
+// https://leetcode.com/problems/search-a-2d-matrix/editorial/
+pub fn search_matrix_i(matrix: Vec<Vec<i32>>, target: i32) -> bool {
+    let m = matrix.len() as i32;
+    if m == 0 {
+        return false;
+    }
+    let n = matrix[0].len() as i32;
+
+    let (mut left, mut right) = (0, m * n - 1);
+    while left <= right {
+        let pivot_idx = (left + right) / 2;
+        let pivot_elem = matrix[(pivot_idx / n) as usize][(pivot_idx % n) as usize];
+        if target == pivot_elem {
+            return true;
+        } else {
+            if target < pivot_elem {
+                right = pivot_idx - 1;
+            } else {
+                left = pivot_idx + 1;
+            }
+        }
+    }
+    false
+}
+
+// https://leetcode.com/problems/search-a-2d-matrix-ii/description/
+pub fn search_matrix_ii(matrix: Vec<Vec<i32>>, target: i32) -> bool {
+    fn using_space_reduction(matrix: Vec<Vec<i32>>, target: i32) -> bool {
+        let mut row = matrix.len() as i32 - 1;
+        let mut col = 0i32;
+
+        while row >= 0 && col < matrix[0].len() as i32 {
+            if matrix[row as usize][col as usize] > target {
+                row -= 1;
+            } else if matrix[row as usize][col as usize] < target {
+                col += 1;
+            } else {
+                return true;
+            }
+        }
+        false
+    }
+    using_space_reduction(matrix, target)
+}
+
+// https://leetcode.com/problems/furthest-building-you-can-reach/description/
+pub fn furthest_building(heights: Vec<i32>, mut bricks: i32, ladders: i32) -> i32 {
+    use std::collections::BinaryHeap;
+    let mut ladder_allocations = BinaryHeap::new();
+    for i in 0..heights.len() - 1 {
+        let climb = heights[i + 1] - heights[i];
+        if climb <= 0 {
+            continue;
+        }
+
+        ladder_allocations.push(-climb);
+        // If we haven't gone over the number of ladders, nothing else to do.
+        if ladder_allocations.len() as i32 <= ladders {
+            continue;
+        }
+        // otherwise, we will need to take a climb out of ladder_allocations
+        bricks += ladder_allocations.pop().unwrap();
+        if bricks < 0 {
+            return i as i32;
+        }
+    }
+    return heights.len() as i32 - 1;
+}
+
+// https://leetcode.com/problems/find-median-from-data-stream/description/
+use std::collections::BinaryHeap;
+
+struct MedianFinder {
+    min: BinaryHeap<i32>,
+    max: BinaryHeap<i32>,
+}
+
+impl MedianFinder {
+
+    fn new() -> Self {
+        Self {
+            min: BinaryHeap::new(),
+            max: BinaryHeap::new(),
+        }
+    }
+    
+    fn add_num(&mut self, num: i32) {
+        self.min.push(num);
+        self.max.push(-self.min.pop().unwrap());
+        if self.max.len() > self.min.len() {
+            self.min.push(-self.max.pop().unwrap());
+        }
+    }
+    
+    fn find_median(&self) -> f64 {
+        if self.min.len() > self.max.len() {
+            (*self.min.peek().unwrap()) as f64
+        } else {
+            ((*self.min.peek().unwrap()) as f64 - (*self.max.peek().unwrap()) as f64) / 2.0
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -159,5 +345,15 @@ mod test {
                 4
             )
         ); // 2,0,3,1
+    }
+
+    #[test]
+    fn test483() {
+        println!(
+            "{}",
+            kth_smallest(vec![vec![1, 5, 9], vec![10, 11, 13], vec![12, 13, 15]], 8)
+        ); // 13
+
+        println!("{}", kth_smallest(vec![vec![-5]], 1)); // -5
     }
 }
