@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 // https://leetcode.com/problems/sign-of-the-product-of-an-array/
 pub fn array_sign(nums: Vec<i32>) -> i32 {
     let mut min = 0;
