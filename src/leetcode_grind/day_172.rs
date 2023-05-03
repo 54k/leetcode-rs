@@ -251,26 +251,56 @@ pub fn search_matrix_ii(matrix: Vec<Vec<i32>>, target: i32) -> bool {
 
 // https://leetcode.com/problems/furthest-building-you-can-reach/description/
 pub fn furthest_building(heights: Vec<i32>, mut bricks: i32, ladders: i32) -> i32 {
-    use std::collections::BinaryHeap;
-    let mut ladder_allocations = BinaryHeap::new();
-    for i in 0..heights.len() - 1 {
-        let climb = heights[i + 1] - heights[i];
-        if climb <= 0 {
-            continue;
-        }
+    fn min_heap_approach(heights: Vec<i32>, mut bricks: i32, ladders: i32) -> i32 {
+        use std::collections::BinaryHeap;
+        let mut ladder_allocations = BinaryHeap::new();
+        for i in 0..heights.len() - 1 {
+            let climb = heights[i + 1] - heights[i];
+            if climb <= 0 {
+                continue;
+            }
 
-        ladder_allocations.push(-climb);
-        // If we haven't gone over the number of ladders, nothing else to do.
-        if ladder_allocations.len() as i32 <= ladders {
-            continue;
+            ladder_allocations.push(-climb);
+            // If we haven't gone over the number of ladders, nothing else to do.
+            if ladder_allocations.len() as i32 <= ladders {
+                continue;
+            }
+            // otherwise, we will need to take a climb out of ladder_allocations
+            bricks += ladder_allocations.pop().unwrap();
+            if bricks < 0 {
+                return i as i32;
+            }
         }
-        // otherwise, we will need to take a climb out of ladder_allocations
-        bricks += ladder_allocations.pop().unwrap();
-        if bricks < 0 {
-            return i as i32;
-        }
+        return heights.len() as i32 - 1;
     }
-    return heights.len() as i32 - 1;
+
+    fn max_heap_approach(heights: Vec<i32>, mut bricks: i32, mut ladders: i32) -> i32 {
+        use std::collections::BinaryHeap;
+        let mut bricks_allocations = BinaryHeap::new();
+        for i in 0..heights.len() - 1 {
+            let climb = heights[i + 1] - heights[i];
+            if climb <= 0 {
+                continue;
+            }
+
+            bricks_allocations.push(climb);
+            bricks -= climb;
+
+            if bricks >= 0 {
+                continue;
+            }
+
+            if ladders == 0 {
+                return i as i32;
+            }
+
+            bricks += bricks_allocations.pop().unwrap();
+            ladders -= 1;
+        }
+        heights.len() as i32 - 1
+    }
+
+    max_heap_approach(heights, bricks, ladders)
 }
 
 // https://leetcode.com/problems/find-median-from-data-stream/description/
@@ -282,14 +312,13 @@ struct MedianFinder {
 }
 
 impl MedianFinder {
-
     fn new() -> Self {
         Self {
             min: BinaryHeap::new(),
             max: BinaryHeap::new(),
         }
     }
-    
+
     fn add_num(&mut self, num: i32) {
         self.min.push(num);
         self.max.push(-self.min.pop().unwrap());
@@ -297,7 +326,7 @@ impl MedianFinder {
             self.min.push(-self.max.pop().unwrap());
         }
     }
-    
+
     fn find_median(&self) -> f64 {
         if self.min.len() > self.max.len() {
             (*self.min.peek().unwrap()) as f64
