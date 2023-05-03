@@ -86,8 +86,8 @@ mod test {
                 NestedInteger::List(vec![NestedInteger::Int(3)]),
             ]),
         ]);
-        println!("{}", it.next());
-        println!("{}", it.next());
-        println!("{}", it.next());
+        println!("{}", it.next()); // 1
+        println!("{}", it.next()); // 2
+        println!("{}", it.next()); // 3
     }
 }
