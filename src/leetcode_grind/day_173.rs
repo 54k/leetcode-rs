@@ -1,3 +1,5 @@
+use std::cmp::min;
+
 // https://leetcode.com/problems/richest-customer-wealth/
 pub fn maximum_wealth(accounts: Vec<Vec<i32>>) -> i32 {
     accounts
@@ -52,8 +54,34 @@ pub fn restaurant_customers(arr: Vec<(i32, i32)>) -> i32 {
 }
 
 // https://leetcode.com/problems/grumpy-bookstore-owner/
+// https://leetcode.com/problems/grumpy-bookstore-owner/solutions/299230/java-python-3-sliding-window/
 pub fn max_satisfied(customers: Vec<i32>, grumpy: Vec<i32>, minutes: i32) -> i32 {
-    todo!();
+    // public int maxSatisfied(int[] customers, int[] grumpy, int X) {
+    //     int satisfied = 0, maxMakeSatisfied = 0;
+    //     for (int i = 0, winOfMakeSatisfied = 0; i < grumpy.length; ++i) {
+    //         if (grumpy[i] == 0) { satisfied += customers[i]; }
+    //         else { winOfMakeSatisfied += customers[i]; }
+    //         if (i >= X) {
+    //             winOfMakeSatisfied -= grumpy[i - X] * customers[i - X];
+    //         }
+    //         maxMakeSatisfied = Math.max(winOfMakeSatisfied, maxMakeSatisfied);
+    //     }
+    //     return satisfied + maxMakeSatisfied;
+    // }
+
+    let (mut satisfied, mut win_max_satisfied, mut max_satisfied) = (0, 0, 0);
+    for i in 0..grumpy.len() {
+        if grumpy[i] == 0 {
+            satisfied += customers[i];
+        } else {
+            win_max_satisfied += customers[i];
+        }
+        if i >= minutes as usize {
+            win_max_satisfied -= grumpy[i - minutes as usize] * customers[i - minutes as usize];
+        }
+        max_satisfied = max_satisfied.max(win_max_satisfied);
+    }
+    satisfied + max_satisfied
 }
 
 // https://leetcode.com/problems/decoded-string-at-index/
@@ -78,5 +106,21 @@ mod test {
     #[test]
     fn test484() {
         println!("{}", restaurant_customers(vec![(5, 8), (2, 4), (3, 9)])); // 2
+    }
+
+    #[test]
+    fn test485() {
+        println!("{}", max_satisfied(vec![4, 10, 10], vec![1, 1, 0], 2)); // 24
+
+        println!(
+            "{}",
+            max_satisfied(
+                vec![1, 0, 1, 2, 1, 1, 7, 5],
+                vec![0, 1, 0, 1, 0, 1, 0, 1],
+                3
+            )
+        ); // 16
+
+        println!("{}", max_satisfied(vec![1], vec![0], 1)); // 16
     }
 }
