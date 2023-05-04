@@ -20,7 +20,7 @@ pub fn restaurant_customers(arr: Vec<(i32, i32)>) -> i32 {
         }
         let mut cur = 0;
         let mut ans = 0;
-        for (k, v) in map {
+        for (_, v) in map {
             cur += v;
             ans = ans.max(cur);
         }
@@ -48,7 +48,7 @@ pub fn restaurant_customers(arr: Vec<(i32, i32)>) -> i32 {
         }
         ans
     }
-    arr_approach(arr)
+    map_approach(arr)
 }
 
 // https://leetcode.com/problems/grumpy-bookstore-owner/
@@ -113,12 +113,96 @@ pub fn decode_at_index(s: String, k: i32) -> String {
 
 // https://leetcode.com/problems/line-reflection/
 pub fn is_reflected(points: Vec<Vec<i32>>) -> bool {
-    todo!();
+    use std::collections::HashSet;
+    let mut m_points = HashSet::new();
+    let (mut min_x, mut max_x) = (i32::MAX, i32::MIN);
+    for p in &points {
+        let (x, y) = (p[0], p[1]);
+        min_x = min_x.min(x);
+        max_x = max_x.max(x);
+        m_points.insert((x, y));
+    }
+    let mid = min_x + max_x;
+
+    for p in &points {
+        let (x, y) = (p[0], p[1]);
+        let delta_x = mid - x;
+        if !m_points.contains(&(delta_x, y)) {
+            return false;
+        }
+    }
+
+    true
 }
 
 // https://leetcode.com/problems/total-cost-to-hire-k-workers/description/
 pub fn total_cost(costs: Vec<i32>, k: i32, candidates: i32) -> i64 {
-    todo!();
+    fn using_2_heaps(costs: Vec<i32>, k: i32, candidates: i32) -> i64 {
+        use std::collections::BinaryHeap;
+        let mut head = BinaryHeap::new();
+        let mut tail = BinaryHeap::new();
+        for i in 0..candidates as usize {
+            head.push(-costs[i]);
+        }
+        for i in (candidates as usize).max(costs.len() - candidates as usize)..costs.len() {
+            tail.push(-costs[i]);
+        }
+        let mut cost = 0;
+        let mut i = candidates as usize;
+        let mut j = costs.len() - candidates as usize - 1;
+
+        for _ in 0..k {
+            if tail.is_empty()
+                || (!head.is_empty() && -head.peek().unwrap() <= -tail.peek().unwrap())
+            {
+                cost += -head.pop().unwrap() as i64;
+                if i < costs.len() && i <= j {
+                    head.push(-costs[i]);
+                    i += 1;
+                }
+            } else {
+                cost += -tail.pop().unwrap() as i64;
+                if i <= j {
+                    tail.push(-costs[j]);
+                    j -= 1;
+                }
+            }
+        }
+        cost
+    }
+    // meh, doesn't work, thanks to Rust's max-heaps
+    fn using_1_heap(costs: Vec<i32>, k: i32, candidates: i32) -> i64 {
+        use std::collections::BinaryHeap;
+        let mut heap = BinaryHeap::new();
+        for i in 0..candidates as usize {
+            heap.push((-costs[i], 0));
+        }
+        for i in (candidates as usize).max(costs.len() - candidates as usize)..costs.len() {
+            heap.push((-costs[i], 1));
+        }
+
+        let mut cost = 0;
+        let mut i = candidates as usize;
+        let mut j = costs.len() - candidates as usize - 1;
+
+        for _ in 0..k {
+            let (cur_cost, cur_section_id) = heap.pop().unwrap();
+            cost += -cur_cost as i64;
+            if i <= j {
+                if cur_section_id == 0 {
+                    if i < costs.len() {
+                        heap.push((-costs[i], 0));
+                        i += 1;
+                    }
+                } else {
+                    heap.push((-costs[j], 1));
+                    j -= 1;
+                }
+            }
+        }
+        cost
+    }
+    using_2_heaps(costs, k, candidates)
 }
 
 #[cfg(test)]
@@ -154,5 +238,21 @@ mod test {
             "{}",
             decode_at_index("a2345678999999999999999".to_string(), 1)
         ); // a
+    }
+
+    #[test]
+    fn test488() {
+        println!("{}", is_reflected(vec![vec![1, 1], vec![-1, -1]])); // false
+        println!("{}", is_reflected(vec![vec![1, 1], vec![-1, 1]])); // true
+        println!(
+            "{}",
+            is_reflected(vec![vec![-16, 1], vec![16, 1], vec![16, 1]])
+        ); // true
+    }
+
+    #[test]
+    fn test489() {
+        println!("{}", total_cost(vec![17, 12, 10, 2, 7, 2, 11, 20, 8], 3, 4)); // 11
+        println!("{}", total_cost(vec![1, 2, 4, 1], 3, 3)); // 4
     }
 }
