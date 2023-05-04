@@ -1,5 +1,3 @@
-use std::cmp::min;
-
 // https://leetcode.com/problems/richest-customer-wealth/
 pub fn maximum_wealth(accounts: Vec<Vec<i32>>) -> i32 {
     accounts
@@ -86,7 +84,31 @@ pub fn max_satisfied(customers: Vec<i32>, grumpy: Vec<i32>, minutes: i32) -> i32
 
 // https://leetcode.com/problems/decoded-string-at-index/
 pub fn decode_at_index(s: String, k: i32) -> String {
-    todo!();
+    let mut size = 0;
+    let mut k = k as i64;
+    let s = s.chars().collect::<Vec<char>>();
+
+    for &ch in &s {
+        if char::is_digit(ch, 10) {
+            size *= ch as i64 - '0' as i64;
+        } else {
+            size += 1;
+        }
+    }
+
+    for ch in s.into_iter().rev() {
+        k %= size;
+        if k == 0 && char::is_ascii_alphabetic(&ch) {
+            return format!("{}", ch);
+        }
+
+        if char::is_digit(ch, 10) {
+            size /= ch as i64 - '0' as i64;
+        } else {
+            size -= 1;
+        }
+    }
+    unreachable!();
 }
 
 // https://leetcode.com/problems/line-reflection/
@@ -122,5 +144,15 @@ mod test {
         ); // 16
 
         println!("{}", max_satisfied(vec![1], vec![0], 1)); // 16
+    }
+
+    #[test]
+    fn test486() {
+        println!("{}", decode_at_index("leet2code3".to_string(), 10)); // o
+        println!("{}", decode_at_index("ha22".to_string(), 5)); // h
+        println!(
+            "{}",
+            decode_at_index("a2345678999999999999999".to_string(), 1)
+        ); // a
     }
 }
