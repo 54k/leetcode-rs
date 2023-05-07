@@ -18,7 +18,7 @@ type PeekingIterator struct {
 	it    *Iterator
 }
 
-func Constructor(iter *Iterator) *PeekingIterator {
+func constructor(iter *Iterator) *PeekingIterator {
 	return &PeekingIterator{
 		stack: make([]int, 0),
 		it:    iter,
