@@ -62,3 +62,5 @@ https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/desc
 https://leetcode.com/problems/trapping-rain-water-ii/description/
 
 https://leetcode.com/problems/minimize-max-distance-to-gas-station/description/
+
+https://leetcode.com/problems/longest-increasing-subsequence-ii/solutions/2560085/python-explanation-with-pictures-segment-tree/
