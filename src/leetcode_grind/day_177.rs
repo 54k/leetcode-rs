@@ -92,8 +92,15 @@ impl ValidWordAbbr {
     }
 }
 
+// https://leetcode.com/problems/generalized-abbreviation/
+pub fn generate_abbreviations(word: String) -> Vec<String> {
+    todo!()
+}
+
 // https://leetcode.com/problems/game-of-life/description/
-pub fn game_of_life(board: &mut Vec<Vec<i32>>) {}
+pub fn game_of_life(board: &mut Vec<Vec<i32>>) {
+    todo!()
+}
 
 #[cfg(test)]
 mod test {
