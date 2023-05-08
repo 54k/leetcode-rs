@@ -94,7 +94,29 @@ impl ValidWordAbbr {
 
 // https://leetcode.com/problems/generalized-abbreviation/
 pub fn generate_abbreviations(word: String) -> Vec<String> {
-    todo!()
+    fn backtrack(word: &Vec<char>, ans: &mut Vec<String>, cur: &mut String, i: usize, k: usize) {
+        let n = cur.len();
+        if i == word.len() {
+            if k != 0 {
+                cur.push_str(&format!("{}", k));
+            }
+            ans.push(cur.clone());
+        } else {
+            backtrack(word, ans, cur, i + 1, k + 1);
+            if k != 0 {
+                cur.push_str(&format!("{}", k));
+            }
+            cur.push(word[i]);
+            backtrack(word, ans, cur, i + 1, 0);
+        }
+        while cur.len() != n {
+            cur.pop();
+        }
+    }
+    let word = word.chars().collect::<Vec<_>>();
+    let mut ans = vec![];
+    backtrack(&word, &mut ans, &mut String::new(), 0, 0);
+    ans
 }
 
 // https://leetcode.com/problems/game-of-life/description/
