@@ -121,7 +121,51 @@ pub fn generate_abbreviations(word: String) -> Vec<String> {
 
 // https://leetcode.com/problems/game-of-life/description/
 pub fn game_of_life(board: &mut Vec<Vec<i32>>) {
-    todo!()
+    let neighbors = vec![0, 1, -1];
+    let rows = board.len();
+    let cols = board[0].len();
+
+    for row in 0..rows {
+        for col in 0..cols {
+            let mut live_neighbors = 0;
+
+            for i in 0..3 {
+                for j in 0..3 {
+                    if !(neighbors[i] == 0 && neighbors[j] == 0) {
+                        let r = row as i32 + neighbors[i];
+                        let c = col as i32 + neighbors[j];
+
+                        if r < rows as i32
+                            && r >= 0
+                            && c < cols as i32
+                            && c >= 0
+                            && board[r as usize][c as usize].abs() == 1
+                        {
+                            live_neighbors += 1;
+                        }
+                    }
+                }
+            }
+            // rule 1 or rule 3
+            if board[row][col] == 1 && (live_neighbors < 2 || live_neighbors > 3) {
+                board[row][col] = -1;
+            }
+            // rule 4
+            if board[row][col] == 0 && live_neighbors == 3 {
+                board[row][col] = 2;
+            }
+        }
+    }
+
+    for row in 0..rows {
+        for col in 0..cols {
+            if board[row][col] > 0 {
+                board[row][col] = 1;
+            } else {
+                board[row][col] = 0;
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -136,6 +180,7 @@ mod test {
         println!("{}", num_ways("0000".to_string())); // 3
         println!("{}", num_ways("00000000".to_string())); // 12
     }
+
     #[test]
     fn test493() {
         let vwa = ValidWordAbbr::new(vec![
@@ -148,5 +193,12 @@ mod test {
         println!("{}", vwa.is_unique("door".to_string()));
         println!("{}", vwa.is_unique("cart".to_string()));
         println!("{}", vwa.is_unique("cake".to_string()));
+    }
+
+    #[test]
+    fn test494() {
+        let mut v = vec![vec![0, 1, 0], vec![0, 0, 1], vec![1, 1, 1], vec![0, 0, 0]];
+        game_of_life(&mut v);
+        println!("{:?}", v); // [[0,0,0],[1,0,1],[0,1,1],[0,1,0]]
     }
 }
