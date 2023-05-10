@@ -34,6 +34,11 @@ pub fn num_ways(s: String) -> i32 {
         return 0;
     }
     if total_ones == 0 {
+        // This code calculates the number of unique pairs that can be formed from a set of n elements,
+        // where n is an integer greater than or equal to 2.
+        // The formula used to calculate the number of pairs is (n-2) * (n-1) / 2.
+        // This formula is derived from the fact that each element can be paired with n-1 other elements,
+        // but we must divide by 2 to avoid counting each pair twice (i.e. (a,b) and (b,a) are the same pair).
         return ((((n - 2) * (n - 1)) / 2) % MOD) as i32;
     }
     println!("{:?}", prefix);
