@@ -123,6 +123,43 @@ pub fn closest_value(root: Option<Rc<RefCell<TreeNode>>>, target: f64) -> i32 {
     closest
 }
 
+pub fn get_skyline(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    use std::collections::{BTreeSet, HashMap};
+    let mut edge_set = BTreeSet::new();
+    for building in &buildings {
+        let (left, right) = (building[0], building[1]);
+        edge_set.insert(left);
+        edge_set.insert(right);
+    }
+    let edges = edge_set.iter().copied().collect::<Vec<i32>>();
+    let edge_idx_map = edge_set
+        .into_iter()
+        .enumerate()
+        .fold(HashMap::new(), |mut acc, (i, v)| {
+            acc.insert(v, i);
+            acc
+        });
+    let mut heights = vec![0; edge_idx_map.len()];
+    for building in &buildings {
+        let (left, right, height) = (building[0], building[1], building[2]);
+        let (left_idx, right_idx) = (edge_idx_map[&left], edge_idx_map[&right]);
+
+        for i in left_idx..right_idx {
+            heights[i] = heights[i].max(height);
+        }
+    }
+
+    let mut ans: Vec<Vec<i32>> = vec![];
+    for (i, height) in heights.into_iter().enumerate() {
+        let cur_pos = edges[i];
+
+        if ans.is_empty() || ans.last().unwrap()[1] != height {
+            ans.push(vec![cur_pos, height]);
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -130,5 +167,19 @@ mod test {
     #[test]
     fn test497() {
         println!("{:?}", search_range(vec![5, 7, 7, 8, 8, 10], 8));
+    }
+
+    #[test]
+    fn test498() {
+        println!(
+            "{:?}",
+            get_skyline(vec![
+                vec![2, 9, 10],
+                vec![3, 7, 15],
+                vec![5, 12, 12],
+                vec![15, 20, 10],
+                vec![19, 24, 8]
+            ])
+        );
     }
 }

@@ -35,28 +35,28 @@ pub fn spiral_matrix_iii(rows: i32, cols: i32, r_start: i32, c_start: i32) -> Ve
 }
 
 // https://leetcode.com/problems/spiral-matrix-iv/
-pub fn spiral_matrix(m: i32, n: i32, mut head: Option<Box<ListNode>>) -> Vec<Vec<i32>> {
-    let mut dir = vec![(0, 1), (1, 0), (0, -1), (-1, 0)];
-    let mut d = 0;
-    let (mut row, mut col) = (0, 0);
-    let mut cnt = 1;
-    let mut ans = vec![vec![-1; n as usize]; m as usize];
+// pub fn spiral_matrix(m: i32, n: i32, mut head: Option<Box<ListNode>>) -> Vec<Vec<i32>> {
+//     let mut dir = vec![(0, 1), (1, 0), (0, -1), (-1, 0)];
+//     let mut d = 0;
+//     let (mut row, mut col) = (0, 0);
+//     let mut cnt = 1;
+//     let mut ans = vec![vec![-1; n as usize]; m as usize];
 
-    while head.is_some() && cnt <= m * n {
-        let mut node = head.take().unwrap();
-        head = node.next.take();
-        cnt += 1;
-        ans[row as usize][col as usize] = node.val;
+//     while head.is_some() && cnt <= m * n {
+//         let mut node = head.take().unwrap();
+//         head = node.next.take();
+//         cnt += 1;
+//         ans[row as usize][col as usize] = node.val;
 
-        let r = (row + dir[d].0 + m) % m;
-        let c = (col + dir[d].1 + n) % n;
+//         let r = (row + dir[d].0 + m) % m;
+//         let c = (col + dir[d].1 + n) % n;
 
-        if ans[r as usize][c as usize] != -1 {
-            d = (d + 1) % 4;
-        }
+//         if ans[r as usize][c as usize] != -1 {
+//             d = (d + 1) % 4;
+//         }
 
-        row += dir[d as usize].0;
-        col += dir[d as usize].1;
-    }
-    ans
-}
+//         row += dir[d as usize].0;
+//         col += dir[d as usize].1;
+//     }
+//     ans
+// }
