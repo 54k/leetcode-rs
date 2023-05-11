@@ -49,3 +49,17 @@ pub fn max_uncrossed_lines(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
     }
     dp[n1][n2]
 }
+
+// https://leetcode.com/problems/find-peak-element/description/
+pub fn find_peak_element(nums: Vec<i32>) -> i32 {
+    let (mut lo, mut hi) = (0, nums.len() - 1);
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2;
+        if nums[mid] > nums[mid + 1] {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    lo as i32
+}
