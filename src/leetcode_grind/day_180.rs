@@ -160,6 +160,63 @@ pub fn get_skyline(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     ans
 }
 
+// https://leetcode.com/problems/range-sum-query-mutable/
+struct FenwickTree {
+    tree: Vec<i32>,
+    n: i32,
+}
+impl FenwickTree {
+    fn new(n: i32) -> Self {
+        Self {
+            tree: vec![0; n as usize + 1],
+            n,
+        }
+    }
+
+    fn update(&mut self, mut index: i32, val: i32) {
+        while index <= self.n {
+            self.tree[index as usize] += val;
+            index += index & -index;
+        }
+    }
+
+    fn get_sum(&self, mut index: i32) -> i32 {
+        let mut s = 0;
+        while index >= 1 {
+            s += self.tree[index as usize];
+            index -= index & -index;
+        }
+        s
+    }
+}
+
+struct NumArray {
+    tree: FenwickTree,
+    nums: Vec<i32>,
+}
+
+impl NumArray {
+    fn new(nums: Vec<i32>) -> Self {
+        let mut tree = FenwickTree::new(nums.len() as i32 + 1);
+        for (i, &n) in nums.iter().enumerate() {
+            tree.update(i as i32 + 1, n);
+        }
+        Self { tree, nums }
+    }
+
+    fn update(&mut self, mut index: i32, val: i32) {
+        let d = val - self.nums[index as usize];
+        self.nums[index as usize] = val;
+        self.tree.update(index + 1, d);
+    }
+
+    fn sum_range(&self, left: i32, right: i32) -> i32 {
+        let rsum = self.tree.get_sum(right + 1);
+        let lsum = self.tree.get_sum(left);
+        rsum - lsum
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -181,5 +238,13 @@ mod test {
                 vec![19, 24, 8]
             ])
         );
+    }
+
+    #[test]
+    fn test499() {
+        let mut rsq = NumArray::new(vec![1, 3, 5]);
+        println!("{:?}", rsq.sum_range(0, 2)); // 9
+        rsq.update(1, 2);
+        println!("{:?}", rsq.sum_range(0, 2)); // 8
     }
 }
