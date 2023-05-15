@@ -73,47 +73,6 @@ func sortArray(nums []int) []int {
 	return nums
 }
 
-func isValidBST(root *TreeNode) bool {
-	approach1 := func(root *TreeNode) bool {
-		var check func(root *TreeNode, lo, hi *int) bool
-		check = func(root *TreeNode, lo, hi *int) bool {
-			if root == nil {
-				return true
-			}
-
-			if lo != nil && root.Val <= *lo {
-				return false
-			}
-			if hi != nil && root.Val >= *hi {
-				return false
-			}
-
-			return check(root.Left, lo, &root.Val) && check(root.Right, &root.Val, hi)
-		}
-		return check(root, nil, nil)
-	}
-
-	approach2 := func(root *TreeNode) bool {
-		var inorder func(root *TreeNode, acc *[]int) bool
-		inorder = func(root *TreeNode, acc *[]int) bool {
-			if root != nil {
-				if !inorder(root.Left, acc) {
-					return false
-				}
-
-				if len(*acc) > 0 && (*acc)[len(*acc)-1] >= root.Val {
-					return false
-				}
-				*acc = append(*acc, root.Val)
-				return inorder(root.Right, acc)
-			}
-			return true
-		}
-		return inorder(root, &[]int{})
-	}
-	return approach1(root) == approach2(root)
-}
-
 func inorderSuccessor(root *TreeNode, p *TreeNode) *TreeNode {
 	var succ *TreeNode
 
@@ -127,4 +86,105 @@ func inorderSuccessor(root *TreeNode, p *TreeNode) *TreeNode {
 	}
 
 	return succ
+}
+
+func isValid(root *TreeNode, lo, hi *int) bool {
+	if root == nil {
+		return true
+	}
+	v := root.Val
+	if lo != nil && v <= *lo {
+		return false
+	}
+	if hi != nil && v >= *hi {
+		return false
+	}
+	return isValid(root.Left, lo, &v) && isValid(root.Right, &v, hi)
+}
+
+func isValidIt(root *TreeNode) bool {
+	stack := []*TreeNode{}
+	mins, maxs := []*int{}, []*int{}
+
+	update := func(v *TreeNode, lo, hi *int) {
+		stack = append(stack, v)
+		mins = append(mins, lo)
+		maxs = append(maxs, hi)
+	}
+
+	var min *int = nil
+	var max *int = nil
+	update(root, min, max)
+
+	for len(stack) > 0 {
+		el := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		min = mins[len(mins)-1]
+		mins = mins[:len(mins)-1]
+
+		max = maxs[len(maxs)-1]
+		maxs = maxs[:len(maxs)-1]
+
+		if el == nil {
+			continue
+		}
+
+		v := el.Val
+		if min != nil && v <= *min {
+			return false
+		}
+		if max != nil && v >= *max {
+			return false
+		}
+
+		update(el.Right, &v, max)
+		update(el.Left, min, &v)
+	}
+	return true
+}
+
+func isValidInorder(root *TreeNode) bool {
+	var prev *int
+	var inorder func(*TreeNode) bool
+	inorder = func(root *TreeNode) bool {
+		if root == nil {
+			return true
+		}
+		if !inorder(root.Left) {
+			return false
+		}
+		if prev != nil && *prev >= root.Val {
+			return false
+		}
+		prev = &root.Val
+		return inorder(root.Right)
+	}
+	return inorder(root)
+}
+
+func isValidInorderIt(root *TreeNode) bool {
+	var prev *int
+	stack := []*TreeNode{}
+
+	for len(stack) > 0 || root != nil {
+		for root != nil {
+			stack = append(stack, root)
+			root = root.Left
+		}
+		root = stack[len(stack)-1]
+		stack = stack[0 : len(stack)-1]
+
+		if prev != nil && root.Val <= *prev {
+			return false
+		}
+
+		prev = &root.Val
+		root = root.Right
+	}
+	return true
+}
+
+func isValidBST(root *TreeNode) bool {
+	return isValidInorderIt(root)
 }
