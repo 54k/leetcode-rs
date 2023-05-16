@@ -5,6 +5,57 @@ pub fn divisor_substrings(num: i32, k: i32) -> i32 {
 
 // https://leetcode.com/problems/recover-binary-search-tree/description/
 pub fn recover_tree(root: &mut Option<Rc<RefCell<TreeNode>>>) {
+    fn find_two_swapped(nums: &Vec<i32>) -> (i32, i32) {
+        let n = nums.len();
+        let (mut x, mut y) = (-1, -1);
+        let mut swapped_first_occurence = false;
+        for i in 0..n - 1 {
+            if nums[i + 1] < nums[i] {
+                y = nums[i + 1];
+                if !swapped_first_occurence {
+                    x = nums[i];
+                    swapped_first_occurence = true;
+                } else {
+                    // second swap occurence
+                    break;
+                }
+            }
+        }
+        return (x, y);
+    }
+
+    fn inorder(root: &mut Option<Rc<RefCell<TreeNode>>>, nums: &mut Vec<i32>) {
+        if let Some(r) = root {
+            let r = r.borrow();
+            inorder(&mut r.left.clone(), nums);
+            nums.push(r.val);
+            inorder(&mut r.right.clone(), nums);
+        }
+    }
+
+    fn recover(root: &mut Option<Rc<RefCell<TreeNode>>>, mut cnt: i32, (x, y): (i32, i32)) {
+        if let Some(mut r) = root.clone() {
+            let mut r = r.borrow_mut();
+            if r.val == x || r.val == y {
+                r.val = if r.val == x { y } else { x };
+                cnt -= 1;
+                if cnt == 0 {
+                    return;
+                }
+            }
+            recover(&mut r.left.clone(), cnt, (x, y));
+            recover(&mut r.right.clone(), cnt, (x, y));
+        }
+    }
+
+    let mut nums = vec![];
+    inorder(&mut root.clone(), &mut nums);
+    let swapped = find_two_swapped(&nums);
+    recover(&mut root.clone(), 2, swapped);
+}
+
+// https://leetcode.com/problems/delete-node-in-a-bst/description/
+pub fn delete_node(root: Option<Rc<RefCell<TreeNode>>>, key: i32) -> Option<Rc<RefCell<TreeNode>>> {
     todo!()
 }
 
