@@ -39,3 +39,22 @@ func swapIter(head *ListNode) *ListNode {
 func swapPairs(head *ListNode) *ListNode {
 	return swapIter(head)
 }
+
+type ImmutableListNode struct {
+}
+
+func (this *ImmutableListNode) getNext() ImmutableListNode {
+	return ImmutableListNode{}{}
+}
+
+func (this *ImmutableListNode) printValue() {
+	// print the value of this node.
+}
+
+func printLinkedListInReverse(head ImmutableListNode) {
+	if head == nil {
+		return
+	}
+	printLinkedListInReverse(head.getNext())
+	head.printValue()
+}
