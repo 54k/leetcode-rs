@@ -1,9 +1,35 @@
+use std::{cell::RefCell, rc::Rc};
+
 // https://leetcode.com/problems/find-the-k-beauty-of-a-number/description/
+// https://leetcode.com/problems/find-the-k-beauty-of-a-number/solutions/2746011/rust-solution-0-ms/
 pub fn divisor_substrings(num: i32, k: i32) -> i32 {
-    todo!()
+    let mut ans = 0;
+    let num_s = format!("{}", num).chars().collect::<Vec<char>>();
+    let mut s = 0;
+    for e in 0..num_s.len() {
+        if e >= k as usize - 1 {
+            let c = i32::from_str_radix(
+                num_s[s..=e].iter().copied().collect::<String>().as_str(),
+                10,
+            )
+            .unwrap();
+            if num % c == 0 {
+                ans += 1;
+            }
+            s += 1;
+        }
+    }
+    ans
 }
 
 // https://leetcode.com/problems/recover-binary-search-tree/description/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
 pub fn recover_tree(root: &mut Option<Rc<RefCell<TreeNode>>>) {
     fn find_two_swapped(nums: &Vec<i32>) -> (i32, i32) {
         let n = nums.len();
@@ -54,9 +80,36 @@ pub fn recover_tree(root: &mut Option<Rc<RefCell<TreeNode>>>) {
     recover(&mut root.clone(), 2, swapped);
 }
 
-// https://leetcode.com/problems/delete-node-in-a-bst/description/
-pub fn delete_node(root: Option<Rc<RefCell<TreeNode>>>, key: i32) -> Option<Rc<RefCell<TreeNode>>> {
-    todo!()
+pub fn recover_tree2(root: &mut Option<Rc<RefCell<TreeNode>>>) {
+    fn find_two_swapped(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        pred: &mut Option<Rc<RefCell<TreeNode>>>,
+        x: &mut Option<Rc<RefCell<TreeNode>>>,
+        y: &mut Option<Rc<RefCell<TreeNode>>>,
+    ) {
+        if let Some(r) = root.clone() {
+            let r = r.borrow();
+            find_two_swapped(r.left.clone(), pred, x, y);
+
+            if pred.is_some() && pred.as_ref().unwrap().borrow().val > r.val {
+                *y = root.clone();
+                if x.is_none() {
+                    *x = pred.clone();
+                } else {
+                    return;
+                }
+            }
+            *pred = root.clone();
+
+            find_two_swapped(r.right.clone(), pred, x, y);
+        }
+    }
+    let (mut x, mut y) = (None, None);
+    find_two_swapped(root.clone(), &mut None, &mut x, &mut y);
+    std::mem::swap(
+        &mut x.unwrap().borrow_mut().val,
+        &mut y.unwrap().borrow_mut().val,
+    );
 }
 
 // https://leetcode.com/problems/gray-code/description/
