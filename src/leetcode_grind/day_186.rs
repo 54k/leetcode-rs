@@ -55,3 +55,31 @@ pub fn delete_node(root: Option<Rc<RefCell<TreeNode>>>, key: i32) -> Option<Rc<R
 
     delete_node(root, key)
 }
+
+// https://leetcode.com/problems/insert-into-a-binary-search-tree/description/
+pub fn insert_into_bst(
+    root: Option<Rc<RefCell<TreeNode>>>,
+    val: i32,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    type Node = Option<Rc<RefCell<TreeNode>>>;
+    fn insert_into_bst(root: Node, val: i32) -> Node {
+        if let Some(r) = root.clone() {
+            if val < r.borrow().val {
+                let ins = insert_into_bst(r.borrow().left.clone(), val);
+                r.borrow_mut().left = ins;
+                root
+            } else {
+                let ins = insert_into_bst(r.borrow().right.clone(), val);
+                r.borrow_mut().right = ins;
+                root
+            }
+        } else {
+            Some(Rc::new(RefCell::new(TreeNode {
+                val,
+                left: None,
+                right: None,
+            })))
+        }
+    }
+    insert_into_bst(root, val)
+}
