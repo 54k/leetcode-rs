@@ -117,3 +117,72 @@ impl BSTIterator {
         self.stack.len() > 0
     }
 }
+
+// https://leetcode.com/problems/search-a-2d-matrix-ii/description/
+pub fn search_matrix(matrix: Vec<Vec<i32>>, target: i32) -> bool {
+    fn search(matrix: &Vec<Vec<i32>>, start: i32, target: i32, search_row: bool) -> bool {
+        let mut lo = start;
+        let mut hi = if search_row {
+            matrix.len() - 1
+        } else {
+            matrix[0].len() - 1
+        } as i32;
+
+        while lo <= hi {
+            let mid = lo + (hi - lo) / 2;
+            if search_row {
+                if matrix[mid as usize][start as usize] < target {
+                    lo = mid + 1;
+                } else if matrix[mid as usize][start as usize] > target {
+                    hi = mid - 1;
+                } else {
+                    return true;
+                }
+            } else {
+                if matrix[start as usize][mid as usize] < target {
+                    lo = mid + 1;
+                } else if matrix[start as usize][mid as usize] > target {
+                    hi = mid - 1;
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
+
+    let shorter_dim = matrix.len().min(matrix[0].len()) as i32;
+    for i in 0..shorter_dim {
+        let is_vert_found = search(&matrix, i, target, false);
+        let is_horizontal_found = search(&matrix, i, target, true);
+
+        if is_vert_found || is_horizontal_found {
+            return true;
+        }
+    }
+
+    false
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test502() {
+        println!(
+            "{}",
+            search_matrix(
+                vec![
+                    vec![1, 4, 7, 11, 15],
+                    vec![2, 5, 8, 12, 19],
+                    vec![3, 6, 9, 16, 22],
+                    vec![10, 13, 14, 17, 24],
+                    vec![18, 21, 23, 26, 30],
+                ],
+                5,
+            )
+        ); // true
+    }
+}
