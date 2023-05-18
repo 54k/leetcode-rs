@@ -43,15 +43,15 @@ func swapPairs(head *ListNode) *ListNode {
 type ImmutableListNode struct {
 }
 
-func (this *ImmutableListNode) getNext() ImmutableListNode {
-	return ImmutableListNode{}{}
+func (this *ImmutableListNode) getNext() *ImmutableListNode {
+	return &ImmutableListNode{}
 }
 
 func (this *ImmutableListNode) printValue() {
 	// print the value of this node.
 }
 
-func printLinkedListInReverse(head ImmutableListNode) {
+func printLinkedListInReverse(head *ImmutableListNode) {
 	if head == nil {
 		return
 	}
