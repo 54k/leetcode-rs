@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"testing"
 )
 
 // This is the robot's control interface.
@@ -13,7 +14,7 @@ type Robot struct {
 
 // Returns true if the cell in front is open and robot moves into the cell.
 // Returns false if the cell in front is blocked and robot stays in the current cell.
-func (robot *Robot) Move() bool {}
+func (robot *Robot) Move() bool { return false }
 
 // Robot will stay in the same cell after calling TurnLeft/TurnRight.
 // Each turn will be 90 degrees.
@@ -158,4 +159,110 @@ func combine(n int, k int) [][]int {
 	res := [][]int{}
 	combineRec(n, k, 1, &cur, &res)
 	return res
+}
+
+// https://leetcode.com/problems/generate-parentheses/description/
+func generateParenthesis(n int) []string {
+	ans := []string{}
+	if n == 0 {
+		ans = append(ans, "")
+	} else {
+		for i := 0; i < n; i++ {
+			for _, left := range generateParenthesis(i) {
+				for _, right := range generateParenthesis(n - i - 1) {
+					ans = append(ans, fmt.Sprintf("(%s)%s", left, right))
+				}
+			}
+		}
+	}
+	return ans
+}
+
+type Node struct {
+	Val   int
+	Left  *Node
+	Right *Node
+}
+
+func treeToDoublyList(root *Node) *Node {
+	if root == nil {
+		return nil
+	}
+	dummy := &Node{Val: -1}
+	prev := dummy.Right
+	stack := []*Node{}
+
+	for len(stack) > 0 || root != nil {
+		for root != nil {
+			stack = append(stack, root)
+			root = root.Left
+		}
+		root = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if prev != nil {
+			prev.Right = root
+			root.Left = prev
+		} else {
+			dummy.Right = root
+		}
+		prev = root
+
+		root = root.Right
+	}
+
+	prev.Right = dummy.Right
+	dummy.Right.Left = prev
+
+	return dummy.Right
+}
+
+func TestTreeToDoublyList(t *testing.T) {
+	tree := &Node{
+		Val: 4,
+		Left: &Node{
+			Val: 2,
+			Left: &Node{
+				Val:   1,
+				Left:  nil,
+				Right: nil,
+			},
+			Right: &Node{
+				Val:   3,
+				Left:  nil,
+				Right: nil,
+			},
+		},
+		Right: &Node{
+			Val:   5,
+			Left:  nil,
+			Right: nil,
+		},
+	}
+
+	list := treeToDoublyList(tree)
+	for list != nil {
+		fmt.Println(list)
+		list = list.Right
+	}
+
+	tree = &Node{
+		Val: 2,
+		Left: &Node{
+			Val:   1,
+			Left:  nil,
+			Right: nil,
+		},
+		Right: &Node{
+			Val:   3,
+			Left:  nil,
+			Right: nil,
+		},
+	}
+
+	list = treeToDoublyList(tree)
+	for list != nil {
+		fmt.Println(list)
+		list = list.Right
+	}
 }
