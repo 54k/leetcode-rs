@@ -266,3 +266,32 @@ func TestTreeToDoublyList(t *testing.T) {
 		list = list.Right
 	}
 }
+
+// https://leetcode.com/problems/permutations/description/
+func recPermute(mask int, nums []int, cur *[]int, ans *[][]int) {
+	fmt.Println("mask ", mask)
+	if len(*cur) == len(nums) {
+		dst := make([]int, len(nums))
+		copy(dst, *cur)
+		*ans = append(*ans, dst)
+		return
+	}
+
+	for i := 0; i < len(nums); i++ {
+		if mask&(1<<i) == 0 {
+			*cur = append(*cur, nums[i])
+			recPermute(mask|(1<<i), nums, cur, ans)
+			*cur = (*cur)[:len(*cur)-1]
+		}
+	}
+}
+
+func permute(nums []int) [][]int {
+	ans := [][]int{}
+	recPermute(0, nums, &[]int{}, &ans)
+	return ans
+}
+
+func TestRecPermute(t *testing.T) {
+	fmt.Println(permute([]int{1, 2, 3})) // [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+}
