@@ -80,6 +80,49 @@ pub fn maximal_network_rank(n: i32, roads: Vec<Vec<i32>>) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/largest-rectangle-in-histogram/description/
+// https://leetcode.com/problems/largest-rectangle-in-histogram/solutions/28941/segment-tree-solution-just-another-idea-onlogn-solution/
+pub fn largest_rectangle_area(heights: Vec<i32>) -> i32 {
+    fn divide_and_conquer(heights: Vec<i32>) -> i32 {
+        fn calc_area(heights: &Vec<i32>, start: i32, end: i32) -> i32 {
+            if start > end {
+                return 0;
+            }
+            let mut min_idx = start;
+            for i in start..=end {
+                if heights[min_idx as usize] >= heights[i as usize] {
+                    min_idx = i;
+                }
+            }
+
+            (heights[min_idx as usize] * (end - start + 1)).max(
+                calc_area(heights, start, min_idx - 1).max(calc_area(heights, min_idx + 1, end)),
+            )
+        }
+
+        calc_area(&heights, 0, heights.len() as i32 - 1)
+    }
+
+    fn stack_approach(heights: Vec<i32>) -> i32 {
+        let mut stack = vec![];
+        let mut max_area = 0;
+        for right in 0..=heights.len() {
+            while !stack.is_empty()
+                && (right == heights.len() || heights[*stack.last().unwrap()] >= heights[right])
+            {
+                let mid = stack.pop().unwrap();
+                let h = heights[mid];
+                let left = stack.last().map(|x| *x as i32).unwrap_or(-1);
+                max_area = max_area.max(h * (right as i32 - left - 1));
+            }
+            stack.push(right);
+        }
+        max_area
+    }
+
+    stack_approach(heights)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

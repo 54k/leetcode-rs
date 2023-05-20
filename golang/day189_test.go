@@ -62,6 +62,8 @@ func calcEquation(equations [][]string, values []float64, queries [][]string) []
 	return ans
 }
 
+// todo https://leetcode.com/problems/sum-of-subarray-minimums/description/
+
 func TestCalcEquation(t *testing.T) {
 	fmt.Println(calcEquation([][]string{{"a", "b"}, {"b", "c"}}, []float64{2., 3.}, [][]string{{"b", "a"}}))
 }
