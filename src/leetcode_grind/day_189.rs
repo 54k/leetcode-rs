@@ -123,6 +123,11 @@ pub fn largest_rectangle_area(heights: Vec<i32>) -> i32 {
     stack_approach(heights)
 }
 
+// https://leetcode.com/problems/maximum-score-of-a-good-subarray/description/
+pub fn maximum_score(nums: Vec<i32>, k: i32) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
