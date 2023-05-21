@@ -123,9 +123,30 @@ pub fn largest_rectangle_area(heights: Vec<i32>) -> i32 {
     stack_approach(heights)
 }
 
+// https://leetcode.com/problems/maximum-score-of-a-good-subarray/solutions/3350023/step-by-step-faster-94-greedy/
+// https://leetcode.com/problems/maximum-score-of-a-good-subarray/solutions/1108440/84-largest-rectangle-in-histogram-with-one-additional-check/
 // https://leetcode.com/problems/maximum-score-of-a-good-subarray/description/
 pub fn maximum_score(nums: Vec<i32>, k: i32) -> i32 {
-    todo!()
+    let mut stack = vec![];
+    let mut max_score = nums[k as usize];
+
+    for right in 0..=nums.len() {
+        while !stack.is_empty()
+            && (right == nums.len() || nums[*stack.last().unwrap()] >= nums[right])
+        {
+            let right = right as i32;
+
+            let min_val = nums[stack.pop().unwrap()];
+
+            let left = stack.last().map(|x| *x as i32).unwrap_or(-1);
+
+            if left < k && right > k {
+                max_score = max_score.max(min_val * (right - left - 1));
+            }
+        }
+        stack.push(right);
+    }
+    max_score
 }
 
 #[cfg(test)]
@@ -135,5 +156,10 @@ mod test {
     #[test]
     fn test504() {
         println!("{}", maximal_network_rank(2, vec![vec![1, 0]]));
+    }
+
+    #[test]
+    fn test505() {
+        println!("{}", maximum_score(vec![1, 4, 3, 7, 4, 5], 3)); // 15
     }
 }

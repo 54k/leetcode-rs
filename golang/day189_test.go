@@ -62,7 +62,66 @@ func calcEquation(equations [][]string, values []float64, queries [][]string) []
 	return ans
 }
 
-// todo https://leetcode.com/problems/sum-of-subarray-minimums/description/
+// https://leetcode.com/problems/sum-of-subarray-minimums/description/
+func sumSubarrayMins(arr []int) int {
+	const MOD = 1000000007
+	stack := []int{}
+	sum := 0
+
+	for right := 0; right <= len(arr); right++ {
+		for len(stack) > 0 && (right == len(arr) || arr[stack[len(stack)-1]] >= arr[right]) {
+			mini := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			left := -1
+			if len(stack) > 0 {
+				left = stack[len(stack)-1]
+			}
+			r := (mini - left) * (right - mini) % MOD
+			s := (arr[mini] * r) % MOD
+			sum += s
+			sum %= MOD
+		}
+
+		stack = append(stack, right)
+	}
+
+	return sum
+}
+
+// https://leetcode.com/problems/sum-of-subarray-ranges/description/
+func subArrayRanges(arr []int) int64 {
+	stack := []int{}
+	diff := int64(0)
+	for right := 0; right <= len(arr); right++ {
+		for len(stack) > 0 && (right == len(arr) || arr[stack[len(stack)-1]] >= arr[right]) {
+			mini := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			left := -1
+			if len(stack) > 0 {
+				left = stack[len(stack)-1]
+			}
+
+			diff -= int64(arr[mini] * (mini - left) * (right - mini))
+		}
+		stack = append(stack, right)
+	}
+	stack = []int{}
+
+	for right := 0; right <= len(arr); right++ {
+		for len(stack) > 0 && (right == len(arr) || arr[stack[len(stack)-1]] <= arr[right]) {
+			mini := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			left := -1
+			if len(stack) > 0 {
+				left = stack[len(stack)-1]
+			}
+
+			diff += int64(arr[mini] * (mini - left) * (right - mini))
+		}
+		stack = append(stack, right)
+	}
+	return diff
+}
 
 func TestCalcEquation(t *testing.T) {
 	fmt.Println(calcEquation([][]string{{"a", "b"}, {"b", "c"}}, []float64{2., 3.}, [][]string{{"b", "a"}}))
