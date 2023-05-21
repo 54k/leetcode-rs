@@ -141,5 +141,9 @@ pub fn get_skyline(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
         ans
     }
 
+    pub fn get_skyline_line_sweep_two_heaps(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        todo!()
+    }
+
     get_skyline_line_sweep_bin_heap(buildings)
 }
