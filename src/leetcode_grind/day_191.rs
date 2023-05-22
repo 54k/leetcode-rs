@@ -6,7 +6,37 @@ pub fn falling_squares(positions: Vec<Vec<i32>>) -> Vec<i32> {
 
 // https://leetcode.com/problems/shifting-letters-ii/
 pub fn shifting_letters(s: String, shifts: Vec<Vec<i32>>) -> String {
-    todo!()
+    let letters = ('a'..='z').collect::<Vec<_>>();
+    let s = s.chars().map(|x| x as i32 - 'a' as i32).collect::<Vec<_>>();
+
+    let mut diff = vec![s[0]];
+    for i in 1..s.len() {
+        diff.push(s[i] - s[i - 1]);
+    }
+    let n = diff.len();
+
+    for sh in shifts {
+        let (left, right, val) = (
+            sh[0] as usize,
+            sh[1] as usize,
+            if sh[2] == 0 { -1 } else { 1 },
+        );
+        diff[left] += val;
+        diff[left] %= 26;
+        if right + 1 < n {
+            diff[right + 1] -= val;
+            diff[right] %= 26;
+        }
+    }
+
+    for i in 1..n {
+        diff[i] += diff[i - 1] % 26;
+        diff[i] %= 26;
+    }
+
+    diff.into_iter()
+        .map(|x| letters[((x + 26) % 26) as usize])
+        .collect()
 }
 
 // https://leetcode.com/problems/top-k-frequent-elements/description/
@@ -34,4 +64,25 @@ pub fn top_k_frequent(nums: Vec<i32>, mut k: i32) -> Vec<i32> {
         }
     }
     ans
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test506() {
+        println!(
+            "{}",
+            shifting_letters(
+                "abc".to_string(),
+                vec![vec![0, 1, 0], vec![1, 2, 1], vec![0, 2, 1]]
+            )
+        );
+
+        println!(
+            "{}",
+            shifting_letters("dztz".to_string(), vec![vec![0, 0, 0], vec![1, 1, 1]])
+        );
+    }
 }
