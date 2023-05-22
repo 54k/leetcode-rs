@@ -62,6 +62,35 @@ pub fn shortest_bridge(mut grid: Vec<Vec<i32>>) -> i32 {
 
 // https://leetcode.com/problems/the-skyline-problem/description/
 pub fn get_skyline(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    pub fn get_skyline_brute(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        use std::collections::{BTreeSet, HashMap};
+        let mut edges = BTreeSet::new();
+        for b in &buildings {
+            edges.insert(b[0]);
+            edges.insert(b[1]);
+        }
+        let edges = edges.into_iter().collect::<Vec<_>>();
+        let mut edge_idx_map = HashMap::new();
+        for (i, &e) in edges.iter().enumerate() {
+            edge_idx_map.insert(e, i);
+        }
+        let mut heights = vec![0; edges.len()];
+        for b in &buildings {
+            let (left, right, height) = (b[0], b[1], b[2]);
+            let (left_idx, right_idx) = (edge_idx_map[&left], edge_idx_map[&right]);
+            for i in left_idx..right_idx {
+                heights[i] = heights[i].max(height);
+            }
+        }
+        let mut ans: Vec<Vec<i32>> = vec![];
+        for (i, h) in heights.into_iter().enumerate() {
+            if ans.is_empty() || ans.last().unwrap()[1] != h {
+                ans.push(vec![edges[i], h]);
+            }
+        }
+        ans
+    }
+
     pub fn get_skyline_brute_sweep_line(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
         use std::collections::BTreeSet;
         let mut edges = BTreeSet::new();
@@ -142,8 +171,122 @@ pub fn get_skyline(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     }
 
     pub fn get_skyline_line_sweep_two_heaps(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-        todo!()
+        use std::collections::BinaryHeap;
+        let mut edges = vec![];
+        for i in 0..buildings.len() {
+            edges.push((buildings[i][0], buildings[i][2]));
+            edges.push((buildings[i][1], -buildings[i][2]));
+        }
+        edges.sort_by_key(|x| x.0);
+
+        let mut live = BinaryHeap::new();
+        let mut past = BinaryHeap::new();
+
+        let mut ans: Vec<Vec<i32>> = vec![];
+
+        let mut idx = 0;
+        while idx < edges.len() {
+            let curr_x = edges[idx].0;
+
+            while idx < edges.len() && edges[idx].0 == curr_x {
+                let height = edges[idx].1;
+                if height > 0 {
+                    live.push(height);
+                } else {
+                    past.push(-height);
+                }
+                idx += 1;
+            }
+
+            while !past.is_empty() && live.peek().unwrap() == past.peek().unwrap() {
+                live.pop();
+                past.pop();
+            }
+
+            let curr_height = *live.peek().unwrap_or(&0);
+
+            if ans.is_empty() || ans.last().unwrap()[1] != curr_height {
+                ans.push(vec![curr_x, curr_height]);
+            }
+        }
+        ans
     }
 
-    get_skyline_line_sweep_bin_heap(buildings)
+    pub fn get_skyline_union_find(mut buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        struct UF {
+            root: Vec<usize>,
+        }
+        impl UF {
+            fn new(n: usize) -> Self {
+                let mut root = vec![];
+                for i in 0..n {
+                    root.push(i);
+                }
+                Self { root }
+            }
+            fn find(&mut self, x: usize) -> usize {
+                if self.root[x] != x {
+                    self.root[x] = self.find(self.root[x]);
+                }
+                self.root[x]
+            }
+            fn union(&mut self, x: usize, y: usize) {
+                let (x, y) = (self.find(x), self.find(y));
+                self.root[x] = self.root[y];
+            }
+        }
+
+        use std::collections::{BTreeSet, HashMap};
+
+        let mut set = BTreeSet::new();
+        for building in &buildings {
+            set.insert(building[0]);
+            set.insert(building[1]);
+        }
+        let edges = set.into_iter().collect::<Vec<_>>();
+
+        let mut edge_idx_map = HashMap::new();
+        for i in 0..edges.len() {
+            edge_idx_map.insert(edges[i], i);
+        }
+        buildings.sort_by_key(|x| x[2]);
+        let buildings = buildings.into_iter().rev().collect::<Vec<Vec<i32>>>();
+
+        let n = edges.len();
+        let mut uf = UF::new(n);
+        let mut heights = vec![0; n];
+
+        for building in &buildings {
+            let (left_edge, right_edge) = (building[0], building[1]);
+            let height = building[2];
+            let (mut left_idx, right_idx) = (edge_idx_map[&left_edge], edge_idx_map[&right_edge]);
+
+            // While we haven't update the the root of 'left_idx':
+            while left_idx < right_idx {
+                // Find the root of left index 'left_idx', that is:
+                // The rightmost index having the same height as 'left_idx'.
+                left_idx = uf.find(left_idx);
+                // If left_idx < right_idx, we have to update both the root and height
+                // of 'left_idx', and move on to the next index towards 'right_idx'.
+                // That is: increment 'left_idx' by 1.
+                if left_idx < right_idx {
+                    uf.union(left_idx, right_idx);
+                    heights[left_idx] = height;
+                    left_idx += 1;
+                }
+            }
+        }
+
+        let mut ans = vec![];
+        // Finally, we just need to iterate over updated heights, and
+        // add every skyline key point to 'answer'.
+        for i in 0..n {
+            if i == 0 || heights[i - 1] != heights[i] {
+                ans.push(vec![edges[i], heights[i]]);
+            }
+        }
+        ans
+    }
+
+    get_skyline_line_sweep_two_heaps(buildings)
 }
