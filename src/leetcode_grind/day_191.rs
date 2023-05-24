@@ -1,9 +1,3 @@
-// https://leetcode.com/problems/falling-squares/
-// https://leetcode.com/problems/falling-squares/editorial/
-pub fn falling_squares(positions: Vec<Vec<i32>>) -> Vec<i32> {
-    todo!()
-}
-
 // https://leetcode.com/problems/shifting-letters-ii/
 pub fn shifting_letters(s: String, shifts: Vec<Vec<i32>>) -> String {
     let letters = ('a'..='z').collect::<Vec<_>>();
