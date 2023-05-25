@@ -15,7 +15,7 @@ pub fn new21_game(n: i32, k: i32, max_pts: i32) -> f64 {
 
     let mut ans = 0.;
     for i in k..=n {
-        ans += dp[i as usize] as f64;
+        ans += dp[i as usize];
     }
     ans
 }
