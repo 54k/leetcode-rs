@@ -209,3 +209,54 @@ pub fn falling_squares_segment_tree(positions: Vec<Vec<i32>>) -> Vec<i32> {
     }
     ans
 }
+
+// https://leetcode.com/problems/range-sum-query-mutable/description/
+mod rmq_spatial_tree {
+    struct NumArray {
+        tree: Vec<i32>,
+        N: i32,
+    }
+
+    impl NumArray {
+        fn new(nums: Vec<i32>) -> Self {
+            let N = nums.len();
+            let mut s = Self {
+                tree: vec![0; N * 2],
+                N: N as i32,
+            };
+            for (i, n) in nums.into_iter().enumerate() {
+                s.update(i as i32, n);
+            }
+            s
+        }
+
+        fn update(&mut self, index: i32, val: i32) {
+            let mut index = index + self.N as i32;
+            self.tree[index as usize] = val;
+            while index >= 1 {
+                index /= 2;
+                self.tree[index as usize] =
+                    self.tree[index as usize * 2 + 1] + self.tree[index as usize * 2];
+            }
+        }
+
+        fn sum_range(&self, mut left: i32, mut right: i32) -> i32 {
+            left += self.N as i32;
+            right += self.N as i32;
+            let mut sum = 0;
+            while left <= right {
+                if left & 1 == 1 {
+                    sum += self.tree[left as usize];
+                    left += 1;
+                }
+                if right & 1 == 0 {
+                    sum += self.tree[right as usize];
+                    right -= 1;
+                }
+                left /= 2;
+                right /= 2;
+            }
+            sum
+        }
+    }
+}
