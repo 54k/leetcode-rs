@@ -163,19 +163,6 @@ mod rmq_sqrt_decompose {
     }
 }
 
-// https://leetcode.com/problems/range-sum-query-2d-mutable/description/
-mod rmq2d {
-    struct NumMatrix {}
-
-    // impl NumMatrix {
-    //     fn new(matrix: Vec<Vec<i32>>) -> Self {}
-
-    //     fn update(&self, row: i32, col: i32, val: i32) {}
-
-    //     fn sum_region(&self, row1: i32, col1: i32, row2: i32, col2: i32) -> i32 {}
-    // }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
