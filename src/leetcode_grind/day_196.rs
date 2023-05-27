@@ -18,6 +18,54 @@ pub fn max_distance(arrays: Vec<Vec<i32>>) -> i32 {
     res
 }
 
+// https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/description/
+pub fn min_difficulty(job_difficulty: Vec<i32>, d: i32) -> i32 {
+    fn top_bottom(job_difficulty: Vec<i32>, d: i32) -> i32 {
+        let n = job_difficulty.len();
+        if n < d as usize {
+            return -1;
+        }
+        let mut memo = vec![vec![-1; d as usize + 1]; n];
+        let mut hardest_remaining = vec![0; n as usize];
+        let mut hardest = 0;
+        for i in (0..job_difficulty.len()).rev() {
+            hardest = hardest.max(job_difficulty[i]);
+            hardest_remaining[i] = hardest;
+        }
+
+        fn dp(
+            i: usize,
+            day: i32,
+            d: i32,
+            memo: &mut [Vec<i32>],
+            job_difficulty: &Vec<i32>,
+            hardest_remaining: &[i32],
+        ) -> i32 {
+            if day == d {
+                return hardest_remaining[i];
+            }
+
+            if memo[i][day as usize] == -1 {
+                let mut best = i32::MAX;
+                let mut hardest = 0;
+                let right = job_difficulty.len() - (d as usize - day as usize);
+
+                for j in i..right {
+                    hardest = hardest.max(job_difficulty[j]);
+                    best = best.min(
+                        hardest + dp(j + 1, day + 1, d, memo, job_difficulty, hardest_remaining),
+                    );
+                }
+                memo[i][day as usize] = best;
+            }
+            return memo[i][day as usize];
+        }
+
+        dp(0, 1, d, &mut memo, &job_difficulty, &hardest_remaining)
+    }
+    top_bottom(job_difficulty, d)
+}
+
 // https://leetcode.com/problems/delete-and-earn/description
 pub fn delete_and_earn(nums: Vec<i32>) -> i32 {
     fn top_down(nums: Vec<i32>) -> i32 {
