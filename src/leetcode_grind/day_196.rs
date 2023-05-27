@@ -19,7 +19,18 @@ pub fn max_distance(arrays: Vec<Vec<i32>>) -> i32 {
 }
 
 // https://leetcode.com/problems/delete-and-earn/description
-pub fn delete_and_earn(nums: Vec<i32>) -> i32 {}
+pub fn delete_and_earn(mut nums: Vec<i32>) -> i32 {
+    use std::collections::HashMap;
+    let mut map = HashMap::new();
+    for &num in nums.iter() {
+        *map.entry(num).or_insert(0) += 1;
+    }
+    let mut dp = vec![0; nums.len()];
+    for i in 0..nums.len() {
+        
+    }
+    dp[nums.len() - 1]
+}
 
 // https://leetcode.com/problems/range-sum-query-2d-mutable/description/
 mod rmq2d {
