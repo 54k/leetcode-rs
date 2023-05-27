@@ -50,3 +50,63 @@ func tribonacci(n int) int {
 	}
 	return c
 }
+
+// https://leetcode.com/problems/longest-common-subsequence/description/
+func longestCommonSubsequence(text1 string, text2 string) int {
+	max := func(a, b int) int {
+		if a < b {
+			return b
+		}
+		return a
+	}
+	dp := map[int]map[int]int{}
+	for i := 0; i <= len(text1); i++ {
+		dp[i] = map[int]int{}
+	}
+	for i, ch1 := range text1 {
+		for j, ch2 := range text2 {
+			i := i + 1
+			j := j + 1
+			if ch1 == ch2 {
+				dp[i][j] = dp[i-1][j-1] + 1
+			} else {
+				dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+			}
+		}
+	}
+	return dp[len(text1)][len(text2)]
+}
+
+// https://leetcode.com/problems/maximal-square/description/
+func maximalSquare(matrix [][]byte) int {
+	rows, cols := len(matrix), len(matrix[0])
+	dp := make([][]int, rows+1)
+	for i := 0; i <= rows; i++ {
+		dp[i] = make([]int, cols+1)
+	}
+
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	maxLen := 0
+	for i := 1; i <= rows; i++ {
+		for j := 1; j <= cols; j++ {
+			if matrix[i-1][j-1] == byte('1') {
+				dp[i][j] = min(dp[i-1][j-1], min(dp[i-1][j], dp[i][j-1])) + 1
+			}
+			maxLen = max(maxLen, dp[i][j])
+		}
+	}
+	return maxLen * maxLen
+}

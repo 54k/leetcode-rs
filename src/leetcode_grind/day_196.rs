@@ -19,17 +19,79 @@ pub fn max_distance(arrays: Vec<Vec<i32>>) -> i32 {
 }
 
 // https://leetcode.com/problems/delete-and-earn/description
-pub fn delete_and_earn(mut nums: Vec<i32>) -> i32 {
-    use std::collections::HashMap;
-    let mut map = HashMap::new();
-    for &num in nums.iter() {
-        *map.entry(num).or_insert(0) += 1;
+pub fn delete_and_earn(nums: Vec<i32>) -> i32 {
+    fn top_down(nums: Vec<i32>) -> i32 {
+        fn rec(num: i32, points: &HashMap<i32, i32>, cache: &mut HashMap<i32, i32>) -> i32 {
+            if num == 0 {
+                return 0;
+            } else if num == 1 {
+                return *points.get(&num).unwrap_or(&0);
+            }
+
+            if cache.contains_key(&num) {
+                return cache[&num];
+            }
+
+            let gain = *points.get(&num).unwrap_or(&0);
+            let a = rec(num - 1, points, cache);
+            let b = rec(num - 2, points, cache) + gain;
+            cache.insert(num, a.max(b));
+
+            return cache[&num];
+        }
+        use std::collections::HashMap;
+        let mut points = HashMap::new();
+        let mut cache = HashMap::new();
+        let mut max = 0;
+        for &num in &nums {
+            *points.entry(num).or_insert(0) += num;
+            max = max.max(num);
+        }
+        rec(max, &points, &mut cache)
     }
-    let mut dp = vec![0; nums.len()];
-    for i in 0..nums.len() {
-        
+
+    fn bottom_up(nums: Vec<i32>) -> i32 {
+        use std::collections::HashMap;
+
+        let mut points = HashMap::new();
+        let mut max = 0;
+        for &num in &nums {
+            *points.entry(num).or_insert(0) += num;
+            max = max.max(num);
+        }
+
+        let mut max_points = vec![0; max as usize + 1];
+        max_points[1] = *points.get(&1).unwrap_or(&0);
+
+        for num in 2..max_points.len() as i32 {
+            let gain = *points.get(&num).unwrap_or(&0);
+            max_points[num as usize] =
+                max_points[num as usize - 1].max(max_points[num as usize - 2] + gain);
+        }
+
+        max_points[max as usize]
     }
-    dp[nums.len() - 1]
+
+    top_down(nums)
+}
+
+// https://leetcode.com/problems/maximum-score-from-performing-multiplication-operations/description/
+pub fn maximum_score(nums: Vec<i32>, multipliers: Vec<i32>) -> i32 {
+    pub fn maximum_score_bottom_up(nums: Vec<i32>, multipliers: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; m + 1];
+        for i in (0..m).rev() {
+            for left in (0..=i).rev() {
+                let right = n - 1 - (i - left);
+                let mul = multipliers[i];
+                dp[i][left] = (nums[left] * mul + dp[i + 1][left + 1])
+                    .max(nums[right] * mul + dp[i + 1][left]);
+            }
+        }
+        dp[0][0]
+    }
+    maximum_score_bottom_up(nums, multipliers)
 }
 
 // https://leetcode.com/problems/range-sum-query-2d-mutable/description/
