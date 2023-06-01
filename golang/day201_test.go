@@ -43,3 +43,12 @@ func shortestPathBinaryMatrix(grid [][]int) int {
 
 	return -1
 }
+
+// https://leetcode.com/problems/power-of-two/description/
+func isPowerOfTwo(n int) bool {
+	if n == 0 {
+		return false
+	} else {
+		return n&(-n) == n
+	}
+}
