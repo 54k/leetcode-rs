@@ -50,6 +50,33 @@ pub fn min_cost(costs: Vec<Vec<i32>>) -> i32 {
     bottom_up(costs)
 }
 
+pub fn min_cost_ii(costs: Vec<Vec<i32>>) -> i32 {
+    fn bottom_up(costs: Vec<Vec<i32>>) -> i32 {
+        let (n, m) = (costs.len(), costs[0].len());
+        let mut dp = vec![vec![1000_000_000; m]; n + 1];
+        dp[0] = vec![0; m];
+        for i in 1..=n {
+            for j in 0..m {
+                for k in 0..m {
+                    if j == k {
+                        continue;
+                    }
+                    dp[i][j] = dp[i][j].min(costs[i - 1][j] + dp[i - 1][k])
+                }
+            }
+        }
+        dp[n].iter().copied().min().unwrap()
+    }
+    fn bottom_up_space_optimized(costs: Vec<Vec<i32>>) -> i32 {
+        todo!()
+    }
+    bottom_up(costs)
+}
+// https://leetcode.com/problems/minimum-falling-path-sum-ii/
+pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
