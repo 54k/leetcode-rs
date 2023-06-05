@@ -72,6 +72,39 @@ pub fn min_cost_ii(costs: Vec<Vec<i32>>) -> i32 {
     }
     bottom_up(costs)
 }
+// https://leetcode.com/problems/h-index/
+pub fn h_index(mut citations: Vec<i32>) -> i32 {
+    pub fn h_index_ON(citations: Vec<i32>) -> i32 {
+        let n = citations.len();
+        let mut papers = vec![0; n + 1];
+        for &c in &citations {
+            papers[n.min(c as usize)] += 1;
+        }
+        let mut k = n;
+        let mut s = papers[n];
+        while k > s {
+            k -= 1;
+            s += papers[k];
+        }
+        k as i32
+    }
+    fn h_index_OLOGN(mut citations: Vec<i32>) -> i32 {
+        citations.sort();
+        let mut i = 0;
+        let h = citations.len();
+        while i < h && citations[citations.len() - 1 - i] > i as i32 {
+            i += 1;
+        }
+        i as i32
+    }
+    h_index_ON(citations)
+}
+
+// https://leetcode.com/problems/h-index-ii/description/
+pub fn h_index_ii(citations: Vec<i32>) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
