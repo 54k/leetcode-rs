@@ -67,11 +67,9 @@ pub fn min_cost_ii(costs: Vec<Vec<i32>>) -> i32 {
         }
         dp[n].iter().copied().min().unwrap()
     }
-    fn bottom_up_space_optimized(costs: Vec<Vec<i32>>) -> i32 {
-        todo!()
-    }
     bottom_up(costs)
 }
+
 // https://leetcode.com/problems/h-index/
 pub fn h_index(mut citations: Vec<i32>) -> i32 {
     pub fn h_index_ON(citations: Vec<i32>) -> i32 {
@@ -100,16 +98,6 @@ pub fn h_index(mut citations: Vec<i32>) -> i32 {
     h_index_ON(citations)
 }
 
-// https://leetcode.com/problems/h-index-ii/description/
-pub fn h_index_ii(citations: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/minimum-falling-path-sum-ii/
-pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
-    todo!()
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -121,53 +109,4 @@ mod test {
             min_cost(vec![vec![17, 2, 17], vec![16, 16, 5], vec![14, 3, 19]])
         );
     }
-}
-
-// https://leetcode.com/problems/stone-game-iv/description/
-pub fn winner_square_game(n: i32) -> bool {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-v/description/
-pub fn stone_game_v(stone_value: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-vi/description/
-pub fn stone_game_vi(alice_values: Vec<i32>, bob_values: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-vii/description/
-pub fn stone_game_vii(stones: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/description/
-pub fn remove_stones(stones: Vec<Vec<i32>>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/range-sum-query-2d-mutable/description/
-mod rmq2d {
-    struct NumMatrix {}
-
-    impl NumMatrix {
-        fn new(matrix: Vec<Vec<i32>>) -> Self {
-            todo!()
-        }
-
-        fn update(&self, row: i32, col: i32, val: i32) {
-            todo!()
-        }
-
-        fn sum_region(&self, row1: i32, col1: i32, row2: i32, col2: i32) -> i32 {
-            todo!()
-        }
-    }
-}
-
-// https://leetcode.com/problems/maximize-grid-happiness/description/
-pub fn get_max_grid_happiness(m: i32, n: i32, introverts_count: i32, extroverts_count: i32) -> i32 {
-    todo!()
 }
