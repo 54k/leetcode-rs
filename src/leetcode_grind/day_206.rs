@@ -74,6 +74,42 @@ pub fn min_cost(houses: Vec<i32>, cost: Vec<Vec<i32>>, m: i32, n: i32, target: i
     }
 }
 
+// https://leetcode.com/problems/count-vowels-permutation/description/
+pub fn count_vowel_permutation(n: i32) -> i32 {
+    const MOD: i64 = 1_000_000_007;
+
+    let vows = vec![
+        vec![1],          //a.0
+        vec![0, 2],       //e.1
+        vec![0, 1, 3, 4], //i.2
+        vec![2, 4],       //o.3
+        vec![0],          //u.4
+    ];
+
+    fn dp(n: i32, i: i32, next: usize, vows: &Vec<Vec<usize>>, cache: &mut Vec<Vec<i32>>) -> i32 {
+        if i == n {
+            return 1;
+        }
+        if cache[i as usize][next] != -1 {
+            return cache[i as usize][next];
+        }
+
+        let mut cnt = 0;
+        for &v in &vows[next] {
+            cnt = (cnt % MOD + dp(n, i + 1, v, vows, cache) as i64 % MOD) % MOD;
+        }
+        cache[i as usize][next] = cnt as i32;
+        cache[i as usize][next]
+    }
+
+    let mut cache = vec![vec![-1; 5]; n as usize];
+    let mut ans = 0;
+    for i in 0..vows.len() {
+        ans = (ans % MOD + dp(n, 1, i, &vows, &mut cache) as i64 % MOD) % MOD;
+    }
+    ans as i32
+}
+
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
