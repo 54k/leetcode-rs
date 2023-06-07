@@ -19,7 +19,19 @@ pub fn min_flips(mut a: i32, mut b: i32, mut c: i32) -> i32 {
 
 // https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/description/
 pub fn num_rolls_to_target(n: i32, k: i32, target: i32) -> i32 {
-    todo!()
+    const MOD: i64 = 1_000_000_007;
+    let mut dp = vec![vec![0; target as usize + 1]; n as usize + 1];
+    dp[n as usize][target as usize] = 1;
+    for i in (0..n as usize).rev() {
+        for sum in 0..=target as usize {
+            let mut ways = 0;
+            for j in 1..=(k as usize).min(target as usize - sum) {
+                ways = (ways + dp[i + 1][sum + j]) % MOD
+            }
+            dp[i][sum] = ways;
+        }
+    }
+    dp[0][0] as i32
 }
 
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
