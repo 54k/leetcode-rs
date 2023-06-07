@@ -17,6 +17,11 @@ pub fn min_flips(mut a: i32, mut b: i32, mut c: i32) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/description/
+pub fn num_rolls_to_target(n: i32, k: i32, target: i32) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
