@@ -29,6 +29,47 @@ pub fn sort_stack(mut s: Vec<i32>) -> Vec<i32> {
     s
 }
 
+// https://leetcode.com/problems/minimum-cost-to-reach-city-with-discounts/description/
+pub fn minimum_cost(n: i32, highways: Vec<Vec<i32>>, discounts: i32) -> i32 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    let mut adj = vec![vec![-1; n as usize]; n as usize];
+    for e in &highways {
+        adj[e[0] as usize][e[1] as usize] = e[2];
+        adj[e[1] as usize][e[0] as usize] = e[2];
+    }
+
+    let mut heap = BinaryHeap::new();
+    heap.push(Reverse((0, 0, discounts as usize)));
+
+    let mut ans = vec![i32::MAX; n as usize];
+    let mut visited = vec![vec![false; n as usize]; discounts as usize + 1];
+
+    while let Some(Reverse((d1, from, remain))) = heap.pop() {
+        if visited[remain][from] {
+            continue;
+        }
+        visited[remain][from] = true;
+        ans[from] = ans[from].min(d1);
+
+        for (to, &w) in adj[from].iter().enumerate() {
+            if w == -1 {
+                continue;
+            }
+            if remain > 0 {
+                heap.push(Reverse((d1 + w / 2, to, remain - 1)));
+            }
+            heap.push(Reverse((d1 + w, to, remain)));
+        }
+    }
+    if ans[n as usize - 1] == i32::MAX {
+        -1
+    } else {
+        ans[n as usize - 1]
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
