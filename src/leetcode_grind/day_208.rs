@@ -52,7 +52,9 @@ pub fn minimum_cost(n: i32, highways: Vec<Vec<i32>>, discounts: i32) -> i32 {
         }
         visited[remain][from] = true;
         ans[from] = ans[from].min(d1);
-
+        if from == n as usize - 1 {
+            break;
+        }
         for (to, &w) in adj[from].iter().enumerate() {
             if w == -1 {
                 continue;
