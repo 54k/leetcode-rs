@@ -72,6 +72,57 @@ pub fn minimum_cost(n: i32, highways: Vec<Vec<i32>>, discounts: i32) -> i32 {
     }
 }
 
+// https://www.geeksforgeeks.org/minimum-cost-path-in-a-directed-graph-via-given-set-of-intermediate-nodes/
+pub fn minimum_cost_with_points_of_interest(
+    n: i32,
+    edges: Vec<Vec<i32>>,
+    points: Vec<i32>,
+) -> Vec<usize> {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    let p_len: i32 = points.len() as i32;
+
+    let mut adj = vec![vec![-1; n as usize]; n as usize];
+    for e in &edges {
+        adj[e[0] as usize][e[1] as usize] = e[2];
+        adj[e[1] as usize][e[0] as usize] = e[2];
+    }
+
+    let mut heap = BinaryHeap::new();
+    heap.push(Reverse((0, 0, p_len as usize, vec![0])));
+
+    let mut ans = vec![];
+    let mut visited = vec![vec![false; n as usize]; p_len as usize + 1];
+
+    while let Some(Reverse((d1, from, remain, cp))) = heap.pop() {
+        if visited[remain][from] {
+            continue;
+        }
+        visited[remain][from] = true;
+
+        if remain == 0 {
+            ans = cp;
+            break;
+        }
+
+        for (to, &w) in adj[from].iter().enumerate() {
+            if w == -1 {
+                continue;
+            }
+            let mut cp2 = cp.clone();
+            cp2.push(to);
+
+            if points.contains(&(to as i32)) && !cp.contains(&to) {
+                heap.push(Reverse((d1 + w, to, remain - 1, cp2)));
+            } else {
+                heap.push(Reverse((d1 + w, to, remain, cp2)));
+            }
+        }
+    }
+    ans
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -79,5 +130,23 @@ mod test {
     #[test]
     fn test505() {
         println!("{:?}", sort_stack(vec![4, 1, 3, 2, 5, 0, 3]));
+    }
+
+    #[test]
+    fn test506() {
+        println!(
+            "{:?}",
+            minimum_cost_with_points_of_interest(
+                5,
+                vec![
+                    vec![0, 1, 4],
+                    vec![2, 1, 3],
+                    vec![1, 4, 11],
+                    vec![3, 2, 3],
+                    vec![3, 4, 200]
+                ],
+                vec![3, 5]
+            )
+        );
     }
 }
