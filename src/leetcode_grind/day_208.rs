@@ -90,16 +90,17 @@ pub fn minimum_cost_with_points_of_interest(
     }
 
     let mut heap = BinaryHeap::new();
-    heap.push(Reverse((0, 0, p_len as usize, vec![0])));
+    for &p in &points {
+        heap.push(Reverse((0, p as usize, p_len as usize, vec![p as usize]))); // weight, from, remain, current_path
+    }
 
     let mut ans = vec![];
-    let mut visited = vec![vec![false; n as usize]; p_len as usize + 1];
+    let mut visited = vec![vec![vec![false; n as usize]; n as usize]; p_len as usize + 1];
 
     while let Some(Reverse((d1, from, remain, cp))) = heap.pop() {
-        if visited[remain][from] {
+        if cp.len() > 4 && cp[cp.len() - 4] == from {
             continue;
         }
-        visited[remain][from] = true;
 
         if remain == 0 {
             ans = cp;
@@ -110,6 +111,9 @@ pub fn minimum_cost_with_points_of_interest(
             if w == -1 {
                 continue;
             }
+
+            // if !visited[remain][from][to] {
+            // visited[remain][from][to] = true;
             let mut cp2 = cp.clone();
             cp2.push(to);
 
@@ -118,6 +122,7 @@ pub fn minimum_cost_with_points_of_interest(
             } else {
                 heap.push(Reverse((d1 + w, to, remain, cp2)));
             }
+            // }
         }
     }
     ans
@@ -145,7 +150,7 @@ mod test {
                     vec![3, 2, 3],
                     vec![3, 4, 200]
                 ],
-                vec![3, 5]
+                vec![0, 3, 4]
             )
         );
     }
