@@ -68,6 +68,81 @@ impl Codec {
     }
 }
 
+// https://leetcode.com/problems/single-number-ii/description/
+pub fn single_number(mut nums: Vec<i32>) -> i32 {
+    nums.sort();
+    for i in (0..nums.len() - 1).step_by(3) {
+        if nums[i] == nums[i + 1] {
+            continue;
+        } else {
+            return nums[i];
+        }
+    }
+    return nums[nums.len() - 1];
+}
+
+// https://leetcode.com/problems/longest-increasing-subsequence/description/
+pub fn length_of_lis(nums: Vec<i32>) -> i32 {
+    let mut sub = vec![nums[0]];
+    let mut len = sub.len();
+    for &num in nums.iter().skip(1) {
+        if sub[len - 1] < num {
+            sub.push(num);
+            len += 1;
+            continue;
+        }
+        for i in 0..len {
+            if sub[i] >= num {
+                sub[i] = num;
+                break;
+            }
+        }
+    }
+    len as i32
+}
+
+// https://leetcode.com/problems/russian-doll-envelopes/description/
+pub fn max_envelopes(mut envelopes: Vec<Vec<i32>>) -> i32 {
+    fn length_of_lis(nums: Vec<i32>) -> i32 {
+        let mut sub = vec![nums[0]];
+        let mut len = sub.len();
+        for &num in nums.iter().skip(1) {
+            if sub[len - 1] < num {
+                sub.push(num);
+                len += 1;
+                continue;
+            }
+
+            let (mut lo, mut hi) = (0, len as i32 - 1);
+            while lo <= hi {
+                let mid = (lo + hi) / 2;
+                if sub[mid as usize] < num {
+                    lo = mid + 1;
+                } else if sub[mid as usize] >= num {
+                    hi = mid - 1;
+                }
+            }
+            sub[lo as usize] = num;
+        }
+        len as i32
+    }
+
+    envelopes.sort_by(|a, b| {
+        if a[0] == b[0] {
+            b[1].cmp(&a[1])
+        } else {
+            a[0].cmp(&b[0])
+        }
+    });
+    let heights = envelopes.into_iter().map(|e| e[1]).collect();
+    length_of_lis(heights)
+}
+
+// https://leetcode.com/problems/the-number-of-weak-characters-in-the-game/description/
+pub fn number_of_weak_characters(properties: Vec<Vec<i32>>) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/description/
 pub fn min_moves2(nums: Vec<i32>) -> i32 {
     todo!()

@@ -28,3 +28,22 @@ func getMinimumDifference(root *TreeNode) int {
 	md(root)
 	return diff
 }
+
+// https://leetcode.com/problems/sum-of-two-integers/description/
+func getSum(a int, b int) int {
+	for b != 0 {
+		a, b = a^b, (a&b)<<1
+	}
+	return a
+}
+
+// https://leetcode.com/problems/reverse-bits/description/
+func reverseBits(num uint32) uint32 {
+	var ans uint32
+	for i, j := 0, 31; i < j; i, j = i+1, j-1 {
+		a, b := (num>>i)&1, (num>>j)&1
+		ans |= (a << j)
+		ans |= (b << i)
+	}
+	return ans
+}
