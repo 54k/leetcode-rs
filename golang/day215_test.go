@@ -31,3 +31,33 @@ func maxLevelSum(root *TreeNode) int {
 	}
 	return ansk
 }
+
+// https://leetcode.com/problems/gray-code/description/
+func grayCode(n int) []int {
+	result := []int{0}
+	visited := map[int]bool{0: true}
+	var dfs func(v int) bool
+	dfs = func(v int) bool {
+		if len(result) == 1<<n {
+			return true
+		}
+		current := result[len(result)-1]
+		for i := 0; i < n; i++ {
+			next := current ^ (1 << i)
+			if !visited[next] {
+				visited[next] = true
+				result = append(result, next)
+
+				if dfs(n) {
+					return true
+				}
+
+				visited[next] = false
+				result = result[:len(result)-1]
+			}
+		}
+		return false
+	}
+	dfs(n)
+	return result
+}
