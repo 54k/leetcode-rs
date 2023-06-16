@@ -146,5 +146,13 @@ pub fn min_moves2(nums: Vec<i32>) -> i32 {
         }
         min as i32
     }
+    pub fn sort_median_approach(mut nums: Vec<i32>) -> i32 {
+        nums.sort();
+        let mut sum = 0;
+        for &num in &nums {
+            sum += (nums[nums.len() / 2] - num).abs();
+        }
+        sum
+    }
     todo!()
 }
