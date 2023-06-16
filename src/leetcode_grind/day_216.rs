@@ -154,5 +154,50 @@ pub fn min_moves2(nums: Vec<i32>) -> i32 {
         }
         sum
     }
-    todo!()
+    pub fn sort_without_median(mut nums: Vec<i32>) -> i32 {
+        nums.sort();
+        let mut sum = 0;
+        for &num in &nums {
+            sum += (nums[nums.len() / 2] - num).abs();
+        }
+        sum
+    }
+    pub fn quickselect_pivot(mut nums: Vec<i32>) -> i32 {
+        fn partition(list: &mut Vec<i32>, left: i32, right: i32) -> i32 {
+            let pivot_value = list[right as usize];
+            let mut i = left;
+            for j in left..=right {
+                if list[j as usize] < pivot_value {
+                    list.swap(i as usize, j as usize);
+                    i += 1;
+                }
+            }
+            list.swap(i as usize, right as usize);
+            i
+        }
+        fn select(list: &mut Vec<i32>, left: i32, right: i32, k: i32) -> i32 {
+            if left == right {
+                return list[left as usize];
+            }
+            let pivot_index = partition(list, left, right);
+            if k == pivot_index {
+                list[k as usize]
+            } else if k < pivot_index {
+                select(list, left, pivot_index - 1, k)
+            } else {
+                select(list, pivot_index + 1, right, k)
+            }
+        }
+
+        let mut sum = 0;
+        let n = nums.len() as i32;
+        let median = select(&mut nums, 0, n - 1, n / 2);
+
+        for num in nums {
+            sum += (median - num).abs();
+        }
+
+        sum
+    }
+    quickselect_pivot(nums)
 }
