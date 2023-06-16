@@ -1,13 +1,3 @@
-// https://leetcode.com/problems/the-number-of-weak-characters-in-the-game/description/
-pub fn number_of_weak_characters(properties: Vec<Vec<i32>>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/description/
-pub fn min_moves2(nums: Vec<i32>) -> i32 {
-    todo!()
-}
-
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
