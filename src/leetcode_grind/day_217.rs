@@ -113,6 +113,46 @@ pub fn make_array_increasing(arr1: Vec<i32>, mut arr2: Vec<i32>) -> i32 {
     make_array_increasing_bottom_up(arr1, arr2)
 }
 
+// https://leetcode.com/problems/minimum-operations-to-make-the-array-increasing/description/
+pub fn min_operations(mut nums: Vec<i32>) -> i32 {
+    let mut ans = 0;
+    for i in 1..nums.len() {
+        if nums[i] > nums[i - 1] + 1 {
+            continue;
+        }
+        let diff = nums[i - 1] + 1 - nums[i];
+        nums[i] += diff;
+        ans += diff;
+    }
+    ans
+}
+
+// https://leetcode.com/problems/non-decreasing-array/description/
+pub fn check_possibility(mut nums: Vec<i32>) -> bool {
+    let mut count = 0;
+    for i in 1..nums.len() {
+        if nums[i - 1] > nums[i] {
+            if count == 1 {
+                return false;
+            }
+
+            count += 1;
+
+            if i < 2 || nums[i - 2] <= nums[i] {
+                nums[i - 1] = nums[i];
+            } else {
+                nums[i] = nums[i - 1];
+            }
+        }
+    }
+    true
+}
+
+// https://leetcode.com/problems/find-good-days-to-rob-the-bank/description/
+pub fn good_days_to_rob_bank(security: Vec<i32>, time: i32) -> Vec<i32> {
+    todo!()
+}
+
 // https://leetcode.com/problems/make-array-non-decreasing-or-non-increasing/
 pub fn convert_array(nums: Vec<i32>) -> i32 {
     todo!()
