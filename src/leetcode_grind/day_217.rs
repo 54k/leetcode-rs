@@ -179,7 +179,26 @@ pub fn good_days_to_rob_bank(security: Vec<i32>, time: i32) -> Vec<i32> {
 
 // https://leetcode.com/problems/make-array-non-decreasing-or-non-increasing/
 pub fn convert_array(nums: Vec<i32>) -> i32 {
-    todo!()
+    use std::collections::BinaryHeap;
+    fn calc(nums: &Vec<i32>) -> i32 {
+        let mut heap = BinaryHeap::new();
+        let mut res = 0;
+        for &num in nums {
+            if let Some(&t) = heap.peek() {
+                if t >= num {
+                    res += (num as i32 - t as i32).abs();
+                    heap.pop();
+                    heap.push(num);
+                }
+            }
+            heap.push(num);
+        }
+        res
+    }
+    let incr = calc(&nums);
+    let decr = calc(&nums.into_iter().map(|x| -x).collect());
+    // println!("i {} d {}", incr, decr);
+    incr.min(decr)
 }
 
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
