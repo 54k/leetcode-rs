@@ -222,25 +222,59 @@ pub fn appeal_sum(s: String) -> i64 {
     //     }
     //     return ans;
     // }
-    let s = s.chars().collect::<Vec<_>>();
-    let mut idx = vec![-1; 26];
-    let (mut x, mut y) = (1, 1);
-    idx[s[0] as usize - 'a' as usize] = 1;
-    for (i, ch) in s.into_iter().enumerate().skip(1) {
-        let chi = ch as usize - 'a' as usize;
+    pub fn approach2(s: String) -> i64 {
+        let s = s.chars().collect::<Vec<_>>();
+        let mut dp = vec![0; 26];
+        let mut acc = 0;
+        let mut ans = 0;
+        for i in 0..s.len() {
+            acc -= dp[s[i] as usize - 'a' as usize];
+            dp[s[i] as usize - 'a' as usize] = i as i32 + 1;
+            acc += dp[s[i] as usize - 'a' as usize];
+            ans += acc as i64;
+        }
+        ans
+    }
+    pub fn approach1(s: String) -> i64 {
+        let s = s.chars().collect::<Vec<_>>();
+        let mut idx = vec![-1; 26];
+        let (mut x, mut y) = (1, 1);
+        idx[s[0] as usize - 'a' as usize] = 1;
+        for (i, ch) in s.into_iter().enumerate().skip(1) {
+            let chi = ch as usize - 'a' as usize;
 
-        x += i as i32 + 1; // ans till ith idx
+            x += i as i32 + 1; // ans till ith idx
 
-        if idx[chi] > 0 {
-            x -= idx[chi];
+            if idx[chi] > 0 {
+                x -= idx[chi];
+            }
+
+            y += x as i64;
+
+            idx[chi] = i as i32 + 1;
         }
 
-        y += x as i64;
-
-        idx[chi] = i as i32 + 1;
+        y
     }
+    todo!()
+}
 
-    y
+// https://leetcode.com/problems/minimum-consecutive-cards-to-pick-up/description/
+pub fn minimum_card_pickup(cards: Vec<i32>) -> i32 {
+    use std::collections::HashMap;
+    let mut m = HashMap::new();
+    let mut ans = i32::MAX;
+    for (i, c) in cards.iter().enumerate() {
+        if m.contains_key(c) {
+            ans = ans.min(i as i32 - m[c] + 1);
+        }
+        m.insert(c, i as i32);
+    }
+    if ans == i32::MAX {
+        -1
+    } else {
+        ans
+    }
 }
 
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
