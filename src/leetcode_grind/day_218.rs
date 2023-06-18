@@ -142,7 +142,71 @@ pub fn longest_increasing_path(matrix: Vec<Vec<i32>>) -> i32 {
 
 // https://leetcode.com/problems/maximum-strictly-increasing-cells-in-a-matrix/description/
 pub fn max_increasing_cells(mat: Vec<Vec<i32>>) -> i32 {
-    todo!()
+    pub fn brute_tle(mat: Vec<Vec<i32>>) -> i32 {
+        let (m, n) = (mat.len(), mat[0].len());
+        let mut cells = vec![vec![0; 2]; m * n];
+        for i in 0..m {
+            for j in 0..n {
+                let index = i * n + j;
+                cells[index][0] = i;
+                cells[index][1] = j;
+            }
+        }
+        cells.sort_by(|a, b| mat[a[0]][a[1]].cmp(&mat[b[0]][b[1]]));
+
+        let mut ans = 0;
+        let mut dp = vec![vec![1; n]; m];
+        for cell in cells {
+            let (i, j) = (cell[0], cell[1]);
+
+            // row
+            for k in 0..m {
+                if mat[k][j] < mat[i][j] {
+                    dp[i][j] = dp[i][j].max(1 + dp[k][j]);
+                }
+            }
+
+            // col
+            for k in 0..n {
+                if mat[i][k] < mat[i][j] {
+                    dp[i][j] = dp[i][j].max(1 + dp[i][k]);
+                }
+            }
+
+            ans = ans.max(dp[i][j]);
+        }
+        ans
+    }
+
+    pub fn btree_map(mat: Vec<Vec<i32>>) -> i32 {
+        use std::collections::BTreeMap;
+        let mut cells = BTreeMap::new();
+        let (m, n) = (mat.len(), mat[0].len());
+        for i in 0..m {
+            for j in 0..n {
+                cells.entry(mat[i][j]).or_insert(vec![]).push(vec![i, j]);
+            }
+        }
+        let mut max_vals = vec![0; m + n];
+        let mut ans = 0;
+        let mut dp = vec![vec![0; n]; m];
+        for val in cells.keys() {
+            for cell in &cells[val] {
+                let (i, j) = (cell[0], cell[1]);
+                dp[i][j] = max_vals[i].max(max_vals[j + m]) + 1;
+                ans = ans.max(dp[i][j]);
+            }
+
+            for cell in &cells[val] {
+                let (i, j) = (cell[0], cell[1]);
+                max_vals[i] = max_vals[i].max(dp[i][j]);
+                max_vals[j + m] = max_vals[j + m].max(dp[i][j]);
+            }
+        }
+        ans
+    }
+
+    btree_map(mat)
 }
 
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
