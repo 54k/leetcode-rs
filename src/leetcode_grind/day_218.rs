@@ -209,6 +209,40 @@ pub fn max_increasing_cells(mat: Vec<Vec<i32>>) -> i32 {
     btree_map(mat)
 }
 
+// https://leetcode.com/problems/total-appeal-of-a-string/description/
+pub fn appeal_sum(s: String) -> i64 {
+    // public long appealSum(String s) {
+    //     int[] a = new int[26];
+    //     long c=0;
+    //     long ans=0;
+    //     for(int i=0;i<s.length();i++)
+    //     {
+    //         c-=a[s.charAt(i)-'a'];
+    //         ans+=c+=a[s.charAt(i)-'a']=i+1;
+    //     }
+    //     return ans;
+    // }
+    let s = s.chars().collect::<Vec<_>>();
+    let mut idx = vec![-1; 26];
+    let (mut x, mut y) = (1, 1);
+    idx[s[0] as usize - 'a' as usize] = 1;
+    for (i, ch) in s.into_iter().enumerate().skip(1) {
+        let chi = ch as usize - 'a' as usize;
+
+        x += i as i32 + 1; // ans till ith idx
+
+        if idx[chi] > 0 {
+            x -= idx[chi];
+        }
+
+        y += x as i64;
+
+        idx[chi] = i as i32 + 1;
+    }
+
+    y
+}
+
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
