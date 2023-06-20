@@ -1,3 +1,29 @@
+// https://leetcode.com/problems/k-radius-subarray-averages/description/
+pub fn get_averages(nums: Vec<i32>, k: i32) -> Vec<i32> {
+    let mut ans = vec![-1; nums.len()];
+    let (mut start, mut sum) = (0, 0);
+    for (end, &num) in nums.iter().enumerate() {
+        sum += num as i64;
+        if end as i32 >= 2 * k {
+            ans[start + k as usize] = (sum / (2 * k + 1) as i64) as i32;
+            sum -= nums[start] as i64;
+            start += 1;
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/bitwise-and-of-numbers-range/description/
+pub fn range_bitwise_and(mut left: i32, mut right: i32) -> i32 {
+    let mut shift = 0;
+    while left < right {
+        left >>= 1;
+        right >>= 1;
+        shift += 1;
+    }
+    right << shift
+}
+
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
