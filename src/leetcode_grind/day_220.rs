@@ -24,51 +24,66 @@ pub fn range_bitwise_and(mut left: i32, mut right: i32) -> i32 {
     right << shift
 }
 
-// https://leetcode.com/problems/minimum-falling-path-sum-ii/
-pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
-    todo!()
+// https://leetcode.com/problems/design-memory-allocator/
+struct Allocator {
+    memory: Vec<i32>,
 }
 
-// https://leetcode.com/problems/stone-game-v/description/
-pub fn stone_game_v(stone_value: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-vi/description/
-pub fn stone_game_vi(alice_values: Vec<i32>, bob_values: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-vii/description/
-pub fn stone_game_vii(stones: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/description/
-pub fn remove_stones(stones: Vec<Vec<i32>>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/range-sum-query-2d-mutable/description/
-mod rmq2d {
-    struct NumMatrix {}
-
-    impl NumMatrix {
-        fn new(matrix: Vec<Vec<i32>>) -> Self {
-            todo!()
+impl Allocator {
+    fn new(n: i32) -> Self {
+        Self {
+            memory: vec![0; n as usize],
         }
-
-        fn update(&self, row: i32, col: i32, val: i32) {
-            todo!()
+    }
+    fn allocate(&mut self, size: i32, m_id: i32) -> i32 {
+        let mut cnt = 0;
+        for i in 0..self.memory.len() {
+            if self.memory[i] == 0 {
+                cnt += 1;
+                if cnt == size {
+                    for j in (i as i32 - size + 1..=i as i32).rev() {
+                        self.memory[j as usize] = m_id;
+                    }
+                    return i as i32 - size + 1;
+                }
+            } else {
+                cnt = 0;
+            }
         }
-
-        fn sum_region(&self, row1: i32, col1: i32, row2: i32, col2: i32) -> i32 {
-            todo!()
+        -1
+    }
+    fn free(&mut self, m_id: i32) -> i32 {
+        let mut ans = 0;
+        for i in 0..self.memory.len() {
+            if self.memory[i] == m_id {
+                ans += 1;
+                self.memory[i] = 0;
+            }
         }
+        ans
     }
 }
 
-// https://leetcode.com/problems/maximize-grid-happiness/description/
-pub fn get_max_grid_happiness(m: i32, n: i32, introverts_count: i32, extroverts_count: i32) -> i32 {
-    todo!()
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test() {
+        let mut alloc = Allocator::new(10);
+        println!("{}", alloc.allocate(1, 1));
+        println!("{}", alloc.allocate(1, 2));
+        println!("{}", alloc.allocate(1, 3));
+
+        println!("{}", alloc.free(2));
+
+        println!("{}", alloc.allocate(3, 4));
+        println!("{}", alloc.allocate(1, 1));
+        println!("{}", alloc.allocate(1, 1));
+
+        println!("{}", alloc.free(1));
+
+        println!("{}", alloc.allocate(10, 2));
+        println!("{}", alloc.free(7));
+    }
 }
