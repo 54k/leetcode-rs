@@ -129,6 +129,7 @@ pub mod day_217;
 pub mod day_218;
 pub mod day_219;
 pub mod day_22;
+pub mod day_220;
 pub mod day_23;
 pub mod day_24;
 pub mod day_25;
