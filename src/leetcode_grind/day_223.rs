@@ -16,6 +16,33 @@ pub fn longest_arith_seq_length(nums: Vec<i32>) -> i32 {
     max_len
 }
 
+// https://leetcode.com/problems/longest-arithmetic-subsequence/
+pub fn destroy_targets(mut nums: Vec<i32>, space: i32) -> i32 {
+    use std::collections::HashMap;
+    let mut max = i32::MIN;
+    let mut hm = HashMap::new();
+    for i in 0..nums.len() {
+        let k = nums[i] % space;
+        *hm.entry(k).or_insert(0) += 1;
+        if hm[&k] > max {
+            max = hm[&k];
+        }
+    }
+    let mut ans = i32::MAX;
+    for i in 0..nums.len() {
+        let k = nums[i] % space;
+        if hm[&k] == max && ans > nums[i] {
+            ans = nums[i];
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/destroy-sequential-targets/description/
+pub fn destroy_targets(nums: Vec<i32>, space: i32) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
