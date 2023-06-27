@@ -31,7 +31,18 @@ pub fn k_smallest_pairs(nums1: Vec<i32>, nums2: Vec<i32>, mut k: i32) -> Vec<Vec
 
 // https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/description/
 pub fn longest_subsequence(arr: Vec<i32>, difference: i32) -> i32 {
-    todo!()
+    use std::collections::HashMap;
+
+    let mut dp = HashMap::new();
+    let mut ans = 1;
+
+    for a in arr {
+        let before_a = *dp.get(&(a - difference)).unwrap_or(&0);
+        dp.insert(a, before_a + 1);
+        ans = ans.max(dp[&a]);
+    }
+
+    ans
 }
 
 // https://leetcode.com/problems/destroy-sequential-targets/description/
