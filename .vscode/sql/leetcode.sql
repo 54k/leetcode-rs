@@ -44,4 +44,28 @@ from
     ) q
 order by
     q.spending desc,
-    q.user_id asc
+    q.user_id asc;
+
+-- https://leetcode.com/problems/nth-highest-salary/description/
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT BEGIN
+SET
+    N = N - 1;
+
+RETURN (
+    # Write your MySQL query statement below.
+    select
+        *
+    from
+        (
+            select
+                distinct salary
+            from
+                Employee
+            order by
+                salary desc
+            limit
+                1 offset N
+        ) as t
+);
+
+END
