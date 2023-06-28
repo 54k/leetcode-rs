@@ -68,9 +68,62 @@ pub fn max_probability_spfa(
     max_prob[end as usize]
 }
 
+// https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/description/
+pub fn count_paths(n: i32, roads: Vec<Vec<i32>>) -> i32 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+    const MOD: i64 = 1000_000_007;
+
+    let mut graph = vec![vec![]; n as usize];
+
+    for road in roads {
+        let (u, v, cost) = (road[0] as usize, road[1] as usize, road[2]);
+        graph[u].push((v, cost as i64));
+        graph[v].push((u, cost as i64));
+    }
+
+    let mut heap = BinaryHeap::new();
+    let mut dist = vec![(i64::MAX, 0); n as usize];
+    dist[0] = (0, 1); // cost, ways
+    heap.push(Reverse((0i64, 0usize))); // cost, node
+
+    while let Some(Reverse(curr)) = heap.pop() {
+        let (cost, v) = (curr.0, curr.1);
+
+        for (nxt, nxt_cost) in &graph[v] {
+            let nxt = *nxt;
+            if cost + nxt_cost < dist[nxt].0 {
+                dist[nxt] = (cost + nxt_cost, dist[v].1);
+                heap.push(Reverse((cost + nxt_cost, nxt)));
+            } else if cost + nxt_cost == dist[nxt].0 {
+                dist[nxt].1 = (dist[nxt].1 % MOD + dist[v].1 % MOD) % MOD;
+            }
+        }
+    }
+
+    dist[n as usize - 1].1 as i32
+}
+
 // https://leetcode.com/problems/destroy-sequential-targets/description/
-pub fn destroy_targets(nums: Vec<i32>, space: i32) -> i32 {
-    todo!()
+pub fn destroy_targets(mut nums: Vec<i32>, space: i32) -> i32 {
+    use std::collections::HashMap;
+    let mut max = i32::MIN;
+    let mut hm = HashMap::new();
+    for i in 0..nums.len() {
+        let k = nums[i] % space;
+        *hm.entry(k).or_insert(0) += 1;
+        if hm[&k] > max {
+            max = hm[&k];
+        }
+    }
+    let mut ans = i32::MAX;
+    for i in 0..nums.len() {
+        let k = nums[i] % space;
+        if hm[&k] == max && ans > nums[i] {
+            ans = nums[i];
+        }
+    }
+    ans
 }
 
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
