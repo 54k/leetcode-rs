@@ -1,3 +1,99 @@
+pub fn shortest_path_all_keys(grid: Vec<String>) -> i32 {
+    use std::collections::{HashMap, HashSet, VecDeque};
+
+    let grid = grid
+        .into_iter()
+        .map(|s| s.chars().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+
+    const DIR: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
+
+    let (m, n) = (grid.len(), grid[0].len());
+
+    let mut key_set = HashSet::new();
+    let mut lock_set = HashSet::new();
+
+    let mut all_keys = 0;
+    let (mut start_row, mut start_col) = (-1, -1);
+
+    for i in 0..m {
+        for j in 0..n {
+            let cell = grid[i][j];
+
+            if cell >= 'a' && cell <= 'f' {
+                all_keys += (1 << (cell as i32 - 'a' as i32));
+                key_set.insert(cell);
+            }
+
+            if cell >= 'A' && cell <= 'F' {
+                lock_set.insert(cell);
+            }
+
+            if cell == '@' {
+                start_row = i as i32;
+                start_col = j as i32;
+            }
+        }
+    }
+
+    let mut seen: HashMap<i32, HashSet<(i32, i32)>> = HashMap::new();
+    let mut queue = VecDeque::new();
+
+    queue.push_back((start_row, start_col, 0, 0)); // [row, col, key_state, distance]
+    seen.insert(0, HashSet::new());
+    seen.get_mut(&0).unwrap().insert((start_row, start_col));
+
+    while let Some((cur_r, cur_c, keys, dist)) = queue.pop_front() {
+        for d in &DIR {
+            let (new_r, new_c) = (cur_r + d.0, cur_c + d.1);
+
+            if 0 <= new_r
+                && new_r < m as i32
+                && 0 <= new_c
+                && new_c < n as i32
+                && grid[new_r as usize][new_c as usize] != '#'
+            {
+                let cell = grid[new_r as usize][new_c as usize];
+                // if it is a key
+                if key_set.contains(&cell) {
+                    // If we have collected it before, no need to revisit this cell.
+                    if (1 << (cell as i32 - 'a' as i32)) & keys != 0 {
+                        continue;
+                    }
+                    // Otherwise, we can walk to this cell and pick it up.
+                    let new_keys = keys | (1 << (cell as i32 - 'a' as i32));
+
+                    // If we collect all keys, return dist + 1.
+                    // Otherwise, just add this state to seen and queue.
+                    if new_keys == all_keys {
+                        return dist + 1;
+                    }
+                    seen.entry(new_keys).or_insert(HashSet::new());
+                    seen.get_mut(&new_keys).unwrap().insert((new_r, new_c));
+                    queue.push_back((new_r, new_c, new_keys, dist + 1));
+                }
+
+                // If it is a lock and we don't have its key, continue.
+                if lock_set.contains(&cell) && (keys & (1 << (cell as i32 - 'A' as i32))) == 0 {
+                    continue;
+                }
+                // We can walk to this cell if we haven't been here before with the same key state.
+                else if !seen.get(&keys).unwrap().contains(&(new_r, new_c)) {
+                    seen.get_mut(&keys).unwrap().insert((new_r, new_c));
+                    queue.push_back((new_r, new_c, keys, dist + 1));
+                }
+            }
+        }
+    }
+
+    -1
+}
+
+// https://leetcode.com/problems/minimum-cost-to-merge-stones/description/
+pub fn merge_stones(stones: Vec<i32>, k: i32) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
 pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
     todo!()
