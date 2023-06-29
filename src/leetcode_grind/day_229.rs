@@ -1,3 +1,4 @@
+// https://leetcode.com/problems/shortest-path-to-get-all-keys/
 pub fn shortest_path_all_keys(grid: Vec<String>) -> i32 {
     use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -90,8 +91,38 @@ pub fn shortest_path_all_keys(grid: Vec<String>) -> i32 {
 }
 
 // https://leetcode.com/problems/minimum-cost-to-merge-stones/description/
+// https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/247567/java-c-python-dp/
 pub fn merge_stones(stones: Vec<i32>, k: i32) -> i32 {
-    todo!()
+    let n = stones.len();
+    if (n as i32 - 1) % (k - 1) > 0 {
+        return -1;
+    }
+
+    let mut prefix = vec![0; n + 1];
+    for i in 0..n {
+        prefix[i + 1] = prefix[i] + stones[i];
+    }
+
+    let mut dp = vec![vec![0; n]; n];
+
+    for m in k..=n as i32 {
+        for i in 0..=n as i32 - m {
+            let j = i + m - 1;
+            dp[i as usize][j as usize] = i32::MAX;
+            let mut mid = i;
+            while mid < j {
+                dp[i as usize][j as usize] = dp[i as usize][j as usize]
+                    .min(dp[i as usize][mid as usize] + dp[mid as usize + 1][j as usize]);
+                mid += k - 1;
+            }
+
+            if (j - i) % (k - 1) == 0 {
+                dp[i as usize][j as usize] += prefix[j as usize + 1] - prefix[i as usize];
+            }
+        }
+    }
+
+    dp[0][n - 1]
 }
 
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
