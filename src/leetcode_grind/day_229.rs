@@ -92,37 +92,84 @@ pub fn shortest_path_all_keys(grid: Vec<String>) -> i32 {
 
 // https://leetcode.com/problems/minimum-cost-to-merge-stones/description/
 // https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/247567/java-c-python-dp/
+// https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/1432667/explained-to-make-you-visualise-the-solution-detailed-explanation/
+// https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/675912/dp-code-decoded-for-non-experts-like-me/
 pub fn merge_stones(stones: Vec<i32>, k: i32) -> i32 {
-    let n = stones.len();
-    if (n as i32 - 1) % (k - 1) > 0 {
-        return -1;
-    }
+    // Time: O(N^3/K), Space: O(N^2)
 
-    let mut prefix = vec![0; n + 1];
-    for i in 0..n {
-        prefix[i + 1] = prefix[i] + stones[i];
-    }
+    // Fesibility check:
+    // Let the final length of the stones after m merges is 1.
+    // Each merge reduces the length by K-1.
+    // After first merge, length is N - (K-1), after second, length is N - (K-1) - (K-1) = N- 2*(K-1).
+    // After m merges, length = m*(K-1) which is 1.
+    // That is, m(K-1) = N - 1 to be able to get to 1.
+    // Re arranging, N-1/K-1 needs to an integer, m for given N and K.
+    // Thus the check, (N-1) % (K-1) == 0
 
-    let mut dp = vec![vec![0; n]; n];
+    // Populating the table:
+    // We start from a minimum length, len of K. Anything lesser,
+    // does not incur any cost.
+    // We then find minimum costs for all sub-problems of lengths from K to N.
+    // Every time, we solve a sub-problem for which, len-1 is a multiple of K-1, it signifies a real merge.
+    // (eg. For N = 5 & K = 3, len of 3 and 5 are real merges, whereas len of 4 is not!).
+    // The reason to calculate sub-problems which are not real merges,
+    // is to copy over the minimum of previous merge costs towards caculating the next real merge (merely bookkeeping).
 
-    for m in k..=n as i32 {
-        for i in 0..=n as i32 - m {
-            let j = i + m - 1;
-            dp[i as usize][j as usize] = i32::MAX;
-            let mut mid = i;
-            while mid < j {
-                dp[i as usize][j as usize] = dp[i as usize][j as usize]
-                    .min(dp[i as usize][mid as usize] + dp[mid as usize + 1][j as usize]);
-                mid += k - 1;
-            }
+    // Cost calculation and Partial sum table
+    // Every time len-1 is a multiple of K, we incur a cost.
+    // This cost = sum of ( all stones under the span of len).
+    // Since the cost is merely sum of a contiguos sub-array of input,
+    // we pre-caculate the partial sums for O(1) lookup. The check (len-1 )% (K-1) == 0,
+    // signals a true merge and we calcuate the additional costs for this sub-problem.
 
-            if (j - i) % (k - 1) == 0 {
-                dp[i as usize][j as usize] += prefix[j as usize + 1] - prefix[i as usize];
+    // Trickiest part for me
+    // Indexing over the previous sub-problems to calculate the current problem, is at the heart of this question.
+    // This current problem is composed of pairs of sub-problems of sizes ( [1, len-1], [K, rest], [1+ K-1 + K-1, rest], ... [len-1, 1] )
+    // which is equivalent to ( [1, len-1], [1 + (K-1), rest], [1 + 2(K-1), rest] ...[len-1, 1] ).
+    // We can add the cost of the merge only after finding the min of the previous sub-problem costs and it affects all the candidates for the DP entry equally.
+
+    // Work through these examples for clarity
+    // So, the first example is a trick! Just for K = 2, every value of len Несет a cost! This threw me off for some time. Here is an example that helped me clear up the nasty bugs:
+    // [1,4,3,3,2], K = 3, 4, 5
+    fn top_down_2d(stones: Vec<i32>, k: i32) -> i32 {
+        let n = stones.len();
+        if (n as i32 - 1) % (k - 1) > 0 {
+            return -1;
+        }
+
+        let mut prefix = vec![0; n + 1];
+        for i in 0..n {
+            prefix[i + 1] = prefix[i] + stones[i];
+        }
+
+        let mut dp = vec![vec![0; n]; n];
+
+        for m in k..=n as i32 {
+            for i in 0..=n as i32 - m {
+                let j = i + m - 1;
+                dp[i as usize][j as usize] = i32::MAX;
+                let mut mid = i;
+                while mid < j {
+                    dp[i as usize][j as usize] = dp[i as usize][j as usize]
+                        .min(dp[i as usize][mid as usize] + dp[mid as usize + 1][j as usize]);
+                    mid += k - 1;
+                }
+
+                if (j - i) % (k - 1) == 0 {
+                    dp[i as usize][j as usize] += prefix[j as usize + 1] - prefix[i as usize];
+                }
             }
         }
+
+        dp[0][n - 1]
     }
 
-    dp[0][n - 1]
+    top_down_2d(stones, k)
+}
+
+// https://leetcode.com/problems/cracking-the-safe/description/
+pub fn crack_safe(n: i32, k: i32) -> String {
+    todo!()
 }
 
 // https://leetcode.com/problems/minimum-falling-path-sum-ii/
