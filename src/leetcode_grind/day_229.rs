@@ -94,6 +94,8 @@ pub fn shortest_path_all_keys(grid: Vec<String>) -> i32 {
 // https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/247567/java-c-python-dp/
 // https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/1432667/explained-to-make-you-visualise-the-solution-detailed-explanation/
 // https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/675912/dp-code-decoded-for-non-experts-like-me/
+// https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/1160631/hard-dp-problem-explained-in-clean-and-commented-java-code/
+// https://leetcode.com/problems/minimum-cost-to-merge-stones/solutions/247657/JAVA-Bottom-Up-+-Top-Down-DP-With-Explaination/
 pub fn merge_stones(stones: Vec<i32>, k: i32) -> i32 {
     // Time: O(N^3/K), Space: O(N^2)
 
