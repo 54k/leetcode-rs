@@ -1,5 +1,5 @@
 // https://leetcode.com/problems/last-day-where-you-can-still-cross/description/
-pub fn latest_day_to_cross(row: i32, col: i32, cells: Vec<Vec<i32>>) -> i32 {
+pub fn latest_day_to_cross_bfs(row: i32, col: i32, cells: Vec<Vec<i32>>) -> i32 {
     const DIR: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
 
     fn can_cross(row: i32, col: i32, cells: &Vec<Vec<i32>>, day: usize) -> bool {
@@ -40,6 +40,59 @@ pub fn latest_day_to_cross(row: i32, col: i32, cells: Vec<Vec<i32>>) -> i32 {
         }
 
         false
+    }
+
+    let (mut left, mut right) = (1, row * col);
+
+    while left < right {
+        let mid = right - (right - left) / 2;
+
+        if can_cross(row, col, &cells, mid as usize) {
+            left = mid;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    left
+}
+
+pub fn latest_day_to_cross_dfs(row: i32, col: i32, cells: Vec<Vec<i32>>) -> i32 {
+    const DIR: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
+
+    fn can_cross(row: i32, col: i32, cells: &Vec<Vec<i32>>, day: usize) -> bool {
+        let mut grid = vec![vec![0; col as usize]; row as usize];
+
+        for i in 0..day {
+            grid[cells[i][0] as usize - 1][cells[i][1] as usize - 1] = 1;
+        }
+
+        for i in 0..col {
+            if grid[0][i as usize] == 0 && dfs(&mut grid, 0, i as i32, row, col) {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn dfs(grid: &mut Vec<Vec<i32>>, r: i32, c: i32, row: i32, col: i32) -> bool {
+        if r < 0 || r >= row || c < 0 || c >= col || grid[r as usize][c as usize] != 0 {
+            return false;
+        }
+
+        if r == row - 1 {
+            return true;
+        }
+
+        grid[r as usize][c as usize] = -1;
+
+        for d in &DIR {
+            let (new_r, new_c) = (r + d.0, c + d.1);
+            if dfs(grid, new_r, new_c, row, col) {
+                return true;
+            }
+        }
+        return false;
     }
 
     let (mut left, mut right) = (1, row * col);
