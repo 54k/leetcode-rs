@@ -1,3 +1,71 @@
+// https://leetcode.com/problems/last-day-where-you-can-still-cross/description/
+pub fn latest_day_to_cross(row: i32, col: i32, cells: Vec<Vec<i32>>) -> i32 {
+    const DIR: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
+
+    fn can_cross(row: i32, col: i32, cells: &Vec<Vec<i32>>, day: usize) -> bool {
+        use std::collections::VecDeque;
+
+        let mut grid = vec![vec![0; col as usize]; row as usize];
+        let mut queue = VecDeque::new();
+
+        for i in 0..day {
+            grid[cells[i][0] as usize - 1][cells[i][1] as usize - 1] = 1;
+        }
+
+        for i in 0..col {
+            if grid[0][i as usize] == 0 {
+                queue.push_back((0, i));
+                grid[0][i as usize] = -1;
+            }
+        }
+
+        while let Some((r, c)) = queue.pop_front() {
+            if r == row - 1 {
+                return true;
+            }
+
+            for d in &DIR {
+                let (new_r, new_c) = (r + d.0, c + d.1);
+
+                if 0 <= new_r
+                    && new_r < row
+                    && 0 <= new_c
+                    && new_c < col
+                    && grid[new_r as usize][new_c as usize] == 0
+                {
+                    grid[new_r as usize][new_c as usize] = -1;
+                    queue.push_back((new_r, new_c));
+                }
+            }
+        }
+
+        false
+    }
+
+    let (mut left, mut right) = (1, row * col);
+
+    while left < right {
+        let mid = right - (right - left) / 2;
+
+        if can_cross(row, col, &cells, mid as usize) {
+            left = mid;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    left
+}
+
+// https://leetcode.com/problems/bricks-falling-when-hit/description/
+pub fn hit_bricks(grid: Vec<Vec<i32>>, hits: Vec<Vec<i32>>) -> Vec<i32> {
+    todo!()
+}
+
+// https://leetcode.com/problems/escape-the-spreading-fire/description/
+pub fn maximum_minutes(grid: Vec<Vec<i32>>) -> i32 {
+    todo!()
+}
 // https://leetcode.com/problems/cracking-the-safe/description/
 pub fn crack_safe(n: i32, k: i32) -> String {
     todo!()
