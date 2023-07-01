@@ -3,6 +3,11 @@ pub fn maximum_rows(matrix: Vec<Vec<i32>>, num_select: i32) -> i32 {
     todo!()
 }
 
+// https://leetcode.com/problems/number-of-ways-to-wear-different-hats-to-each-other/description/
+pub fn number_ways(hats: Vec<Vec<i32>>) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array/description/
 pub fn ways_to_partition(nums: Vec<i32>, k: i32) -> i32 {
     todo!()
