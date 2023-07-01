@@ -1,5 +1,7 @@
 package main
 
+import "sort"
+
 func distributeCookies(cookies []int, k int) int {
 	distribute := make([]int, k)
 	const MAX = 2_147_483_647
@@ -41,4 +43,38 @@ func distributeCookies(cookies []int, k int) int {
 	}
 
 	return dfs(0, k)
+}
+
+func threeSum(nums []int) [][]int {
+	n := len(nums)
+	ans := [][]int{}
+	sort.Ints(nums)
+
+	var twoSum func(int)
+	twoSum = func(i int) {
+		left, right := i+1, n-1
+		for left < right {
+			sum := nums[i] + nums[left] + nums[right]
+			if sum < 0 {
+				left++
+			} else if sum > 0 {
+				right--
+			} else {
+				ans = append(ans, []int{nums[left], nums[right], nums[i]})
+				left++
+				right--
+				for left < right && nums[left] == nums[left-1] {
+					left++
+				}
+			}
+		}
+	}
+
+	for i := 0; i < n && nums[i] <= 0; i++ {
+		if i == 0 || nums[i-1] != nums[i] {
+			twoSum(i)
+		}
+	}
+
+	return ans
 }
