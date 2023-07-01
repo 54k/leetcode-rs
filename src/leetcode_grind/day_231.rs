@@ -1,63 +1,213 @@
-// https://leetcode.com/problems/bricks-falling-when-hit/description/
-pub fn hit_bricks(grid: Vec<Vec<i32>>, hits: Vec<Vec<i32>>) -> Vec<i32> {
-    todo!()
-}
+// https://leetcode.com/problems/fair-distribution-of-cookies/description/
+pub fn distribute_cookies(cookies: Vec<i32>, k: i32) -> i32 {
+    let mut distribute = vec![0; k as usize];
 
-// https://leetcode.com/problems/escape-the-spreading-fire/description/
-pub fn maximum_minutes(grid: Vec<Vec<i32>>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/cracking-the-safe/description/
-pub fn crack_safe(n: i32, k: i32) -> String {
-    todo!()
-}
-
-// https://leetcode.com/problems/minimum-falling-path-sum-ii/
-pub fn min_falling_path_sum(grid: Vec<Vec<i32>>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-v/description/
-pub fn stone_game_v(stone_value: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-vi/description/
-pub fn stone_game_vi(alice_values: Vec<i32>, bob_values: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/stone-game-vii/description/
-pub fn stone_game_vii(stones: Vec<i32>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/description/
-pub fn remove_stones(stones: Vec<Vec<i32>>) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/range-sum-query-2d-mutable/description/
-mod rmq2d {
-    struct NumMatrix {}
-
-    impl NumMatrix {
-        fn new(matrix: Vec<Vec<i32>>) -> Self {
-            todo!()
+    fn dfs(
+        i: i32,
+        distribute: &mut Vec<i32>,
+        cookies: &Vec<i32>,
+        k: i32,
+        mut zero_count: i32,
+    ) -> i32 {
+        if cookies.len() as i32 - i < zero_count {
+            return i32::MAX;
         }
 
-        fn update(&self, row: i32, col: i32, val: i32) {
-            todo!()
+        if i == cookies.len() as i32 {
+            let mut unfairness = i32::MIN;
+            for value in distribute {
+                unfairness = unfairness.max(*value);
+            }
+            return unfairness;
         }
 
-        fn sum_region(&self, row1: i32, col1: i32, row2: i32, col2: i32) -> i32 {
-            todo!()
+        let mut answer = i32::MAX;
+
+        for j in 0..k {
+            zero_count -= if distribute[j as usize] == 0 { 1 } else { 0 };
+            distribute[j as usize] += cookies[i as usize];
+
+            answer = answer.min(dfs(i + 1, distribute, cookies, k, zero_count));
+
+            distribute[j as usize] -= cookies[i as usize];
+            zero_count += if distribute[j as usize] == 0 { 1 } else { 0 };
         }
+
+        answer
     }
+
+    dfs(0, &mut distribute, &cookies, k, k)
 }
 
-// https://leetcode.com/problems/maximize-grid-happiness/description/
-pub fn get_max_grid_happiness(m: i32, n: i32, introverts_count: i32, extroverts_count: i32) -> i32 {
-    todo!()
+// https://leetcode.com/problems/partition-to-k-equal-sum-subsets/description/
+pub fn can_partition_k_subsets_tle(nums: Vec<i32>, k: i32) -> bool {
+    let mut subsets = vec![0; k as usize];
+
+    fn dfs(i: i32, nums: &Vec<i32>, subsets: &mut Vec<i32>, k: i32) -> bool {
+        if i == nums.len() as i32 {
+            for i in 1..subsets.len() {
+                if subsets[i as usize - 1] != subsets[i as usize] {
+                    return false;
+                }
+            }
+            return true;
+        }
+        let mut answer = false;
+        for j in 0..k {
+            subsets[j as usize] += nums[i as usize];
+            answer = answer || dfs(i + 1, nums, subsets, k);
+            subsets[j as usize] -= nums[i as usize];
+        }
+        answer
+    }
+
+    dfs(0, &nums, &mut subsets, k)
+}
+
+pub fn can_partition_k_subsets_backtrack_sort(mut nums: Vec<i32>, k: i32) -> bool {
+    fn backtrack(
+        arr: &Vec<i32>,
+        index: usize,
+        count: i32,
+        curr_sum: i32,
+        k: i32,
+        target_sum: i32,
+        taken: &mut Vec<bool>,
+    ) -> bool {
+        let n = arr.len();
+
+        // We made k - 1 subsets with target sum and last subset will also have target sum.
+        if count == k - 1 {
+            return true;
+        }
+
+        // Current subset sum exceeds target sum, no need to proceed further.
+        if curr_sum > target_sum {
+            return false;
+        }
+
+        // When current subset sum reaches target sum then one subset is made.
+        // Increment count and reset current subset sum to 0.
+        if curr_sum == target_sum {
+            return backtrack(arr, 0, count + 1, 0, k, target_sum, taken);
+        }
+
+        // Try not picked elements to make some combinations.
+        for j in index..n {
+            if !taken[j] {
+                taken[j] = true;
+
+                // If using current jth element in this subset leads to make all valid subsets.
+                if backtrack(arr, j + 1, count, curr_sum + arr[j], k, target_sum, taken) {
+                    return true;
+                }
+
+                taken[j] = false;
+            }
+        }
+
+        false
+    }
+
+    let mut total_array_sum = 0;
+    let n = nums.len();
+
+    for i in 0..n {
+        total_array_sum += nums[i];
+    }
+
+    if total_array_sum % k != 0 {
+        return false;
+    }
+
+    nums.sort();
+    let nums = nums.into_iter().rev().collect();
+
+    let target_sum = total_array_sum / k;
+    let mut taken = vec![false; n];
+
+    backtrack(&nums, 0, 0, 0, k, target_sum, &mut taken)
+}
+
+pub fn can_partition_k_subsets_memo_bitmask(mut nums: Vec<i32>, k: i32) -> bool {
+    use std::collections::HashMap;
+
+    fn backtrack(
+        arr: &Vec<i32>,
+        index: usize,
+        count: i32,
+        curr_sum: i32,
+        k: i32,
+        target_sum: i32,
+        mut mask: i32,
+        memo: &mut HashMap<i32, bool>,
+    ) -> bool {
+        let n = arr.len();
+
+        // We made k - 1 subsets with target sum and last subset will also have target sum.
+        if count == k - 1 {
+            return true;
+        }
+
+        // Current subset sum exceeds target sum, no need to proceed further.
+        if curr_sum > target_sum {
+            return false;
+        }
+
+        if memo.contains_key(&mask) {
+            return memo[&mask];
+        }
+
+        // When current subset sum reaches target sum then one subset is made.
+        // Increment count and reset current subset sum to 0.
+        if curr_sum == target_sum {
+            let ans = backtrack(arr, 0, count + 1, 0, k, target_sum, mask, memo);
+            memo.insert(mask, ans);
+            return ans;
+        }
+
+        // Try not picked elements to make some combinations.
+        for j in index..n {
+            if ((mask >> j) & 1) == 0 {
+                mask |= 1 << j;
+
+                // If using current jth element in this subset leads to make all valid subsets.
+                if backtrack(
+                    arr,
+                    j + 1,
+                    count,
+                    curr_sum + arr[j],
+                    k,
+                    target_sum,
+                    mask,
+                    memo,
+                ) {
+                    return true;
+                }
+
+                mask ^= 1 << j;
+            }
+        }
+
+        memo.insert(mask, false);
+        false
+    }
+
+    let mut total_array_sum = 0;
+    let n = nums.len();
+
+    for i in 0..n {
+        total_array_sum += nums[i];
+    }
+
+    if total_array_sum % k != 0 {
+        return false;
+    }
+
+    nums.sort();
+    let nums = nums.into_iter().rev().collect();
+
+    let target_sum = total_array_sum / k;
+
+    backtrack(&nums, 0, 0, 0, k, target_sum, 0, &mut HashMap::new())
 }
