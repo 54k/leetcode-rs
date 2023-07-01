@@ -211,3 +211,111 @@ pub fn can_partition_k_subsets_memo_bitmask(mut nums: Vec<i32>, k: i32) -> bool 
 
     backtrack(&nums, 0, 0, 0, k, target_sum, 0, &mut HashMap::new())
 }
+
+pub fn can_partition_k_subsets_dp(nums: Vec<i32>, k: i32) -> bool {
+    let mut total_array_sum = 0;
+    let n = nums.len();
+
+    for i in 0..n {
+        total_array_sum += nums[i];
+    }
+
+    if total_array_sum % k != 0 {
+        return false;
+    }
+
+    let target_sum = total_array_sum / k;
+
+    let mut subset_sum = vec![-1; (1 << n) as usize];
+    // Initially only one state is valid, i.e don't pick anything.
+    subset_sum[0] = 0;
+
+    for mask in 0..(1 << n) {
+        if subset_sum[mask] == -1 {
+            continue;
+        }
+
+        for i in 0..n {
+            // If the number arr[i] was not picked earlier, and arr[i] + subsetSum[mask]
+            // is not greater than the targetSum then add arr[i] to the subset
+            // sum at subsetSum[mask] and store the result at subsetSum[mask | (1 << i)].
+
+            if mask & (1 << i) == 0 && subset_sum[mask] + nums[i] <= target_sum {
+                subset_sum[mask | (1 << i)] = (subset_sum[mask] + nums[i]) % target_sum;
+            }
+        }
+
+        if subset_sum[(1 << n) - 1] == 0 {
+            return true;
+        }
+    }
+
+    subset_sum[(1 << n) - 1] == 0
+}
+
+// https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/description/
+// https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/solutions/1009817/one-branch-cutting-trick-to-solve-three-leetcode-questions/
+pub fn minimum_time_required_brute_tle(jobs: Vec<i32>, k: i32) -> i32 {
+    fn dfs(jobs: &Vec<i32>, workers: &mut Vec<i32>, k: usize, i: usize) -> i32 {
+        if i == jobs.len() {
+            let mut ans = i32::MIN;
+            for w in workers {
+                ans = ans.max(*w);
+            }
+            return ans;
+        }
+
+        let mut ans = i32::MAX;
+        for j in 0..k {
+            workers[j] += jobs[i];
+            ans = ans.min(dfs(jobs, workers, k, i + 1));
+            workers[j] -= jobs[i];
+        }
+        ans
+    }
+
+    dfs(&jobs, &mut vec![0; k as usize], k as usize, 0)
+}
+
+pub fn minimum_time_required_dfs(mut jobs: Vec<i32>, k: i32) -> i32 {
+    use std::collections::HashSet;
+
+    fn dfs(jobs: &Vec<i32>, workers: &mut Vec<i32>, k: usize, i: usize, ans: &mut i32) {
+        if i == jobs.len() {
+            *ans = (*ans).min(workers.iter().copied().max().unwrap());
+            return;
+        }
+
+        let mut memo = HashSet::new();
+
+        for j in 0..k {
+            if memo.contains(&workers[j]) {
+                continue;
+            }
+
+            if workers[j] + jobs[i] >= *ans {
+                continue;
+            }
+
+            memo.insert(workers[j]);
+
+            workers[j] += jobs[i];
+            dfs(jobs, workers, k, i + 1, ans);
+            workers[j] -= jobs[i];
+        }
+    }
+
+    jobs.sort();
+    jobs.reverse();
+
+    let mut ans = i32::MAX;
+
+    dfs(&jobs, &mut vec![0; k as usize], k as usize, 0, &mut ans);
+
+    ans
+}
+
+// https://leetcode.com/problems/matchsticks-to-square/description/
+pub fn makesquare(matchsticks: Vec<i32>) -> bool {
+    todo!()
+}
