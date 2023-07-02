@@ -314,8 +314,3 @@ pub fn minimum_time_required_dfs(mut jobs: Vec<i32>, k: i32) -> i32 {
 
     ans
 }
-
-// https://leetcode.com/problems/matchsticks-to-square/description/
-pub fn makesquare(matchsticks: Vec<i32>) -> bool {
-    todo!()
-}
