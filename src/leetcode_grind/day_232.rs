@@ -1,5 +1,5 @@
 // https://leetcode.com/problems/maximum-number-of-achievable-transfer-requests/description/
-pub fn maximum_requests(n: i32, requests: Vec<Vec<i32>>) -> i32 {
+pub fn maximum_requests_backtracking(n: i32, requests: Vec<Vec<i32>>) -> i32 {
     fn dfs(
         requests: &Vec<Vec<i32>>,
         indegree: &mut Vec<i32>,
@@ -36,3 +36,43 @@ pub fn maximum_requests(n: i32, requests: Vec<Vec<i32>>) -> i32 {
     answer
 }
 
+pub fn maximum_requests_bitcount(n: i32, requests: Vec<Vec<i32>>) -> i32 {
+    let mut answer = 0;
+    for mask in 0..(1 << requests.len()) as i32 {
+        let mut indegree = vec![0; n as usize];
+        let mut pos = requests.len() - 1;
+        // Number of set bits representing the requests we will consider.
+        let bit_count = mask.count_ones();
+
+        // If the request count we're going to consider is less than the maximum request
+        // We have considered without violating the constraints; then we can return it cannot be the answer.
+        if bit_count <= answer {
+            continue;
+        }
+
+        // For all the 1's in the number, update the array indegree for the building it involves.
+        let mut curr = mask;
+        while curr > 0 {
+            if (curr & 1) == 1 {
+                indegree[requests[pos][0] as usize] -= 1;
+                indegree[requests[pos][1] as usize] += 1;
+            }
+            curr >>= 1;
+            pos -= 1;
+        }
+
+        let mut flag = true;
+        // Check if it doesn;t violates the constraints
+        for i in 0..n as usize {
+            if indegree[i] != 0 {
+                flag = false;
+                break;
+            }
+        }
+
+        if flag {
+            answer = bit_count;
+        }
+    }
+    answer as i32
+}
