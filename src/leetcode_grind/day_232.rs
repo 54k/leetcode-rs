@@ -76,3 +76,27 @@ pub fn maximum_requests_bitcount(n: i32, requests: Vec<Vec<i32>>) -> i32 {
     }
     answer as i32
 }
+
+// https://leetcode.com/problems/maximum-white-tiles-covered-by-a-carpet/description/
+// https://leetcode.com/problems/maximum-white-tiles-covered-by-a-carpet/solutions/2038534/sliding-window/
+// https://leetcode.com/problems/maximum-white-tiles-covered-by-a-carpet/solutions/2038512/c-prefix-sum-binary-search-sorting-simple-and-detailed-explanation/
+pub fn maximum_white_tiles(mut tiles: Vec<Vec<i32>>, carpet_len: i32) -> i32 {
+    tiles.sort();
+    let mut res = 0;
+    let (mut i, mut j) = (0, 0);
+    let mut cover = 0;
+
+    while res < carpet_len && i < tiles.len() {
+        if tiles[j][0] + carpet_len > tiles[i][1] {
+            cover += tiles[i][1] - tiles[i][0] + 1;
+            res = res.max(cover);
+            i += 1;
+        } else {
+            let partial = 0.max(tiles[j][0] + carpet_len - tiles[i][0]);
+            res = res.max(cover + partial);
+            cover -= (tiles[j][1] - tiles[j][0] + 1);
+            j += 1;
+        }
+    }
+    res
+}
