@@ -42,3 +42,33 @@ pub fn buddy_strings(s: String, goal: String) -> bool {
 
     s[fi as usize] == goal[si as usize] && s[si as usize] == goal[fi as usize]
 }
+
+// https://leetcode.com/problems/check-if-one-string-swap-can-make-strings-equal/
+pub fn are_almost_equal(s1: String, s2: String) -> bool {
+    if s1 == s2 {
+        return true;
+    }
+
+    let (s1, s2) = (
+        s1.chars().collect::<Vec<char>>(),
+        s2.chars().collect::<Vec<char>>(),
+    );
+    let (mut fi, mut si) = (-1, -1);
+    for i in 0..s1.len() {
+        if s1[i] != s2[i] {
+            if fi == -1 {
+                fi = i as i32;
+            } else if si == -1 {
+                si = i as i32;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    if si == -1 {
+        return false;
+    }
+
+    s1[fi as usize] == s2[si as usize] && s1[si as usize] == s2[fi as usize]
+}
