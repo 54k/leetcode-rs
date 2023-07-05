@@ -1,3 +1,13 @@
+// https://leetcode.com/problems/minimize-hamming-distance-after-swap-operations/description/
+pub fn minimum_hamming_distance(
+    source: Vec<i32>,
+    target: Vec<i32>,
+    allowed_swaps: Vec<Vec<i32>>,
+) -> i32 {
+    todo!()
+}
+
+// https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/solutions/1009817/one-branch-cutting-trick-to-solve-three-leetcode-questions/
 // https://leetcode.com/problems/matchsticks-to-square/description/
 pub fn makesquare(matchsticks: Vec<i32>) -> bool {
     todo!()

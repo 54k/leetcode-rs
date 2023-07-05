@@ -110,7 +110,7 @@ pub fn earliest_acq(mut logs: Vec<Vec<i32>>, n: i32) -> i32 {
 }
 
 // https://leetcode.com/problems/smallest-string-with-swaps/description/
-pub fn smallest_string_with_swaps(s: String, pairs: Vec<Vec<i32>>) -> String {
+pub fn smallest_string_with_swaps_dfs(s: String, pairs: Vec<Vec<i32>>) -> String {
     fn dfs(
         s: &Vec<char>,
         vertex: usize,
@@ -163,11 +163,74 @@ pub fn smallest_string_with_swaps(s: String, pairs: Vec<Vec<i32>>) -> String {
     answer.into_iter().collect()
 }
 
-// https://leetcode.com/problems/minimize-hamming-distance-after-swap-operations/description/
-pub fn minimum_hamming_distance(
-    source: Vec<i32>,
-    target: Vec<i32>,
-    allowed_swaps: Vec<Vec<i32>>,
-) -> i32 {
-    todo!()
+pub fn smallest_string_with_swaps_dsu(s: String, pairs: Vec<Vec<i32>>) -> String {
+    use std::collections::HashMap;
+
+    struct UF {
+        root: Vec<usize>,
+        rank: Vec<i32>,
+    }
+
+    impl UF {
+        fn new(n: usize) -> Self {
+            let mut root = vec![];
+            for i in 0..n {
+                root.push(i);
+            }
+            Self {
+                root,
+                rank: vec![1; n],
+            }
+        }
+
+        fn find(&mut self, x: usize) -> usize {
+            if self.root[x] != x {
+                self.root[x] = self.find(self.root[x]);
+            }
+            self.root[x]
+        }
+
+        fn union(&mut self, x: usize, y: usize) {
+            let (mut x, mut y) = (self.find(x), self.find(y));
+            if x == y {
+                return;
+            }
+            if self.rank[x] < self.rank[y] {
+                std::mem::swap(&mut x, &mut y);
+            }
+            self.root[y] = x;
+            self.rank[x] += self.rank[y];
+        }
+    }
+
+    let s = s.chars().collect::<Vec<_>>();
+    let mut uf = UF::new(s.len());
+
+    for edge in pairs {
+        let (source, destination) = (edge[0] as usize, edge[1] as usize);
+        uf.union(source, destination);
+    }
+
+    let mut root_to_component = HashMap::new();
+
+    for vertex in 0..s.len() {
+        let root = uf.find(vertex);
+        root_to_component.entry(root).or_insert(vec![]).push(vertex);
+    }
+
+    let mut smallest_string = vec!['a'; s.len()];
+
+    for indices in root_to_component.values() {
+        let mut chars = vec![];
+        for &idx in indices {
+            chars.push(s[idx]);
+        }
+        chars.sort();
+
+        for idx in 0..indices.len() {
+            smallest_string[indices[idx]] = chars[idx];
+        }
+    }
+
+    smallest_string.into_iter().collect()
 }
