@@ -7,6 +7,11 @@ pub fn minimum_hamming_distance(
     todo!()
 }
 
+// https://leetcode.com/problems/process-restricted-friend-requests/description/
+pub fn friend_requests(n: i32, restrictions: Vec<Vec<i32>>, requests: Vec<Vec<i32>>) -> Vec<bool> {
+    todo!()
+}
+
 // https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/solutions/1009817/one-branch-cutting-trick-to-solve-three-leetcode-questions/
 // https://leetcode.com/problems/matchsticks-to-square/description/
 pub fn makesquare(matchsticks: Vec<i32>) -> bool {
