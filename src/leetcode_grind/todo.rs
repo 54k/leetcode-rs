@@ -1,3 +1,8 @@
+// https://leetcode.com/problems/total-appeal-of-a-string/description/
+pub fn appeal_sum(s: String) -> i64 {
+    todo!()
+}
+
 // https://leetcode.com/problems/minimize-hamming-distance-after-swap-operations/description/
 pub fn minimum_hamming_distance(
     source: Vec<i32>,
