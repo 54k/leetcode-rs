@@ -8,8 +8,8 @@ pub fn maximum_rows(matrix: Vec<Vec<i32>>, num_select: i32) -> i32 {
     todo!()
 }
 
-// https://leetcode.com/problems/number-of-ways-to-wear-different-hats-to-each-other/description/
-pub fn number_ways(hats: Vec<Vec<i32>>) -> i32 {
+// https://leetcode.com/problems/the-number-of-good-subsets/description/
+pub fn number_of_good_subsets(nums: Vec<i32>) -> i32 {
     todo!()
 }
 
