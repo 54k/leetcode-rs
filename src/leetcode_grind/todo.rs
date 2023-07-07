@@ -3,6 +3,26 @@ pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
     todo!()
 }
 
+// https://leetcode.com/problems/sum-of-special-evenly-spaced-elements-in-array/description/
+pub fn solve(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> Vec<i32> {
+    todo!()
+}
+
+// https://leetcode.com/problems/determine-if-two-strings-are-close/editorial/
+pub fn close_strings(word1: String, word2: String) -> bool {
+    todo!()
+}
+
+// https://leetcode.com/problems/make-number-of-distinct-characters-equal/description/
+pub fn is_it_possible(word1: String, word2: String) -> bool {
+    todo!()
+}
+
+// https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/description/
+pub fn unique_letter_string(s: String) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/total-appeal-of-a-string/description/
 pub fn appeal_sum(s: String) -> i64 {
     todo!()
@@ -19,12 +39,6 @@ pub fn minimum_hamming_distance(
 
 // https://leetcode.com/problems/process-restricted-friend-requests/description/
 pub fn friend_requests(n: i32, restrictions: Vec<Vec<i32>>, requests: Vec<Vec<i32>>) -> Vec<bool> {
-    todo!()
-}
-
-// https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/solutions/1009817/one-branch-cutting-trick-to-solve-three-leetcode-questions/
-// https://leetcode.com/problems/matchsticks-to-square/description/
-pub fn makesquare(matchsticks: Vec<i32>) -> bool {
     todo!()
 }
 
