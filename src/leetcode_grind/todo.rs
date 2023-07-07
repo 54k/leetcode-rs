@@ -1,3 +1,8 @@
+// https://leetcode.com/problems/subarrays-with-k-different-integers/description/
+pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
+    todo!()
+}
+
 // https://leetcode.com/problems/total-appeal-of-a-string/description/
 pub fn appeal_sum(s: String) -> i64 {
     todo!()

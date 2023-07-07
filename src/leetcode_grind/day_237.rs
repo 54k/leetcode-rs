@@ -96,3 +96,81 @@ pub fn max_consecutive_answers(answer_key: String, k: i32) -> i32 {
 
     max_consecutive_answers_adv_sliding_window(answer_key, k)
 }
+
+// https://leetcode.com/problems/count-vowel-substrings-of-a-string/description/
+pub fn count_vowel_substrings(word: String) -> i32 {
+    pub fn count_vowel_substrings_brute(word: String) -> i32 {
+        let mut count = vec![0; 2];
+        const vowels: [char; 5] = ['a', 'e', 'i', 'o', 'u'];
+
+        let word = word.chars().collect::<Vec<_>>();
+        let mut ans = 0;
+
+        fn is_ok(w: &[char]) -> bool {
+            for &v in &vowels {
+                if !w.contains(&v) {
+                    return false;
+                }
+            }
+
+            for ch in w {
+                if !vowels.contains(&ch) {
+                    return false;
+                }
+            }
+
+            true
+        }
+
+        for i in 0..word.len() {
+            for j in i + 1..word.len() {
+                if is_ok(&word[i..=j]) {
+                    ans += 1;
+                }
+            }
+        }
+
+        ans
+    }
+
+    pub fn count_vowel_substrings_hash_map(word: String) -> i32 {
+        use std::collections::HashMap;
+        // iterate over string
+        // find consonant index, we will call it c
+        // after we find first vowel, lock c
+        // then we start building up the vowel dictionary where each vowel maps to the most recent index that it has been seen
+        // if all vowels have recent indexes, then the total combinations including this set of vowels is the smallest index - c
+        let mut c = -1;
+        let default_values = vec![('a', -1), ('e', -1), ('i', -1), ('o', -1), ('u', -1)];
+        let mut vowels_count: HashMap<_, _> = default_values.clone().into_iter().collect();
+        let mut total = 0;
+
+        for (i, letter) in word.chars().enumerate() {
+            if !vowels_count.contains_key(&letter) {
+                c = i as i32;
+                vowels_count = default_values.clone().into_iter().collect();
+            } else {
+                *vowels_count.get_mut(&letter).unwrap() = i as i32;
+                let min_idx = vowels_count.values().copied().min().unwrap_or(-1);
+                if min_idx > -1 {
+                    total += min_idx - c;
+                }
+            }
+        }
+        total
+    }
+
+    count_vowel_substrings_hash_map(word)
+}
+
+// https://leetcode.com/problems/vowels-of-all-substrings/description/
+pub fn count_vowels(word: String) -> i64 {
+    let mut res = 0;
+    let n = word.len();
+    for (i, ch) in word.chars().enumerate() {
+        if ['a', 'e', 'i', 'o', 'u'].contains(&ch) {
+            res += (i as i64 + 1) * (n as i64 - i as i64);
+        }
+    }
+    res
+}
