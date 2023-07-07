@@ -165,6 +165,24 @@ pub fn count_vowel_substrings(word: String) -> i32 {
 
 // https://leetcode.com/problems/vowels-of-all-substrings/description/
 pub fn count_vowels(word: String) -> i64 {
+    // Number of substring whose the ith character would be part of = Total substrings of length n - Number of substring whose ith character won't be part of.
+
+    // Total substrings of length n = n * (n +1)/2
+    // Number of substring whose ith character won't be part of = Number of substrings b/w indices [0 to i-1] + Number of substrings b/w indices [i+1 to n-1].
+
+    // Note : Number of substrings are not driven by index but are driven by length of string. Hence,
+
+    // For 0 to i-1 (Having length = i) => i*(i+1)/2
+    // (i+1, n-1) (Having length = n-i-1) => (n-i-1)*(n-i)/2
+
+    // Restating,
+    // Number of substring whose the ith character would be part of = Total substrings of length n - Number of substring whose ith character won't be part of.
+    // => n*(n+1) / 2 - i(i+1) /2 - (n-i-1)(n-i)/2
+
+    // On expanding and simplification, it becomes
+
+    // => n - i^2 - i + ni
+    // =>. (n-i) * (i + 1)
     let mut res = 0;
     let n = word.len();
     for (i, ch) in word.chars().enumerate() {
