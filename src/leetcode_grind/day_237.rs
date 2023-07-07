@@ -192,3 +192,46 @@ pub fn count_vowels(word: String) -> i64 {
     }
     res
 }
+
+// https://leetcode.com/problems/optimize-water-distribution-in-a-village/description/
+pub fn min_cost_to_supply_water(n: i32, wells: Vec<i32>, pipes: Vec<Vec<i32>>) -> i32 {
+    use std::cmp::Reverse;
+    use std::collections::{BinaryHeap, HashSet};
+
+    let mut adj = vec![vec![]; n as usize + 1];
+    let mut heap = BinaryHeap::new();
+
+    for i in 0..wells.len() {
+        let virtual_edge = (wells[i], i + 1);
+        adj[0].push(virtual_edge);
+        heap.push(Reverse(virtual_edge));
+    }
+
+    for pipe in &pipes {
+        let (from, to, cost) = (pipe[0] as usize, pipe[1] as usize, pipe[2]);
+        adj[from].push((cost, to));
+        adj[to].push((cost, from));
+    }
+
+    let mut set = HashSet::new();
+    set.insert(0);
+    let mut total_cost = 0;
+
+    while set.len() < n as usize + 1 {
+        let Reverse((cost, next_house)) = heap.pop().unwrap();
+        if set.contains(&next_house) {
+            continue;
+        }
+
+        set.insert(next_house);
+        total_cost += cost;
+
+        for &neighbor in &adj[next_house] {
+            if !set.contains(&neighbor.1) {
+                heap.push(Reverse(neighbor));
+            }
+        }
+    }
+
+    total_cost
+}
