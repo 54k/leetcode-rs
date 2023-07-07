@@ -308,3 +308,64 @@ pub fn min_cost_to_supply_water(n: i32, wells: Vec<i32>, pipes: Vec<Vec<i32>>) -
 
     min_cost_to_supply_water_kruskal(n, wells, pipes)
 }
+
+pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
+    use std::collections::HashMap;
+    struct Window {
+        count: HashMap<i32, i32>,
+        non_zero: i32,
+    }
+    impl Window {
+        fn new() -> Self {
+            Self {
+                count: HashMap::new(),
+                non_zero: 0,
+            }
+        }
+
+        fn add(&mut self, x: i32) {
+            *self.count.entry(x).or_insert(0) += 1;
+            if self.count[&x] == 1 {
+                self.non_zero += 1;
+            }
+        }
+
+        fn remove(&mut self, x: i32) {
+            *self.count.entry(x).or_insert(1) -= 1;
+            if self.count[&x] == 0 {
+                self.non_zero -= 1;
+            }
+        }
+
+        fn different(&self) -> i32 {
+            self.non_zero
+        }
+    }
+
+    let mut window1 = Window::new();
+    let mut window2 = Window::new();
+
+    let mut ans = 0;
+    let mut left1 = 0;
+    let mut left2 = 0;
+
+    for right in 0..nums.len() {
+        let x = nums[right];
+        window1.add(x);
+        window2.add(x);
+
+        while window1.different() > k {
+            window1.remove(nums[left1]);
+            left1 += 1;
+        }
+
+        while window2.different() >= k {
+            window2.remove(nums[left2]);
+            left2 += 1;
+        }
+
+        ans += left2 - left1;
+    }
+
+    ans as i32
+}
