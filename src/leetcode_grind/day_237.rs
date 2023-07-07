@@ -194,44 +194,117 @@ pub fn count_vowels(word: String) -> i64 {
 }
 
 // https://leetcode.com/problems/optimize-water-distribution-in-a-village/description/
+
 pub fn min_cost_to_supply_water(n: i32, wells: Vec<i32>, pipes: Vec<Vec<i32>>) -> i32 {
-    use std::cmp::Reverse;
-    use std::collections::{BinaryHeap, HashSet};
+    pub fn min_cost_to_supply_water_prim(n: i32, wells: Vec<i32>, pipes: Vec<Vec<i32>>) -> i32 {
+        use std::cmp::Reverse;
+        use std::collections::{BinaryHeap, HashSet};
 
-    let mut adj = vec![vec![]; n as usize + 1];
-    let mut heap = BinaryHeap::new();
+        let mut adj = vec![vec![]; n as usize + 1];
+        let mut heap = BinaryHeap::new();
 
-    for i in 0..wells.len() {
-        let virtual_edge = (wells[i], i + 1);
-        adj[0].push(virtual_edge);
-        heap.push(Reverse(virtual_edge));
-    }
-
-    for pipe in &pipes {
-        let (from, to, cost) = (pipe[0] as usize, pipe[1] as usize, pipe[2]);
-        adj[from].push((cost, to));
-        adj[to].push((cost, from));
-    }
-
-    let mut set = HashSet::new();
-    set.insert(0);
-    let mut total_cost = 0;
-
-    while set.len() < n as usize + 1 {
-        let Reverse((cost, next_house)) = heap.pop().unwrap();
-        if set.contains(&next_house) {
-            continue;
+        for i in 0..wells.len() {
+            let virtual_edge = (wells[i], i + 1);
+            adj[0].push(virtual_edge);
+            heap.push(Reverse(virtual_edge));
         }
 
-        set.insert(next_house);
-        total_cost += cost;
+        for pipe in &pipes {
+            let (from, to, cost) = (pipe[0] as usize, pipe[1] as usize, pipe[2]);
+            adj[from].push((cost, to));
+            adj[to].push((cost, from));
+        }
 
-        for &neighbor in &adj[next_house] {
-            if !set.contains(&neighbor.1) {
-                heap.push(Reverse(neighbor));
+        let mut set = HashSet::new();
+        set.insert(0);
+        let mut total_cost = 0;
+
+        while set.len() < n as usize + 1 {
+            let Reverse((cost, next_house)) = heap.pop().unwrap();
+            if set.contains(&next_house) {
+                continue;
+            }
+
+            set.insert(next_house);
+            total_cost += cost;
+
+            for &neighbor in &adj[next_house] {
+                if !set.contains(&neighbor.1) {
+                    heap.push(Reverse(neighbor));
+                }
             }
         }
+        total_cost
     }
 
-    total_cost
+    pub fn min_cost_to_supply_water_kruskal(n: i32, wells: Vec<i32>, pipes: Vec<Vec<i32>>) -> i32 {
+        struct UF {
+            repr: Vec<usize>,
+            sz: Vec<i32>,
+        }
+
+        impl UF {
+            fn new(n: usize) -> Self {
+                let mut r = vec![];
+                for i in 0..=n {
+                    r.push(i);
+                }
+
+                Self {
+                    repr: r,
+                    sz: vec![1; n + 1],
+                }
+            }
+
+            fn find(&mut self, x: usize) -> usize {
+                if self.repr[x] != x {
+                    self.repr[x] = self.find(self.repr[x]);
+                }
+                self.repr[x]
+            }
+
+            fn union(&mut self, x: usize, y: usize) {
+                let (mut x, mut y) = (self.find(x), self.find(y));
+                if x == y {
+                    return;
+                }
+
+                if self.sz[x] < self.sz[y] {
+                    std::mem::swap(&mut x, &mut y);
+                }
+
+                self.repr[y] = x;
+                self.sz[x] += self.sz[y];
+            }
+
+            fn same(&mut self, x: usize, y: usize) -> bool {
+                self.find(x) == self.find(y)
+            }
+        }
+
+        let mut edges = Vec::with_capacity(n as usize + 1 + wells.len());
+        for i in 0..wells.len() {
+            edges.push((0, i + 1, wells[i]));
+        }
+
+        for i in 0..pipes.len() {
+            edges.push((pipes[i][0] as usize, pipes[i][1] as usize, pipes[i][2]));
+        }
+
+        edges.sort_by_key(|x| x.2);
+
+        let mut uf = UF::new(n as usize);
+
+        let mut total_cost = 0;
+        for edge in edges {
+            let (h1, h2, cost) = (edge.0, edge.1, edge.2);
+            if !uf.same(h1, h2) {
+                uf.union(h1, h2);
+                total_cost += cost;
+            }
+        }
+        total_cost
+    }
+
+    min_cost_to_supply_water_kruskal(n, wells, pipes)
 }
