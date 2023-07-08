@@ -1,1 +1,18 @@
 https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/solutions/1009817/one-branch-cutting-trick-to-solve-three-leetcode-questions/
+
+It is easy to get TLE, so how should we cut some branches and speed up the searching process?
+We use an array of length n to record the workload assigned to each worker.
+
+The core idea is that assume at certain point of dfs searching,
+we have the following workload for 10 workers,
+workers = [10, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+if we want to assign the current task jobs[curr] to someone,
+it makes no difference if we assign it to any worker whose current workload is 5.
+Therefore we can use a set named seen to store searched workload such that we only search 5 once.
+
+There is also another branch cutting step, if the total workload is already larger than self.res,
+we can exit the dfs search, too.
+
+Another trick is to reverse sort all the jobs so that we are more likely to exit earlier.
+

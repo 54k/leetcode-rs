@@ -102,5 +102,52 @@ pub fn length_of_longest_substring_k_distinct(s: String, k: i32) -> i32 {
 
         left
     }
-    todo!()
+
+    pub fn length_of_longest_substring_k_distinct_sliding_window1(s: String, k: i32) -> i32 {
+        use std::collections::HashMap;
+        let mut counter = HashMap::new();
+        let n = s.len();
+        let s = s.chars().collect::<Vec<_>>();
+        let mut max_size = 0;
+        let mut left = 0;
+        for right in 0..n {
+            *counter.entry(s[right]).or_insert(0) += 1;
+
+            while counter.len() > k as usize {
+                let c = s[left];
+                *counter.get_mut(&c).unwrap() -= 1;
+                if counter[&c] == 0 {
+                    counter.remove(&c);
+                }
+                left += 1;
+            }
+            max_size = max_size.max(right - left + 1);
+        }
+
+        max_size as i32
+    }
+
+    pub fn length_of_longest_substring_k_distinct_sliding_window2(s: String, k: i32) -> i32 {
+        use std::collections::HashMap;
+        let mut counter = HashMap::new();
+        let n = s.len();
+        let s = s.chars().collect::<Vec<_>>();
+        let mut max_size = 0;
+
+        for right in 0..n {
+            *counter.entry(s[right]).or_insert(0) += 1;
+            if counter.len() <= k as usize {
+                max_size += 1;
+            } else {
+                *counter.entry(s[right - max_size]).or_insert(0) -= 1;
+                if counter[&s[right - max_size]] == 0 {
+                    counter.remove(&s[right - max_size]);
+                }
+            }
+        }
+
+        max_size as i32
+    }
+
+    length_of_longest_substring_k_distinct_sliding_window2(s, k)
 }
