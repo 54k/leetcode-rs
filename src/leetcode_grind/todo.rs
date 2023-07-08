@@ -1,16 +1,6 @@
 // https://leetcode.com/problems/subarrays-with-k-different-integers/solutions/523136/java-c-python-sliding-window/
 // todo sliding window problems from explanation
 
-// https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/description/
-pub fn length_of_longest_substring_two_distinct(s: String) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/description/
-pub fn length_of_longest_substring_k_distinct(s: String, k: i32) -> i32 {
-    todo!()
-}
-
 // https://leetcode.com/problems/subarrays-with-k-different-integers/description/
 pub fn subarrays_with_k_distinct(nums: Vec<i32>, k: i32) -> i32 {
     todo!()
