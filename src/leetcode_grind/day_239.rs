@@ -148,85 +148,129 @@ pub fn all_paths_source_target(graph: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
 
 // https://leetcode.com/problems/reconstruct-itinerary/description/
 pub fn find_itinerary(tickets: Vec<Vec<String>>) -> Vec<String> {
-    use std::collections::HashMap;
+    pub fn find_itinerary_backtrack(tickets: Vec<Vec<String>>) -> Vec<String> {
+        use std::collections::HashMap;
 
-    let mut flight_map: HashMap<String, Vec<String>> = HashMap::new();
-    let mut visit_bitmap = HashMap::new();
-    let mut result = vec![];
+        let mut flight_map: HashMap<String, Vec<String>> = HashMap::new();
+        let mut visit_bitmap = HashMap::new();
+        let mut result = vec![];
 
-    // step 1 build the graph first
-    for ticket in &tickets {
-        flight_map
-            .entry(ticket[0].clone())
-            .or_insert(vec![])
-            .push(ticket[1].clone());
-    }
-
-    // step 2 order the destinations and init the visit bitmap
-    for (k, v) in flight_map.iter_mut() {
-        v.sort();
-        visit_bitmap.insert(k.clone(), vec![false; v.len()]);
-    }
-
-    let mut route = vec![];
-    route.push("JFK".to_string());
-
-    // step 3 backtracking
-    backtrack(
-        "JFK".to_string(),
-        &mut route,
-        tickets.len(),
-        &mut result,
-        &flight_map,
-        &mut visit_bitmap,
-    );
-
-    return result;
-
-    fn backtrack(
-        origin: String,
-        route: &mut Vec<String>,
-        flights: usize,
-        result: &mut Vec<String>,
-        flight_map: &HashMap<String, Vec<String>>,
-        visit_bitmap: &mut HashMap<String, Vec<bool>>,
-    ) -> bool {
-        if route.len() == flights + 1 {
-            *result = route.clone();
-            return true;
+        // step 1 build the graph first
+        for ticket in &tickets {
+            flight_map
+                .entry(ticket[0].clone())
+                .or_insert(vec![])
+                .push(ticket[1].clone());
         }
 
-        if !flight_map.contains_key(&origin) {
-            return false;
+        // step 2 order the destinations and init the visit bitmap
+        for (k, v) in flight_map.iter_mut() {
+            v.sort();
+            visit_bitmap.insert(k.clone(), vec![false; v.len()]);
         }
 
-        let mut i = 0usize;
+        let mut route = vec![];
+        route.push("JFK".to_string());
 
-        for dest in flight_map.get(&origin).unwrap() {
-            if !visit_bitmap.get_mut(&origin).unwrap()[i] {
-                visit_bitmap.get_mut(&origin).unwrap()[i] = true;
-                route.push(dest.clone());
-                let ret = backtrack(
-                    dest.clone(),
-                    route,
-                    flights,
-                    result,
-                    flight_map,
-                    &mut visit_bitmap.clone(),
-                );
-                route.pop();
-                visit_bitmap.get_mut(&origin).unwrap()[i] = false;
+        // step 3 backtracking
+        backtrack(
+            "JFK".to_string(),
+            &mut route,
+            tickets.len(),
+            &mut result,
+            &flight_map,
+            &mut visit_bitmap,
+        );
 
-                if ret {
-                    return true;
+        return result;
+
+        fn backtrack(
+            origin: String,
+            route: &mut Vec<String>,
+            flights: usize,
+            result: &mut Vec<String>,
+            flight_map: &HashMap<String, Vec<String>>,
+            visit_bitmap: &mut HashMap<String, Vec<bool>>,
+        ) -> bool {
+            if route.len() == flights + 1 {
+                *result = route.clone();
+                return true;
+            }
+
+            if !flight_map.contains_key(&origin) {
+                return false;
+            }
+
+            let mut i = 0usize;
+
+            for dest in flight_map.get(&origin).unwrap() {
+                if !visit_bitmap.get_mut(&origin).unwrap()[i] {
+                    visit_bitmap.get_mut(&origin).unwrap()[i] = true;
+                    route.push(dest.clone());
+                    let ret = backtrack(
+                        dest.clone(),
+                        route,
+                        flights,
+                        result,
+                        flight_map,
+                        &mut visit_bitmap.clone(),
+                    );
+                    route.pop();
+                    visit_bitmap.get_mut(&origin).unwrap()[i] = false;
+
+                    if ret {
+                        return true;
+                    }
+                }
+
+                i += 1;
+            }
+
+            false
+        }
+    }
+
+    pub fn find_itinerary_euler(tickets: Vec<Vec<String>>) -> Vec<String> {
+        use std::collections::HashMap;
+
+        let mut flight_map: HashMap<String, Vec<String>> = HashMap::new();
+        let mut result = vec![];
+
+        // step 1 build the graph first
+        for ticket in &tickets {
+            flight_map
+                .entry(ticket[0].clone())
+                .or_insert(vec![])
+                .push(ticket[1].clone());
+        }
+
+        // step 2 order the destinations
+        for (k, v) in flight_map.iter_mut() {
+            v.sort();
+            v.reverse();
+        }
+
+        // step 3 post-order dfs
+        dfs("JFK".to_string(), &mut flight_map, &mut result);
+        result.reverse();
+        return result;
+
+        fn dfs(
+            origin: String,
+            flight_map: &mut HashMap<String, Vec<String>>,
+            result: &mut Vec<String>,
+        ) {
+            if flight_map.contains_key(&origin) {
+                while !flight_map.get_mut(&origin).unwrap().is_empty() {
+                    let next = flight_map.get_mut(&origin).unwrap().pop().unwrap();
+                    dfs(next, flight_map, result);
                 }
             }
 
-            i += 1;
+            result.push(origin);
         }
-
-        false
     }
+    find_itinerary_euler(tickets)
 }
 
 #[cfg(test)]
