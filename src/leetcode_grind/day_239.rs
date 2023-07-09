@@ -148,8 +148,6 @@ pub fn all_paths_source_target(graph: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
 
 // https://leetcode.com/problems/reconstruct-itinerary/description/
 pub fn find_itinerary(tickets: Vec<Vec<String>>) -> Vec<String> {
-    todo!("doesn't work");
-
     use std::collections::HashMap;
 
     let mut flight_map: HashMap<String, Vec<String>> = HashMap::new();
@@ -158,15 +156,10 @@ pub fn find_itinerary(tickets: Vec<Vec<String>>) -> Vec<String> {
 
     // step 1 build the graph first
     for ticket in &tickets {
-        let (origin, dest) = (ticket[0].clone(), ticket[1].clone());
-        if flight_map.contains_key(&origin) {
-            let mut dest_list = flight_map.get(&origin).unwrap().clone();
-            dest_list.push(dest);
-        } else {
-            let mut dest_list = vec![];
-            dest_list.push(dest);
-            flight_map.insert(origin, dest_list);
-        }
+        flight_map
+            .entry(ticket[0].clone())
+            .or_insert(vec![])
+            .push(ticket[1].clone());
     }
 
     // step 2 order the destinations and init the visit bitmap
@@ -175,8 +168,6 @@ pub fn find_itinerary(tickets: Vec<Vec<String>>) -> Vec<String> {
         visit_bitmap.insert(k.clone(), vec![false; v.len()]);
     }
 
-    let flights = tickets.len();
-
     let mut route = vec![];
     route.push("JFK".to_string());
 
@@ -184,11 +175,12 @@ pub fn find_itinerary(tickets: Vec<Vec<String>>) -> Vec<String> {
     backtrack(
         "JFK".to_string(),
         &mut route,
-        flights,
+        tickets.len(),
         &mut result,
         &flight_map,
         &mut visit_bitmap,
     );
+
     return result;
 
     fn backtrack(
@@ -234,5 +226,21 @@ pub fn find_itinerary(tickets: Vec<Vec<String>>) -> Vec<String> {
         }
 
         false
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn test_find_itinerary() {
+        let res = find_itinerary(vec![
+            vec!["JFK".to_string(), "SFO".to_string()],
+            vec!["JFK".to_string(), "ATL".to_string()],
+            vec!["SFO".to_string(), "ATL".to_string()],
+            vec!["ATL".to_string(), "JFK".to_string()],
+            vec!["ATL".to_string(), "SFO".to_string()],
+        ]);
+        println!("{:?}", res);
     }
 }
