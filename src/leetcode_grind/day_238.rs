@@ -151,3 +151,79 @@ pub fn length_of_longest_substring_k_distinct(s: String, k: i32) -> i32 {
 
     length_of_longest_substring_k_distinct_sliding_window2(s, k)
 }
+
+// https://leetcode.com/problems/flip-string-to-monotone-increasing/description/
+pub fn min_flips_mono_incr(s: String) -> i32 {
+    pub fn min_flips_mono_incr_iterative(s: String) -> i32 {
+        let mut m = 0;
+        for ch in s.chars() {
+            if ch == '0' {
+                m += 1;
+            }
+        }
+
+        let mut ans = m;
+
+        for ch in s.chars() {
+            if ch == '1' {
+                m += 1;
+            } else {
+                m -= 1;
+            }
+            ans = ans.min(m);
+        }
+
+        ans
+    }
+    pub fn min_flips_mono_incr_dp(s: String) -> i32 {
+        let mut ans = 0;
+        let s = s.chars().collect::<Vec<_>>();
+        let mut num = 0;
+        for i in 0..s.len() {
+            if s[i] == '0' {
+                ans = num.min(ans + 1);
+            } else {
+                num += 1;
+            }
+        }
+        ans
+    }
+    min_flips_mono_incr_dp(s)
+}
+
+// https://leetcode.com/problems/sort-the-jumbled-numbers/description/
+pub fn sort_jumbled(mapping: Vec<i32>, nums: Vec<i32>) -> Vec<i32> {
+    use std::collections::HashMap;
+    let mapping: HashMap<_, _> = mapping
+        .iter()
+        .copied()
+        .enumerate()
+        .map(|(i, x)| (i as i32, x))
+        .collect();
+
+    fn transform(n: i32, mapping: &HashMap<i32, i32>) -> i32 {
+        let nn: Vec<i32> = n
+            .to_string()
+            .chars()
+            .map(|x| format!("{}", x).parse::<i32>().unwrap())
+            .collect();
+
+        let mut ans = 0;
+
+        for i in nn {
+            ans = ans * 10 + mapping[&i];
+        }
+
+        // println!("given {} then {}", n, ans);
+        ans
+    }
+
+    let mut nums: Vec<_> = nums
+        .into_iter()
+        .enumerate()
+        .map(|(i, x)| (transform(x, &mapping), i, x))
+        .collect();
+
+    nums.sort();
+    nums.into_iter().map(|(_, _, x)| x).collect()
+}
