@@ -72,3 +72,40 @@ pub fn distance_k(
 
     ans
 }
+
+// https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/description/
+pub fn leads_to_destination(n: i32, edges: Vec<Vec<i32>>, source: i32, destination: i32) -> bool {
+    let mut graph = vec![vec![]; n as usize];
+    for edge in edges {
+        graph[edge[0] as usize].push(edge[1] as usize);
+    }
+    let mut states = vec![0; n as usize];
+
+    fn lead_to_dest(
+        graph: &Vec<Vec<usize>>,
+        node: usize,
+        dest: usize,
+        states: &mut Vec<i32>,
+    ) -> bool {
+        if states[node] != 0 {
+            return states[node] == 2;
+        }
+
+        if graph[node].is_empty() {
+            return node == dest;
+        }
+
+        states[node] = 1;
+
+        for &next in &graph[node] {
+            if !lead_to_dest(graph, next, dest, states) {
+                return false;
+            }
+        }
+
+        states[node] = 2;
+        return true;
+    }
+
+    lead_to_dest(&graph, source as usize, destination as usize, &mut states)
+}
