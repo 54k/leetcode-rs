@@ -73,7 +73,7 @@ pub fn distance_k(
     ans
 }
 
-// https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/description/
+// https://leetcode.com/problems/all-paths-from-source-lead-to-destination/description/
 pub fn leads_to_destination(n: i32, edges: Vec<Vec<i32>>, source: i32, destination: i32) -> bool {
     let mut graph = vec![vec![]; n as usize];
     for edge in edges {
