@@ -101,3 +101,66 @@ func validPath(n int, edges [][]int, source int, destination int) bool {
 
 	return false
 }
+
+// https://leetcode.com/problems/all-paths-from-source-to-target/description/
+func allPathsSourceTargetBFS(graph [][]int) [][]int {
+	type pair struct {
+		n    int
+		path []int
+	}
+
+	result := [][]int{}
+
+	lvl := []*pair{{0, []int{}}}
+
+	for len(lvl) > 0 {
+		nextLvl := []*pair{}
+
+		for _, p := range lvl {
+			cur, path := p.n, p.path
+			path = append(path, cur)
+
+			if cur == len(graph)-1 {
+				result = append(result, path)
+			}
+
+			for _, next := range graph[cur] {
+				nextPath := make([]int, 0)
+				nextPath = append(nextPath, path...)
+				nextLvl = append(nextLvl, &pair{next, nextPath})
+			}
+		}
+
+		lvl = nextLvl
+
+	}
+
+	return result
+}
+
+func allPathsSourceTargetDFS(graph [][]int) [][]int {
+	path := []int{0}
+	result := [][]int{}
+
+	var dfs func(int)
+
+	dfs = func(cur int) {
+		if cur == len(graph)-1 {
+			copy := []int{}
+			copy = append(copy, path...)
+			result = append(result, copy)
+			return
+		}
+
+		for _, next := range graph[cur] {
+			path = append(path, next)
+			dfs(next)
+			path = path[:len(path)-1]
+		}
+	}
+
+	dfs(0)
+
+	return result
+
+}
