@@ -62,3 +62,112 @@ func maxSlidingWindow(nums []int, k int) []int {
 
 	return ans
 }
+
+// https://leetcode.com/problems/network-delay-time/description/
+func networkDelayTimeDFS(times [][]int, n int, k int) int {
+	type pair struct {
+		to   int
+		time int
+	}
+
+	adj := make([][]pair, n+1)
+	for i := 1; i <= n; i++ {
+		adj[i] = []pair{}
+	}
+	for _, edge := range times {
+		from, to, time := edge[0], edge[1], edge[2]
+		adj[from] = append(adj[from], pair{to, time})
+	}
+
+	distances := make([]int, n+1)
+	for i := 1; i <= n; i++ {
+		distances[i] = 1 << 31
+	}
+
+	var dfs func(int, int)
+	dfs = func(node, time int) {
+		if distances[node] < time {
+			return
+		}
+		distances[node] = time
+		for _, next := range adj[node] {
+			n, t := next.to, next.time
+			if distances[n] > time+t {
+				dfs(n, time+t)
+			}
+		}
+	}
+
+	dfs(k, 0)
+
+	ans := -(1 << 31)
+
+	for i := 1; i <= n; i++ {
+		if ans < distances[i] {
+			ans = distances[i]
+		}
+	}
+
+	if ans == 1<<31 {
+		return -1
+	} else {
+		return ans
+	}
+}
+
+func networkDelayTimeBFS(times [][]int, n int, k int) int {
+	type pair struct {
+		to   int
+		time int
+	}
+
+	adj := make([][]pair, n+1)
+	for i := 1; i <= n; i++ {
+		adj[i] = []pair{}
+	}
+	for _, edge := range times {
+		from, to, time := edge[0], edge[1], edge[2]
+		adj[from] = append(adj[from], pair{to, time})
+	}
+
+	distances := make([]int, n+1)
+	for i := 1; i <= n; i++ {
+		distances[i] = 1 << 31
+	}
+
+	bfs := func(node int) {
+		lvl := []int{node}
+		distances[node] = 0
+
+		for len(lvl) > 0 {
+			nextLvl := []int{}
+			for _, curr := range lvl {
+				for _, n := range adj[curr] {
+					to, time := n.to, n.time
+					if distances[to] > time+distances[curr] {
+						distances[to] = time + distances[curr]
+						nextLvl = append(nextLvl, to)
+					}
+				}
+			}
+
+			lvl = nextLvl
+		}
+	}
+
+	bfs(k)
+
+	ans := -(1 << 31)
+
+	for i := 1; i <= n; i++ {
+		if ans < distances[i] {
+			ans = distances[i]
+		}
+	}
+
+	if ans == 1<<31 {
+		return -1
+	} else {
+		return ans
+	}
+}
