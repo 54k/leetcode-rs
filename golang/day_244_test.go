@@ -36,3 +36,29 @@ func destroyTargets(nums []int, space int) int {
 
 	return ans
 }
+
+// https://leetcode.com/problems/sliding-window-maximum/description/
+func maxSlidingWindow(nums []int, k int) []int {
+	type pair struct {
+		i   int
+		val int
+	}
+	ans := []int{}
+	q := []pair{}
+	for r := 0; r < len(nums); r++ {
+		for len(q) > 0 && q[len(q)-1].val <= nums[r] {
+			q = q[:len(q)-1]
+		}
+		q = append(q, pair{r, nums[r]})
+
+		for len(q) > 0 && q[0].i < r-k+1 {
+			q = q[1:]
+		}
+
+		if r >= k-1 {
+			ans = append(ans, q[0].val)
+		}
+	}
+
+	return ans
+}
