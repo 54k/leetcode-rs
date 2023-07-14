@@ -137,3 +137,42 @@ pub fn network_delay_time(times: Vec<Vec<i32>>, n: i32, k: i32) -> i32 {
     }
     network_delay_time_dijkstra(times, n, k)
 }
+
+// https://leetcode.com/problems/the-time-when-the-network-becomes-idle/description/
+pub fn network_becomes_idle(edges: Vec<Vec<i32>>, patience: Vec<i32>) -> i32 {
+    use std::collections::VecDeque;
+
+    let n = patience.len();
+    let mut adj = vec![vec![]; n];
+
+    for e in &edges {
+        adj[e[0] as usize].push(e[1] as usize);
+        adj[e[1] as usize].push(e[0] as usize);
+    }
+
+    let mut dist_to_master = vec![-1; n];
+    dist_to_master[0] = 0;
+
+    let mut q = VecDeque::new();
+    q.push_back(0);
+
+    while let Some(curr) = q.pop_front() {
+        for &next in &adj[curr] {
+            if dist_to_master[next] == -1 {
+                dist_to_master[next] = dist_to_master[curr] + 1;
+                q.push_back(next);
+            }
+        }
+    }
+
+    let mut idle = 0;
+
+    for i in 1..n {
+        let first_message_recv = dist_to_master[i] * 2;
+        let num_of_extra = (dist_to_master[i] * 2 - 1) / patience[i];
+        let last_msg_sent = num_of_extra * patience[i];
+        idle = idle.max(last_msg_sent + first_message_recv);
+    }
+
+    idle + 1
+}
