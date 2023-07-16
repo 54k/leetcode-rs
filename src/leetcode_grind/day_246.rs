@@ -83,7 +83,7 @@ pub fn number_of_good_subsets(nums: Vec<i32>) -> i32 {
     }
 
     let mut ones = 1;
-    for i in 1..=*counter.get(&1).unwrap_or(&0) {
+    for _ in 1..=*counter.get(&1).unwrap_or(&0) {
         ones *= 2;
         ones %= MOD;
     }
