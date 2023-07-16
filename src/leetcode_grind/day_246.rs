@@ -96,3 +96,75 @@ pub fn number_of_good_subsets(nums: Vec<i32>) -> i32 {
 
     (((ones % MOD) * (dp_sum % MOD)) % MOD) as i32
 }
+
+// https://leetcode.com/problems/longest-absolute-file-path/description/
+pub fn length_longest_path(input: String) -> i32 {
+    let split: Vec<&str> = input.split('\n').collect();
+
+    let mut stack: Vec<(usize, &str)> = vec![];
+    let mut ans = 0;
+
+    for s in split {
+        let mut lvl = 0;
+        for ch in s.chars() {
+            if ch == '\t' {
+                lvl += 1;
+            } else {
+                break;
+            }
+        }
+        let fname = &s[(lvl as usize)..];
+
+        while stack.len() > 0 && stack[stack.len() - 1].0 >= lvl {
+            stack.pop();
+        }
+        stack.push((lvl, fname.clone()));
+
+        if fname.contains('.') {
+            let v = stack
+                .clone()
+                .into_iter()
+                .map(|(_, s)| s.clone().to_string())
+                .collect::<Vec<String>>()
+                .join("/");
+
+            ans = ans.max(v.len() as i32);
+        }
+    }
+
+    ans
+}
+
+// https://leetcode.com/problems/license-key-formatting/description/
+pub fn license_key_formatting(s: String, k: i32) -> String {
+    let mut ans = vec![];
+    let s = s.chars().collect::<Vec<_>>();
+
+    let mut cur_group_size = 0;
+
+    for i in (0..s.len()).rev() {
+        if s[i] == '-' {
+            continue;
+        }
+        ans.push(s[i]);
+        cur_group_size += 1;
+        if cur_group_size == k {
+            cur_group_size = 0;
+            ans.push('-');
+        }
+    }
+
+    let ans = ans.into_iter().rev().collect::<Vec<_>>();
+
+    if ans.len() == 0 {
+        return "".to_string();
+    }
+
+    let anss: String = if ans[0] == '-' {
+        ans.into_iter().skip(1).collect()
+    } else {
+        ans.into_iter().collect()
+    };
+
+    anss.to_uppercase()
+}
