@@ -129,6 +129,19 @@ func lengthOfLongestSubstringKDistinct(s string, k int) int {
 	return left
 }
 
+// https://leetcode.com/problems/subarray-sum-equals-k/description/
+func subarraySum(nums []int, k int) int {
+	sarr := map[int]int{}
+	sarr[0] = 1
+	count, sum := 0, 0
+	for _, n := range nums {
+		sum += n
+		count += sarr[sum-k]
+		sarr[sum]++
+	}
+	return count
+}
+
 func TestLRUCache(t *testing.T) {
 	lru := Constructor(2)
 	lru.Put(1, 1)
