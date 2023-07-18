@@ -79,7 +79,7 @@ func (this *LRUCache) Put(key int, value int) {
 }
 
 // https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/description/
-func lengthOfLongestSubstringKDistinct(s string, k int) int {
+func lengthOfLongestSubstringKDistinctBinSearch(s string, k int) int {
 	isValid := func(s string, size int) bool {
 		n := len(s)
 		counter := map[rune]int{}
@@ -127,6 +127,51 @@ func lengthOfLongestSubstringKDistinct(s string, k int) int {
 	}
 
 	return left
+}
+
+func lengthOfLongestSubstringKDistinctSlidingWindow(s string, k int) int {
+	n := len(s)
+	maxSize := 0
+	counter := map[byte]int{}
+
+	for left, right := 0, 0; right < n; right++ {
+		counter[s[right]]++
+
+		for len(counter) > k {
+			counter[s[left]]--
+			if counter[s[left]] == 0 {
+				delete(counter, s[left])
+			}
+			left++
+		}
+
+		if right-left+1 > maxSize {
+			maxSize = right - left + 1
+		}
+	}
+
+	return maxSize
+}
+
+func lengthOfLongestSubstringKDistinctMaxSlidingWindow(s string, k int) int {
+	n := len(s)
+	maxSize := 0
+	counter := map[byte]int{}
+
+	for right := 0; right < n; right++ {
+		counter[s[right]]++
+
+		if len(counter) <= k {
+			maxSize++
+		} else {
+			counter[s[right-maxSize]]--
+			if counter[s[right-maxSize]] == 0 {
+				delete(counter, s[right-maxSize])
+			}
+		}
+	}
+
+	return maxSize
 }
 
 // https://leetcode.com/problems/subarray-sum-equals-k/description/
