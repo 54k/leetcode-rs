@@ -115,3 +115,33 @@ pub fn candy(ratings: Vec<i32>) -> i32 {
 
     candy_slope(ratings)
 }
+
+// https://leetcode.com/problems/one-edit-distance/description/
+pub fn is_one_edit_distance(s: String, t: String) -> bool {
+    fn is_one_edit_distance(mut s: String, mut t: String) -> bool {
+        let ns = s.len();
+        let nt = t.len();
+
+        if ns > nt {
+            return is_one_edit_distance(t, s);
+        }
+
+        if nt - ns > 1 {
+            return false;
+        }
+
+        let (s, t) = (s.chars().collect::<Vec<_>>(), t.chars().collect::<Vec<_>>());
+        for i in 0..ns {
+            if s[i] != t[i] {
+                if ns == nt {
+                    return s[i + 1..] == t[i + 1..];
+                } else {
+                    return s[i..] == t[i + 1..];
+                }
+            }
+        }
+
+        ns + 1 == nt
+    }
+    is_one_edit_distance(s, t)
+}
