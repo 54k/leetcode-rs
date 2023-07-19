@@ -47,3 +47,26 @@ func findThePrefixCommonArray(A []int, B []int) []int {
 
 	return ans
 }
+
+// https://leetcode.com/problems/partition-labels/description/
+func partitionLabels(s string) []int {
+	lastOccerence := map[rune]int{}
+	for i, c := range s {
+		lastOccerence[c] = i
+	}
+
+	left, right := 0, 0
+	ans := []int{}
+
+	for i, c := range s {
+		if right < lastOccerence[c] {
+			right = lastOccerence[c]
+		}
+		if right == i {
+			ans = append(ans, right-left+1)
+			left = right + 1
+		}
+	}
+
+	return ans
+}

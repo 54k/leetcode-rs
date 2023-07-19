@@ -51,7 +51,7 @@ pub fn find_the_prefix_common_array(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
         let mut ans = vec![];
         let (mut set_a, mut set_b) = (0u64, 0u64);
         for i in 0..a.len() {
-            set_a |= a[i] as u64;
+            set_a |= a[i] as u64;  
             set_b |= b[i] as u64;
 
             ans.push((set_a & set_b).count_ones() as i32);
