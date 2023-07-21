@@ -183,3 +183,29 @@ func numDistinct(s string, t string) int {
 
 	return dp(0, 0)
 }
+
+// https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/
+func strStr(haystack string, needle string) int {
+	zFun := func(s string) []int {
+		zArr := make([]int, len(s))
+
+		for i := 1; i < len(s); i++ {
+			for zArr[i]+i < len(s) && s[zArr[i]+i] == s[zArr[i]] {
+				zArr[i]++
+			}
+		}
+
+		return zArr
+	}
+
+	z := zFun(needle + "$" + haystack)
+
+	fmt.Println(z)
+
+	for i, v := range z {
+		if v == len(needle) {
+			return i - len(needle) - 1
+		}
+	}
+	return -1
+}
