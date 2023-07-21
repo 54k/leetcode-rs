@@ -121,3 +121,32 @@ func findCheapestPriceBellmanFord(n int, flights [][]int, src int, dst int, k in
 	}
 	return dist[dst]
 }
+
+// https://leetcode.com/problems/one-edit-distance/description/
+func isOneEditDistance(s string, t string) bool {
+	eq := func(a, b string) bool {
+		if len(a) != len(b) {
+			return false
+		}
+		for i := 0; i < len(a); i++ {
+			if a[i] != b[i] {
+				return false
+			}
+		}
+		return true
+	}
+	if len(s) > len(t) {
+		return isOneEditDistance(t, s)
+	}
+
+	for i := 0; i < len(s); i++ {
+		if s[i] != t[i] {
+			if len(s) != len(t) {
+				return eq(s[i:], t[i+1:])
+			} else {
+				return eq(s[i+1:], t[i+1:])
+			}
+		}
+	}
+	return len(t)-len(s) == 1
+}
