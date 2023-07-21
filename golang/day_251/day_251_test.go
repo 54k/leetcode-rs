@@ -1,5 +1,7 @@
 package day251
 
+import "fmt"
+
 // https://leetcode.com/problems/number-of-longest-increasing-subsequence/description/
 func findNumberOfLIS(nums []int) int {
 	length := make([]int, len(nums))
@@ -84,6 +86,34 @@ func findCheapestPrice(n int, flights [][]int, src int, dst int, k int) int {
 
 		lvl = newLvl
 		stops++
+	}
+
+	if dist[dst] == 1<<30 {
+		return -1
+	}
+	return dist[dst]
+}
+
+func findCheapestPriceBellmanFord(n int, flights [][]int, src int, dst int, k int) int {
+	dist := make([]int, n)
+	for i := 0; i < n; i++ {
+		dist[i] = 1 << 30
+	}
+	dist[src] = 0
+
+	for i := 0; i <= k; i++ {
+		temp := make([]int, n)
+		copy(temp, dist)
+		fmt.Println(temp)
+		for _, flight := range flights {
+			if dist[flight[0]] != 1<<30 {
+				if temp[flight[1]] > dist[flight[0]]+flight[2] {
+					temp[flight[1]] = dist[flight[0]] + flight[2]
+				}
+			}
+		}
+
+		dist = temp
 	}
 
 	if dist[dst] == 1<<30 {
