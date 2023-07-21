@@ -25,3 +25,29 @@ pub fn largest_divisible_subset(nums: Vec<i32>) -> Vec<i32> {
     }
     ans
 }
+
+// https://leetcode.com/problems/distinct-subsequences/description/
+pub fn num_distinct(s: String, t: String) -> i32 {
+    let m = s.len();
+    let n = t.len();
+    let s = s.chars().collect::<Vec<_>>();
+    let t = t.chars().collect::<Vec<_>>();
+
+    let mut dp = vec![vec![0; n + 1]; m + 1];
+
+    for i in 0..=m {
+        dp[i][n] = 1;
+    }
+
+    for i in (0..m).rev() {
+        for j in (0..n).rev() {
+            dp[i][j] = dp[i + 1][j];
+
+            if s[i] == t[j] {
+                dp[i][j] += dp[i + 1][j + 1];
+            }
+        }
+    }
+
+    dp[0][0]
+}
