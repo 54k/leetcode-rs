@@ -150,3 +150,36 @@ func isOneEditDistance(s string, t string) bool {
 	}
 	return len(t)-len(s) == 1
 }
+
+// https://leetcode.com/problems/distinct-subsequences/description/
+func numDistinct(s string, t string) int {
+	type pair struct {
+		a, b int
+	}
+	m, n := len(s), len(t)
+	memo := map[pair]int{}
+	var dp func(i, j int) int
+	dp = func(i, j int) int {
+		if i == m || j == n {
+			if j == n {
+				return 1
+			}
+			return 0
+		}
+
+		key := pair{i, j}
+		if _, ok := memo[key]; ok {
+			return memo[key]
+		}
+		ans := dp(i+1, j)
+
+		if s[i] == t[j] {
+			ans += dp(i+1, j+1)
+		}
+
+		memo[key] = ans
+		return memo[key]
+	}
+
+	return dp(0, 0)
+}
