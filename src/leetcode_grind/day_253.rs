@@ -176,3 +176,63 @@ pub fn minimum_effort_path_dsu(heights: Vec<Vec<i32>>) -> i32 {
     }
     return -1;
 }
+
+pub fn minimum_effort_path_bellman_ford_tle(heights: Vec<Vec<i32>>) -> i32 {
+    let mut edge_list = vec![];
+    let (rows, cols) = (heights.len(), heights[0].len());
+
+    for r in 0..rows {
+        for c in 0..cols {
+            if r > 0 {
+                edge_list.push((
+                    r * cols + c,
+                    (r - 1) * cols + c,
+                    (heights[r][c] - heights[r - 1][c]).abs(),
+                ));
+            }
+
+            if r < rows - 1 {
+                edge_list.push((
+                    r * cols + c,
+                    (r + 1) * cols + c,
+                    (heights[r][c] - heights[r + 1][c]).abs(),
+                ));
+            }
+
+            if c > 0 {
+                edge_list.push((
+                    r * cols + c,
+                    r * cols + c - 1,
+                    (heights[r][c] - heights[r][c - 1]).abs(),
+                ));
+            }
+
+            if c < cols - 1 {
+                edge_list.push((
+                    r * cols + c,
+                    r * cols + c + 1,
+                    (heights[r][c] - heights[r][c + 1]).abs(),
+                ));
+            }
+        }
+    }
+
+    let mut efforts = vec![i32::MAX; rows * cols];
+    efforts[0] = 0;
+
+    for _ in 0..rows * cols - 1 {
+        let mut tmp = efforts.clone();
+
+        for (to, from, effort) in edge_list.clone() {
+            if efforts[from] == i32::MAX {
+                continue;
+            }
+
+            tmp[to] = tmp[to].min(efforts[from].max(effort));
+        }
+
+        efforts = tmp
+    }
+
+    efforts[rows * cols - 1]
+}
