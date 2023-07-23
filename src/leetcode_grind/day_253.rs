@@ -93,3 +93,86 @@ pub fn minimum_effort_path_dijkstras(heights: Vec<Vec<i32>>) -> i32 {
 
     diff_matrix[row - 1][col - 1]
 }
+
+pub fn minimum_effort_path_dsu(heights: Vec<Vec<i32>>) -> i32 {
+    struct DSU {
+        parent: Vec<usize>,
+        sz: Vec<usize>,
+        edge_list: Vec<(usize, usize, i32)>,
+    }
+
+    impl DSU {
+        fn new(heights: &Vec<Vec<i32>>) -> Self {
+            let (row, col) = (heights.len(), heights[0].len());
+
+            let mut parent = vec![0; row * col];
+            let mut edge_list = vec![];
+            let sz = vec![1; row * col];
+
+            for cur_row in 0..row {
+                for cur_col in 0..col {
+                    if cur_row > 0 {
+                        edge_list.push((
+                            cur_row * col + cur_col,
+                            (cur_row - 1) * col + cur_col,
+                            (heights[cur_row][cur_col] - heights[cur_row - 1][cur_col]).abs(),
+                        ));
+                    }
+                    if cur_col > 0 {
+                        edge_list.push((
+                            cur_row * col + cur_col,
+                            cur_row * col + cur_col - 1,
+                            (heights[cur_row][cur_col] - heights[cur_row][cur_col - 1]).abs(),
+                        ));
+                    }
+
+                    parent[cur_row * col + cur_col] = cur_row * col + cur_col;
+                }
+            }
+
+            Self {
+                parent,
+                sz,
+                edge_list,
+            }
+        }
+
+        fn find(&mut self, x: usize) -> usize {
+            if self.parent[x] != x {
+                self.parent[x] = self.find(self.parent[x]);
+            }
+            self.parent[x]
+        }
+
+        fn union(&mut self, x: usize, y: usize) {
+            let (mut x, mut y) = (self.find(x), self.find(y));
+            if x == y {
+                return;
+            }
+
+            if self.sz[x] < self.sz[y] {
+                std::mem::swap(&mut x, &mut y);
+            }
+
+            self.parent[y] = x;
+            self.sz[x] += self.sz[y];
+        }
+    }
+
+    let (row, col) = (heights.len(), heights[0].len());
+    if row == 1 && col == 1 {
+        return 0;
+    }
+
+    let mut uf = DSU::new(&heights);
+    uf.edge_list.sort_by_key(|x| x.2);
+
+    for i in 0..uf.edge_list.len() {
+        let (x, y) = (uf.edge_list[i].0, uf.edge_list[i].1);
+        uf.union(x, y);
+        if uf.find(0) == uf.find(row * col - 1) {
+            return uf.edge_list[i].2;
+        }
+    }
+    return -1;
+}
