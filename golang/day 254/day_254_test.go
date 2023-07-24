@@ -2,6 +2,7 @@ package day_254
 
 import "math/rand"
 
+// https://leetcode.com/problems/top-k-frequent-elements/
 func topKFrequent(nums []int, k int) []int {
 	count := map[int]int{}
 	for _, num := range nums {
@@ -56,4 +57,87 @@ func topKFrequent(nums []int, k int) []int {
 	quickselect(0, n-1, n-k)
 
 	return unique[n-k : n]
+}
+
+// https://leetcode.com/problems/course-schedule-ii/description/
+func findOrderDFS(numCourses int, prerequisites [][]int) []int {
+	adj := map[int][]int{}
+	for i := 0; i < numCourses; i++ {
+		adj[i] = []int{}
+	}
+	for _, p := range prerequisites {
+		adj[p[1]] = append(adj[p[1]], p[0])
+	}
+	vis := make([]int, numCourses)
+	ans := []int{}
+
+	var dfs func(int) bool
+	dfs = func(v int) bool {
+		if vis[v] == 1 {
+			return true
+		}
+		vis[v] = 1
+		for _, u := range adj[v] {
+			if vis[u] != 2 && dfs(u) {
+				return true
+			}
+		}
+		vis[v] = 2
+		ans = append(ans, v)
+		return false
+	}
+
+	for i := 0; i < numCourses; i++ {
+		if vis[i] == 0 && dfs(i) {
+			return []int{}
+		}
+	}
+
+	for i := 0; i < len(ans)/2; i++ {
+		tmp := ans[i]
+		ans[i] = ans[len(ans)-1-i]
+		ans[len(ans)-1-i] = tmp
+	}
+	return ans
+}
+
+func findOrderKhan(numCourses int, prerequisites [][]int) []int {
+	adj := map[int][]int{}
+	for _, p := range prerequisites {
+		if _, ok := adj[p[0]]; !ok {
+			adj[p[0]] = []int{}
+		}
+		adj[p[1]] = append(adj[p[1]], p[0])
+	}
+
+	inDegree := make([]int, numCourses)
+	for _, p := range prerequisites {
+		inDegree[p[0]]++
+	}
+
+	queue := []int{}
+	for i, d := range inDegree {
+		if d == 0 {
+			queue = append(queue, i)
+		}
+	}
+	ans := []int{}
+	for len(queue) > 0 {
+		v := queue[0]
+		queue = queue[1:]
+		ans = append(ans, v)
+
+		for _, u := range adj[v] {
+			inDegree[u]--
+			if inDegree[u] == 0 {
+				queue = append(queue, u)
+			}
+		}
+	}
+
+	if len(ans) != numCourses {
+		return []int{}
+	}
+
+	return ans
 }
