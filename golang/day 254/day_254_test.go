@@ -1,6 +1,7 @@
 package day_254
 
 import "math/rand"
+import "strings"
 
 // https://leetcode.com/problems/top-k-frequent-elements/
 func topKFrequent(nums []int, k int) []int {
@@ -140,4 +141,64 @@ func findOrderKhan(numCourses int, prerequisites [][]int) []int {
 	}
 
 	return ans
+}
+
+// https://leetcode.com/problems/alien-dictionary/description/
+func alienOrder(words []string) string {
+	adj := map[byte][]byte{}
+
+	for i := 0; i < len(words)-1; i++ {
+		w1, w2 := words[i], words[i+1]
+		l1, l2 := len(w1), len(w2)
+		if l1 > l2 && strings.HasPrefix(w1, w2) {
+			return ""
+		}
+
+		m := l1
+		if l2 < m {
+			m = l2
+		}
+
+		for j := 0; j < m; j++ {
+			if w1[j] != w2[j] {
+				adj[w2[j]] = append(adj[w2[j]], w1[j])
+				break
+			}
+		}
+	}
+
+	path := []byte{}
+	vis := make([]byte, 255)
+
+	var dfs func(byte) bool
+	dfs = func(v byte) bool {
+		if vis[v] == 1 {
+			return true
+		}
+		vis[v] = 1
+		for _, u := range adj[v] {
+			if vis[u] != 2 && dfs(u) {
+				return true
+			}
+		}
+		vis[v] = 2
+		path = append(path, v)
+		return false
+	}
+
+	letters := map[byte]bool{}
+
+	for _, word := range words {
+		for _, letter := range word {
+			letters[byte(letter)] = true
+		}
+	}
+
+	for k, _ := range letters {
+		if vis[k] == 0 && dfs(k) {
+			return ""
+		}
+	}
+
+	return string(path)
 }
