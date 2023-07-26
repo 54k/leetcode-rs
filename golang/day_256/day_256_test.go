@@ -56,3 +56,31 @@ func preorderTraversal(root *TreeNode) []int {
 
 	return answer
 }
+
+func preorderTraversalMorris(root *TreeNode) []int {
+	answer := []int{}
+	curr := root
+	var last *TreeNode
+	for curr != nil {
+		if curr.Left == nil {
+			answer = append(answer, curr.Val)
+			curr = curr.Right
+		} else {
+			last = curr.Left
+
+			for last.Right != nil && last.Right != curr {
+				last = last.Right
+			}
+
+			if last.Right == nil {
+				answer = append(answer, curr.Val)
+				last.Right = curr
+				curr = curr.Left
+			} else {
+				last.Right = nil
+				curr = curr.Right
+			}
+		}
+	}
+	return answer
+}
