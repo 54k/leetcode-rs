@@ -32,3 +32,27 @@ func minSpeedOnTime(dist []int, hour float64) int {
 
 	return minSpeed
 }
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+// https://leetcode.com/problems/binary-tree-preorder-traversal/description/
+func preorderTraversal(root *TreeNode) []int {
+	stack := []*TreeNode{root}
+	answer := []int{}
+
+	for len(stack) > 0 {
+		curr := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if curr != nil {
+			answer = append(answer, curr.Val)
+			stack = append(stack, curr.Right)
+			stack = append(stack, curr.Left)
+		}
+	}
+
+	return answer
+}
