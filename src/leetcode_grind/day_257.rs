@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 // https://leetcode.com/problems/maximum-running-time-of-n-computers/description/
 pub fn max_run_time(n: i32, mut batteries: Vec<i32>) -> i64 {
     batteries.sort();
@@ -26,6 +28,13 @@ pub fn max_run_time(n: i32, mut batteries: Vec<i32>) -> i64 {
     }
 
     live[n as usize - 1] + extra / n as i64
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 
 // https://leetcode.com/problems/symmetric-tree/description/
@@ -58,4 +67,37 @@ pub fn is_symmetric(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
     }
 
     true
+}
+
+// https://leetcode.com/problems/path-sum/description/
+pub fn has_path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> bool {
+    if root.is_none() {
+        return false;
+    }
+
+    let mut node_stack = vec![];
+    let mut sum_stack = vec![];
+    node_stack.push(root.clone());
+    sum_stack.push(target_sum - root.clone().as_ref().unwrap().borrow().val);
+
+    while node_stack.len() > 0 {
+        let node = node_stack.pop().unwrap().clone().unwrap();
+        let node = node.borrow();
+        let curr_sum = sum_stack.pop().unwrap();
+
+        if node.right.is_none() && node.left.is_none() && curr_sum == 0 {
+            return true;
+        }
+
+        if node.right.is_some() {
+            node_stack.push(node.right.clone());
+            sum_stack.push(curr_sum - node.right.as_ref().unwrap().borrow().val);
+        }
+        if node.left.is_some() {
+            node_stack.push(node.left.clone());
+            sum_stack.push(curr_sum - node.left.as_ref().unwrap().borrow().val);
+        }
+    }
+
+    false
 }
