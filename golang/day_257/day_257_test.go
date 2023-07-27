@@ -31,3 +31,35 @@ func maxRunTime(n int, batteries []int) int64 {
 
 	return left
 }
+
+// https://leetcode.com/problems/binary-tree-inorder-traversal/description/
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func inorderTraversalMorris(root *TreeNode) []int {
+	res := []int{}
+	curr := root
+	var pre *TreeNode
+
+	for curr != nil {
+		if curr.Left == nil {
+			res = append(res, curr.Val)
+			curr = curr.Right
+		} else {
+			pre = curr.Left
+			for pre.Right != nil {
+				pre = pre.Right
+			}
+
+			pre.Right = curr
+			temp := curr
+			curr = curr.Left
+			temp.Left = nil
+		}
+	}
+
+	return res
+}
