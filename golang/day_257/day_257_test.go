@@ -63,3 +63,34 @@ func inorderTraversalMorris(root *TreeNode) []int {
 
 	return res
 }
+
+// https://leetcode.com/problems/count-univalue-subtrees/description/
+func countUnivalSubtrees(root *TreeNode) int {
+	count := 0
+
+	var dfs func(*TreeNode) bool
+	dfs = func(node *TreeNode) bool {
+		if node == nil {
+			return true
+		}
+
+		left := dfs(node.Left)
+		right := dfs(node.Right)
+
+		if left && right {
+			if node.Left != nil && node.Left.Val != node.Val {
+				return false
+			}
+			if node.Right != nil && node.Right.Val != node.Val {
+				return false
+			}
+			count++
+			return true
+		}
+
+		return false
+	}
+
+	dfs(root)
+	return count
+}
