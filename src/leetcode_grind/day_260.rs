@@ -132,29 +132,33 @@ pub fn minimum_string(a: String, b: String, c: String) -> String {
 
 // https://leetcode.com/problems/stepping-numbers/description/
 pub fn count_stepping_numbers(low: i32, high: i32) -> Vec<i32> {
-    fn dfs(cur: i64, res: &mut Vec<i32>, low: i32, high: i32) {
-        if cur >= low as i64 && cur <= high as i64 {
-            res.push(cur as i32);
+    pub fn count_stepping_numbers_dfs(low: i32, high: i32) -> Vec<i32> {
+        fn dfs(cur: i64, res: &mut Vec<i32>, low: i32, high: i32) {
+            if cur >= low as i64 && cur <= high as i64 {
+                res.push(cur as i32);
+            }
+
+            if cur > high as i64 || cur == 0 {
+                return;
+            }
+
+            let last = cur % 10;
+            if last != 0 {
+                dfs(cur * 10 + last - 1, res, low, high);
+            }
+            if last != 9 {
+                dfs(cur * 10 + last + 1, res, low, high)
+            }
         }
 
-        if cur > high as i64 || cur == 0 {
-            return;
+        let mut res = vec![];
+        for i in 0..=9 {
+            dfs(i, &mut res, low, high);
         }
 
-        let last = cur % 10;
-        if last != 0 {
-            dfs(cur * 10 + last - 1, res, low, high);
-        }
-        if last != 9 {
-            dfs(cur * 10 + last + 1, res, low, high)
-        }
+        res.sort();
+        res
     }
 
-    let mut res = vec![];
-    for i in 0..=9 {
-        dfs(i, &mut res, low, high);
-    }
-
-    res.sort();
-    res
+    count_stepping_numbers_dfs(low, high)
 }
