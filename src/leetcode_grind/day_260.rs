@@ -26,3 +26,29 @@ pub fn strange_printer(s: String) -> i32 {
 
     dp[0][n - 1] + 1
 }
+
+// https://leetcode.com/problems/find-the-celebrity/description/
+// pub fn find_celebrity(&self, n: i32) -> i32 {
+//     fn is_celeb(this: &Solution, n: i32, i: i32) -> bool {
+//         for j in 0..n {
+//             if i == j {
+//                 continue;
+//             }
+//             if this.knows(i, j) || !this.knows(j, i) {
+//                 return false;
+//             }
+//         }
+//         true
+//     }
+//     let mut celeb_candidate = 0;
+//     for i in 0..n {
+//         if self.knows(celeb_candidate, i) {
+//             celeb_candidate = i;
+//         }
+//     }
+
+//     if is_celeb(self, n, celeb_candidate) {
+//         return celeb_candidate;
+//     }
+//     -1
+// }
