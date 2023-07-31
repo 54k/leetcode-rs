@@ -1,7 +1,7 @@
 // https://leetcode.com/problems/minimum-ascii-delete-sum-for-two-strings/description/
 pub fn minimum_delete_sum(s1: String, s2: String) -> i32 {
     use std::collections::HashMap;
-
+    let mut memo = HashMap::new();
     fn compute_cost(
         s1: &Vec<char>,
         s2: &Vec<char>,
@@ -9,7 +9,7 @@ pub fn minimum_delete_sum(s1: String, s2: String) -> i32 {
         j: i32,
         memo: &mut HashMap<(i32, i32), i32>,
     ) -> i32 {
-        let key = (i, j);
+        let mut key = (i, j);
 
         if i < 0 && j < 0 {
             return 0;
@@ -20,34 +20,20 @@ pub fn minimum_delete_sum(s1: String, s2: String) -> i32 {
         }
 
         let res = if i < 0 {
-            let mut delete_cost = 0;
-            for pointer in 0..=j {
-                delete_cost += s2[pointer as usize] as i32;
-            }
-            delete_cost
+            s2[j as usize] as i32 + compute_cost(s1, s2, i, j - 1, memo)
         } else if j < 0 {
-            let mut delete_cost = 0;
-            for pointer in 0..=i {
-                delete_cost += s1[pointer as usize] as i32;
-            }
-            delete_cost
+            s1[i as usize] as i32 + compute_cost(s1, s2, i - 1, j, memo)
         } else if s1[i as usize] == s2[j as usize] {
             compute_cost(s1, s2, i - 1, j - 1, memo)
         } else {
-            (s1[i as usize] as i32 + compute_cost(s1, s2, i - 1, j, memo)).min(
-                (s2[j as usize] as i32 + compute_cost(s1, s2, i, j - 1, memo)).min(
-                    s1[i as usize] as i32
-                        + s2[j as usize] as i32
-                        + compute_cost(s1, s2, i - 1, j - 1, memo),
-                ),
-            )
+            (s1[i as usize] as i32 + compute_cost(s1, s2, i - 1, j, memo))
+                .min((s2[j as usize] as i32 + compute_cost(s1, s2, i, j - 1, memo)))
         };
 
         memo.insert(key, res);
         memo[&key]
     }
 
-    let mut memo = HashMap::new();
     let s1 = s1.chars().collect::<Vec<_>>();
     let s2 = s2.chars().collect::<Vec<_>>();
 
