@@ -78,3 +78,50 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 		return rightLcp
 	}
 }
+
+// https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/
+func lowestCommonAncestorIterative(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+
+	stack := []*TreeNode{}
+	parent := map[*TreeNode]*TreeNode{}
+
+	parent[root] = nil
+	stack = append(stack, root)
+
+	for {
+		_, ok1 := parent[p]
+		_, ok2 := parent[q]
+		if ok1 && ok2 {
+			break
+		}
+
+		node := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if node.Left != nil {
+			parent[node.Left] = node
+			stack = append(stack, node.Left)
+		}
+
+		if node.Right != nil {
+			parent[node.Right] = node
+			stack = append(stack, node.Right)
+		}
+	}
+
+	ancestor := map[*TreeNode]bool{}
+
+	for p != nil {
+		ancestor[p] = true
+		p = parent[p]
+	}
+
+	for !ancestor[q] {
+		q = parent[q]
+	}
+
+	return q
+}
