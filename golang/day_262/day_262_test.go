@@ -56,3 +56,25 @@ func longestValidSubstring(word string, forbidden []string) int {
 	}
 	return ans
 }
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+// https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if root == nil || root == p || root == q {
+		return root
+	}
+	leftLcp := lowestCommonAncestor(root.Left, p, q)
+	rightLcp := lowestCommonAncestor(root.Right, p, q)
+	if leftLcp != nil && rightLcp != nil {
+		return root
+	} else if leftLcp != nil {
+		return leftLcp
+	} else {
+		return rightLcp
+	}
+}
