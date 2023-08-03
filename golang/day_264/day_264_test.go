@@ -268,3 +268,79 @@ func numKLenSubstrNoRepeats(s string, k int) int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/binary-tree-maximum-path-sum/description/
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func maxPathSum(root *TreeNode) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	ans := -(1 << 30)
+	var dfs func(*TreeNode) int
+	dfs = func(root *TreeNode) int {
+		if root == nil {
+			return 0
+		}
+
+		left := max(dfs(root.Left), 0)
+		right := max(dfs(root.Right), 0)
+
+		total := root.Val + left + right
+
+		ans = max(ans, total)
+
+		return max(root.Val+left, root.Val+right)
+	}
+	dfs(root)
+	return ans
+}
+
+// https://leetcode.com/problems/extra-characters-in-a-string/description/
+func minExtraChar(s string, dictionary []string) int {
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	memo := make([]int, len(s))
+	for i := 0; i < len(memo); i++ {
+		memo[i] = -1
+	}
+	dict := map[string]bool{}
+	for _, w := range dictionary {
+		dict[w] = true
+	}
+
+	var dfs func(int) int
+	dfs = func(start int) int {
+		if start == len(s) {
+			return 0
+		}
+		if memo[start] != -1 {
+			return memo[start]
+		}
+		ans := dfs(start+1) + 1
+		for end := start; end < len(s); end++ {
+			for w, _ := range dict {
+				cur := string(s[start : end+1])
+				if w == cur {
+					ans = min(ans, dfs(end+1))
+				}
+			}
+		}
+		memo[start] = ans
+		return ans
+	}
+
+	return dfs(0)
+}
