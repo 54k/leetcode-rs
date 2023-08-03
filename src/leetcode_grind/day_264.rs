@@ -55,3 +55,33 @@ pub fn min_extra_char(s: String, dictionary: Vec<String>) -> i32 {
 
     min_extra_char_bottom_up(s, dictionary)
 }
+
+// https://leetcode.com/problems/find-k-length-substrings-with-no-repeated-characters/description/
+pub fn num_k_len_substr_no_repeats(s: String, k: i32) -> i32 {
+    if k > 26 {
+        return 0;
+    }
+
+    let mut ans = 0;
+    let n = s.len();
+    let s = s.chars().collect::<Vec<_>>();
+    let mut freq = vec![0; 26];
+
+    let mut left = 0;
+    for right in 0..n {
+        freq[s[right] as usize - 'a' as usize] += 1;
+
+        while freq[s[right] as usize - 'a' as usize] > 1 {
+            freq[s[left] as usize - 'a' as usize] -= 1;
+            left += 1;
+        }
+
+        if right - left + 1 == k as usize {
+            ans += 1;
+            freq[s[left] as usize - 'a' as usize] -= 1;
+            left += 1;
+        }
+    }
+
+    ans
+}

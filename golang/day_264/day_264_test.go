@@ -119,3 +119,152 @@ func (this *MyLinkedList) DeleteAtIndex(index int) {
 		prev.next = cur.next
 	}
 }
+
+// https://leetcode.com/problems/linked-list-cycle/description/
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func hasCycleFloyd1(head *ListNode) bool {
+	fast, slow := head, head
+
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+
+		if slow == fast {
+			return true
+		}
+	}
+
+	return false
+}
+
+func hasCycleFloyd2(head *ListNode) bool {
+	if head == nil {
+		return false
+	}
+	fast, slow := head.Next, head
+	for slow != fast {
+		if fast == nil || fast.Next == nil {
+			return false
+		}
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	return true
+}
+
+// https://leetcode.com/problems/linked-list-cycle-ii/description/
+func detectCycleFloyd1(head *ListNode) *ListNode {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+
+		if slow == fast {
+			slow = head
+			for slow != fast {
+				slow = slow.Next
+				fast = fast.Next
+			}
+			return slow
+		}
+	}
+	return nil
+}
+
+// https://leetcode.com/problems/intersection-of-two-linked-lists/description/
+func getIntersectionNode1(headA, headB *ListNode) *ListNode {
+	len := func(h *ListNode) int {
+		ans := 0
+		for h != nil {
+			h = h.Next
+			ans++
+		}
+		return ans
+	}
+
+	diff := len(headA) - len(headB)
+	if diff < 0 {
+		diff *= -1
+	} else {
+		headA, headB = headB, headA
+	}
+
+	for diff > 0 {
+		headB = headB.Next
+		diff--
+	}
+
+	for headA != nil && headB != nil && headA != headB {
+		headA = headA.Next
+		headB = headB.Next
+	}
+	return headA
+}
+
+func getIntersectionNode2(headA, headB *ListNode) *ListNode {
+	pA, pB := headA, headB
+	for pA != pB {
+		if pA == nil {
+			pA = headB
+		} else {
+			pA = pA.Next
+		}
+
+		if pB == nil {
+			pB = headA
+		} else {
+			pB = pB.Next
+		}
+	}
+
+	return pA
+}
+
+// https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	dummy := &ListNode{0, head}
+	first, second := dummy, dummy
+
+	for i := 0; i <= n; i++ {
+		first = first.Next
+	}
+
+	for first != nil {
+		first = first.Next
+		second = second.Next
+	}
+
+	second.Next = second.Next.Next
+	return dummy.Next
+}
+
+// https://leetcode.com/problems/find-k-length-substrings-with-no-repeated-characters/description/
+func numKLenSubstrNoRepeats(s string, k int) int {
+	if k > 26 {
+		return 0
+	}
+
+	freq := make([]int, 26)
+	n := len(s)
+	left := 0
+	ans := 0
+	for right := 0; right < n; right++ {
+		freq[s[right]-'a']++
+
+		for freq[s[right]-'a'] > 1 {
+			freq[s[left]-'a']--
+			left++
+		}
+
+		if right-left+1 == k {
+			ans++
+			freq[s[left]-'a']--
+			left++
+		}
+	}
+	return ans
+}
