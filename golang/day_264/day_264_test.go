@@ -344,3 +344,29 @@ func minExtraChar(s string, dictionary []string) int {
 
 	return dfs(0)
 }
+
+func minExtraCharBottomUp(s string, dictionary []string) int {
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+	dp := make([]int, len(s)+1)
+	dict := map[string]bool{}
+	for _, w := range dictionary {
+		dict[w] = true
+	}
+	for start := len(s) - 1; start >= 0; start-- {
+		dp[start] = dp[start+1] + 1
+		for end := start; end < len(s); end++ {
+			cur := string(s[start : end+1])
+			for w, _ := range dict {
+				if cur == w {
+					dp[start] = min(dp[start], dp[end+1])
+				}
+			}
+		}
+	}
+	return dp[0]
+}
