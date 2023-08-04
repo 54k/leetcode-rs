@@ -197,6 +197,42 @@ func isPalindrome(head *ListNode) bool {
 	return true
 }
 
+// https://leetcode.com/problems/special-permutations/description/
+func specialPerm(nums []int) int {
+	const mod = 1000000007
+
+	memo := make([][]int, 1<<14+1)
+	for i := 0; i < len(memo); i++ {
+		memo[i] = make([]int, 16)
+		for j := 0; j < len(memo[i]); j++ {
+			memo[i][j] = -1
+		}
+	}
+	var permute func(int, int, int) int
+	permute = func(lastIdx int, mask int, cnt int) int {
+		if cnt == len(nums) {
+			return 1
+		}
+
+		if memo[mask][lastIdx+1] != -1 {
+			return memo[mask][lastIdx+1]
+		}
+
+		ans := 0
+		for i := 0; i < len(nums); i++ {
+			if lastIdx == -1 || (mask&(1<<i) == 0 &&
+				i != lastIdx &&
+				(nums[lastIdx]%nums[i] == 0 || nums[i]%nums[lastIdx] == 0)) {
+				ans = (ans + permute(i, mask|(1<<i), cnt+1)) % mod
+			}
+		}
+		memo[mask][lastIdx+1] = ans
+		return ans
+	}
+
+	return permute(-1, 0, 0)
+}
+
 // https://leetcode.com/problems/greatest-common-divisor-of-strings/description/
 func gcdOfStrings(str1 string, str2 string) string {
 	panic("todo")
