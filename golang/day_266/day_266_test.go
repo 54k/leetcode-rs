@@ -7,7 +7,7 @@ type TreeNode struct {
 }
 
 // https://leetcode.com/problems/unique-binary-search-trees-ii/editorial/
-func generateTrees(n int) []*TreeNode {
+func generateTreesTopDown(n int) []*TreeNode {
 	type pair struct {
 		left  int
 		right int
@@ -44,6 +44,40 @@ func generateTrees(n int) []*TreeNode {
 	}
 
 	return generate(1, n)
+}
+
+func generateTrees(n int) []*TreeNode {
+
+	var clone func(*TreeNode, int) *TreeNode
+	clone = func(node *TreeNode, offset int) *TreeNode {
+		if node == nil {
+			return nil
+		}
+		cloned := &TreeNode{node.Val + offset, nil, nil}
+		cloned.Left = clone(cloned.Left, offset)
+		cloned.Right = clone(cloned.Right, offset)
+		return cloned
+	}
+
+	dp := make([][]*TreeNode, n+1)
+	for i := 0; i <= n; i++ {
+		dp[i] = []*TreeNode{}
+	}
+	dp[0] = append(dp[0], nil)
+
+	for numberOfNodes := 1; numberOfNodes <= n; numberOfNodes++ {
+		for i := 1; i <= numberOfNodes; i++ {
+			j := numberOfNodes - i
+			for _, left := range dp[i-1] {
+				for _, right := range dp[j] {
+					root := &TreeNode{i, left, clone(right, i)}
+					dp[numberOfNodes] = append(dp[numberOfNodes], root)
+				}
+			}
+		}
+	}
+
+	return dp[n]
 }
 
 // https://leetcode.com/problems/greatest-common-divisor-of-strings/description/
