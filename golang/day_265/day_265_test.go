@@ -232,8 +232,3 @@ func specialPerm(nums []int) int {
 
 	return permute(-1, 0, 0)
 }
-
-// https://leetcode.com/problems/greatest-common-divisor-of-strings/description/
-func gcdOfStrings(str1 string, str2 string) string {
-	panic("todo")
-}
