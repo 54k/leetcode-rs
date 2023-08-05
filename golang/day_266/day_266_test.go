@@ -84,3 +84,45 @@ func generateTrees(n int) []*TreeNode {
 func gcdOfStrings(str1 string, str2 string) string {
 	panic("todo")
 }
+
+// https://leetcode.com/problems/range-sum-query-mutable/description/
+type NumArray struct {
+	tree []int
+	k    int
+}
+
+func Constructor(nums []int) NumArray {
+	arr := NumArray{make([]int, 2*len(nums)), len(nums)}
+	for i, n := range nums {
+		arr.Update(i, n)
+	}
+	return arr
+}
+
+func (this *NumArray) Update(index int, val int) {
+	index += this.k
+	this.tree[index] = val
+	for i := index; i > 0; {
+		i /= 2
+		this.tree[i] = this.tree[i*2] + this.tree[i*2+1]
+	}
+}
+
+func (this *NumArray) SumRange(left int, right int) int {
+	left += this.k
+	right += this.k
+	sum := 0
+	for left <= right {
+		if left%2 == 1 {
+			sum += this.tree[left]
+			left++
+		}
+		if right%2 == 0 {
+			sum += this.tree[right]
+			right--
+		}
+		left /= 2
+		right /= 2
+	}
+	return sum
+}
