@@ -6,7 +6,7 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-// https://leetcode.com/problems/unique-binary-search-trees-ii/editorial/
+// https://leetcode.com/problems/unique-binary-search-trees-ii/description/
 func generateTreesTopDown(n int) []*TreeNode {
 	type pair struct {
 		left  int
@@ -54,8 +54,8 @@ func generateTrees(n int) []*TreeNode {
 			return nil
 		}
 		cloned := &TreeNode{node.Val + offset, nil, nil}
-		cloned.Left = clone(cloned.Left, offset)
-		cloned.Right = clone(cloned.Right, offset)
+		cloned.Left = clone(node.Left, offset)
+		cloned.Right = clone(node.Right, offset)
 		return cloned
 	}
 
