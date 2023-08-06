@@ -1,5 +1,7 @@
 package day267
 
+import "sort"
+
 // https://leetcode.com/problems/add-two-numbers/description/
 type ListNode struct {
 	Val  int
@@ -45,6 +47,40 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 	}
 	list2.Next = mergeTwoLists(list1, list2.Next)
 	return list2
+}
+
+// https://leetcode.com/problems/maximum-elegance-of-a-k-length-subsequence/description/
+func findMaximumElegance(items [][]int, k int) int64 {
+	max := func(a, b int64) int64 {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	dups := []int{}
+	sort.Slice(items, func(a, b int) bool {
+		return items[a][0] > items[b][0]
+	})
+	cur := int64(0)
+	res := int64(0)
+	seen := map[int]bool{}
+	for i := 0; i < len(items); i++ {
+		if i < k {
+			if seen[items[i][1]] {
+				dups = append(dups, items[i][0])
+			}
+			cur += int64(items[i][0])
+		} else if !seen[items[i][1]] {
+			if len(dups) == 0 {
+				break
+			}
+			cur += int64(items[i][0] - dups[len(dups)-1])
+			dups = dups[:len(dups)-1]
+		}
+		seen[items[i][1]] = true
+		res = max(res, cur+int64(len(seen))*int64(len(seen)))
+	}
+	return res
 }
 
 // https://leetcode.com/problems/greatest-common-divisor-of-strings/description/
