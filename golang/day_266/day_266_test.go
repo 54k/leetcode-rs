@@ -80,11 +80,6 @@ func generateTrees(n int) []*TreeNode {
 	return dp[n]
 }
 
-// https://leetcode.com/problems/greatest-common-divisor-of-strings/description/
-func gcdOfStrings(str1 string, str2 string) string {
-	panic("todo")
-}
-
 // https://leetcode.com/problems/range-sum-query-mutable/description/
 type NumArray struct {
 	tree []int
