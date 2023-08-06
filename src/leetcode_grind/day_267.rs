@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 // https://leetcode.com/problems/number-of-music-playlists/description/
 pub fn num_music_playlists(n: i32, goal: i32, k: i32) -> i32 {
     const MOD: i64 = 1000000007;
@@ -210,6 +212,7 @@ pub fn maximum_safeness_factor(grid: Vec<Vec<i32>>) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/maximum-elegance-of-a-k-length-subsequence/
 pub fn find_maximum_elegance(mut items: Vec<Vec<i32>>, k: i32) -> i64 {
     use std::collections::HashSet;
     items.sort_by(|a, b| b[0].cmp(&a[0]));
@@ -234,6 +237,33 @@ pub fn find_maximum_elegance(mut items: Vec<Vec<i32>>, k: i32) -> i64 {
         res = res.max(cur + (seen.len() as i64) * (seen.len() as i64));
     }
     res
+}
+
+// https://leetcode.com/problems/distribute-coins-in-binary-tree/description/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn distribute_coins(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+    type Node = Option<Rc<RefCell<TreeNode>>>;
+    fn dfs(root: Node, ans: &mut i32) -> i32 {
+        if let Some(n) = root {
+            let n = n.borrow();
+            let left = n.left.clone();
+            let right = n.right.clone();
+            let l = dfs(left.clone(), ans);
+            let r = dfs(right.clone(), ans);
+            *ans += l.abs() + r.abs();
+            return n.val + l + r - 1;
+        }
+        0
+    }
+    let mut ans = 0;
+    dfs(root, &mut ans);
+    ans
 }
 
 #[test]
