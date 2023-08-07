@@ -121,3 +121,56 @@ func insert(head *Node, insertVal int) *Node {
 	prev.Next = &Node{insertVal, curr}
 	return head
 }
+
+// https://leetcode.com/problems/copy-list-with-random-pointer/description/
+type NodeRandom struct {
+	Val    int
+	Next   *NodeRandom
+	Random *NodeRandom
+}
+
+func copyRandomList(head *NodeRandom) *NodeRandom {
+	visited := map[*NodeRandom]*NodeRandom{}
+	var copy func(*NodeRandom) *NodeRandom
+	copy = func(head *NodeRandom) *NodeRandom {
+		if head == nil {
+			return head
+		}
+		if _, ok := visited[head]; ok {
+			return visited[head]
+		}
+		node := &NodeRandom{head.Val, nil, nil}
+		visited[head] = node
+		node.Next = copy(head.Next)
+		node.Random = copy(head.Random)
+		return node
+	}
+	return copy(head)
+}
+
+// https://leetcode.com/problems/rotate-list/description/
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func rotateRight(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	oldTail := head
+	var n int
+	for n = 1; oldTail.Next != nil; n++ {
+		oldTail = oldTail.Next
+	}
+	oldTail.Next = head
+
+	newTail := head
+	for i := 0; i < n-k%n-1; i++ {
+		newTail = newTail.Next
+	}
+	newHead := newTail.Next
+	newTail.Next = nil
+	return newHead
+}
