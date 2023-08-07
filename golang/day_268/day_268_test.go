@@ -174,3 +174,26 @@ func rotateRight(head *ListNode, k int) *ListNode {
 	newTail.Next = nil
 	return newHead
 }
+
+// https://leetcode.com/problems/find-good-days-to-rob-the-bank/description/
+func goodDaysToRobBank(security []int, time int) []int {
+	n := len(security)
+	p1, p2 := make([]int, n), make([]int, n)
+	for i := 1; i < n; i++ {
+		if security[i-1] >= security[i] {
+			p1[i] = p1[i-1] + 1
+		}
+	}
+	for i := n - 2; i >= 0; i-- {
+		if security[i+1] >= security[i] {
+			p2[i] = p2[i+1] + 1
+		}
+	}
+	ans := []int{}
+	for i := 0; i < n; i++ {
+		if p1[i] >= time && p2[i] >= time {
+			ans = append(ans, i)
+		}
+	}
+	return ans
+}
