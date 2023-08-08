@@ -86,3 +86,30 @@ func trap2pointers(height []int) int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/search-in-rotated-sorted-array/description/
+func search(nums []int, target int) int {
+	left, right := 0, len(nums)-1
+	for left <= right {
+		mid := left + (right-left)/2
+		targetInRight := target < nums[0]
+		midInRight := nums[mid] < nums[0]
+		el := nums[mid]
+		if targetInRight != midInRight {
+			if targetInRight {
+				el = -(1 << 31)
+			} else {
+				el = (1 << 31)
+			}
+		} else if el == target {
+			return mid
+		}
+
+		if el < target {
+			left = mid + 1
+		} else {
+			right = mid - 1
+		}
+	}
+	return -1
+}
