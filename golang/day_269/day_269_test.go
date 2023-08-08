@@ -113,3 +113,26 @@ func search(nums []int, target int) int {
 	}
 	return -1
 }
+
+// https://leetcode.com/problems/validate-binary-search-tree/description/
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func isValidBST(root *TreeNode) bool {
+	var isValid func(*TreeNode, int, int) bool
+	isValid = func(root *TreeNode, left int, right int) bool {
+		if root == nil {
+			return true
+		}
+
+		if root.Val <= left || root.Val >= right {
+			return false
+		}
+
+		return isValid(root.Left, left, root.Val) && isValid(root.Right, root.Val, right)
+	}
+	return isValid(root, -(1 << 32), (1 << 32))
+}
