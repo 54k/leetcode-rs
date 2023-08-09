@@ -24,3 +24,51 @@ pub fn minimize_max(mut nums: Vec<i32>, p: i32) -> i32 {
     }
     left
 }
+
+// https://leetcode.com/problems/minimum-absolute-difference/description/
+pub fn minimum_abs_difference(arr: Vec<i32>) -> Vec<Vec<i32>> {
+    let mut ans = vec![];
+    let mut min = i32::MAX;
+    let mut arr = arr;
+    arr.sort();
+    for i in 0..arr.len() - 1 {
+        if arr[i + 1] - arr[i] < min {
+            ans.clear();
+            ans.push(vec![arr[i], arr[i + 1]]);
+            min = arr[i + 1] - arr[i];
+        } else if arr[i + 1] - arr[i] == min {
+            ans.push(vec![arr[i], arr[i + 1]]);
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/minimum-difference-between-largest-and-smallest-value-in-three-moves/
+pub fn min_difference(mut nums: Vec<i32>) -> i32 {
+    if nums.len() < 5 {
+        return 0;
+    }
+    nums.sort();
+    let n = nums.len();
+    let mut res = i32::MAX;
+    for i in 0..4 {
+        res = res.min(nums[n - 4 + i] - nums[i]);
+    }
+    res
+}
+
+// https://leetcode.com/problems/minimum-score-by-changing-two-elements/description/
+pub fn minimize_sum(mut nums: Vec<i32>) -> i32 {
+    if nums.len() < 4 {
+        return 0;
+    }
+    nums.sort();
+    let n = nums.len();
+    let mut ans = i32::MAX;
+
+    for i in 0..3 {
+        ans = ans.min(nums[n - 3 + i] - nums[i]);
+    }
+
+    ans
+}
