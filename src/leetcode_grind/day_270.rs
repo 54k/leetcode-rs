@@ -72,3 +72,15 @@ pub fn minimize_sum(mut nums: Vec<i32>) -> i32 {
 
     ans
 }
+
+// https://leetcode.com/problems/robot-return-to-origin/description/
+pub fn judge_circle(moves: String) -> bool {
+    use std::collections::HashMap;
+    let m = HashMap::from([('U', (0, 1)), ('D', (0, -1)), ('R', (1, 0)), ('L', (-1, 0))]);
+    let (mut x, mut y) = (0, 0);
+    for ch in moves.chars() {
+        x += m[&ch].0;
+        y += m[&ch].1;
+    }
+    return x == 0 && y == 0;
+}
