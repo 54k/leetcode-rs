@@ -134,3 +134,114 @@ func lowestCommonAncestor(p *Node, q *Node) *Node {
 	}
 	return q
 }
+
+// https://leetcode.com/problems/longest-univalue-path/description/
+func longestUnivaluePath(root *TreeNode) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	ans := 0
+	var arrowLen func(*TreeNode) int
+	arrowLen = func(root *TreeNode) int {
+		if root == nil {
+			return 0
+		}
+		left := arrowLen(root.Left)
+		right := arrowLen(root.Right)
+		arrowLeft, arrowRight := 0, 0
+		if root.Left != nil && root.Left.Val == root.Val {
+			arrowLeft += left + 1
+		}
+		if root.Right != nil && root.Right.Val == root.Val {
+			arrowRight += right + 1
+		}
+		ans = max(ans, arrowLeft+arrowRight)
+		return max(arrowLeft, arrowRight)
+	}
+	arrowLen(root)
+	return ans
+}
+
+// https://leetcode.com/problems/remove-duplicate-letters/description/
+func removeDuplicateLettersGreedyLetterByLetter(s string) string {
+	cnt := make([]int, 26)
+	pos := 0
+	for i := 0; i < len(s); i++ {
+		cnt[s[i]-'a']++
+	}
+
+	for i := 0; i < len(s); i++ {
+		if s[i] < s[pos] {
+			pos = i
+		}
+
+		cnt[s[i]-'a']--
+		if cnt[s[i]-'a'] == 0 {
+			break
+		}
+	}
+
+	if len(s) == 0 {
+		return ""
+	}
+
+	suffix := s[pos+1:]
+	replaced := ""
+	for _, ch := range []byte(suffix) {
+		if ch == s[pos] {
+			continue
+		}
+		replaced += string(ch)
+	}
+	return string(s[pos]) + removeDuplicateLettersGreedyLetterByLetter(replaced)
+}
+
+func removeDuplicateLettersWithCounter(s string) string {
+	cnt := make([]int, 26)
+	for i := 0; i < len(s); i++ {
+		cnt[s[i]-'a']++
+	}
+	inStack := map[rune]bool{}
+	stack := []rune{}
+
+	for _, ch := range s {
+		cnt[ch-'a']--
+		if !inStack[ch] {
+			for len(stack) > 0 && cnt[stack[len(stack)-1]-'a'] > 0 && stack[len(stack)-1] > ch {
+				top := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+				inStack[top] = false
+			}
+			inStack[ch] = true
+			stack = append(stack, ch)
+		}
+	}
+
+	return string(stack)
+}
+
+func removeDuplicateLetters(s string) string {
+	lastIdx := make([]int, 26)
+	for i := 0; i < len(s); i++ {
+		lastIdx[s[i]-'a'] = i
+	}
+	inStack := map[rune]bool{}
+	stack := []rune{}
+
+	for i, ch := range s {
+		if !inStack[ch] {
+			for len(stack) > 0 && lastIdx[stack[len(stack)-1]-'a'] > i && stack[len(stack)-1] > ch {
+				top := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+				inStack[top] = false
+			}
+			inStack[ch] = true
+			stack = append(stack, ch)
+		}
+	}
+
+	return string(stack)
+}
