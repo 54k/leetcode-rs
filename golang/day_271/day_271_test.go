@@ -114,3 +114,23 @@ func findDuplicateSubtrees(root *TreeNode) []*TreeNode {
 	dfs(root)
 	return res
 }
+
+// https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/description/
+type Node struct {
+	Val    int
+	Left   *Node
+	Right  *Node
+	Parent *Node
+}
+
+func lowestCommonAncestor(p *Node, q *Node) *Node {
+	ancestor := map[*Node]bool{}
+	for p != nil {
+		ancestor[p] = true
+		p = p.Parent
+	}
+	for q != nil && !ancestor[q] {
+		q = q.Parent
+	}
+	return q
+}
