@@ -245,3 +245,119 @@ func removeDuplicateLetters(s string) string {
 
 	return string(stack)
 }
+
+// https://leetcode.com/problems/maximize-distance-to-closest-person/description/
+func maxDistToClosestArrays(seats []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	leftDist, rightDist := make([]int, len(seats)), make([]int, len(seats))
+	for i := 0; i < len(seats); i++ {
+		leftDist[i], rightDist[i] = len(seats), len(seats)
+	}
+
+	for i := 0; i < len(seats); i++ {
+		if seats[i] == 1 {
+			leftDist[i] = 0
+		} else if i > 0 {
+			leftDist[i] = leftDist[i-1] + 1
+		}
+	}
+	for i := len(seats) - 1; i >= 0; i-- {
+		if seats[i] == 1 {
+			rightDist[i] = 0
+		} else if i < len(seats)-1 {
+			rightDist[i] = rightDist[i+1] + 1
+		}
+	}
+
+	ans := 0
+	for i := 0; i < len(seats); i++ {
+		if seats[i] == 0 {
+			ans = max(ans, min(leftDist[i], rightDist[i]))
+		}
+	}
+	return ans
+}
+
+func maxDistToClosestTwoPointers(seats []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	prev, future := -1, 0
+	ans := 0
+	for i := 0; i < len(seats); i++ {
+		if seats[i] == 1 {
+			prev = i
+		} else {
+			for future < len(seats) && seats[future] == 0 || future < i {
+				future++
+			}
+			left := len(seats)
+			if prev > -1 {
+				left = i - prev
+			}
+			right := len(seats)
+			if future < len(seats) {
+				right = future - i
+			}
+			ans = max(ans, min(left, right))
+		}
+	}
+	return ans
+}
+
+func maxDistToClosestZeroGroups(seats []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	n := len(seats)
+	ans := 0
+	k := 0
+	for i := 0; i < n; i++ {
+		if seats[i] == 1 {
+			ans = max(ans, (k+1)/2)
+			k = 0
+		} else {
+			k++
+		}
+	}
+
+	for i := 0; i < n; i++ {
+		if seats[i] == 1 {
+			ans = max(ans, i)
+			break
+		}
+	}
+
+	for i := n - 1; i >= 0; i-- {
+		if seats[i] == 1 {
+			ans = max(ans, n-1-i)
+			break
+		}
+	}
+	return ans
+}
