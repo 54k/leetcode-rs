@@ -49,3 +49,55 @@ pub fn alien_order(words: Vec<String>) -> String {
     }
     ans.into_iter().collect()
 }
+
+// https://leetcode.com/problems/alien-dictionary/
+pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {
+    pub fn find_kth_largest_quickselect(nums: Vec<i32>, k: i32) -> i32 {
+        extern "C" {
+            fn random() -> i32;
+        }
+        fn quickselect(nums: &Vec<i32>, k: i32) -> i32 {
+            let pivot_idx = unsafe { random() % nums.len() as i32 } as usize;
+            let pivot = nums[pivot_idx];
+
+            let mut left = vec![];
+            let mut mid = vec![];
+            let mut right = vec![];
+
+            for &num in nums {
+                if num > pivot {
+                    left.push(num);
+                } else if num == pivot {
+                    mid.push(num);
+                } else {
+                    right.push(num);
+                }
+            }
+
+            if k <= left.len() as i32 {
+                return quickselect(&left, k);
+            }
+
+            if (left.len() as i32 + mid.len() as i32) < k {
+                return quickselect(&right, k - left.len() as i32 - mid.len() as i32);
+            }
+
+            pivot
+        }
+        quickselect(&nums, k)
+    }
+
+    pub fn find_kth_largest_heap(nums: Vec<i32>, k: i32) -> i32 {
+        use std::collections::BinaryHeap;
+        let mut heap = BinaryHeap::new();
+        for i in 0..nums.len() {
+            heap.push(-nums[i]);
+            if (heap.len() as i32) > k {
+                heap.pop();
+            }
+        }
+        -heap.pop().unwrap()
+    }
+
+    find_kth_largest_quickselect(nums, k)
+}
