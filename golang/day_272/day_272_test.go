@@ -81,7 +81,7 @@ func topKFrequent(nums []int, k int) []int {
 	n := len(freq)
 	uniq := make([]int, n)
 	i := 0
-	for k, _ := range freq {
+	for k := range freq {
 		uniq[i] = k
 		i++
 	}
