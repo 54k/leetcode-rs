@@ -124,5 +124,5 @@ func topKFrequent(nums []int, k int) []int {
 	}
 
 	quickselect(0, n-1, n-k)
-	return uniq[n-k : n]
+	return uniq[n-k:]
 }
