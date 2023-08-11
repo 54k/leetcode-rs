@@ -71,3 +71,58 @@ func findKthLargest(nums []int, k int) int {
 	}
 	return quickselect(nums, k)
 }
+
+// https://leetcode.com/problems/top-k-frequent-elements/description/
+func topKFrequent(nums []int, k int) []int {
+	freq := map[int]int{}
+	for _, n := range nums {
+		freq[n]++
+	}
+	n := len(freq)
+	uniq := make([]int, n)
+	i := 0
+	for k, _ := range freq {
+		uniq[i] = k
+		i++
+	}
+
+	swap := func(left int, right int) {
+		tmp := uniq[left]
+		uniq[left] = uniq[right]
+		uniq[right] = tmp
+	}
+
+	partition := func(left int, right int, pivotIndex int) int {
+		pivotFrequency := freq[uniq[pivotIndex]]
+		swap(pivotIndex, right)
+		storeIdx := left
+		for i := left; i <= right; i++ {
+			if freq[uniq[i]] < pivotFrequency {
+				swap(storeIdx, i)
+				storeIdx++
+			}
+		}
+		swap(storeIdx, right)
+		return storeIdx
+	}
+
+	var quickselect func(int, int, int)
+	quickselect = func(left int, right int, k int) {
+		if left == right {
+			return
+		}
+		pivotIndex := left + rand.Intn(right-left)
+		pivotIndex = partition(left, right, pivotIndex)
+
+		if k == pivotIndex {
+			return
+		} else if k < pivotIndex {
+			quickselect(left, pivotIndex-1, k)
+		} else {
+			quickselect(pivotIndex+1, right, k)
+		}
+	}
+
+	quickselect(0, n-1, n-k)
+	return uniq[n-k : n]
+}
