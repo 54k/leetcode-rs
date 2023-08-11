@@ -1,5 +1,7 @@
 package day272
 
+import "math/rand"
+
 // https://leetcode.com/problems/coin-change-ii/description/
 func change(amount int, coins []int) int {
 	dp := make([]int, amount+1)
@@ -36,4 +38,36 @@ func insertionSortList(head *ListNode) *ListNode {
 		curr = next
 	}
 	return dummy.Next
+}
+
+// https://leetcode.com/problems/kth-largest-element-in-an-array/description/
+func findKthLargest(nums []int, k int) int {
+	var quickselect func([]int, int) int
+	quickselect = func(nums []int, k int) int {
+		pIdx := rand.Int() % len(nums)
+		pivot := nums[pIdx]
+
+		left := []int{}
+		mid := []int{}
+		right := []int{}
+
+		for _, n := range nums {
+			if n < pivot {
+				right = append(right, n)
+			} else if n == pivot {
+				mid = append(mid, n)
+			} else {
+				left = append(left, n)
+			}
+		}
+
+		if len(left) >= k {
+			return quickselect(left, k)
+		}
+		if len(mid)+len(left) < k {
+			return quickselect(right, k-len(mid)-len(left))
+		}
+		return pivot
+	}
+	return quickselect(nums, k)
 }

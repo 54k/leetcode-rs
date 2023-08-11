@@ -101,3 +101,60 @@ pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {
 
     find_kth_largest_quickselect(nums, k)
 }
+
+// https://leetcode.com/problems/top-k-frequent-elements/description/
+pub fn top_k_frequent(nums: Vec<i32>, k: i32) -> Vec<i32> {
+    pub fn top_k_frequent_buckets(nums: Vec<i32>, k: i32) -> Vec<i32> {
+        use std::collections::HashMap;
+        let mut freq = HashMap::new();
+        for &n in &nums {
+            *freq.entry(n).or_insert(0) += 1;
+        }
+        let mut buckets = vec![vec![]; nums.len() + 1];
+        for (k, v) in freq {
+            buckets[v as usize].push(k);
+        }
+        let mut flat = vec![];
+        for freq in (1..=nums.len()).rev() {
+            for &n in &buckets[freq] {
+                flat.push(n);
+            }
+        }
+
+        flat.into_iter().take(k as usize).collect()
+    }
+    top_k_frequent_buckets(nums, k)
+}
+// https://leetcode.com/problems/find-median-from-data-stream/description/
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
+
+struct MedianFinder {
+    left: BinaryHeap<i32>,
+    right: BinaryHeap<Reverse<i32>>,
+}
+
+impl MedianFinder {
+    fn new() -> Self {
+        Self {
+            left: BinaryHeap::new(),
+            right: BinaryHeap::new(),
+        }
+    }
+
+    fn add_num(&mut self, num: i32) {
+        self.left.push(num);
+        self.right.push(Reverse(self.left.pop().unwrap()));
+        if self.right.len() > self.left.len() {
+            self.left.push(self.right.pop().unwrap().0);
+        }
+    }
+
+    fn find_median(&self) -> f64 {
+        if self.left.len() > self.right.len() {
+            *self.left.peek().unwrap() as f64
+        } else {
+            (*self.left.peek().unwrap() as f64 + self.right.peek().unwrap().0 as f64) / 2.0
+        }
+    }
+}
