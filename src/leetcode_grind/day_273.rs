@@ -17,3 +17,31 @@ pub fn unique_paths_with_obstacles(obstacle_grid: Vec<Vec<i32>>) -> i32 {
     }
     dp[n - 1]
 }
+
+// https://leetcode.com/problems/describe-the-painting/description/
+pub fn split_painting(segments: Vec<Vec<i32>>) -> Vec<Vec<i64>> {
+    let mut mapping = vec![0; 100002];
+    let mut ends = vec![false; 100002];
+    for seg in segments {
+        let (s, e, v) = (seg[0] as usize, seg[1] as usize, seg[2] as i64);
+        mapping[s] += v;
+        mapping[e] -= v;
+        ends[s] = true;
+        ends[e] = true;
+    }
+
+    let mut res = vec![];
+    let mut prev = 0;
+    let mut sum = 0;
+
+    for i in 0..mapping.len() {
+        if ends[i] && sum > 0 {
+            res.push(vec![prev as i64, i as i64, sum]);
+        }
+        sum += mapping[i];
+        if ends[i] {
+            prev = i;
+        }
+    }
+    res
+}
