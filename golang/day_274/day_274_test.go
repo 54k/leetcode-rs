@@ -30,6 +30,7 @@ func validPartition(nums []int) bool {
 	return dp[n] == 1
 }
 
+// https://leetcode.com/problems/double-a-number-represented-as-a-linked-list/
 type ListNode struct {
 	Val  int
 	Next *ListNode

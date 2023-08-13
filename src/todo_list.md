@@ -1,3 +1,5 @@
+https://leetcode.com/problems/count-stepping-numbers-in-range/solutions/3836309/c-digit-dp-clean-code-detailed-explanation-easy-to-understand/
+---
 Digit Dp questions for Practise :
 1.https://leetcode.com/problems/number-of-digit-one/
 2.https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/
