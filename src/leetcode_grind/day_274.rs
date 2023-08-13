@@ -130,3 +130,36 @@ fn test_second_greater_element() {
     let res = second_greater_element(vec![2, 4, 0, 9, 6]);
     println!("{:?}", res);
 }
+
+// https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/
+pub fn valid_partition(nums: Vec<i32>) -> bool {
+    use std::collections::HashMap;
+    let mut memo = HashMap::new();
+    memo.insert(-1, true);
+
+    fn prefix_is_valid(nums: &Vec<i32>, i: i32, memo: &mut HashMap<i32, bool>) -> bool {
+        if memo.contains_key(&i) {
+            return memo[&i];
+        }
+        let mut ans = false;
+        if i > 0 && nums[i as usize] == nums[i as usize - 1] {
+            ans |= prefix_is_valid(nums, i - 2, memo);
+        }
+        if i > 1
+            && nums[i as usize] == nums[i as usize - 1]
+            && nums[i as usize - 1] == nums[i as usize - 2]
+        {
+            ans |= prefix_is_valid(nums, i - 3, memo);
+        }
+        if i > 1
+            && nums[i as usize] == nums[i as usize - 1] + 1
+            && nums[i as usize - 1] == nums[i as usize - 2] + 1
+        {
+            ans |= prefix_is_valid(nums, i - 3, memo);
+        }
+        memo.insert(i, ans);
+        ans
+    }
+
+    prefix_is_valid(&nums, nums.len() as i32 - 1, &mut memo)
+}
