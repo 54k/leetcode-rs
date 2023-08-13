@@ -188,3 +188,81 @@ pub fn valid_partition_rolling_index_bottom_up(nums: Vec<i32>) -> bool {
 
     dp[n % 3]
 }
+
+// https://leetcode.com/problems/sentence-screen-fitting/description/
+pub fn words_typing(sentence: Vec<String>, rows: i32, cols: i32) -> i32 {
+    let mut cursor = 0;
+    let mut sb = String::new();
+    for s in sentence {
+        sb.push_str(s.as_str());
+        sb.push(' ');
+    }
+    let sb = sb.chars().collect::<Vec<_>>();
+    let n = sb.len() as i32;
+    for _ in 0..rows {
+        cursor += cols;
+
+        while cursor % n >= 0 && sb[(cursor % n) as usize] != ' ' {
+            cursor -= 1;
+        }
+        cursor += 1;
+    }
+    cursor / n
+}
+
+#[test]
+fn test_words_typing() {
+    let res = words_typing(vec!["hello".to_string(), "world".to_string()], 2, 8);
+    println!("{}", res);
+}
+
+// https://leetcode.com/problems/text-justification/description/
+pub fn full_justify(words: Vec<String>, max_width: i32) -> Vec<String> {
+    fn get_words(mut i: usize, words: &Vec<String>, max_width: i32) -> Vec<String> {
+        let mut current_line = vec![];
+        let mut current_len = 0;
+
+        while i < words.len() && current_len + words[i].len() as i32 <= max_width {
+            current_line.push(words[i].clone());
+            current_len += words[i].len() as i32 + 1;
+            i += 1;
+        }
+
+        current_line
+    }
+
+    fn create_line(mut line: Vec<String>, i: usize, words: &Vec<String>, max_width: i32) -> String {
+        let mut base_len = -1;
+        for word in &line {
+            base_len += word.len() as i32 + 1;
+        }
+
+        let extra_spaces = max_width - base_len;
+
+        if line.len() == 1 || i == words.len() {
+            return line.join(" ") + &" ".repeat(extra_spaces as usize);
+        }
+
+        let word_count = line.len() as i32 - 1;
+        let spaces_per_word = extra_spaces / word_count;
+        let needs_extra_space = extra_spaces % word_count;
+
+        for j in 0..needs_extra_space {
+            line[j as usize] = line[j as usize].clone() + &" ";
+        }
+
+        for j in 0..word_count {
+            line[j as usize] = line[j as usize].clone() + &" ".repeat(spaces_per_word as usize);
+        }
+        line.join(" ")
+    }
+
+    let mut ans = vec![];
+    let mut i = 0;
+    while i < words.len() {
+        let curr_line = get_words(i, &words, max_width);
+        i += curr_line.len();
+        ans.push(create_line(curr_line, i, &words, max_width));
+    }
+    ans
+}
