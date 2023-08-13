@@ -163,3 +163,28 @@ pub fn valid_partition(nums: Vec<i32>) -> bool {
 
     prefix_is_valid(&nums, nums.len() as i32 - 1, &mut memo)
 }
+
+// https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/
+pub fn valid_partition_rolling_index_bottom_up(nums: Vec<i32>) -> bool {
+    let n = nums.len();
+    let mut dp = vec![false; 3];
+    dp[0] = true;
+
+    for i in 0..n {
+        let dp_idx = i + 1;
+        let mut ans = false;
+
+        if i > 0 && nums[i] == nums[i - 1] {
+            ans |= dp[(dp_idx - 2) % 3];
+        }
+        if i > 1 && nums[i] == nums[i - 1] && nums[i] == nums[i - 2] {
+            ans |= dp[(dp_idx - 3) % 3];
+        }
+        if i > 1 && nums[i] == nums[i - 1] + 1 && nums[i - 1] == nums[i - 2] + 1 {
+            ans |= dp[(dp_idx - 3) % 3];
+        }
+        dp[dp_idx % 3] = ans;
+    }
+
+    dp[n % 3]
+}
