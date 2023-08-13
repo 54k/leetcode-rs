@@ -1,4 +1,4 @@
-/ pub fn maximum_score(nums: Vec<i32>, k: i32) -> i32 {
+// pub fn maximum_score(nums: Vec<i32>, k: i32) -> i32 {
 //     todo!();
 //     let mut k = k as i64;
 //     const MOD: i64 = 1000000007;
