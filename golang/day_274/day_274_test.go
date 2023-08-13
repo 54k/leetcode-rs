@@ -1,5 +1,10 @@
 package day274
 
+import (
+	"fmt"
+	"testing"
+)
+
 // https://leetcode.com/problems/check-if-there-is-a-valid-partition-for-the-array/description/
 func validPartition(nums []int) bool {
 	n := len(nums)
@@ -23,4 +28,42 @@ func validPartition(nums []int) bool {
 	}
 
 	return dp[n] == 1
+}
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func doubleIt(head *ListNode) *ListNode {
+	rev := func(h *ListNode) *ListNode {
+		var newHead *ListNode
+		for h != nil {
+			nxt := h.Next
+			h.Next = newHead
+			newHead = h
+			h = nxt
+		}
+		return newHead
+	}
+
+	head = rev(head)
+	ret := head
+	sum := 0
+	for head != nil {
+		sum += head.Val * 2
+		head.Val = sum % 10
+		sum /= 10
+		head = head.Next
+	}
+	ret = rev(ret)
+	if sum > 0 {
+		ret = &ListNode{sum, ret}
+	}
+	return ret
+}
+
+func TestDoubleIT(t *testing.T) {
+	res := doubleIt(&ListNode{9, &ListNode{9, &ListNode{9, nil}}})
+	fmt.Println(res)
 }

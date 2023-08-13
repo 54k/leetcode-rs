@@ -1,3 +1,16 @@
+Digit Dp questions for Practise :
+1.https://leetcode.com/problems/number-of-digit-one/
+2.https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/
+3.https://leetcode.com/problems/count-of-integers/
+4.https://leetcode.com/problems/numbers-at-most-n-given-digit-set/
+Make digit dp easy--
+Have solns like template do 1st question and follow these similar template for understanding patters:
+1.https://leetcode.com/submissions/detail/1008999546/
+2.https://leetcode.com/submissions/detail/1009906991/
+3.https://leetcode.com/submissions/detail/1009920942/
+4.https://leetcode.com/submissions/detail/1010796454/
+---
+
 https://leetcode.com/problems/strong-password-checker/description/
 
 https://leetcode.com/problems/replace-non-coprime-numbers-in-array/description/

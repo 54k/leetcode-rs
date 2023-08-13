@@ -266,3 +266,57 @@ pub fn full_justify(words: Vec<String>, max_width: i32) -> Vec<String> {
     }
     ans
 }
+
+pub fn max_sum(nums: Vec<i32>) -> i32 {
+    fn get_max(mut num: i32) -> i32 {
+        let mut ans = 0;
+        while num != 0 {
+            ans = ans.max(num % 10);
+            num /= 10;
+        }
+        ans
+    }
+
+    let mut ans = i32::MIN;
+    for i in 0..nums.len() {
+        for j in 0..nums.len() {
+            if i == j {
+                continue;
+            }
+            if get_max(nums[i]) == get_max(nums[j]) {
+                ans = ans.max(nums[i] + nums[j]);
+            }
+        }
+    }
+    if ans == i32::MIN {
+        return -1;
+    } else {
+        return ans;
+    }
+}
+
+pub fn min_absolute_difference(nums: Vec<i32>, x: i32) -> i32 {
+    use std::collections::BTreeSet;
+    let mut set = BTreeSet::new();
+    let mut ans = i32::MAX;
+    for j in x as usize..nums.len() {
+        set.insert(nums[j - x as usize]);
+        if let Some(&left) = set.range(..=nums[j]).last() {
+            ans = ans.min((nums[j] - left).abs());
+        }
+        if let Some(&right) = set.range(nums[j]..).take(1).find(|_| true) {
+            ans = ans.min((nums[j] - right).abs());
+        }
+    }
+    ans
+}
+
+pub fn maximum_score(nums: Vec<i32>, k: i32) -> i32 {
+    
+}
+
+#[test]
+fn test_min_abs_diff() {
+    let res = min_absolute_difference(vec![5, 3, 2, 10, 15], 1);
+    println!("{}", res);
+}
