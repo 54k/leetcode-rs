@@ -260,8 +260,43 @@ pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
     find_closest_elements_binary_search(arr, k, x)
 }
 
+// https://leetcode.com/problems/sort-the-matrix-diagonally/description/
+pub fn diagonal_sort(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    pub fn diagonal_sort_hash_map(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        use std::collections::BinaryHeap;
+        use std::collections::HashMap;
+        let (m, n) = (mat.len(), mat[0].len());
+        let mut map = HashMap::new();
+
+        for r in 0..m {
+            for c in 0..n {
+                let diag = r as i32 - c as i32;
+                map.entry(diag)
+                    .or_insert(BinaryHeap::new())
+                    .push(-mat[r][c]);
+            }
+        }
+
+        for r in 0..m {
+            for c in 0..n {
+                let diag = r as i32 - c as i32;
+                mat[r][c] = -map.get_mut(&diag).unwrap().pop().unwrap();
+            }
+        }
+        mat
+    }
+    
+    diagonal_sort_hash_map(mat)
+}
+
 #[test]
 fn test_find_closest_elements() {
     let res = find_closest_elements(vec![1, 2, 3, 4, 5], 4, 3);
+    println!("{:?}", res);
+}
+
+#[test]
+fn test_sort_diag_matrix() {
+    let res = diagonal_sort(vec![vec![3, 3, 1, 1], vec![2, 2, 1, 2], vec![1, 1, 1, 2]]);
     println!("{:?}", res);
 }
