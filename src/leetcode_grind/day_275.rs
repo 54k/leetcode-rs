@@ -87,3 +87,86 @@
 //     }
 //     res as i32
 // }
+
+// https://leetcode.com/problems/sort-colors/description/
+pub fn sort_colors(nums: &mut Vec<i32>) {
+    let mut p0 = 0;
+    let mut p2 = nums.len();
+    let mut i = 0;
+    while i < p2 {
+        let el = nums[i];
+        if el == 0 {
+            nums.swap(i, p0);
+            p0 += 1;
+            i += 1;
+        } else if el == 2 {
+            p2 -= 1;
+            nums.swap(i, p2);
+        } else {
+            i += 1;
+        }
+    }
+}
+
+// https://leetcode.com/problems/query-kth-smallest-trimmed-number/description/
+pub fn smallest_trimmed_numbers(nums: Vec<String>, queries: Vec<Vec<i32>>) -> Vec<i32> {
+    let n = nums.len();
+    let mut res = vec![];
+
+    for q in queries {
+        let mut pq = vec![];
+        for i in 0..n {
+            pq.push((
+                nums[i][nums[i].len() - q[1] as usize..].to_string(),
+                i as i32,
+            ));
+        }
+        pq.sort();
+        res.push(pq[q[0] as usize - 1].1);
+    }
+    res
+}
+
+// https://leetcode.com/problems/maximum-gap/description/
+pub fn maximum_gap(mut nums: Vec<i32>) -> i32 {
+    if nums.is_empty() || nums.len() < 2 {
+        return 0;
+    }
+
+    let max_val = nums.iter().copied().max().unwrap();
+    let mut exp = 1usize; // 1, 10, 100, 1000
+    let radix = 10; // base 10 system
+
+    let mut aux = vec![0; nums.len()];
+
+    while max_val as usize / exp > 0 {
+        // go through all digits from LSD to MSD
+        let mut count = vec![0; radix];
+
+        for i in 0..nums.len() {
+            count[(nums[i] as usize / exp) % radix] += 1;
+        }
+
+        for i in 1..count.len() {
+            count[i] += count[i - 1];
+        }
+
+        for i in (0..nums.len()).rev() {
+            count[(nums[i] as usize / exp) % radix] -= 1;
+            aux[count[(nums[i] as usize / exp) % radix]] = nums[i];
+        }
+
+        for i in 0..nums.len() {
+            nums[i] = aux[i];
+        }
+
+        exp *= 10;
+    }
+
+    let mut max_gap = 0;
+    for i in 0..nums.len() - 1 {
+        max_gap = max_gap.max(nums[i + 1] - nums[i]);
+    }
+
+    max_gap
+}
