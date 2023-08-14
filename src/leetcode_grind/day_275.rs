@@ -327,3 +327,46 @@ fn test_sort_diag_matrix() {
     let res = diagonal_sort(vec![vec![3, 3, 1, 1], vec![2, 2, 1, 2], vec![1, 1, 1, 2]]);
     println!("{:?}", res);
 }
+
+// https://leetcode.com/problems/the-skyline-problem/description/
+pub fn get_skyline(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    use std::collections::BinaryHeap;
+
+    let mut edges = vec![];
+    for (i, b) in buildings.iter().enumerate() {
+        edges.push((b[0], i));
+        edges.push((b[1], i));
+    }
+    edges.sort();
+
+    let mut ans: Vec<Vec<i32>> = vec![];
+    let mut live = BinaryHeap::new();
+    let mut idx = 0;
+
+    while idx < edges.len() {
+        let curr_x = edges[idx].0;
+
+        while idx < edges.len() && edges[idx].0 == curr_x {
+            let b = edges[idx].1;
+
+            if buildings[b][0] == curr_x {
+                let right = buildings[b][1];
+                let height = buildings[b][2];
+                live.push((height, right));
+            }
+            idx += 1;
+        }
+
+        while !live.is_empty() && live.peek().unwrap().1 <= curr_x {
+            live.pop();
+        }
+
+        let curr_height = live.peek().unwrap_or(&(0, 0)).0;
+
+        if ans.is_empty() || ans[ans.len() - 1][1] != curr_height {
+            ans.push(vec![curr_x, curr_height]);
+        }
+    }
+
+    ans
+}
