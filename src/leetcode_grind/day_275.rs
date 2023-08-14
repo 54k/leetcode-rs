@@ -285,8 +285,35 @@ pub fn diagonal_sort(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
         }
         mat
     }
-    
-    diagonal_sort_hash_map(mat)
+
+    pub fn diagonal_sort_one_by_one(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        fn sort_diagonal(row: usize, col: usize, mat: &mut Vec<Vec<i32>>) {
+            use std::collections::BinaryHeap;
+            let (m, n) = (mat.len(), mat[0].len());
+            let mut diagonal = BinaryHeap::new();
+            let diagonal_len = (m - row).min(n - col);
+
+            for i in 0..diagonal_len {
+                diagonal.push(-mat[row + i][col + i]);
+            }
+            for i in 0..diagonal_len {
+                mat[row + i][col + i] = -diagonal.pop().unwrap();
+            }
+        }
+
+        let (m, n) = (mat.len(), mat[0].len());
+        for row in 0..m {
+            sort_diagonal(row, 0, &mut mat);
+        }
+
+        for col in 0..n {
+            sort_diagonal(0, col, &mut mat);
+        }
+
+        mat
+    }
+
+    diagonal_sort_one_by_one(mat)
 }
 
 #[test]
