@@ -170,3 +170,98 @@ pub fn maximum_gap(mut nums: Vec<i32>) -> i32 {
 
     max_gap
 }
+
+// https://leetcode.com/problems/find-k-closest-elements/description/
+pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+    pub fn find_closest_elements_naive(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+        let mut sorted_arr = vec![];
+        for num in arr {
+            sorted_arr.push(num);
+        }
+
+        sorted_arr.sort_by(|a, b| (a - x).abs().cmp(&(b - x).abs()));
+
+        let mut sorted_arr = sorted_arr[..k as usize]
+            .into_iter()
+            .copied()
+            .collect::<Vec<_>>();
+
+        sorted_arr.sort();
+        sorted_arr
+    }
+
+    pub fn find_closest_elements_bin_search_two_pointers(
+        arr: Vec<i32>,
+        k: i32,
+        x: i32,
+    ) -> Vec<i32> {
+        let mut result = vec![];
+
+        if arr.len() == k as usize {
+            return arr;
+        }
+
+        let mut left = 0;
+        let mut right = arr.len() as i32;
+
+        while left < right {
+            let mid = (left + right) / 2;
+            if arr[mid as usize] >= x {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        right = left;
+        left -= 1;
+
+        while right - left - 1 < k {
+            if left == -1 {
+                right += 1;
+                continue;
+            }
+
+            if right == arr.len() as i32
+                || (arr[left as usize] - x).abs() <= (arr[right as usize] - x)
+            {
+                left -= 1;
+            } else {
+                right += 1;
+            }
+        }
+
+        for i in left + 1..right {
+            result.push(arr[i as usize]);
+        }
+
+        result
+    }
+
+    pub fn find_closest_elements_binary_search(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+        let mut left = 0;
+        let mut right = arr.len() as i32 - k;
+
+        while left < right {
+            let mid = (left + right) / 2;
+            if x - arr[mid as usize] <= arr[mid as usize + k as usize] - x {
+                right = mid
+            } else {
+                left = mid + 1
+            }
+        }
+
+        arr[left as usize..left as usize + k as usize]
+            .into_iter()
+            .copied()
+            .collect()
+    }
+
+    find_closest_elements_binary_search(arr, k, x)
+}
+
+#[test]
+fn test_find_closest_elements() {
+    let res = find_closest_elements(vec![1, 2, 3, 4, 5], 4, 3);
+    println!("{:?}", res);
+}
