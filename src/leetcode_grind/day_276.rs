@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 // https://leetcode.com/problems/longest-palindromic-substring/description/
 pub fn longest_palindrome(s: String) -> String {
     let n = s.len();
@@ -142,4 +144,69 @@ pub fn count_substrings(s: String) -> i32 {
         }
     }
     ans
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn is_valid_bst(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+    fn update(
+        r: Option<Rc<RefCell<TreeNode>>>,
+        low: Option<i32>,
+        high: Option<i32>,
+        stack: &mut Vec<Option<Rc<RefCell<TreeNode>>>>,
+        lower_limits: &mut Vec<Option<i32>>,
+        upper_limits: &mut Vec<Option<i32>>,
+    ) {
+        stack.push(r);
+        lower_limits.push(low);
+        upper_limits.push(high);
+    }
+
+    let mut stack = vec![];
+    stack.push(root);
+
+    let mut upper_limits = vec![None];
+    let mut lower_limits = vec![None];
+
+    while let Some(r) = stack.pop() {
+        let low = lower_limits.pop().unwrap();
+        let high = upper_limits.pop().unwrap();
+
+        if r.is_none() {
+            continue;
+        }
+
+        let r = r.as_ref().unwrap().borrow();
+        let val = r.val;
+        if low.is_some() && val <= low.unwrap() {
+            return false;
+        }
+        if high.is_some() && val >= high.unwrap() {
+            return false;
+        }
+
+        update(
+            r.right.clone(),
+            Some(val),
+            high,
+            &mut stack,
+            &mut lower_limits,
+            &mut upper_limits,
+        );
+        update(
+            r.left.clone(),
+            low,
+            Some(val),
+            &mut stack,
+            &mut lower_limits,
+            &mut upper_limits,
+        );
+    }
+
+    true
 }

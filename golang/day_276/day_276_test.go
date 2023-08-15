@@ -38,17 +38,16 @@ type TreeNode struct {
 }
 
 func isValidBST(root *TreeNode) bool {
-	var isValid func(*TreeNode, int, int) bool
-	isValid = func(root *TreeNode, leftBound int, rightBound int) bool {
+	var check func(*TreeNode, int, int) bool
+	check = func(root *TreeNode, left int, right int) bool {
 		if root == nil {
 			return true
 		}
-
-		if root.Val <= leftBound || root.Val >= rightBound {
+		if root.Val >= left || root.Val <= right {
 			return false
 		}
-		return isValid(root.Right, root.Val, rightBound) && isValid(root.Left, leftBound, root.Val)
+		return check(root.Left, root.Val, right) && check(root.Right, left, root.Val)
 	}
 
-	return isValid(root, -(1 << 32), (1 << 32))
+	return check(root, (1 << 32), -(1 << 32))
 }
