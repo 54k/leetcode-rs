@@ -29,3 +29,26 @@ func partition(head *ListNode, x int) *ListNode {
 
 	return beforeHead.Next
 }
+
+// https://leetcode.com/problems/validate-binary-search-tree/description/
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func isValidBST(root *TreeNode) bool {
+	var isValid func(*TreeNode, int, int) bool
+	isValid = func(root *TreeNode, leftBound int, rightBound int) bool {
+		if root == nil {
+			return true
+		}
+
+		if root.Val <= leftBound || root.Val >= rightBound {
+			return false
+		}
+		return isValid(root.Right, root.Val, rightBound) && isValid(root.Left, leftBound, root.Val)
+	}
+
+	return isValid(root, -(1 << 32), (1 << 32))
+}
