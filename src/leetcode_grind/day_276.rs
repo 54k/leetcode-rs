@@ -210,3 +210,48 @@ pub fn is_valid_bst(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
 
     true
 }
+
+// https://leetcode.com/problems/the-skyline-problem/description/
+pub fn get_skyline(buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    use std::collections::BinaryHeap;
+    let mut edges = vec![];
+    for building in &buildings {
+        edges.push((building[0], building[2]));
+        edges.push((building[1], -building[2]));
+    }
+    edges.sort();
+
+    let mut live = BinaryHeap::new();
+    let mut past = BinaryHeap::new();
+
+    let mut answer: Vec<Vec<i32>> = vec![];
+    let mut idx = 0;
+
+    while idx < edges.len() {
+        let curr_x = edges[idx].0;
+
+        while idx < edges.len() && edges[idx].0 == curr_x {
+            let height = edges[idx].1;
+
+            if height > 0 {
+                live.push(height);
+            } else {
+                past.push(-height);
+            }
+            idx += 1;
+        }
+
+        while past.len() > 0 && *live.peek().unwrap() == *past.peek().unwrap() {
+            live.pop();
+            past.pop();
+        }
+
+        let current_height = *live.peek().unwrap_or(&0);
+
+        if answer.len() == 0 || answer[answer.len() - 1][1] != current_height {
+            answer.push(vec![curr_x, current_height]);
+        }
+    }
+
+    answer
+}
