@@ -146,6 +146,7 @@ pub fn count_substrings(s: String) -> i32 {
     ans
 }
 
+// https://leetcode.com/problems/validate-binary-search-tree/
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
     pub val: i32,
