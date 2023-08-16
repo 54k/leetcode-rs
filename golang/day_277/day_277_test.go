@@ -76,3 +76,38 @@ func inorderSuccessorWithParent(node *Node) *Node {
 	}
 	return node.Parent
 }
+
+// https://leetcode.com/problems/binary-search-tree-iterator/description
+type BSTIterator struct {
+	stack []*TreeNode
+	curr  *TreeNode
+}
+
+func Constructor(root *TreeNode) BSTIterator {
+	return BSTIterator{[]*TreeNode{}, root}
+}
+
+func (this *BSTIterator) Next() int {
+	curr := this.curr
+	stack := this.stack
+
+	if len(stack) > 0 || curr != nil {
+		for curr != nil {
+			stack = append(stack, curr)
+			curr = curr.Left
+		}
+
+		top := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		this.curr = top.Right
+		this.stack = stack
+		return top.Val
+	}
+
+	panic("oops")
+}
+
+func (this *BSTIterator) HasNext() bool {
+	return len(this.stack) > 0 || this.curr != nil
+}
