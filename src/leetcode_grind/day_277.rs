@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 // https://leetcode.com/problems/sliding-window-maximum/description/
 pub fn max_sliding_window(nums: Vec<i32>, k: i32) -> Vec<i32> {
     use std::collections::VecDeque;
@@ -71,6 +73,13 @@ pub fn calculate(s: String) -> i32 {
 }
 
 // https://leetcode.com/problems/search-in-a-binary-search-tree/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
 pub fn search_bst(
     mut root: Option<Rc<RefCell<TreeNode>>>,
     val: i32,
