@@ -102,3 +102,84 @@ pub fn search_bst(
     }
     root
 }
+
+// https://leetcode.com/problems/the-skyline-problem/description/
+pub fn get_skyline(mut buildings: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    struct UF {
+        root: Vec<usize>,
+    }
+    impl UF {
+        fn new(n: usize) -> Self {
+            let mut root = vec![0; n];
+            for i in 0..n {
+                root[i] = i;
+            }
+            Self { root }
+        }
+
+        fn find(&mut self, x: usize) -> usize {
+            if self.root[x] == x {
+                return x;
+            }
+            self.root[x] = self.find(self.root[x]);
+            self.root[x]
+        }
+
+        fn union(&mut self, x: usize, y: usize) {
+            self.root[x] = self.root[y];
+        }
+    }
+
+    use std::collections::{BTreeSet, HashMap};
+    let mut edge_set = BTreeSet::new();
+    for building in &buildings {
+        edge_set.insert(building[0]);
+        edge_set.insert(building[1]);
+    }
+
+    let edges = edge_set.into_iter().collect::<Vec<_>>();
+    let mut edge_idx_map = HashMap::new();
+    for i in 0..edges.len() {
+        edge_idx_map.insert(edges[i], i);
+    }
+
+    // sort the buildings in desc order
+    buildings.sort_by(|a, b| b[2].cmp(&a[2]));
+
+    // println!("{:?}", buildings);
+
+    let n = edges.len();
+    let mut edge_uf = UF::new(n);
+    let mut heights = vec![0; n];
+
+    for building in buildings {
+        let left_edge = building[0];
+        let right_edge = building[1];
+        let height = building[2];
+
+        let mut left_index = edge_idx_map[&left_edge];
+        let right_index = edge_idx_map[&right_edge];
+
+        // println!("li {} ri {}", left_index, right_index);
+
+        while left_index < right_index {
+            left_index = edge_uf.find(left_index);
+
+            if left_index < right_index {
+                edge_uf.union(left_index, right_index);
+                heights[left_index] = height;
+                left_index += 1;
+            }
+        }
+    }
+
+    // println!("{:?}", heights);
+
+    let mut ans = vec![];
+    for i in 0..n {
+        if i == 0 || heights[i] != heights[i - 1] {
+            ans.push(vec![edges[i], heights[i]]);
+        }
+    }
+    ans
+}
