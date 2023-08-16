@@ -22,9 +22,15 @@ pub fn max_sliding_window(nums: Vec<i32>, k: i32) -> Vec<i32> {
 }
 
 // https://leetcode.com/problems/determine-if-two-events-have-conflict/description/
-pub fn have_conflict(event1: Vec<String>, event2: Vec<String>) -> bool {
+pub fn have_conflict_1(event1: Vec<String>, event2: Vec<String>) -> bool {
     if event1[0] > event2[0] {
-        return have_conflict(event2, event1);
+        return have_conflict_1(event2, event1);
     }
     event1[1] >= event2[0]
+}
+
+pub fn have_conflict_2(event1: Vec<String>, event2: Vec<String>) -> bool {
+    let r = event1[1].clone().min(event2[1].clone());
+    let l = event1[0].clone().max(event2[0].clone());
+    l <= r
 }
