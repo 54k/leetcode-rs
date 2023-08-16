@@ -69,3 +69,27 @@ pub fn calculate(s: String) -> i32 {
     }
     result + (sign * operand)
 }
+
+// https://leetcode.com/problems/search-in-a-binary-search-tree/
+pub fn search_bst(
+    mut root: Option<Rc<RefCell<TreeNode>>>,
+    val: i32,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    while root.is_some() {
+        if let Some(mut r) = root.clone() {
+            let r = r.borrow();
+            let v = r.val;
+            if v == val {
+                return root;
+            }
+            if v != val {
+                if val < v {
+                    root = r.left.clone();
+                } else {
+                    root = r.right.clone();
+                }
+            }
+        }
+    }
+    root
+}
