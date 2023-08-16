@@ -34,3 +34,38 @@ pub fn have_conflict_2(event1: Vec<String>, event2: Vec<String>) -> bool {
     let l = event1[0].clone().max(event2[0].clone());
     l <= r
 }
+
+// https://leetcode.com/problems/basic-calculator/description/
+pub fn calculate(s: String) -> i32 {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut stack = vec![];
+    let mut operand = 0;
+    let mut result = 0;
+    let mut sign = 1;
+
+    for i in 0..s.len() {
+        let ch = s[i];
+        if char::is_digit(ch, 10) {
+            operand = 10 * operand + (ch as i32 - '0' as i32);
+        } else if ch == '+' {
+            result += sign * operand;
+            sign = 1;
+            operand = 0;
+        } else if ch == '-' {
+            result += sign * operand;
+            sign = -1;
+            operand = 0;
+        } else if ch == '(' {
+            stack.push(result);
+            stack.push(sign);
+            sign = 1;
+            result = 0;
+        } else if ch == ')' {
+            result += sign * operand;
+            result *= stack.pop().unwrap();
+            result += stack.pop().unwrap();
+            operand = 0;
+        }
+    }
+    result + (sign * operand)
+}
