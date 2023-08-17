@@ -61,3 +61,26 @@ fn test_classes() {
     let res = max_average_ratio(vec![vec![1, 2], vec![3, 5], vec![2, 2]], 2);
     println!("{}", res);
 }
+
+// https://leetcode.com/problems/corporate-flight-bookings/
+pub fn corp_flight_bookings(bookings: Vec<Vec<i32>>, n: i32) -> Vec<i32> {
+    let mut seats = vec![0; n as usize];
+
+    for b in bookings {
+        let f = b[0] as usize - 1;
+        let l = b[1] as usize - 1;
+        let s = b[2];
+
+        seats[f] += s;
+        if l < seats.len() - 1 {
+            seats[l + 1] += -s;
+        }
+    }
+
+    // println!("{:?}", seats);
+
+    for i in 1..seats.len() {
+        seats[i] += seats[i - 1];
+    }
+    seats
+}
