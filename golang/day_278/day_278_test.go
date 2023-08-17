@@ -92,3 +92,91 @@ func longestPalindrome(s string) string {
 	j := ans[1]
 	return s[i : j+1]
 }
+
+// https://leetcode.com/problems/insert-into-a-binary-search-tree/
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func insertIntoBSTIter(root *TreeNode, val int) *TreeNode {
+	toIns := &TreeNode{val, nil, nil}
+	node := root
+	for node != nil {
+		if node.Val > val {
+			if node.Left == nil {
+				node.Left = toIns
+				return root
+			} else {
+				node = node.Left
+			}
+		} else {
+			if node.Right == nil {
+				node.Right = toIns
+				return root
+			} else {
+				node = node.Right
+			}
+		}
+	}
+	return toIns
+}
+func insertIntoBST(root *TreeNode, val int) *TreeNode {
+	if root == nil {
+		return &TreeNode{val, nil, nil}
+	}
+	if root.Val < val {
+		root.Right = insertIntoBST(root.Right, val)
+	} else {
+		root.Left = insertIntoBST(root.Left, val)
+	}
+	return root
+}
+
+// https://leetcode.com/problems/search-in-a-binary-search-tree/
+func searchBST(root *TreeNode, val int) *TreeNode {
+	for root != nil && root.Val != val {
+		if root.Val > val {
+			root = root.Left
+		} else {
+			root = root.Right
+		}
+	}
+	return root
+}
+
+// https://leetcode.com/problems/delete-node-in-a-bst/description/
+func succ(root *TreeNode) *TreeNode {
+	cur := root.Right
+	for cur != nil && cur.Left != nil {
+		cur = cur.Left
+	}
+	return cur
+}
+
+func deleteNode(root *TreeNode, key int) *TreeNode {
+	if root == nil {
+		return root
+	}
+
+	if root.Val == key {
+		if root.Left == nil {
+			return root.Right
+		}
+		if root.Right == nil {
+			return root.Left
+		}
+
+		p := succ(root)
+		root.Val = p.Val
+		root.Right = deleteNode(root.Right, p.Val)
+		return root
+	}
+	if root.Val < key {
+		root.Right = deleteNode(root.Right, key)
+	} else {
+		root.Left = deleteNode(root.Left, key)
+	}
+	return root
+}
