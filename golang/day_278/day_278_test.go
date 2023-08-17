@@ -59,3 +59,36 @@ func updateMatrix(mat [][]int) [][]int {
 
 	return dp
 }
+
+// https://leetcode.com/problems/longest-palindromic-substring/description/
+func longestPalindrome(s string) string {
+	expand := func(left int, right int) int {
+		for left >= 0 && right < len(s) && s[left] == s[right] {
+			left -= 1
+			right += 1
+		}
+		return right - left - 1
+	}
+
+	ans := make([]int, 2)
+
+	for i := 0; i < len(s); i++ {
+		oddLength := expand(i, i)
+		if oddLength > ans[1]-ans[0]+1 {
+			dist := oddLength / 2
+			ans[0] = i - dist
+			ans[1] = i + dist
+		}
+
+		evenLength := expand(i, i+1)
+		if evenLength > ans[1]-ans[0]+1 {
+			dist := evenLength/2 - 1
+			ans[0] = i - dist
+			ans[1] = i + 1 + dist
+		}
+	}
+
+	i := ans[0]
+	j := ans[1]
+	return s[i : j+1]
+}
