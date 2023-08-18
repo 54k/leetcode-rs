@@ -57,3 +57,21 @@ func increasingBST(root *TreeNode) *TreeNode {
 	}
 	return dummy.Right
 }
+
+// https://leetcode.com/problems/gas-station/description/
+func canCompleteCircuit(gas []int, cost []int) int {
+	mn := 1 << 60
+	sum := 0
+	ans := 0
+	for i := 0; i < len(gas); i++ {
+		if sum < mn {
+			ans = i
+			mn = sum
+		}
+		sum += gas[i] - cost[i]
+	}
+	if sum < 0 {
+		return -1
+	}
+	return ans
+}
