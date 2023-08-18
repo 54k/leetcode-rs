@@ -117,3 +117,32 @@ fn test_min_length() {
     let res = min_length("ABFCACDB".to_string());
     println!("{res}");
 }
+
+// https://leetcode.com/problems/number-of-students-unable-to-eat-lunch/
+pub fn count_students(students: Vec<i32>, mut sandwiches: Vec<i32>) -> i32 {
+    use std::collections::VecDeque;
+
+    let mut students = students.into_iter().collect::<VecDeque<_>>();
+    sandwiches.reverse();
+
+    loop {
+        let mut k = students.len();
+        let mut flag = false;
+        while k > 0 {
+            if *students.front().unwrap() != *sandwiches.last().unwrap() {
+                let top = students.pop_front().unwrap();
+                students.push_back(top);
+            } else {
+                sandwiches.pop();
+                students.pop_front();
+                flag = true;
+            }
+            k -= 1;
+        }
+        if !flag {
+            break;
+        }
+    }
+
+    students.len() as i32
+}
