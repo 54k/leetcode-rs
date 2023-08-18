@@ -146,3 +146,21 @@ pub fn count_students(students: Vec<i32>, mut sandwiches: Vec<i32>) -> i32 {
 
     students.len() as i32
 }
+
+// https://leetcode.com/problems/time-needed-to-buy-tickets/
+pub fn time_required_to_buy(mut tickets: Vec<i32>, mut k: i32) -> i32 {
+    let mut time = 0;
+
+    loop {
+        for i in 0..tickets.len() {
+            if tickets[i] == 0 {
+                continue;
+            }
+            tickets[i] -= 1;
+            time += 1;
+            if i as i32 == k && tickets[i] == 0 {
+                return time;
+            }
+        }
+    }
+}
