@@ -237,3 +237,15 @@ pub fn bst_from_preorder(preorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
         &val_idx,
     )
 }
+
+// https://leetcode.com/problems/buildings-with-an-ocean-view/description/
+pub fn find_buildings(heights: Vec<i32>) -> Vec<i32> {
+    let mut mono = vec![];
+    for i in 0..heights.len() {
+        while mono.len() > 0 && heights[mono[mono.len() - 1] as usize] <= heights[i] {
+            mono.pop();
+        }
+        mono.push(i as i32);
+    }
+    mono
+}

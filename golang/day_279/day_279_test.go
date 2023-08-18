@@ -101,3 +101,31 @@ func bstFromPreorder(preorder []int) *TreeNode {
 	}
 	return helper(lo, hi)
 }
+
+func bstFromPreorderIter(preorder []int) *TreeNode {
+	n := len(preorder)
+	if n == 0 {
+		return nil
+	}
+	root := &TreeNode{preorder[0], nil, nil}
+	deque := []*TreeNode{}
+	deque = append(deque, root)
+
+	for i := 1; i < n; i++ {
+		node := deque[len(deque)-1]
+		child := &TreeNode{preorder[i], nil, nil}
+
+		for len(deque) > 0 && deque[len(deque)-1].Val < child.Val {
+			pop := deque[len(deque)-1]
+			deque = deque[:len(deque)-1]
+			node = pop
+		}
+		if node.Val < child.Val {
+			node.Right = child
+		} else {
+			node.Left = child
+		}
+		deque = append(deque, child)
+	}
+	return root
+}
