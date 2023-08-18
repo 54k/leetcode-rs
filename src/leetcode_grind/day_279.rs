@@ -249,3 +249,72 @@ pub fn find_buildings(heights: Vec<i32>) -> Vec<i32> {
     }
     mono
 }
+
+//https://leetcode.com/problems/kth-largest-element-in-a-stream/description/
+mod kth_largest {
+    use std::collections::BinaryHeap;
+
+    struct KthLargest {
+        k: usize,
+        heap: BinaryHeap<i32>,
+    }
+
+    impl KthLargest {
+        fn new(k: i32, nums: Vec<i32>) -> Self {
+            let k = k as usize;
+            let mut heap = BinaryHeap::new();
+            for n in nums {
+                heap.push(-n);
+                if heap.len() > k {
+                    heap.pop();
+                }
+            }
+            Self { k, heap }
+        }
+
+        fn add(&mut self, val: i32) -> i32 {
+            self.heap.push(-val);
+            if self.heap.len() > self.k {
+                self.heap.pop();
+            }
+            -(*self.heap.peek().unwrap())
+        }
+    }
+}
+
+// https://leetcode.com/problems/maximum-frequency-stack/description/
+mod max_freq {
+    use std::collections::HashMap;
+
+    struct FreqStack {
+        freq: HashMap<i32, i32>,
+        group: HashMap<i32, Vec<i32>>,
+        max_freq: i32,
+    }
+
+    impl FreqStack {
+        fn new() -> Self {
+            Self {
+                freq: HashMap::new(),
+                group: HashMap::new(),
+                max_freq: 0,
+            }
+        }
+
+        fn push(&mut self, val: i32) {
+            let f = *self.freq.entry(val).or_insert(0) + 1;
+            self.freq.insert(val, f);
+            self.max_freq = self.max_freq.max(f);
+            self.group.entry(f).or_insert(vec![]).push(val);
+        }
+
+        fn pop(&mut self) -> i32 {
+            let x = self.group.get_mut(&self.max_freq).unwrap().pop().unwrap();
+            *self.freq.entry(x).or_insert(0) -= 1;
+            if self.group[&self.max_freq].len() == 0 {
+                self.max_freq -= 1;
+            }
+            x
+        }
+    }
+}
