@@ -145,3 +145,31 @@ func findBuildings(heights []int) []int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/description/
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	rVal, pVal, qVal := root.Val, p.Val, q.Val
+	if pVal < rVal && qVal < rVal {
+		return lowestCommonAncestor(root.Left, p, q)
+	} else if pVal > rVal && qVal > rVal {
+		return lowestCommonAncestor(root.Right, p, q)
+	}
+	return root
+}
+
+func lowestCommonAncestorIter(root, p, q *TreeNode) *TreeNode {
+	pVal, qVal := p.Val, q.Val
+	node := root
+	for node != nil {
+		parentVal := node.Val
+
+		if pVal > parentVal && qVal > parentVal {
+			node = node.Right
+		} else if pVal < parentVal && qVal < parentVal {
+			node = node.Left
+		} else {
+			return node
+		}
+	}
+	return root
+}
