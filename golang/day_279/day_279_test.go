@@ -75,3 +75,29 @@ func canCompleteCircuit(gas []int, cost []int) int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/description/
+func bstFromPreorder(preorder []int) *TreeNode {
+	lo := -(1 << 60)
+	hi := 1 << 60
+	idx := 0
+	var helper func(int, int) *TreeNode
+	helper = func(lo int, hi int) *TreeNode {
+		if idx == len(preorder) {
+			return nil
+		}
+
+		val := preorder[idx]
+		if val <= lo || val >= hi {
+			return nil
+		}
+
+		idx++
+
+		root := &TreeNode{val, nil, nil}
+		root.Left = helper(lo, val)
+		root.Right = helper(val, hi)
+		return root
+	}
+	return helper(lo, hi)
+}

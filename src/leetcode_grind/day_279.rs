@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 // https://leetcode.com/problems/maximum-nesting-depth-of-the-parentheses/description/
 pub fn max_depth(s: String) -> i32 {
     let mut stack = vec![];
@@ -163,4 +165,75 @@ pub fn time_required_to_buy(mut tickets: Vec<i32>, mut k: i32) -> i32 {
             }
         }
     }
+}
+
+// https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/description/
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+pub fn bst_from_preorder(preorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+    type Node = Option<Rc<RefCell<TreeNode>>>;
+    use std::collections::HashMap;
+    let mut inorder = preorder.clone();
+    inorder.sort();
+    let val_idx = inorder
+        .iter()
+        .copied()
+        .enumerate()
+        .map(|(i, v)| (v, i as i32))
+        .collect::<HashMap<_, _>>();
+
+    fn construct(
+        pre_idx: &mut usize,
+        left: i32,
+        right: i32,
+        inorder: &Vec<i32>,
+        preorder: &Vec<i32>,
+        val_idx: &HashMap<i32, i32>,
+    ) -> Node {
+        if left >= right {
+            return None;
+        }
+
+        let root_val = preorder[*pre_idx];
+        let mut node = TreeNode {
+            val: root_val,
+            left: None,
+            right: None,
+        };
+        *pre_idx += 1;
+
+        node.left = construct(
+            pre_idx,
+            left,
+            val_idx[&root_val],
+            inorder,
+            preorder,
+            val_idx,
+        );
+        node.right = construct(
+            pre_idx,
+            val_idx[&root_val] + 1,
+            right,
+            inorder,
+            preorder,
+            val_idx,
+        );
+
+        Some(Rc::new(RefCell::new(node)))
+    }
+
+    let mut pre_idx = 0;
+    construct(
+        &mut pre_idx,
+        0,
+        inorder.len() as i32,
+        &inorder,
+        &preorder,
+        &val_idx,
+    )
 }
