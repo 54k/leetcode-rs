@@ -129,3 +129,19 @@ func bstFromPreorderIter(preorder []int) *TreeNode {
 	}
 	return root
 }
+
+// https://leetcode.com/problems/buildings-with-an-ocean-view/description/
+func findBuildings(heights []int) []int {
+	ans := []int{}
+	max := 0
+	for i := len(heights) - 1; i >= 0; i-- {
+		if heights[i] > max {
+			max = heights[i]
+			ans = append(ans, i)
+		}
+	}
+	for i := 0; i < len(ans)/2; i++ {
+		ans[i], ans[len(ans)-i-1] = ans[len(ans)-i-1], ans[i]
+	}
+	return ans
+}
