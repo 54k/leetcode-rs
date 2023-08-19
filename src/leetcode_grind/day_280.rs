@@ -104,3 +104,17 @@ fn test_critical() {
     );
     println!("{:?}", res);
 }
+
+// https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description/
+pub fn min_add_to_make_valid(s: String) -> i32 {
+    let mut ans = 0;
+    let mut balance = 0;
+    for ch in s.chars() {
+        balance += if ch == '(' { 1 } else { -1 };
+        if balance == -1 {
+            ans += 1;
+            balance += 1;
+        }
+    }
+    ans + balance
+}
