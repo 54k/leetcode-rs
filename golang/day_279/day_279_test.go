@@ -173,3 +173,21 @@ func lowestCommonAncestorIter(root, p, q *TreeNode) *TreeNode {
 	}
 	return root
 }
+
+// https://leetcode.com/problems/verify-preorder-sequence-in-binary-search-tree/description/
+func verifyPreorder(preorder []int) bool {
+	stack := []int{}
+	minLimit := -(1 << 30)
+	for i := 0; i < len(preorder); i++ {
+		child := preorder[i]
+		for len(stack) > 0 && stack[len(stack)-1] < child {
+			minLimit = stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+		}
+		if child <= minLimit {
+			return false
+		}
+		stack = append(stack, child)
+	}
+	return true
+}
