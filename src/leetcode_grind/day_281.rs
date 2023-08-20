@@ -191,3 +191,31 @@ pub fn max_taxi_earnings(n: i32, rides: Vec<Vec<i32>>) -> i64 {
     }
     max_taxi_earnings_sort_by_end(n, rides)
 }
+
+// https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/description/
+pub fn max_events(mut events: Vec<Vec<i32>>) -> i32 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    let mut heap: BinaryHeap<Reverse<i32>> = BinaryHeap::new();
+    events.sort();
+    let mut j = 0;
+    let mut res = 0;
+    for d in 1..=100_000i32 {
+        while !heap.is_empty() && heap.peek().unwrap().0 < d {
+            heap.pop();
+        }
+
+        while j < events.len() && events[j][0] == d {
+            heap.push(Reverse(events[j][1]));
+            j += 1;
+        }
+
+        if !heap.is_empty() {
+            heap.pop();
+            res += 1;
+        }
+    }
+    res
+}
+

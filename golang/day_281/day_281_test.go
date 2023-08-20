@@ -124,3 +124,21 @@ func isAcronym(words []string, s string) bool {
 	}
 	return acr == s
 }
+
+// https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description/
+func minAddToMakeValid(s string) int {
+	bal := 0
+	ans := 0
+	for _, b := range s {
+		if b == '(' {
+			bal += 1
+		} else if b == ')' {
+			bal -= 1
+		}
+		if bal == -1 {
+			ans++
+			bal++
+		}
+	}
+	return ans + bal
+}
