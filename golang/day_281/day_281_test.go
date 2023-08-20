@@ -1,5 +1,10 @@
 package day281
 
+import (
+	"sort"
+	"strconv"
+)
+
 // https://leetcode.com/problems/maximize-the-confusion-of-an-exam/description/
 func maxConsecutiveAnswers1(answerKey string, k int) int {
 	min := func(a, b int) int {
@@ -141,4 +146,52 @@ func minAddToMakeValid(s string) int {
 		}
 	}
 	return ans + bal
+}
+
+// https://leetcode.com/problems/find-right-interval/description/
+func findRightInterval(intervals [][]int) []int {
+	ktos := func(key []int) string {
+		res := ""
+		for _, e := range key {
+			res += strconv.Itoa(e) + ","
+		}
+		return res
+	}
+
+	res := make([]int, len(intervals))
+
+	hash := map[string]int{}
+	for i, interval := range intervals {
+		hash[ktos(interval)] = i
+	}
+
+	sort.Slice(intervals, func(a, b int) bool {
+		return intervals[a][0] < intervals[b][0]
+	})
+
+	var binSearch func(int, int, int) []int
+	binSearch = func(target int, start int, end int) []int {
+		if start >= end {
+			if intervals[start][0] >= target {
+				return intervals[start]
+			}
+			return nil
+		}
+
+		mid := (start + end) / 2
+		if intervals[mid][0] < target {
+			return binSearch(target, mid+1, end)
+		} else {
+			return binSearch(target, start, mid)
+		}
+	}
+
+	for _, interval := range intervals {
+		interval2 := binSearch(interval[1], 0, len(intervals)-1)
+		res[hash[ktos(interval)]] = -1
+		if interval2 != nil {
+			res[hash[ktos(interval)]] = hash[ktos(interval2)]
+		}
+	}
+	return res
 }

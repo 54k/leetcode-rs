@@ -1,4 +1,4 @@
-// https://leetcode.com/problems/sort-items-by-groups-respecting-dependencies/description/
+pub fn find_right_interval(intervals: Vec<Vec<i32>>) -> Vec<i32> {} // https://leetcode.com/problems/sort-items-by-groups-respecting-dependencies/description/
 pub fn sort_items(n: i32, m: i32, mut group: Vec<i32>, before_items: Vec<Vec<i32>>) -> Vec<i32> {
     use std::collections::HashMap;
     let mut item_graph = HashMap::new();
@@ -230,4 +230,89 @@ pub fn can_attend_meetings(mut intervals: Vec<Vec<i32>>) -> bool {
         }
     }
     true
+}
+
+// https://leetcode.com/problems/find-right-interval/
+pub fn find_right_interval(intervals: Vec<Vec<i32>>) -> Vec<i32> {
+    let mut res = vec![];
+    for i in 0..intervals.len() {
+        let mut min = i32::MAX;
+        let mut min_index = -1;
+        for j in 0..intervals.len() {
+            if intervals[j][0] >= intervals[i][1] && intervals[j][0] < min {
+                min_index = j as i32;
+                min = intervals[j][0];
+            }
+        }
+        res.push(min_index);
+    }
+    res
+}
+
+// https://leetcode.com/problems/find-right-interval/description/
+pub fn find_right_interval_ii(mut intervals: Vec<Vec<i32>>) -> Vec<i32> {
+    use std::collections::HashMap;
+    let mut hash = HashMap::new();
+    for i in 0..intervals.len() {
+        hash.insert(intervals[i].clone(), i);
+    }
+    intervals.sort();
+    let mut res = vec![0; intervals.len()];
+    for i in 0..intervals.len() {
+        let mut min = i32::MAX;
+        let mut min_index = -1;
+        for j in i..intervals.len() {
+            if intervals[j][0] >= intervals[i][1] && intervals[j][0] < min {
+                min_index = hash[&intervals[j]] as i32;
+                min = intervals[j][0];
+            }
+        }
+        res[hash[&intervals[i]]] = min_index as i32;
+    }
+    res
+}
+
+pub fn find_right_interval_iii(intervals: Vec<Vec<i32>>) -> Vec<i32> {
+    use std::collections::BTreeMap;
+    let mut hash = BTreeMap::new();
+    for (i, interval) in intervals.iter().enumerate() {
+        hash.insert(interval[0], i);
+    }
+
+    let mut ans = vec![];
+
+    for interval in &intervals {
+        let ceil = hash
+            .range(interval[1]..)
+            .take(1)
+            .map(|x| *x.1 as i32)
+            .last()
+            .unwrap_or(-1);
+        ans.push(ceil);
+    }
+
+    ans
+}
+
+pub fn find_right_interval_iv(mut intervals: Vec<Vec<i32>>) -> Vec<i32> {
+    use std::collections::HashMap;
+    let mut hash = HashMap::new();
+    for (i, interval) in intervals.iter().enumerate() {
+        hash.insert(interval.clone(), i);
+    }
+    let mut end_intervals = intervals.clone();
+    intervals.sort();
+    end_intervals.sort_by_key(|x| x[1]);
+    let mut res = vec![-1; intervals.len()];
+    let mut j = 0;
+    for i in 0..end_intervals.len() {
+        while j < intervals.len() && intervals[j][0] < end_intervals[i][1] {
+            j += 1;
+        }
+
+        if j < intervals.len() {
+            res[hash[&end_intervals[i]]] = hash[&intervals[j]] as i32;
+        }
+    }
+    res
 }
