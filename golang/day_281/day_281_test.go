@@ -84,3 +84,12 @@ func maxConsecutiveAnswers2(answerKey string, k int) int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/check-if-a-string-is-an-acronym-of-words/
+func isAcronym(words []string, s string) bool {
+	acr := ""
+	for _, w := range words {
+		acr += string(w[0])
+	}
+	return acr == s
+}
