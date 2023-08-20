@@ -83,6 +83,7 @@ pub fn sort_items(n: i32, m: i32, mut group: Vec<i32>, before_items: Vec<Vec<i32
     ans.into_iter().map(|x| x as i32).collect()
 }
 
+// https://leetcode.com/problems/determine-the-minimum-sum-of-a-k-avoiding-array/
 pub fn minimum_sum(n: i32, k: i32) -> i32 {
     use std::collections::HashSet;
     let mut added = HashSet::new();
@@ -100,6 +101,7 @@ pub fn minimum_sum(n: i32, k: i32) -> i32 {
     sum
 }
 
+// https://leetcode.com/problems/find-the-longest-equal-subarray/
 pub fn longest_equal_subarray(nums: Vec<i32>, k: i32) -> i32 {
     use std::collections::HashMap;
     let mut count = HashMap::new();
