@@ -147,3 +147,47 @@ pub fn maximize_the_profit(n: i32, offers: Vec<Vec<i32>>) -> i32 {
 
     dp[n as usize]
 }
+
+// https://leetcode.com/problems/maximum-earnings-from-taxi/description/
+pub fn max_taxi_earnings(n: i32, rides: Vec<Vec<i32>>) -> i64 {
+    pub fn max_taxi_earnings_knapsack(n: i32, rides: Vec<Vec<i32>>) -> i64 {
+        let mut rides = rides;
+        rides.sort();
+        let mut dp = vec![0; n as usize + 1];
+        let mut j = 0;
+        for i in 1..=n as usize {
+            dp[i] = dp[i].max(dp[i - 1]);
+
+            while j < rides.len() && rides[j][0] == i as i32 {
+                let ride = &rides[j];
+                dp[ride[1] as usize] = dp[ride[1] as usize]
+                    .max(dp[i] + ride[1] as i64 - ride[0] as i64 + ride[2] as i64);
+                j += 1;
+            }
+        }
+
+        dp[n as usize]
+    }
+    pub fn max_taxi_earnings_sort_by_end(n: i32, rides: Vec<Vec<i32>>) -> i64 {
+        let mut rides_by_end = vec![];
+        for _ in 0..=n as usize {
+            rides_by_end.push(vec![]);
+        }
+        for ride in &rides {
+            rides_by_end[ride[1] as usize].push(ride.clone());
+        }
+
+        let mut dp = vec![0; n as usize + 1];
+        for i in 1..=n as usize {
+            dp[i] = dp[i].max(dp[i - 1]);
+
+            for ride in &rides_by_end[i] {
+                dp[i] = dp[i]
+                    .max(dp[ride[0] as usize] + ride[1] as i64 - ride[0] as i64 + ride[2] as i64);
+            }
+        }
+
+        dp[n as usize]
+    }
+    max_taxi_earnings_sort_by_end(n, rides)
+}
