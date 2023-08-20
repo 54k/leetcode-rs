@@ -1,0 +1,86 @@
+package day281
+
+// https://leetcode.com/problems/maximize-the-confusion-of-an-exam/description/
+func maxConsecutiveAnswers1(answerKey string, k int) int {
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	isValid := func(size int) bool {
+		fCount := 0
+		tCount := 0
+
+		for i := 0; i < len(answerKey); i++ {
+			if answerKey[i] == 'T' {
+				tCount++
+			} else {
+				fCount++
+			}
+
+			if i >= size {
+				if answerKey[i-size] == 'T' {
+					tCount--
+				} else {
+					fCount--
+				}
+			}
+
+			if i+1 >= size {
+				if min(fCount, tCount) <= k {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	lo, hi := k, len(answerKey)
+	for lo < hi {
+		mid := (lo + hi + 1) / 2
+		if isValid(mid) {
+			lo = mid
+		} else {
+			hi = mid - 1
+		}
+	}
+	return lo
+}
+
+func maxConsecutiveAnswers2(answerKey string, k int) int {
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	fc, tc := 0, 0
+	lo := 0
+	ans := 0
+	for hi := 0; hi < len(answerKey); hi++ {
+		if answerKey[hi] == 'T' {
+			tc++
+		} else {
+			fc++
+		}
+		for min(fc, tc) > k {
+			if answerKey[lo] == 'T' {
+				tc--
+			} else {
+				fc--
+			}
+			lo++
+		}
+		ans = max(ans, hi-lo+1)
+	}
+	return ans
+}

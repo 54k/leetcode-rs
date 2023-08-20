@@ -82,3 +82,44 @@ pub fn sort_items(n: i32, m: i32, mut group: Vec<i32>, before_items: Vec<Vec<i32
     }
     ans.into_iter().map(|x| x as i32).collect()
 }
+
+pub fn minimum_sum(n: i32, k: i32) -> i32 {
+    use std::collections::HashSet;
+    let mut added = HashSet::new();
+    let mut sum = 0;
+    let mut i = 1;
+
+    while (added.len() as i32) < n {
+        if !added.contains(&(k - i)) {
+            added.insert(i);
+            sum += i;
+        }
+        i += 1;
+    }
+
+    sum
+}
+
+pub fn longest_equal_subarray(nums: Vec<i32>, k: i32) -> i32 {
+    use std::collections::HashMap;
+    let mut count = HashMap::new();
+    let mut max_freq = 0;
+    let mut i = 0;
+
+    for j in 0..nums.len() {
+        *count.entry(nums[j]).or_insert(0) += 1;
+        max_freq = max_freq.max(count[&nums[j]]);
+
+        if j as i32 - i as i32 + 1 - max_freq > k {
+            *count.entry(nums[i]).or_insert(0) -= 1;
+            i += 1;
+        }
+    }
+    max_freq
+}
+
+#[test]
+fn test_longest_equal_subarray() {
+    let res = longest_equal_subarray(vec![1, 3, 2, 3, 1, 3], 3);
+    println!("{res}"); // 3
+}
