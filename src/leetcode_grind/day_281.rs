@@ -123,3 +123,27 @@ fn test_longest_equal_subarray() {
     let res = longest_equal_subarray(vec![1, 3, 2, 3, 1, 3], 3);
     println!("{res}"); // 3
 }
+
+// https://leetcode.com/problems/maximize-the-profit-as-the-salesman/description/
+pub fn maximize_the_profit(n: i32, offers: Vec<Vec<i32>>) -> i32 {
+    let mut dp = vec![0; n as usize + 1];
+    let mut m = vec![];
+
+    for _ in 0..n {
+        m.push(vec![]);
+    }
+
+    for o in &offers {
+        m[o[1] as usize].push(o.clone());
+    }
+
+    for e in 1..=n as usize {
+        dp[e] = dp[e - 1];
+
+        for a in &m[e - 1] {
+            dp[e] = dp[e].max(dp[a[0] as usize] + a[2]);
+        }
+    }
+
+    dp[n as usize]
+}
