@@ -85,6 +85,37 @@ func maxConsecutiveAnswers2(answerKey string, k int) int {
 	return ans
 }
 
+func maxConsecutiveAnswers3(answerKey string, k int) int {
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	fc, tc, ans := 0, 0, 0
+	left := 0
+	for right := 0; right < len(answerKey); right++ {
+		if answerKey[right] == 'T' {
+			tc++
+		} else {
+			fc++
+		}
+		minor := min(tc, fc)
+		if minor <= k {
+			ans++
+		} else {
+			if answerKey[left] == 'T' {
+				tc--
+			} else {
+				fc--
+			}
+			left++
+		}
+	}
+	return ans
+}
+
 // https://leetcode.com/problems/check-if-a-string-is-an-acronym-of-words/
 func isAcronym(words []string, s string) bool {
 	acr := ""
