@@ -51,3 +51,87 @@ pub fn crack_safe(n: i32, k: i32) -> String {
 
     str_pwd
 }
+
+// https://leetcode.com/problems/maximum-length-of-pair-chain/description/
+pub fn find_longest_chain(pairs: Vec<Vec<i32>>) -> i32 {
+    let mut pairs = pairs;
+    pairs.sort();
+    let mut dp = vec![0; pairs.len()];
+
+    for i in 0..pairs.len() {
+        dp[i] = dp[i].max(1);
+        for j in 0..i {
+            if pairs[j][1] < pairs[i][0] {
+                dp[i] = dp[j] + 1;
+            }
+        }
+    }
+
+    let mut ans = 0;
+    for i in 0..pairs.len() {
+        ans = ans.max(dp[i]);
+    }
+    ans
+}
+
+#[test]
+fn test_pairs_len() {
+    let res = find_longest_chain(vec![vec![1, 2], vec![7, 8], vec![4, 5]]);
+    println!("{res}"); // 3
+}
+
+pub fn find_longest_chain_greedy(pairs: Vec<Vec<i32>>) -> i32 {
+    let mut pairs = pairs;
+    pairs.sort_by_key(|x| x[1]);
+    let mut ans = 0;
+    let mut curr_tail = i32::MIN;
+    for i in 0..pairs.len() {
+        if pairs[i][0] > curr_tail {
+            curr_tail = pairs[i][1];
+            ans += 1
+        }
+    }
+    ans
+}
+
+// https://leetcode.com/problems/maximum-profit-in-job-scheduling/description/
+pub fn job_scheduling(start_time: Vec<i32>, end_time: Vec<i32>, profit: Vec<i32>) -> i32 {
+    fn find_prev_job(jobs: &Vec<i32>, last_start_time: i32) -> i32 {
+        let mut start = 0;
+        let mut end = jobs.len() as i32 - 1;
+        let mut prev_idx = -1;
+
+        while start <= end {
+            let mid = (start + end) / 2;
+            if jobs[mid as usize] > last_start_time {
+                end = mid - 1;
+            } else {
+                prev_idx = mid;
+                start = mid + 1;
+            }
+        }
+        prev_idx
+    }
+
+    let mut jobs = end_time
+        .into_iter()
+        .zip(start_time)
+        .zip(profit)
+        .map(|((a, b), c)| (a, b, c))
+        .collect::<Vec<_>>();
+    jobs.sort();
+
+    let end_times = jobs.iter().map(|x| x.0).collect::<Vec<_>>();
+
+    let mut ans = 0;
+    let mut dp = vec![0; jobs.len() + 1];
+    for i in 1..=jobs.len() {
+        let job_idx = i - 1;
+        let prev_job = find_prev_job(&end_times, jobs[job_idx].1) + 1;
+        let take_job = jobs[job_idx].2 + dp[prev_job as usize];
+        dp[i] = take_job.max(dp[i - 1]);
+        ans = ans.max(dp[i]);
+    }
+
+    ans
+}

@@ -1,5 +1,7 @@
 package day282
 
+import "strings"
+
 // https://leetcode.com/problems/repeated-substring-pattern/description/
 func repeatedSubstringPattern(s string) bool {
 	if len(s) == 1 {
@@ -19,4 +21,9 @@ func repeatedSubstringPattern(s string) bool {
 		}
 	}
 	return false
+}
+
+func repeatedSubstringPattern2(s string) bool {
+	t := s + s
+	return strings.Contains(t[1:len(t)-1], s)
 }

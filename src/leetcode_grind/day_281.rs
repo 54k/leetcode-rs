@@ -248,7 +248,6 @@ pub fn find_right_interval(intervals: Vec<Vec<i32>>) -> Vec<i32> {
     res
 }
 
-// https://leetcode.com/problems/find-right-interval/description/
 pub fn find_right_interval_ii(mut intervals: Vec<Vec<i32>>) -> Vec<i32> {
     use std::collections::HashMap;
     let mut hash = HashMap::new();
