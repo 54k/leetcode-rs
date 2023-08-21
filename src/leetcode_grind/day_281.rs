@@ -315,3 +315,75 @@ pub fn find_right_interval_iv(mut intervals: Vec<Vec<i32>>) -> Vec<i32> {
     }
     res
 }
+
+// https://leetcode.com/problems/is-array-a-preorder-of-some-binary-tree/
+pub fn is_preorder(nodes: Vec<Vec<i32>>) -> bool {
+    let mut stack = vec![vec![-1, -1]];
+    for i in 0..nodes.len() {
+        let child = nodes[i].clone();
+        while stack.len() > 0 && stack.last().unwrap()[0] != child[1] {
+            stack.pop();
+            if stack.is_empty() {
+                return false;
+            }
+        }
+        stack.push(child);
+    }
+    true
+}
+
+#[test]
+fn test_is_preorder() {
+    let res = is_preorder(vec![
+        vec![0, -1],
+        vec![1, 0],
+        vec![2, 0],
+        vec![3, 2],
+        vec![4, 2],
+    ]);
+    println!("{res}");
+}
+
+// https://leetcode.com/problems/create-target-array-in-the-given-order/
+pub fn create_target_array(nums: Vec<i32>, index: Vec<i32>) -> Vec<i32> {
+    let mut target = vec![];
+
+    for i in 0..nums.len() {
+        let idx = index[i] as usize;
+        let num = nums[i];
+        if target.len() == idx {
+            target.push(num);
+        } else {
+            target.push(0);
+            for j in (idx..target.len() - 1).rev() {
+                target[j + 1] = target[j];
+            }
+            target[idx] = num;
+        }
+    }
+    target
+}
+
+// https://leetcode.com/problems/contains-duplicate-iii/description/
+pub fn contains_nearby_almost_duplicate(nums: Vec<i32>, index_diff: i32, value_diff: i32) -> bool {
+    use std::collections::BTreeSet;
+
+    let mut set = BTreeSet::new();
+    for i in 0..nums.len() {
+        if let Some(&s) = set.range(nums[i]..).find(|_| true) {
+            if s <= nums[i] + value_diff {
+                return true;
+            }
+        }
+        if let Some(&g) = set.range(..=nums[i]).last() {
+            if nums[i] <= g + value_diff {
+                return true;
+            }
+        }
+        set.insert(nums[i]);
+        if set.len() > index_diff as usize {
+            set.remove(&nums[i - index_diff as usize]);
+        }
+    }
+    false
+}

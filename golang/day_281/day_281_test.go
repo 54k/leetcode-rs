@@ -195,3 +195,31 @@ func findRightInterval(intervals [][]int) []int {
 	}
 	return res
 }
+
+// https://leetcode.com/problems/balanced-binary-tree/editorial/
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func isBalanced(root *TreeNode) bool {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	var isBalanced2 func(root *TreeNode) (bool, int)
+	isBalanced2 = func(root *TreeNode) (bool, int) {
+		if root == nil {
+			return true, 0
+		}
+
+		lb, left := isBalanced2(root.Left)
+		rb, right := isBalanced2(root.Right)
+		return left-right >= -1 && left-right <= 1 && lb && rb, 1 + max(left, right)
+	}
+	res, _ := isBalanced2(root)
+	return res
+}
