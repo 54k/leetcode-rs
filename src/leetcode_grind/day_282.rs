@@ -135,3 +135,37 @@ pub fn job_scheduling(start_time: Vec<i32>, end_time: Vec<i32>, profit: Vec<i32>
 
     ans
 }
+
+pub fn job_scheduling_heap(start_time: Vec<i32>, end_time: Vec<i32>, profit: Vec<i32>) -> i32 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    let mut jobs = start_time
+        .into_iter()
+        .zip(end_time)
+        .zip(profit)
+        .map(|((s, e), p)| (s, e, p))
+        .collect::<Vec<_>>();
+    jobs.sort();
+
+    let mut max_profit = 0;
+    let mut heap: BinaryHeap<Reverse<(i32, i32)>> = BinaryHeap::new();
+
+    for i in 0..jobs.len() {
+        // println!("{:?}", heap);
+        while !heap.is_empty() && heap.peek().unwrap().0 .0 <= jobs[i].0 {
+            let top = heap.pop().unwrap().0;
+            if top.1 > max_profit {
+                max_profit = top.1;
+            }
+        }
+        let combined_job = (jobs[i].1, jobs[i].2 + max_profit);
+        heap.push(Reverse(combined_job));
+    }
+
+    while heap.len() > 0 {
+        max_profit = max_profit.max(heap.pop().unwrap().0 .1);
+    }
+
+    max_profit
+}
