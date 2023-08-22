@@ -158,3 +158,17 @@ pub fn character_replacement_iii(s: String, k: i32) -> i32 {
     }
     longest_substr_len as i32
 }
+
+// https://leetcode.com/problems/maximum-beauty-of-an-array-after-applying-operation/description/
+pub fn maximum_beauty(mut nums: Vec<i32>, k: i32) -> i32 {
+    nums.sort();
+    let mut start = 0;
+    let mut ans = 0;
+    for end in 0..nums.len() {
+        while nums[end] - nums[start] > 2 * k {
+            start += 1;
+        }
+        ans = ans.max(end - start + 1);
+    }
+    ans as i32
+}

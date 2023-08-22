@@ -32,3 +32,34 @@ func partitionString(s string) int {
 	}
 	return count
 }
+
+// https://leetcode.com/problems/count-complete-subarrays-in-an-array/description/
+func countCompleteSubarrays(nums []int) int {
+	uniq := map[int]bool{}
+	for _, n := range nums {
+		uniq[n] = true
+	}
+	k := len(uniq)
+
+	ans := 0
+	countFreq := map[int]int{}
+	start := 0
+
+	for end := 0; end < len(nums); end++ {
+		curr := nums[end]
+		if countFreq[curr] == 0 {
+			k--
+		}
+		countFreq[curr]++
+		for k == 0 {
+			prev := nums[start]
+			countFreq[prev]--
+			if countFreq[prev] == 0 {
+				k++
+			}
+			start++
+		}
+		ans += start
+	}
+	return ans
+}
