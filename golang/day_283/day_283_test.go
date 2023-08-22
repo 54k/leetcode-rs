@@ -63,3 +63,24 @@ func countCompleteSubarrays(nums []int) int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/find-the-longest-equal-subarray/description/
+func longestEqualSubarray(nums []int, k int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	count := map[int]int{}
+	maxFreq := 0
+	for i, j := 0, 0; j < len(nums); j++ {
+		count[nums[j]]++
+		maxFreq = max(maxFreq, count[nums[j]])
+		if j-i+1-maxFreq > k {
+			count[nums[i]]--
+			i++
+		}
+	}
+	return maxFreq
+}
