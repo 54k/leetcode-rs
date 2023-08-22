@@ -177,7 +177,7 @@ pub fn maximum_beauty(mut nums: Vec<i32>, k: i32) -> i32 {
 }
 
 // https://leetcode.com/problems/find-the-longest-semi-repetitive-substring/description/
-pub fn longest_semi_repetitive_substring(s: String) -> i32 {
+pub fn longest_semi_repetitive_substring_i(s: String) -> i32 {
     use std::collections::VecDeque;
     let s = s.chars().collect::<Vec<_>>();
     let mut ans = 0;
@@ -203,4 +203,75 @@ pub fn longest_semi_repetitive_substring(s: String) -> i32 {
     }
 
     ans as i32
+}
+
+pub fn longest_semi_repetitive_substring_ii(s: String) -> i32 {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut i = 0;
+    let mut cur = 0;
+    for j in 1..s.len() {
+        cur += if s[j] == s[j - 1] { 1 } else { 0 };
+        if cur > 1 {
+            i += 1;
+            cur -= if s[i] == s[i - 1] { 1 } else { 0 };
+        }
+    }
+    s.len() as i32 - i as i32
+}
+
+// https://leetcode.com/problems/maximize-win-from-two-segments/description/
+pub fn maximize_win(prize_positions: Vec<i32>, k: i32) -> i32 {
+    let mut j = 0;
+    let mut res = 0;
+    let mut dp = vec![0; prize_positions.len() + 1];
+
+    for i in 0..prize_positions.len() {
+        while prize_positions[j] < prize_positions[i] - k {
+            j += 1;
+        }
+        dp[i + 1] = dp[i].max(i - j + 1);
+        res = res.max(dp[j] + i - j + 1);
+    }
+    res as i32
+}
+
+// https://leetcode.com/problems/two-best-non-overlapping-events/description/
+pub fn max_two_events_i(events: Vec<Vec<i32>>) -> i32 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    let mut heap: BinaryHeap<Reverse<(i32, i32)>> = BinaryHeap::new();
+    let mut events = events;
+    events.sort();
+
+    let mut ans = 0;
+    let mut max_profit = 0;
+
+    for i in 0..events.len() {
+        while heap.len() > 0 && heap.peek().unwrap().0 .0 < events[i][0] {
+            max_profit = max_profit.max(heap.pop().unwrap().0 .1);
+        }
+        ans = ans.max(max_profit + events[i][2]);
+
+        heap.push(Reverse((events[i][1], events[i][2])));
+    }
+    ans
+}
+
+pub fn max_two_events_ii(events: Vec<Vec<i32>>) -> i32 {
+    let mut events = events;
+    events.sort();
+    let mut end_events = events.clone();
+    end_events.sort_by_key(|x| x[1]);
+    let mut ans = 0;
+    let mut j = 0;
+    let mut max_profit = 0;
+    for i in 0..events.len() {
+        while j < end_events.len() && end_events[j][1] < events[i][0] {
+            max_profit = max_profit.max(end_events[j][2]);
+            j += 1;
+        }
+        ans = ans.max(max_profit + events[i][2]);
+    }
+    ans
 }
