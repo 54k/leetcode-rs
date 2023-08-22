@@ -145,15 +145,18 @@ pub fn character_replacement_iii(s: String, k: i32) -> i32 {
     let mut freq_map = vec![0; 26];
     let mut max_freq = 0;
     let mut longest_substr_len = 0;
+
     for end in 0..s.len() {
         let curr_char = s[end] as usize - 'A' as usize;
         freq_map[curr_char] += 1;
         max_freq = max_freq.max(freq_map[curr_char]);
+
         if end - start + 1 - max_freq > k as usize {
             let outgoing_char = s[start] as usize - 'A' as usize;
             freq_map[outgoing_char] -= 1;
             start += 1;
         }
+
         longest_substr_len = longest_substr_len.max(end - start + 1);
     }
     longest_substr_len as i32
@@ -170,5 +173,34 @@ pub fn maximum_beauty(mut nums: Vec<i32>, k: i32) -> i32 {
         }
         ans = ans.max(end - start + 1);
     }
+    ans as i32
+}
+
+// https://leetcode.com/problems/find-the-longest-semi-repetitive-substring/description/
+pub fn longest_semi_repetitive_substring(s: String) -> i32 {
+    use std::collections::VecDeque;
+    let s = s.chars().collect::<Vec<_>>();
+    let mut ans = 0;
+
+    let mut current = VecDeque::new();
+    let mut k = 1;
+
+    for end in 0..s.len() {
+        let incoming = s[end];
+        if current.len() >= 1 && current[current.len() - 1] == incoming {
+            k -= 1;
+        }
+        current.push_back(incoming);
+
+        while k < 0 {
+            if current.len() >= 2 && current[0] == current[1] {
+                k += 1;
+            }
+            current.pop_front();
+        }
+
+        ans = ans.max(current.len());
+    }
+
     ans as i32
 }
