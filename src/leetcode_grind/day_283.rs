@@ -138,3 +138,23 @@ pub fn character_replacement_ii(s: String, k: i32) -> i32 {
     }
     max_len as i32
 }
+
+pub fn character_replacement_iii(s: String, k: i32) -> i32 {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut start = 0;
+    let mut freq_map = vec![0; 26];
+    let mut max_freq = 0;
+    let mut longest_substr_len = 0;
+    for end in 0..s.len() {
+        let curr_char = s[end] as usize - 'A' as usize;
+        freq_map[curr_char] += 1;
+        max_freq = max_freq.max(freq_map[curr_char]);
+        if end - start + 1 - max_freq > k as usize {
+            let outgoing_char = s[start] as usize - 'A' as usize;
+            freq_map[outgoing_char] -= 1;
+            start += 1;
+        }
+        longest_substr_len = longest_substr_len.max(end - start + 1);
+    }
+    longest_substr_len as i32
+}
