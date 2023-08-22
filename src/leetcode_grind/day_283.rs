@@ -220,7 +220,7 @@ pub fn longest_semi_repetitive_substring_ii(s: String) -> i32 {
 }
 
 // https://leetcode.com/problems/maximize-win-from-two-segments/description/
-pub fn maximize_win(prize_positions: Vec<i32>, k: i32) -> i32 {
+pub fn maximize_win_i(prize_positions: Vec<i32>, k: i32) -> i32 {
     let mut j = 0;
     let mut res = 0;
     let mut dp = vec![0; prize_positions.len() + 1];
@@ -272,6 +272,29 @@ pub fn max_two_events_ii(events: Vec<Vec<i32>>) -> i32 {
             j += 1;
         }
         ans = ans.max(max_profit + events[i][2]);
+    }
+    ans
+}
+
+// https://leetcode.com/problems/count-the-number-of-good-subarrays/
+pub fn count_good(nums: Vec<i32>, k: i32) -> i64 {
+    use std::collections::HashMap;
+    let mut count = HashMap::new();
+    let mut j = 0;
+    let mut ans = 0;
+    let mut pairs = 0;
+    for i in 0..nums.len() {
+        let curr = nums[i];
+        pairs += *count.get(&curr).unwrap_or(&0);
+        *count.entry(curr).or_insert(0) += 1;
+
+        while pairs >= k {
+            let outgoing = nums[j];
+            *count.entry(outgoing).or_insert(0) -= 1;
+            pairs -= *count.get(&outgoing).unwrap_or(&0);
+            j += 1;
+        }
+        ans += j as i64;
     }
     ans
 }
