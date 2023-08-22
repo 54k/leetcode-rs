@@ -14,3 +14,21 @@ func convertToTitle(columnNumber int) string {
 	}
 	return string(ansb)
 }
+
+// https://leetcode.com/problems/optimal-partition-of-string/description
+func partitionString(s string) int {
+	lastSeen := make([]int, 26)
+	for i := 0; i < 26; i++ {
+		lastSeen[i] = -1
+	}
+	count := 1
+	substringStart := 0
+	for i, ch := range s {
+		if lastSeen[ch-'a'] >= substringStart {
+			count++
+			substringStart = i
+		}
+		lastSeen[ch-'a'] = i
+	}
+	return count
+}

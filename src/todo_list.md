@@ -1,3 +1,5 @@
+https://leetcode.com/problems/find-the-longest-equal-subarray/solutions/3934172/java-c-python-one-pass-sliding-window-o-n/
+
 https://leetcode.com/problems/count-stepping-numbers-in-range/solutions/3836309/c-digit-dp-clean-code-detailed-explanation-easy-to-understand/
 ---
 Digit Dp questions for Practise :
