@@ -73,7 +73,7 @@ pub fn min_swaps_deque(data: Vec<i32>) -> i32 {
 }
 
 // https://leetcode.com/problems/longest-repeating-character-replacement/description/
-pub fn character_replacement_bin_search(s: String, k: i32) -> i32 {
+pub fn character_replacement_i(s: String, k: i32) -> i32 {
     fn is_valid(s: &Vec<char>, size: i32, k: i32) -> bool {
         let mut freq_map = vec![0; 26];
         let mut max_freq = 0;
@@ -108,4 +108,33 @@ pub fn character_replacement_bin_search(s: String, k: i32) -> i32 {
         }
     }
     lo
+}
+
+pub fn character_replacement_ii(s: String, k: i32) -> i32 {
+    use std::collections::HashSet;
+    let s = s.chars().collect::<Vec<_>>();
+    let mut all_letters = HashSet::new();
+    for i in 0..s.len() {
+        all_letters.insert(s[i]);
+    }
+    let mut max_len = 0;
+    for &letter in all_letters.iter() {
+        let mut start = 0;
+        let mut count = 0;
+
+        for end in 0..s.len() {
+            if s[end] == letter {
+                count += 1;
+            }
+
+            while end - start + 1 - count > k as usize {
+                if s[start] == letter {
+                    count -= 1;
+                }
+                start += 1;
+            }
+            max_len = max_len.max(end - start + 1);
+        }
+    }
+    max_len as i32
 }
