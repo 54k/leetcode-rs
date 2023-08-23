@@ -118,3 +118,57 @@ pub fn reorganize_string_iii(s: String) -> String {
 
     ans.into_iter().collect()
 }
+
+// https://leetcode.com/problems/perfect-rectangle/description/
+pub fn is_rectangle_cover(rectangles: Vec<Vec<i32>>) -> bool {
+    if rectangles.len() == 0 || rectangles[0].len() == 0 {
+        return false;
+    }
+
+    let mut x1 = i32::MAX;
+    let mut x2 = i32::MIN;
+    let mut y1 = i32::MAX;
+    let mut y2 = i32::MIN;
+
+    use std::collections::HashSet;
+    let mut set: HashSet<String> = HashSet::new();
+    let mut area = 0;
+
+    for rect in rectangles {
+        x1 = x1.min(rect[0]);
+        y1 = y1.min(rect[1]);
+
+        x2 = x2.max(rect[2]);
+        y2 = y2.max(rect[3]);
+
+        area += (rect[2] - rect[0]) * (rect[3] - rect[1]);
+
+        let s1 = format!("{} {}", rect[0], rect[1]);
+        let s2 = format!("{} {}", rect[0], rect[3]);
+        let s3 = format!("{} {}", rect[2], rect[3]);
+        let s4 = format!("{} {}", rect[2], rect[1]);
+
+        if !set.insert(s1.clone()) {
+            set.remove(&s1);
+        }
+        if !set.insert(s2.clone()) {
+            set.remove(&s2);
+        }
+        if !set.insert(s3.clone()) {
+            set.remove(&s3);
+        }
+        if !set.insert(s4.clone()) {
+            set.remove(&s4);
+        }
+    }
+
+    if !set.contains(&format!("{} {}", x1, y1))
+        || !set.contains(&format!("{} {}", x1, y2))
+        || !set.contains(&format!("{} {}", x2, y1))
+        || !set.contains(&format!("{} {}", x2, y2))
+        || set.len() != 4
+    {
+        return false;
+    }
+    area == (x2 - x1) * (y2 - y1)
+}
