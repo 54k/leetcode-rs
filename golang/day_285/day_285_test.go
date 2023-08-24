@@ -1,5 +1,7 @@
 package day285
 
+import "math"
+
 // https://leetcode.com/problems/text-justification/description/
 func fullJustify(words []string, maxWidth int) []string {
 	getWords := func(i int) []string {
@@ -62,4 +64,63 @@ func fullJustify(words []string, maxWidth int) []string {
 		ans = append(ans, strLine)
 	}
 	return ans
+}
+
+type Node struct {
+	pre, nxt *Node
+	val      int
+}
+
+func NewNode(val int) *Node {
+	node := &Node{nil, nil, val}
+	node.pre = node
+	node.nxt = node
+	return node
+}
+
+func (this *Node) append(node *Node) {
+	tmp := this.nxt
+	this.nxt = node
+	node.pre = this
+	node.nxt = tmp
+	tmp.pre = node
+}
+
+func (this *Node) remove() *Node {
+	this.pre.nxt = this.nxt
+	this.nxt.pre = this.pre
+	this.nxt = this
+	this.pre = this
+	return this
+}
+
+type MRUQueue struct {
+	nodes  []*Node
+	bucket int
+}
+
+func Constructor(n int) MRUQueue {
+	bucket := int(math.Sqrt(float64(n)))
+	nodes := make([]*Node, (n+bucket-1)/bucket)
+	for i := 0; i < len(nodes); i++ {
+		nodes[i] = NewNode(-1)
+	}
+	for i := 1; i <= n; i++ {
+		nodes[(i-1)/bucket].pre.append(NewNode(i))
+	}
+	return MRUQueue{nodes, bucket}
+}
+
+func (this *MRUQueue) Fetch(k int) int {
+	k--
+	ans := this.nodes[k/this.bucket].nxt
+	for i := k % this.bucket; i > 0; i-- {
+		ans = ans.nxt
+	}
+	ans.remove()
+	for i := 1 + k/this.bucket; i < len(this.nodes); i++ {
+		this.nodes[i-1].pre.append(this.nodes[i].nxt.remove())
+	}
+	this.nodes[len(this.nodes)-1].pre.append(ans)
+	return ans.val
 }
