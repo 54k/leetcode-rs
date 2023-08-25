@@ -146,12 +146,12 @@ pub fn longest_common_subsequence(text1: String, text2: String) -> i32 {
         if memo.contains_key(&(i, j)) {
             return memo[&(i, j)];
         }
-        let mut ans = 0;
-        if text1[i] == text2[j] {
-            ans = 1 + rec(memo, text1, text2, i + 1, j + 1);
+
+        let ans = if text1[i] == text2[j] {
+            1 + rec(memo, text1, text2, i + 1, j + 1)
         } else {
-            ans = rec(memo, text1, text2, i + 1, j).max(rec(memo, text1, text2, i, j + 1));
-        }
+            rec(memo, text1, text2, i + 1, j).max(rec(memo, text1, text2, i, j + 1))
+        };
 
         memo.insert((i, j), ans);
         ans
