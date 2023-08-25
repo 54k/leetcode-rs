@@ -101,7 +101,9 @@ type MRUQueue struct {
 
 func Constructor(n int) MRUQueue {
 	bucket := int(math.Sqrt(float64(n)))
-	nodes := make([]*Node, (n+bucket-1)/bucket)
+	// nodes := make([]*Node, (n+bucket-1)/bucket)
+	nodes := make([]*Node, int(math.Ceil(float64(n)/float64(bucket))))
+
 	for i := 0; i < len(nodes); i++ {
 		nodes[i] = NewNode(-1)
 	}
