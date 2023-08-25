@@ -19,7 +19,7 @@ pub fn smaller_numbers_than_current(nums: Vec<i32>) -> Vec<i32> {
 }
 
 // https://leetcode.com/problems/interleaving-string/description/
-pub fn is_interleave(s1: String, s2: String, s3: String) -> bool {
+pub fn is_interleave_i(s1: String, s2: String, s3: String) -> bool {
     fn rec(
         s1: &Vec<char>,
         i: usize,
@@ -27,14 +27,11 @@ pub fn is_interleave(s1: String, s2: String, s3: String) -> bool {
         j: usize,
         s3: &Vec<char>,
         res: &mut Vec<char>,
-        memo: &mut HashMap<(usize, usize), bool>,
     ) -> bool {
         if res == s3 && i == s1.len() && j == s2.len() {
             return true;
         }
-        if memo.contains_key(&(i, j)) {
-            return memo[&(i, j)];
-        }
+
         let mut result = false;
 
         if i < s1.len() {
@@ -42,20 +39,65 @@ pub fn is_interleave(s1: String, s2: String, s3: String) -> bool {
             result |= rec(s1, i + 1, s2, j, s3, res);
             res.pop();
         }
+
         if j < s2.len() {
             res.push(s2[j]);
             result |= rec(s1, i, s2, j + 1, s3, res);
             res.pop();
         }
-        memo.insert((i, j), result);
+
         result
     }
 
     let s1 = s1.chars().collect::<Vec<_>>();
     let s2 = s2.chars().collect::<Vec<_>>();
     let s3 = s3.chars().collect::<Vec<_>>();
-    use std::collections::HashMap;
-    let mut memo = HashMap::new();
+
     let mut res = vec![];
-    rec(&s1, 0, &s2, 0, &s3, &mut res, &mut memo)
+
+    rec(&s1, 0, &s2, 0, &s3, &mut res)
+}
+
+pub fn is_interleave_ii(s1: String, s2: String, s3: String) -> bool {
+    use std::collections::HashMap;
+
+    fn rec(
+        s1: &Vec<char>,
+        i: usize,
+        s2: &Vec<char>,
+        j: usize,
+        s3: &Vec<char>,
+        k: usize,
+        memo: &mut HashMap<(usize, usize), bool>,
+    ) -> bool {
+        if i == s1.len() {
+            return s3[k..] == s2[j..];
+        }
+        if j == s2.len() {
+            return s3[k..] == s1[i..];
+        }
+
+        if memo.contains_key(&(i, j)) {
+            return memo[&(i, j)];
+        }
+        let mut ans = false;
+        if (s1[i] == s3[k] && rec(s1, i + 1, s2, j, s3, k + 1, memo))
+            || (s2[j] == s3[k] && rec(s1, i, s2, j + 1, s3, k + 1, memo))
+        {
+            ans = true;
+        }
+        memo.insert((i, j), ans);
+        ans
+    }
+
+    if s1.len() + s2.len() > s3.len() {
+        return false;
+    }
+
+    let mut memo = HashMap::new();
+    let s1 = s1.chars().collect::<Vec<_>>();
+    let s2 = s2.chars().collect::<Vec<_>>();
+    let s3 = s3.chars().collect::<Vec<_>>();
+
+    rec(&s1, 0, &s2, 0, &s3, 0, &mut memo)
 }
