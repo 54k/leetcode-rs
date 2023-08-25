@@ -128,3 +128,37 @@ pub fn is_interleave_iii(s1: String, s2: String, s3: String) -> bool {
 
     dp[s1.len()][s2.len()]
 }
+
+// https://leetcode.com/problems/longest-common-subsequence/description/
+pub fn longest_common_subsequence(text1: String, text2: String) -> i32 {
+    use std::collections::HashMap;
+
+    fn rec(
+        memo: &mut HashMap<(usize, usize), i32>,
+        text1: &Vec<char>,
+        text2: &Vec<char>,
+        i: usize,
+        j: usize,
+    ) -> i32 {
+        if i == text1.len() || j == text2.len() {
+            return 0;
+        }
+        if memo.contains_key(&(i, j)) {
+            return memo[&(i, j)];
+        }
+        let mut ans = 0;
+        if text1[i] == text2[j] {
+            ans = 1 + rec(memo, text1, text2, i + 1, j + 1);
+        } else {
+            ans = rec(memo, text1, text2, i + 1, j).max(rec(memo, text1, text2, i, j + 1));
+        }
+
+        memo.insert((i, j), ans);
+        ans
+    }
+
+    let text1 = text1.chars().collect::<Vec<_>>();
+    let text2 = text2.chars().collect::<Vec<_>>();
+    let mut memo = HashMap::new();
+    rec(&mut memo, &text1, &text2, 0, 0)
+}
