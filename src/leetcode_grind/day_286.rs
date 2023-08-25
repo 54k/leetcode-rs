@@ -1,5 +1,3 @@
-use std::hash::Hash;
-
 // https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/description/
 pub fn smaller_numbers_than_current(nums: Vec<i32>) -> Vec<i32> {
     let mut ans = vec![];
@@ -100,4 +98,33 @@ pub fn is_interleave_ii(s1: String, s2: String, s3: String) -> bool {
     let s3 = s3.chars().collect::<Vec<_>>();
 
     rec(&s1, 0, &s2, 0, &s3, 0, &mut memo)
+}
+
+pub fn is_interleave_iii(s1: String, s2: String, s3: String) -> bool {
+    if s3.len() != s1.len() + s2.len() {
+        return false;
+    }
+
+    let s1 = s1.chars().collect::<Vec<_>>();
+    let s2 = s2.chars().collect::<Vec<_>>();
+    let s3 = s3.chars().collect::<Vec<_>>();
+
+    let mut dp = vec![vec![false; s2.len() + 1]; s1.len() + 1];
+
+    for i in 0..=s1.len() {
+        for j in 0..=s2.len() {
+            if i == 0 && j == 0 {
+                dp[i][j] = true;
+            } else if i == 0 {
+                dp[i][j] = dp[i][j - 1] && s2[j - 1] == s3[i + j - 1];
+            } else if j == 0 {
+                dp[i][j] = dp[i - 1][j] && s1[i - 1] == s3[i + j - 1];
+            } else {
+                dp[i][j] = (dp[i - 1][j] && s1[i - 1] == s3[i + j - 1])
+                    || (dp[i][j - 1] && s2[j - 1] == s3[i + j - 1]);
+            }
+        }
+    }
+
+    dp[s1.len()][s2.len()]
 }
