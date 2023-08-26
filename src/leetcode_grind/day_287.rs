@@ -87,11 +87,83 @@ pub fn number_of_beautiful_integers_tle(low: i32, high: i32, k: i32) -> i32 {
     hi - lo
 }
 
+// https://leetcode.com/problems/number-of-beautiful-integers-in-the-range/solutions/3931973/digit-dp-c-solution-intuition-explanation-code/
+pub fn number_of_beautiful_integers(low: i32, high: i32, k: i32) -> i32 {
+    fn find(
+        len: i32,
+        tight: bool,
+        sum: i32,
+        odd: i32,
+        is_zero: bool,
+        actual_len: i32,
+        digits: &Vec<i32>,
+        k: i32,
+        dp: &mut Vec<Vec<Vec<Vec<Vec<Vec<i32>>>>>>,
+    ) -> i32 {
+        if len == digits.len() as i32 {
+            if (actual_len - odd == odd) && sum == 0 && !is_zero {
+                return 1;
+            }
+            return 0;
+        }
+
+        if dp[len as usize][actual_len as usize][tight as usize][sum as usize][odd as usize]
+            [is_zero as usize]
+            != -1
+        {
+            return dp[len as usize][actual_len as usize][tight as usize][sum as usize]
+                [odd as usize][is_zero as usize];
+        }
+
+        let mut limit = 9;
+        let mut res = 0;
+
+        if tight {
+            limit = digits[len as usize];
+        }
+
+        for dig in 0..=limit {
+            res += find(
+                len + 1,
+                tight && (dig == limit),
+                (10 * sum + dig) % k,
+                odd + (dig % 2),
+                is_zero && (dig == 0),
+                if is_zero && (dig == 0) {
+                    0
+                } else {
+                    actual_len + 1
+                },
+                &digits,
+                k,
+                dp,
+            )
+        }
+        dp[len as usize][actual_len as usize][tight as usize][sum as usize][odd as usize]
+            [is_zero as usize] = res;
+        res
+    }
+
+    fn go(x: i32, k: i32) -> i32 {
+        let mut dp = vec![vec![vec![vec![vec![vec![-1; 2]; 11]; 25]; 2]; 11]; 11];
+        let mut digits = vec![];
+        let mut m = x;
+        while m > 0 {
+            digits.push(m % 10);
+            m /= 10;
+        }
+        digits.reverse();
+        find(0, true, 0, 0, true, 0, &digits, k, &mut dp)
+    }
+
+    go(high, k) - go(low - 1, k)
+}
+
 #[test]
 fn test_number_of_beautiful_integers() {
-    let res = number_of_beautiful_integers_tle(5, 5, 2);
+    let res = number_of_beautiful_integers(5, 5, 2);
     println!("{:?}", res); // 0
 
-    let res = number_of_beautiful_integers_tle(10, 20, 3);
+    let res = number_of_beautiful_integers(10, 20, 3);
     println!("{:?}", res); // 2
 }
