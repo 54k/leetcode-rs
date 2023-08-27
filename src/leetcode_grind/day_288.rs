@@ -275,3 +275,46 @@ pub fn di_string_match(s: String) -> Vec<i32> {
     ans[n] = lo;
     ans
 }
+
+// https://leetcode.com/problems/valid-permutations-for-di-sequence/description/
+pub fn num_perms_di_sequence(s: String) -> i32 {
+    let mut dp = vec![vec![0; s.len() + 1]];
+
+    dp[s.len() - 1][s.len() - 1]
+}
+
+// https://leetcode.com/problems/build-an-array-with-stack-operations/
+pub fn build_array_i(target: Vec<i32>, n: i32) -> Vec<String> {
+    let mut ans = vec![];
+    let mut cur = vec![];
+    let mut i = 1;
+    while cur != target {
+        let was_empty = cur.len() == 0;
+        if i <= n {
+            ans.push("Push".to_string());
+            cur.push(i);
+            i += 1;
+        }
+        if !was_empty && cur.len() > 0 {
+            ans.push("Pop".to_string());
+            cur.pop();
+        }
+    }
+    ans
+}
+
+pub fn build_array_ii(target: Vec<i32>, n: i32) -> Vec<String> {
+    let mut res = vec![];
+    let mut curr = 1;
+    let mut i = 0;
+    while i < target.len() {
+        res.push("Push".to_string());
+        if target[i] != curr {
+            res.push("Pop".to_string());
+            i -= 1;
+        }
+        curr += 1;
+        i += 1;
+    }
+    res
+}
