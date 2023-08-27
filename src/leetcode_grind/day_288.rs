@@ -276,13 +276,6 @@ pub fn di_string_match(s: String) -> Vec<i32> {
     ans
 }
 
-// https://leetcode.com/problems/valid-permutations-for-di-sequence/description/
-pub fn num_perms_di_sequence(s: String) -> i32 {
-    let mut dp = vec![vec![0; s.len() + 1]];
-
-    dp[s.len() - 1][s.len() - 1]
-}
-
 // https://leetcode.com/problems/build-an-array-with-stack-operations/
 pub fn build_array_i(target: Vec<i32>, n: i32) -> Vec<String> {
     let mut ans = vec![];
