@@ -165,3 +165,29 @@ pub fn max_frequency(mut nums: Vec<i32>, k: i32) -> i32 {
 
     res as i32
 }
+
+// https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/description/
+pub fn min_operations(nums: Vec<i32>) -> i32 {
+    use std::collections::HashSet;
+
+    let n = nums.len();
+
+    let mut uniq = nums
+        .into_iter()
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .collect::<Vec<_>>();
+    uniq.sort();
+
+    let mut res = 0;
+
+    let mut i = 0;
+    for j in 0..uniq.len() {
+        while uniq[i] + n as i32 <= uniq[j] {
+            i += 1;
+        }
+        res = res.max(j - i + 1);
+    }
+
+    n as i32 - res as i32
+}
