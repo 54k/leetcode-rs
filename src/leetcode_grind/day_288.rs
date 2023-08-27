@@ -311,3 +311,20 @@ pub fn build_array_ii(target: Vec<i32>, n: i32) -> Vec<String> {
     }
     res
 }
+
+// https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/description/
+pub fn max_depth_after_split(seq: String) -> Vec<i32> {
+    let mut groups = vec![];
+    let mut depth = 0;
+
+    for ch in seq.chars() {
+        if ch == '(' {
+            depth += 1;
+        }
+        groups.push(depth % 2);
+        if ch == ')' {
+            depth -= 1;
+        }
+    }
+    groups
+}
