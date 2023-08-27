@@ -120,3 +120,48 @@ impl CustomStack {
         }
     }
 }
+
+// https://leetcode.com/problems/interleaving-string/description/
+pub fn is_interleave(s1: String, s2: String, s3: String) -> bool {
+    if s3.len() != s1.len() + s2.len() {
+        return false;
+    }
+    let s1 = s1.chars().collect::<Vec<_>>();
+    let s2 = s2.chars().collect::<Vec<_>>();
+    let s3 = s3.chars().collect::<Vec<_>>();
+
+    let mut dp = vec![false; s2.len() + 1];
+    for i in 0..=s1.len() {
+        for j in 0..=s2.len() {
+            if i == 0 && j == 0 {
+                dp[j] = true;
+            } else if i == 0 {
+                dp[j] = dp[j - 1] && s2[j - 1] == s3[i + j - 1];
+            } else if j == 0 {
+                dp[j] = dp[j] && s1[i - 1] == s3[i + j - 1];
+            } else {
+                dp[j] = (dp[j] && s1[i - 1] == s3[i + j - 1])
+                    || (dp[j - 1] && s2[j - 1] == s3[i + j - 1]);
+            }
+        }
+    }
+    dp[s2.len()]
+}
+
+// https://leetcode.com/problems/frequency-of-the-most-frequent-element/description/
+pub fn max_frequency(mut nums: Vec<i32>, k: i32) -> i32 {
+    nums.sort();
+    let mut res = 0;
+    let mut sum = 0;
+    let mut i = 0;
+    for j in 0..nums.len() {
+        sum += nums[j] as i64;
+        while (sum + k as i64) < (nums[j] as i64 * (j as i64 - i as i64 + 1)) {
+            sum -= nums[i] as i64;
+            i += 1;
+        }
+        res = res.max(j - i + 1)
+    }
+
+    res as i32
+}
