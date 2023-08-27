@@ -328,3 +328,16 @@ pub fn max_depth_after_split(seq: String) -> Vec<i32> {
     }
     groups
 }
+
+// https://leetcode.com/problems/minimum-number-of-swaps-to-make-the-string-balanced/description/
+pub fn min_swaps(s: String) -> i32 {
+    let mut size = 0;
+    for ch in s.chars() {
+        if ch == '[' {
+            size += 1;
+        } else if size > 0 {
+            size -= 1;
+        }
+    }
+    (size + 1) / 2
+}
