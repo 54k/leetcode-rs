@@ -1,5 +1,5 @@
 // https://leetcode.com/problems/frog-jump/description/
-pub fn can_cross(stones: Vec<i32>) -> bool {
+pub fn can_cross_i(stones: Vec<i32>) -> bool {
     use std::collections::HashMap;
     let mut mark = HashMap::new();
     for (i, &s) in stones.iter().enumerate() {
@@ -41,4 +41,40 @@ pub fn can_cross(stones: Vec<i32>) -> bool {
         ans
     }
     solve(&mut dp, &stones, &mut mark, 0, 0)
+}
+
+pub fn can_cross_ii(stones: Vec<i32>) -> bool {
+    use std::collections::HashMap;
+    let mut mark = HashMap::new();
+    for (i, &s) in stones.iter().enumerate() {
+        mark.insert(s, i);
+    }
+
+    let mut dp = vec![vec![false; 2001]; 2001];
+    dp[0][0] = true;
+
+    for index in 0..stones.len() {
+        for prev_jump in 0..=stones.len() as i32 {
+            if dp[index][prev_jump as usize] {
+                if mark.contains_key(&(stones[index] + prev_jump)) {
+                    dp[mark[&(stones[index] + prev_jump)]][prev_jump as usize] = true;
+                }
+
+                if mark.contains_key(&(stones[index] + prev_jump + 1)) {
+                    dp[mark[&(stones[index] + prev_jump + 1)]][prev_jump as usize + 1] = true;
+                }
+
+                if mark.contains_key(&(stones[index] + prev_jump - 1)) {
+                    dp[mark[&(stones[index] + prev_jump - 1)]][prev_jump as usize - 1] = true;
+                }
+            }
+        }
+    }
+
+    for index in 0..=stones.len() {
+        if dp[stones.len() - 1][index] {
+            return true;
+        }
+    }
+    false
 }
