@@ -191,3 +191,87 @@ pub fn min_operations(nums: Vec<i32>) -> i32 {
 
     n as i32 - res as i32
 }
+
+// https://leetcode.com/problems/construct-smallest-number-from-di-string/
+pub fn smallest_number_i(pattern: String) -> String {
+    fn is_valid(nums: &Vec<i32>, pattern: &Vec<char>) -> bool {
+        for (i, &ch) in pattern.iter().enumerate() {
+            if ch == 'I' {
+                if nums[i] > nums[i + 1] {
+                    return false;
+                }
+            } else if ch == 'D' {
+                if nums[i] < nums[i + 1] {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    fn generate(n: usize, used: u32, cur: &mut Vec<i32>, res: &mut Vec<Vec<i32>>) {
+        if cur.len() == n {
+            res.push(cur.clone());
+            return;
+        }
+
+        for i in 1..=9 {
+            if ((1 << i) & used) == 0 {
+                cur.push(i);
+                generate(n, used | (1 << i), cur, res);
+                cur.pop();
+            }
+        }
+    }
+
+    let pattern = pattern.chars().collect::<Vec<_>>();
+    let mut res = vec![];
+    generate(pattern.len() + 1, 0, &mut vec![], &mut res);
+
+    for r in res {
+        if is_valid(&r, &pattern) {
+            return r
+                .into_iter()
+                .map(|x| format!("{x}"))
+                .collect::<Vec<_>>()
+                .join("");
+        }
+    }
+    "".to_string()
+}
+
+pub fn smallest_number_ii(pattern: String) -> String {
+    let pattern = pattern.chars().collect::<Vec<_>>();
+    let mut res = vec![];
+    let mut stack = vec![];
+    for i in 0..=pattern.len() {
+        stack.push(char::from_u32('1' as u32 + i as u32).unwrap());
+        if i == pattern.len() || pattern[i] == 'I' {
+            let mut copy = stack.clone();
+            copy.reverse();
+            res.extend(copy.into_iter());
+            stack.clear();
+        }
+    }
+    res.into_iter().collect()
+}
+
+// https://leetcode.com/problems/di-string-match/description/
+pub fn di_string_match(s: String) -> Vec<i32> {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut ans = vec![0; s.len() + 1];
+    let n = s.len();
+    let mut lo = 0;
+    let mut hi = n as i32;
+    for i in 0..n {
+        if s[i] == 'I' {
+            ans[i] = lo;
+            lo += 1;
+        } else {
+            ans[i] = hi;
+            hi -= 1;
+        }
+    }
+    ans[n] = lo;
+    ans
+}
