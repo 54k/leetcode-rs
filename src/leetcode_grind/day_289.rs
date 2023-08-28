@@ -224,3 +224,26 @@ pub fn next_greater_elements_iii(nums: Vec<i32>) -> Vec<i32> {
     }
     res
 }
+
+// https://leetcode.com/problems/next-greater-element-i/description/
+pub fn next_greater_element_i_i(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+    use std::collections::HashMap;
+    let mut next_greater = HashMap::new();
+    let mut stack = vec![];
+    for &n in nums2.iter().rev() {
+        while stack.len() > 0 && stack[stack.len() - 1] <= n {
+            stack.pop();
+        }
+        if stack.len() > 0 {
+            next_greater.insert(n, stack[stack.len() - 1]);
+        } else {
+            next_greater.insert(n, -1);
+        }
+        stack.push(n);
+    }
+    let mut ans = vec![];
+    for n in nums1 {
+        ans.push(next_greater[&n]);
+    }
+    ans
+}
