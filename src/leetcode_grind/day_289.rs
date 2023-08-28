@@ -172,3 +172,55 @@ fn test_mct_from_leaf_value() {
     let ans = mct_from_leaf_values_ii(vec![6, 2, 4]);
     println!("{ans}"); // 32
 }
+
+// https://leetcode.com/problems/next-greater-element-ii/description/
+pub fn next_greater_elements_i(nums: Vec<i32>) -> Vec<i32> {
+    let mut res = vec![-1; nums.len()];
+
+    let mut double_nums = vec![];
+    double_nums.extend(nums.iter());
+    double_nums.extend(nums.iter());
+
+    for i in 0..nums.len() {
+        res[i] = -1;
+
+        for j in i + 1..double_nums.len() {
+            if double_nums[j] > double_nums[i] {
+                res[i] = double_nums[j];
+                break;
+            }
+        }
+    }
+
+    res
+}
+
+pub fn next_greater_elements_ii(nums: Vec<i32>) -> Vec<i32> {
+    let n = nums.len();
+    let mut res = vec![-1; nums.len()];
+    for i in 0..nums.len() {
+        res[i] = -1;
+        for j in 1..nums.len() {
+            if nums[(j + i) % n] > nums[i] {
+                res[i] = nums[(j + i) % n];
+                break;
+            }
+        }
+    }
+    res
+}
+
+pub fn next_greater_elements_iii(nums: Vec<i32>) -> Vec<i32> {
+    let mut res = vec![-1; nums.len()];
+    let mut stack = vec![];
+    for i in (0..2 * nums.len()).rev() {
+        while !stack.is_empty() && nums[stack[stack.len() - 1]] <= nums[i % nums.len()] {
+            stack.pop();
+        }
+        if !stack.is_empty() {
+            res[i % nums.len()] = nums[*stack.last().unwrap()];
+        }
+        stack.push(i % nums.len());
+    }
+    res
+}
