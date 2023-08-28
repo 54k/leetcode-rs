@@ -247,3 +247,25 @@ pub fn next_greater_element_i_i(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
     }
     ans
 }
+
+pub fn next_greater_element_i_ii(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+    use std::collections::HashMap;
+    let mut map = HashMap::new();
+    let mut stack = vec![];
+
+    for n in nums2 {
+        while stack.len() > 0 && stack[stack.len() - 1] < n {
+            map.insert(stack.pop().unwrap(), n);
+        }
+        stack.push(n);
+    }
+    let mut res = vec![];
+    for n in nums1 {
+        if map.contains_key(&n) {
+            res.push(map[&n]);
+        } else {
+            res.push(-1);
+        }
+    }
+    res
+}
