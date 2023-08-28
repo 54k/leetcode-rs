@@ -78,3 +78,56 @@ mod stack_1_queue {
         }
     }
 }
+
+// https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/
+pub fn mct_from_leaf_values_i(arr: Vec<i32>) -> i32 {
+    fn rec(i: usize, j: usize, arr: &Vec<i32>, memo: &mut Vec<Vec<i32>>) -> i32 {
+        if i == j {
+            return 0;
+        }
+        if memo[i][j] != -1 {
+            return memo[i][j];
+        }
+        let mut ans = i32::MAX;
+        for k in i..j {
+            ans = ans.min(
+                arr[i..=k].iter().max().unwrap() * arr[k + 1..=j].iter().max().unwrap()
+                    + rec(i, k, arr, memo)
+                    + rec(k + 1, j, arr, memo),
+            );
+        }
+        memo[i][j] = ans;
+        ans
+    }
+    let mut memo = vec![vec![-1; arr.len()]; arr.len()];
+    rec(0, arr.len() - 1, &arr, &mut memo)
+}
+
+pub fn mct_from_leaf_values_ii(arr: Vec<i32>) -> i32 {
+    let mut dp = vec![vec![0; arr.len()]; arr.len()];
+    for len in 1..arr.len() {
+        for i in 0..=arr.len() - len - 1 {
+            let j = i + len;
+
+            let mut ans = i32::MAX;
+            for k in i..j {
+                ans = ans.min(
+                    arr[i..=k].iter().max().unwrap() * arr[k + 1..=j].iter().max().unwrap()
+                        + dp[i][k]
+                        + dp[k + 1][j],
+                );
+            }
+            dp[i][j] = ans;
+        }
+    }
+    dp[0][arr.len() - 1]
+}
+
+#[test]
+fn test_mct_from_leaf_value() {
+    let ans = mct_from_leaf_values_i(vec![6, 2, 4]);
+    println!("{ans}"); // 32
+
+    let ans = mct_from_leaf_values_ii(vec![6, 2, 4]);
+    println!("{ans}"); // 32
+}
