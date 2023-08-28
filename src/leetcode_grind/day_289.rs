@@ -123,6 +123,47 @@ pub fn mct_from_leaf_values_ii(arr: Vec<i32>) -> i32 {
     dp[0][arr.len() - 1]
 }
 
+pub fn mct_from_leaf_values_iii(arr: Vec<i32>) -> i32 {
+    let mut arr = arr;
+    let mut res = 0;
+    while arr.len() > 1 {
+        let i = arr
+            .iter()
+            .enumerate()
+            .map(|(i, x)| (*x, i))
+            .min()
+            .unwrap()
+            .1;
+        let (mut l, mut r) = (i32::MAX, i32::MAX);
+        if i > 0 {
+            l = arr[i - 1];
+        }
+        if i < arr.len() - 1 {
+            r = arr[i + 1];
+        }
+        res += l.min(r) * arr[i];
+        arr.remove(i);
+    }
+    res
+}
+
+pub fn mct_from_leaf_values_iv(arr: Vec<i32>) -> i32 {
+    let mut res = 0;
+    let mut stack = vec![];
+    stack.push(i32::MAX);
+    for a in arr {
+        while *stack.last().unwrap() <= a {
+            let mid = stack.pop().unwrap();
+            res += mid * (*stack.last().unwrap()).min(a);
+        }
+        stack.push(a);
+    }
+    while stack.len() > 2 {
+        res += stack.pop().unwrap() * (*stack.last().unwrap());
+    }
+    res
+}
+
 #[test]
 fn test_mct_from_leaf_value() {
     let ans = mct_from_leaf_values_i(vec![6, 2, 4]);
