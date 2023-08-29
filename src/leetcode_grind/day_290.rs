@@ -49,3 +49,26 @@ pub fn best_closing_time_ii(customers: String) -> i32 {
 
     earliest_hour as i32
 }
+
+// https://leetcode.com/problems/find-permutation/
+pub fn find_permutation(s: String) -> Vec<i32> {
+    let mut res = vec![0; s.len() + 1];
+    let mut stack = vec![];
+    let mut j = 0;
+    let s = s.chars().collect::<Vec<_>>();
+    for i in 1..=s.len() {
+        stack.push(i as i32);
+        if s[i - 1] == 'I' {
+            while !stack.is_empty() {
+                res[j] = stack.pop().unwrap();
+                j += 1;
+            }
+        }
+    }
+    stack.push(s.len() as i32 + 1);
+    while !stack.is_empty() {
+        res[j] = stack.pop().unwrap();
+        j += 1;
+    }
+    res
+}
