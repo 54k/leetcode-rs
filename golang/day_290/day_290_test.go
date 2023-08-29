@@ -239,3 +239,55 @@ func twoSumBSTsMorrisTraversal(root1 *TreeNode, root2 *TreeNode, target int) boo
 
 	return false
 }
+
+// https://leetcode.com/problems/remove-nodes-from-linked-list/description/“
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func removeNodes(head *ListNode) *ListNode {
+	stack := []*ListNode{}
+	node := head
+	for node.Next != nil {
+		stack = append(stack, node)
+		node = node.Next
+	}
+
+	max := -(1 << 31)
+	var newHead *ListNode
+
+	for i := len(stack) - 1; i >= 0; i-- {
+		cur := stack[i]
+		if cur.Val >= max {
+			max = cur.Val
+			cur.Next = newHead
+			newHead = cur
+		}
+	}
+
+	return newHead
+}
+
+func removeNodesRec(head *ListNode) *ListNode {
+	var rec func(*ListNode) (*ListNode, int)
+
+	rec = func(ln *ListNode) (*ListNode, int) {
+		if ln == nil {
+			return nil, -(1 << 31)
+		}
+		prev, max := rec(ln.Next)
+		if ln.Val < max {
+			return prev, max
+		} else {
+			ln.Next = prev
+			if ln.Val > max {
+				return ln, ln.Val
+			}
+			return ln, max
+		}
+	}
+
+	res, _ := rec(head)
+	return res
+}
