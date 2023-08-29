@@ -72,3 +72,38 @@ pub fn find_permutation(s: String) -> Vec<i32> {
     }
     res
 }
+
+// https://leetcode.com/problems/using-a-robot-to-print-the-lexicographically-smallest-string/description/
+pub fn robot_with_string(s: String) -> String {
+    use std::collections::HashMap;
+    let mut map = HashMap::new();
+    let s = s.chars().collect::<Vec<_>>();
+
+    for ch in 'a'..='z' {
+        map.insert(ch, -1);
+    }
+    for (i, &ch) in s.iter().enumerate() {
+        map.insert(ch, i as i32);
+    }
+
+    let mut t = vec![];
+    let mut res = vec![];
+    let mut idx = 0;
+
+    for ch in 'a'..='z' {
+        while t.len() > 0 && *t.last().unwrap() <= ch {
+            res.push(t.pop().unwrap());
+        }
+
+        while idx < s.len() && idx as i32 <= map[&ch] {
+            if s[idx] == ch {
+                res.push(s[idx]);
+            } else {
+                t.push(s[idx]);
+            }
+            idx += 1;
+        }
+    }
+
+    res.into_iter().collect()
+}
