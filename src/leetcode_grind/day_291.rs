@@ -48,7 +48,7 @@ pub fn minimum_replacement(nums: Vec<i32>) -> i64 {
 }
 
 // https://leetcode.com/problems/find-permutation/description/
-pub fn find_permutation(s: String) -> Vec<i32> {
+pub fn find_permutation_ii(s: String) -> Vec<i32> {
     fn rev(res: &mut [i32], start: usize, end: usize) {
         for i in 0..(end - start) / 2 {
             res.swap(i + start, end - i - 1);
@@ -69,6 +69,30 @@ pub fn find_permutation(s: String) -> Vec<i32> {
         }
         rev(&mut res, j - 1, i);
         i += 1;
+    }
+    res
+}
+
+pub fn find_permutation_iii(s: String) -> Vec<i32> {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut res = vec![1; s.len() + 1];
+    let mut i = 1;
+
+    while i <= s.len() {
+        res[i] = i as i32 + 1;
+        let j = i;
+        if s[i - 1] == 'D' {
+            while i <= s.len() && s[i - 1] == 'D' {
+                i += 1;
+            }
+            let mut c = i;
+            for k in j - 1..=i - 1 {
+                res[k] = c as i32;
+                c -= 1;
+            }
+        } else {
+            i += 1;
+        }
     }
     res
 }
