@@ -113,6 +113,30 @@ pub fn schedule_course_iterative(courses: Vec<Vec<i32>>) -> i32 {
     count
 }
 
+pub fn schedule_course_queue(courses: Vec<Vec<i32>>) -> i32 {
+    use std::collections::BinaryHeap;
+    let mut heap = BinaryHeap::new();
+    let mut courses = courses;
+    courses.sort_unstable_by_key(|x| x[1]);
+
+    let mut time = 0;
+    let mut count = 0;
+
+    for course in courses {
+        if time + course[0] <= course[1] {
+            time += course[0];
+            heap.push(course);
+            count += 1;
+        } else {
+            if heap.len() > 0 && heap.peek().unwrap()[0] > course[0] {
+                time += course[0] - heap.pop().unwrap()[0];
+                heap.push(course);
+            }
+        }
+    }
+    count
+}
+
 // https://leetcode.com/problems/jump-game-ii/description/
 pub fn jump(nums: Vec<i32>) -> i32 {
     let mut ans = 0;
