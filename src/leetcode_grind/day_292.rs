@@ -87,6 +87,32 @@ pub fn schedule_course_recursive(courses: Vec<Vec<i32>>) -> i32 {
     rec(&courses, 0, 0, &mut memo)
 }
 
+pub fn schedule_course_iterative(courses: Vec<Vec<i32>>) -> i32 {
+    let mut courses = courses;
+    courses.sort_by_key(|x| x[1]);
+    let mut time = 0;
+    let mut count = 0;
+    for i in 0..courses.len() {
+        if time + courses[i][0] <= courses[i][1] {
+            time += courses[i][0];
+            count += 1;
+        } else {
+            let mut max_i = i;
+            for j in 0..i {
+                if courses[j][0] > courses[max_i][0] {
+                    max_i = j;
+                }
+            }
+
+            if courses[max_i][0] > courses[i][0] {
+                time += courses[i][0] - courses[max_i][0];
+            }
+            courses[max_i][0] = -1;
+        }
+    }
+    count
+}
+
 // https://leetcode.com/problems/jump-game-ii/description/
 pub fn jump(nums: Vec<i32>) -> i32 {
     let mut ans = 0;
