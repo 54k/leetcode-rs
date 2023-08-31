@@ -62,8 +62,29 @@ fn test_course_schedule() {
 }
 
 // https://leetcode.com/problems/course-schedule-iii/description/
-pub fn schedule_course(courses: Vec<Vec<i32>>) -> i32 {
-    todo!()
+pub fn schedule_course_recursive(courses: Vec<Vec<i32>>) -> i32 {
+    let mut courses = courses;
+    courses.sort_by_key(|x| x[1]);
+    let mut memo = vec![vec![-1; courses[courses.len() - 1][1] as usize + 1]; courses.len()];
+
+    fn rec(courses: &Vec<Vec<i32>>, i: usize, time: usize, memo: &mut Vec<Vec<i32>>) -> i32 {
+        if i == courses.len() {
+            return 0;
+        }
+        if memo[i][time] != -1 {
+            return memo[i][time];
+        }
+        let mut taken = 0;
+        if time as i32 + courses[i][0] <= courses[i][1] {
+            taken = 1 + rec(courses, i + 1, time + courses[i][0] as usize, memo);
+        }
+        let not_taken = rec(courses, i + 1, time, memo);
+        let ans = taken.max(not_taken);
+        memo[i][time] = ans;
+        ans
+    }
+
+    rec(&courses, 0, 0, &mut memo)
 }
 
 // https://leetcode.com/problems/jump-game-ii/description/
