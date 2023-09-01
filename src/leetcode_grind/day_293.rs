@@ -33,7 +33,7 @@ pub fn count_bits_pop_count_ii(n: i32) -> Vec<i32> {
     ans
 }
 
-pub fn count_bits_dp(n: i32) -> Vec<i32> {
+pub fn count_bits_dp_mst(n: i32) -> Vec<i32> {
     let n = n as usize;
     let mut ans = vec![0; n as usize + 1];
     let mut x = 0;
@@ -60,6 +60,14 @@ pub fn count_bits_dp(n: i32) -> Vec<i32> {
 
 #[test]
 fn count_bits() {
-    let res = count_bits_dp(5);
+    let res = count_bits_dp_mst(5);
     println!("{:?}", res);
+}
+
+pub fn count_bits_dp_lst(n: i32) -> Vec<i32> {
+    let mut ans = vec![];
+    for x in 1..=n as usize {
+        ans[x] = ans[x >> 1] + (x as i32 & 1);
+    }
+    ans
 }
