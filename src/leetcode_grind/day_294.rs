@@ -132,3 +132,19 @@ pub fn word_break_iii(s: String, word_dict: Vec<String>) -> bool {
     }
     dp[s.len() - 1]
 }
+
+pub fn word_break_iv(s: String, word_dict: Vec<String>) -> bool {
+    use std::collections::HashSet;
+    let dict = word_dict.into_iter().collect::<HashSet<_>>();
+    let mut dp = vec![false; s.len() + 1];
+    dp[0] = true;
+    for i in 1..=s.len() {
+        for j in 0..i {
+            if dp[j] && dict.contains(&s[j..i]) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+    dp[s.len()]
+}
