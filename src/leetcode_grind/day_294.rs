@@ -85,3 +85,50 @@ pub fn word_break_i(s: String, word_dict: Vec<String>) -> bool {
     }
     dp[0]
 }
+
+pub fn word_break_ii(s: String, word_dict: Vec<String>) -> bool {
+    use std::collections::HashSet;
+    use std::collections::VecDeque;
+
+    let dict = word_dict.into_iter().collect::<HashSet<_>>();
+    let mut queue = VecDeque::new();
+    queue.push_back(0);
+    let mut seen = vec![false; s.len() + 1];
+
+    while let Some(start) = queue.pop_front() {
+        if start == s.len() {
+            return true;
+        }
+
+        for end in start + 1..=s.len() {
+            if seen[end] {
+                continue;
+            }
+
+            if dict.contains(&s[start..end]) {
+                queue.push_back(end);
+                seen[end] = true;
+            }
+        }
+    }
+
+    false
+}
+
+pub fn word_break_iii(s: String, word_dict: Vec<String>) -> bool {
+    let mut dp = vec![false; s.len()];
+    for end in 0..s.len() {
+        for word in &word_dict {
+            if end < word.len() - 1 {
+                continue;
+            }
+            if end == word.len() - 1 || dp[end - word.len()] {
+                if word == &s[end - word.len() + 1..end + 1].to_string() {
+                    dp[end] = true;
+                    break;
+                }
+            }
+        }
+    }
+    dp[s.len() - 1]
+}
