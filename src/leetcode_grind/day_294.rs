@@ -236,3 +236,37 @@ pub fn depth_sum_inverse_i(nested_list: Vec<NestedInteger>) -> i32 {
     let (sum_of_products, sum_of_elements, max_depth) = get_weighted_sum_triplet(&nested_list, 1);
     (max_depth + 1) * sum_of_elements - sum_of_products
 }
+
+pub fn depth_sum_inverse_ii(nested_list: Vec<NestedInteger>) -> i32 {
+    use std::collections::VecDeque;
+    let mut queue = VecDeque::new();
+    for l in nested_list {
+        queue.push_back(l);
+    }
+
+    let mut depth = 1;
+    let mut max_depth = 0;
+    let mut total_sum = 0;
+    let mut total_product_sum = 0;
+
+    while queue.len() > 0 {
+        max_depth = max_depth.max(depth);
+        for _ in 0..queue.len() {
+            let el = queue.pop_front().unwrap();
+            match el {
+                NestedInteger::Int(num) => {
+                    total_sum += num;
+                    total_product_sum += num * depth;
+                }
+                NestedInteger::List(list) => {
+                    for l in list {
+                        queue.push_back(l);
+                    }
+                }
+            }
+        }
+        depth += 1;
+    }
+
+    (max_depth + 1) * total_sum - total_product_sum
+}
