@@ -1,7 +1,7 @@
 // https://leetcode.com/problems/extra-characters-in-a-string/description/
 pub fn min_extra_char(s: String, dictionary: Vec<String>) -> i32 {
     use std::collections::HashSet;
-    let mut dict = dictionary.into_iter().collect::<HashSet<_>>();
+    let dict = dictionary.into_iter().collect::<HashSet<_>>();
     let mut dp = vec![0; s.len() + 1];
 
     for start in (0..s.len()).rev() {
@@ -12,11 +12,20 @@ pub fn min_extra_char(s: String, dictionary: Vec<String>) -> i32 {
             }
         }
     }
-
     dp[0]
 }
 
 // https://leetcode.com/problems/word-break/
 pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
-    todo!()
+    let mut dp = vec![false; s.len() + 1];
+    dp[s.len()] = true;
+
+    for i in (0..s.len()).rev() {
+        for w in &word_dict {
+            if s[i..].starts_with(w) {
+                dp[i] |= dp[i + w.len()];
+            }
+        }
+    }
+    dp[0]
 }
