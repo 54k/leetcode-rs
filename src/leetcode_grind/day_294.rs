@@ -148,3 +148,91 @@ pub fn word_break_iv(s: String, word_dict: Vec<String>) -> bool {
     }
     dp[s.len()]
 }
+
+// https://leetcode.com/problems/nested-list-weight-sum/
+#[derive(Debug, PartialEq, Eq)]
+pub enum NestedInteger {
+    Int(i32),
+    List(Vec<NestedInteger>),
+}
+
+pub fn depth_sum_i(nested_list: Vec<NestedInteger>) -> i32 {
+    fn dfs(nested_list: &Vec<NestedInteger>, depth: i32) -> i32 {
+        let mut total = 0;
+        for nested in nested_list {
+            match nested {
+                NestedInteger::Int(num) => {
+                    total += num * depth;
+                }
+                NestedInteger::List(next) => {
+                    total += dfs(&next, depth + 1);
+                }
+            }
+        }
+        total
+    }
+    dfs(&nested_list, 1)
+}
+
+pub fn depth_sum_ii(nested_list: Vec<NestedInteger>) -> i32 {
+    use std::collections::VecDeque;
+    let mut queue = VecDeque::new();
+    for list in nested_list {
+        queue.push_back(list);
+    }
+
+    let mut total = 0;
+    let mut depth = 1;
+
+    while queue.len() > 0 {
+        for _ in 0..queue.len() {
+            let el = queue.pop_front().unwrap();
+            match el {
+                NestedInteger::Int(num) => {
+                    total += num * depth;
+                }
+                NestedInteger::List(next) => {
+                    for list in next {
+                        queue.push_back(list);
+                    }
+                }
+            }
+        }
+        depth += 1;
+    }
+    total
+}
+
+// https://leetcode.com/problems/nested-list-weight-sum-ii/
+pub fn depth_sum_inverse_i(nested_list: Vec<NestedInteger>) -> i32 {
+    fn get_weighted_sum_triplet(list: &Vec<NestedInteger>, depth: i32) -> (i32, i32, i32) {
+        let mut sum_of_products = 0;
+        let mut sum_of_elements = 0;
+        let mut max_depth = 0;
+
+        for nested in list {
+            match nested {
+                NestedInteger::Int(num) => {
+                    sum_of_products += num * depth;
+                    sum_of_elements += num;
+                    max_depth = max_depth.max(depth);
+                }
+                NestedInteger::List(next) => {
+                    if next.is_empty() {
+                        max_depth = max_depth.max(depth);
+                        continue;
+                    }
+                    let triplet = get_weighted_sum_triplet(&next, depth + 1);
+                    sum_of_products += triplet.0;
+                    sum_of_elements += triplet.1;
+                    max_depth = max_depth.max(triplet.2);
+                }
+            }
+        }
+
+        (sum_of_products, sum_of_elements, max_depth)
+    }
+
+    let (sum_of_products, sum_of_elements, max_depth) = get_weighted_sum_triplet(&nested_list, 1);
+    (max_depth + 1) * sum_of_elements - sum_of_products
+}
