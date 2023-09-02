@@ -1,5 +1,6 @@
 package day294
 
+// https://leetcode.com/problems/extra-characters-in-a-string/
 type TrieNode struct {
 	children map[byte]*TrieNode
 	isWord   bool
@@ -67,4 +68,53 @@ func minExtraChar(s string, dictionary []string) int {
 	}
 
 	return dp(0)
+}
+
+// https://leetcode.com/problems/word-break/description/
+type TrieNode2 struct {
+	isWord   bool
+	children map[rune]*TrieNode2
+}
+
+func newTrieNode2() *TrieNode2 {
+	return &TrieNode2{false, map[rune]*TrieNode2{}}
+}
+
+func buildTrie2(wordDict []string) *TrieNode2 {
+	root := newTrieNode2()
+	for _, w := range wordDict {
+		node := root
+		for _, ch := range w {
+			if _, ok := node.children[ch]; !ok {
+				node.children[ch] = newTrieNode2()
+			}
+			node = node.children[ch]
+		}
+		node.isWord = true
+	}
+	return root
+}
+
+func wordBreak(s string, wordDict []string) bool {
+	root := buildTrie2(wordDict)
+	dp := make([]bool, len(s))
+
+	for i := 0; i < len(s); i++ {
+		if i == 0 || dp[i-1] {
+			curr := root
+			for j := i; j < len(s); j++ {
+				ch := rune(s[j])
+				if _, ok := curr.children[ch]; !ok {
+					break
+				}
+
+				curr = curr.children[ch]
+				if curr.isWord {
+					dp[j] = true
+				}
+			}
+		}
+	}
+
+	return dp[len(s)-1]
 }
