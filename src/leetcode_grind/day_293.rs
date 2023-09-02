@@ -71,3 +71,11 @@ pub fn count_bits_dp_lst(n: i32) -> Vec<i32> {
     }
     ans
 }
+
+pub fn count_bits_last_set_bit(n: i32) -> Vec<i32> {
+    let mut ans = vec![0; n as usize + 1];
+    for x in 1..=n as usize {
+        ans[x] = ans[x & (x - 1)] + 1;
+    }
+    ans
+}
