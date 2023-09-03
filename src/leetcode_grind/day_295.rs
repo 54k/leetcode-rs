@@ -151,3 +151,35 @@ pub fn array_nesting_iii(nums: Vec<i32>) -> i32 {
     }
     res
 }
+
+// https://leetcode.com/problems/exclusive-time-of-functions/description/
+pub fn exclusive_time(n: i32, logs: Vec<String>) -> Vec<i32> {
+    let mut stack = vec![];
+    let mut ans = vec![0; n as usize];
+
+    for log in logs {
+        let split = log.split(":").collect::<Vec<_>>();
+        let (id, tpe, time) = (
+            split[0].parse::<usize>().unwrap(),
+            split[1],
+            split[2].parse::<i32>().unwrap(),
+        );
+
+        if tpe == "start" {
+            if stack.len() > 0 {
+                let top: &(usize, i32) = stack.last().unwrap();
+                ans[top.0] += time - top.1;
+            }
+            stack.push((id, time));
+        } else {
+            let top = stack.pop().unwrap();
+            ans[top.0] += time - top.1 + 1;
+            if stack.len() > 0 {
+                let top: (usize, i32) = stack.pop().unwrap();
+                stack.push((top.0, time + 1));
+            }
+        }
+    }
+
+    ans
+}
