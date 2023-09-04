@@ -1,5 +1,7 @@
 extern crate core;
 
+pub mod algorithms_in_practice;
+pub mod codeforces;
 pub mod ctci;
 pub mod cube_js;
 pub mod dynamic_programming;
@@ -9,4 +11,3 @@ pub mod linked_lists;
 pub mod picodata;
 pub mod stepik;
 pub mod yandex;
-pub mod codeforces;
