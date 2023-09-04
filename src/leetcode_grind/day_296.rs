@@ -148,3 +148,94 @@ pub fn sort_array_merge_sort_ii(mut nums: Vec<i32>) -> Vec<i32> {
     merge_sort(&mut nums);
     nums
 }
+
+pub fn sort_array_counting_sort(mut nums: Vec<i32>) -> Vec<i32> {
+    fn count_sort(nums: &mut Vec<i32>) {
+        use std::collections::HashMap;
+        let mut counts = HashMap::new();
+        let mut min_value = nums[0];
+        let mut max_value = nums[0];
+
+        for &n in nums.iter() {
+            *counts.entry(n).or_insert(0) += 1;
+            min_value = min_value.min(n);
+            max_value = max_value.max(n);
+        }
+
+        let mut index = 0;
+        for val in min_value..=max_value {
+            while *counts.get(&val).unwrap_or(&0) > 0 {
+                nums[index] = val;
+                index += 1;
+                *counts.entry(val).or_insert(0) -= 1;
+            }
+        }
+    }
+
+    count_sort(&mut nums);
+    nums
+}
+
+pub fn sort_array_radix_sort(mut nums: Vec<i32>) -> Vec<i32> {
+    fn radix_sort(nums: &mut Vec<i32>) {
+        fn bucket_sort(nums: &mut Vec<i32>, place_value: i32) {
+            let mut buckets = vec![vec![]; 10];
+
+            for &val in nums.iter() {
+                let mut digit = val.abs() / place_value;
+                digit = digit % 10;
+                buckets[digit as usize].push(val);
+            }
+
+            let mut index = 0;
+            for digit in 0..10 {
+                for &val in buckets[digit].iter() {
+                    nums[index] = val;
+                    index += 1;
+                }
+            }
+        }
+
+        let mut max_element = nums[0];
+        for val in nums.iter() {
+            max_element = val.abs().max(max_element);
+        }
+
+        let mut max_digits = 0;
+        while max_element > 0 {
+            max_digits += 1;
+            max_element /= 10;
+        }
+
+        let mut place_value = 1;
+        for _ in 0..max_digits {
+            bucket_sort(nums, place_value);
+            place_value *= 10;
+        }
+
+        let mut negatives = vec![];
+        let mut positives = vec![];
+
+        for &val in nums.iter() {
+            if val < 0 {
+                negatives.push(val);
+            } else {
+                positives.push(val);
+            }
+        }
+        negatives.reverse();
+
+        let mut index = 0;
+        for val in negatives {
+            nums[index] = val;
+            index += 1;
+        }
+        for val in positives {
+            nums[index] = val;
+            index += 1;
+        }
+    }
+
+    radix_sort(&mut nums);
+    nums
+}
