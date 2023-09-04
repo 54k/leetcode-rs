@@ -239,3 +239,39 @@ pub fn sort_array_radix_sort(mut nums: Vec<i32>) -> Vec<i32> {
     radix_sort(&mut nums);
     nums
 }
+
+pub fn sort_array_heap_sort(mut nums: Vec<i32>) -> Vec<i32> {
+    fn heap_sort(nums: &mut Vec<i32>) {
+        fn heapify(nums: &mut Vec<i32>, n: usize, i: usize) {
+            let mut largest = i;
+            let left = 2 * i + 1;
+            let right = 2 * i + 2;
+
+            if left < n && nums[left] > nums[largest] {
+                largest = left;
+            }
+
+            if right < n && nums[right] > nums[largest] {
+                largest = right;
+            }
+
+            if largest != i {
+                nums.swap(i, largest);
+                heapify(nums, n, largest);
+            }
+        }
+
+        let n = nums.len();
+        for i in (0..n / 2).rev() {
+            heapify(nums, n, i);
+        }
+
+        for i in (0..n).rev() {
+            nums.swap(0, i);
+            heapify(nums, i, 0);
+        }
+    }
+
+    heap_sort(&mut nums);
+    nums
+}
