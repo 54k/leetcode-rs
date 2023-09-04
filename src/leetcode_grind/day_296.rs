@@ -276,6 +276,7 @@ pub fn sort_array_heap_sort(mut nums: Vec<i32>) -> Vec<i32> {
     nums
 }
 
+// https://leetcode.com/problems/ternary-expression-parser/description/
 pub fn parse_ternary(mut expression: String) -> String {
     let is_atom = |win: &str| -> bool {
         let win = &win.chars().collect::<Vec<_>>()[..];
