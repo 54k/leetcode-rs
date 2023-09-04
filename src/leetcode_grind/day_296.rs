@@ -275,3 +275,37 @@ pub fn sort_array_heap_sort(mut nums: Vec<i32>) -> Vec<i32> {
     heap_sort(&mut nums);
     nums
 }
+
+pub fn parse_ternary(mut expression: String) -> String {
+    let is_atom = |win: &str| -> bool {
+        let win = &win.chars().collect::<Vec<_>>()[..];
+        ['F', 'T'].contains(&win[0])
+            && '?' == win[1]
+            && (('0'..='9').contains(&win[2]) || ['F', 'T'].contains(&win[2]))
+            && ':' == win[3]
+            && (('0'..='9').contains(&win[4]) || ['F', 'T'].contains(&win[4]))
+    };
+
+    let solve_atom = |atom: &str| -> String {
+        let atom = &atom.chars().collect::<Vec<_>>()[..];
+        if atom[0] == 'T' {
+            atom[2..3].iter().copied().collect::<String>()
+        } else {
+            atom[4..5].iter().copied().collect::<String>()
+        }
+    };
+
+    while expression.len() != 1 {
+        let mut j = expression.len() - 1;
+        while !is_atom(&expression[j - 4..=j]) {
+            j -= 1;
+        }
+
+        let first = expression[..j - 4].to_string();
+        let second = solve_atom(&expression[j - 4..=j]);
+        let third = &expression[j + 1..expression.len()];
+        expression = first + second.as_str() + third;
+    }
+
+    expression
+}
