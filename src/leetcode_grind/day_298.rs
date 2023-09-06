@@ -1,5 +1,4 @@
 // https://leetcode.com/problems/split-linked-list-in-parts/description/
-
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode {
     pub val: i32,
