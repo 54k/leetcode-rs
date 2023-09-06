@@ -158,3 +158,95 @@ func sortArrayCountingSort(nums []int) []int {
 func TestSort(t *testing.T) {
 	fmt.Println(sortArrayCountingSort([]int{-1, 2, -8, -10}))
 }
+
+func longestCommonSubsequenceTopDown(text1 string, text2 string) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	memo := make([][]int, len(text1)+1)
+	for i := 0; i < len(text1); i++ {
+		memo[i] = make([]int, len(text2)+1)
+		for j := 0; j < len(text2); j++ {
+			memo[i][j] = -1
+		}
+	}
+
+	var dp func(int, int) int
+	dp = func(i, j int) int {
+		if i == len(text1) || j == len(text2) {
+			return 0
+		}
+		if memo[i][j] != -1 {
+			return memo[i][j]
+		}
+		ans := 0
+		if text1[i] == text2[j] {
+			ans = 1 + dp(i+1, j+1)
+		} else {
+			ans = max(ans, max(dp(i+1, j), dp(i, j+1)))
+		}
+		memo[i][j] = ans
+		return ans
+	}
+
+	return dp(0, 0)
+}
+
+func longestCommonSubsequenceBottomUp(text1 string, text2 string) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	dp := make([][]int, len(text1)+1)
+	for i := 0; i < len(dp); i++ {
+		dp[i] = make([]int, len(text2)+2)
+	}
+
+	for i := 1; i <= len(text1); i++ {
+		for j := 1; j <= len(text2); j++ {
+			k, x := i-1, j-1
+			if text1[k] == text2[x] {
+				dp[i][j] = 1 + dp[i-1][j-1]
+			} else {
+				dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+			}
+		}
+	}
+
+	return dp[len(text1)][len(text2)]
+}
+
+func longestCommonSubsequenceBottomUpOptimized(text1 string, text2 string) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	if len(text1) > len(text2) {
+		text1, text2 = text2, text1
+	}
+
+	prev := make([]int, len(text1)+1)
+	for col := len(text2) - 1; col >= 0; col-- {
+		current := make([]int, len(text1)+1)
+		for row := len(text1) - 1; row >= 0; row-- {
+			if text1[row] == text2[col] {
+				current[row] = 1 + prev[row+1]
+			} else {
+				current[row] = max(prev[row], current[row+1])
+			}
+		}
+		prev = current
+	}
+
+	return prev[0]
+}
