@@ -2,6 +2,7 @@ package day298
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 )
 
@@ -249,4 +250,57 @@ func longestCommonSubsequenceBottomUpOptimized(text1 string, text2 string) int {
 	}
 
 	return prev[0]
+}
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func minimumOperations(root *TreeNode) int {
+	swaps := 0
+	lvl := []*TreeNode{root}
+	for len(lvl) > 0 {
+		sorted := []int{}
+		idxMap := map[int]int{}
+		visited := []bool{}
+
+		for i := 0; i < len(lvl); i++ {
+			idxMap[lvl[i].Val] = i
+			sorted = append(sorted, lvl[i].Val)
+			visited = append(visited, false)
+		}
+		sort.Ints(sorted)
+
+		for i := 0; i < len(sorted); i++ {
+			if visited[i] || idxMap[sorted[i]] == i {
+				continue
+			}
+
+			cycle_size := 0
+			j := i
+			for !visited[j] {
+				visited[j] = true
+				cycle_size++
+				j = idxMap[sorted[j]]
+			}
+			if cycle_size > 0 {
+				swaps += (cycle_size - 1)
+			}
+		}
+
+		next := []*TreeNode{}
+		for _, e := range lvl {
+			if e.Left != nil {
+				next = append(next, e.Left)
+			}
+			if e.Right != nil {
+				next = append(next, e.Right)
+			}
+		}
+		lvl = next
+	}
+
+	return swaps
 }
