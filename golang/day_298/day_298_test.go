@@ -160,6 +160,7 @@ func TestSort(t *testing.T) {
 	fmt.Println(sortArrayCountingSort([]int{-1, 2, -8, -10}))
 }
 
+// https://leetcode.com/problems/sort-an-array/
 func longestCommonSubsequenceTopDown(text1 string, text2 string) int {
 	max := func(a, b int) int {
 		if a > b {
@@ -252,6 +253,7 @@ func longestCommonSubsequenceBottomUpOptimized(text1 string, text2 string) int {
 	return prev[0]
 }
 
+// https://leetcode.com/problems/sort-an-array/
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
