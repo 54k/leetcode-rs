@@ -13,7 +13,7 @@ pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
 }
 
 // https://leetcode.com/problems/ternary-expression-parser/description/
-pub fn parse_ternary(expression: String) -> String {
+pub fn parse_ternary_i(expression: String) -> String {
     let mut stack = vec![];
     let expression = expression.chars().collect::<Vec<_>>();
     let mut i = expression.len() as i32 - 1;
@@ -38,8 +38,31 @@ pub fn parse_ternary(expression: String) -> String {
     stack.pop().unwrap().to_string()
 }
 
+pub fn parse_ternary_ii(expression: String) -> String {
+    let mut stack = vec![];
+    let expression: Vec<char> = expression.chars().collect::<Vec<_>>();
+
+    for i in (0..expression.len()).rev() {
+        if stack.len() > 0 && stack[stack.len() - 1] == '?' {
+            stack.pop();
+            let on_true = stack.pop().unwrap();
+            stack.pop();
+            let on_false = stack.pop().unwrap();
+            stack.push(if expression[i] == 'T' {
+                on_true
+            } else {
+                on_false
+            });
+        } else {
+            stack.push(expression[i]);
+        }
+    }
+
+    stack.pop().unwrap().to_string()
+}
+
 #[test]
 fn test_parse_ternary() {
-    let res = parse_ternary("T?2:3".to_string());
+    let res = parse_ternary_ii("T?2:3".to_string());
     println!("{res}");
 }
