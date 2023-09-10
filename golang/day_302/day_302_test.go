@@ -50,3 +50,27 @@ func buildTreePostorder(inorder []int, postorder []int) *TreeNode {
 	}
 	return construct(0, len(inorder)-1)
 }
+
+// https://leetcode.com/problems/ternary-expression-parser/description/
+func parseTernary(expression string) string {
+	i := 0
+	for i < len(expression) {
+		if expression[i] != 'T' && expression[i] != 'F' || i == len(expression)-1 || expression[i+1] == ':' {
+			break
+		}
+		if expression[i] == 'T' {
+			i += 2
+		} else {
+			count := 1
+			i += 2
+			for ; count != 0; i++ {
+				if expression[i] == ':' {
+					count--
+				} else if expression[i] == '?' {
+					count++
+				}
+			}
+		}
+	}
+	return expression[i : i+1]
+}
