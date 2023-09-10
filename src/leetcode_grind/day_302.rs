@@ -142,6 +142,39 @@ pub fn parse_ternary_recursion(expression: String) -> String {
         .collect()
 }
 
+pub fn parse_ternary_iterative(expression: String) -> String {
+    let mut i = 0;
+    let expression = expression.chars().collect::<Vec<_>>();
+    loop {
+        if expression[i] != 'T' && expression[i] != 'F' {
+            return expression[i].to_string();
+        }
+
+        if i == expression.len() - 1 {
+            return expression[i].to_string();
+        }
+
+        if expression[i + 1] == ':' {
+            return expression[i].to_string();
+        }
+
+        if expression[i] == 'T' {
+            i += 2;
+        } else {
+            let mut count = 1;
+            i += 2;
+            while count != 0 {
+                if expression[i] == ':' {
+                    count -= 1;
+                } else if expression[i] == '?' {
+                    count += 1;
+                }
+                i += 1;
+            }
+        }
+    }
+}
+
 #[test]
 fn test_ternary_parser() {
     let res = parse_ternary_tree("T?2:3".to_string());
