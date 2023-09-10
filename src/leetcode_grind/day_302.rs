@@ -56,7 +56,7 @@ pub fn count_orders_bottom_up(n: i32) -> i32 {
 }
 
 // https://leetcode.com/problems/ternary-expression-parser/description/
-pub fn parse_ternary(expression: String) -> String {
+pub fn parse_ternary_tree(expression: String) -> String {
     use std::{cell::RefCell, rc::Rc};
     struct TreeNode {
         val: char,
@@ -107,8 +107,43 @@ pub fn parse_ternary(expression: String) -> String {
     root.unwrap().borrow().val.to_string()
 }
 
+pub fn parse_ternary_recursion(expression: String) -> String {
+    let expression = expression.chars().collect::<Vec<_>>();
+    fn solve(expression: &Vec<char>, left: usize, right: usize) -> Vec<char> {
+        if left == right {
+            return expression[left..left + 1].iter().copied().collect();
+        }
+
+        let mut question_mark_index = left;
+        while expression[question_mark_index] != '?' {
+            question_mark_index += 1;
+        }
+
+        let mut ahead_colon_index = question_mark_index + 1;
+        let mut count = 1;
+        while count != 0 {
+            if expression[ahead_colon_index] == '?' {
+                count += 1;
+            } else if expression[ahead_colon_index] == ':' {
+                count -= 1;
+            }
+            ahead_colon_index += 1;
+        }
+
+        if expression[left] == 'T' {
+            solve(expression, question_mark_index + 1, ahead_colon_index - 2)
+        } else {
+            solve(expression, ahead_colon_index, right)
+        }
+    }
+
+    solve(&expression, 0, expression.len() - 1)
+        .into_iter()
+        .collect()
+}
+
 #[test]
 fn test_ternary_parser() {
-    let res = parse_ternary("T?2:3".to_string());
+    let res = parse_ternary_tree("T?2:3".to_string());
     println!("{res}");
 }
