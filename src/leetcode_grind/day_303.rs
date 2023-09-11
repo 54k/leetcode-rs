@@ -87,3 +87,39 @@ fn test_max_profit() {
     let res = max_profit_ii(vec![2, 5], 4);
     println!("{res}");
 }
+
+// https://leetcode.com/problems/split-array-largest-sum/description/
+pub fn split_array(nums: Vec<i32>, k: i32) -> i32 {
+    let mut memo = vec![vec![0; 51]; 1001];
+    let n = nums.len();
+    let mut prefix_sum = vec![0; n + 1];
+    for i in 0..n {
+        prefix_sum[i + 1] += prefix_sum[i] + nums[i];
+    }
+
+    for subarray_count in 1..=k as usize {
+        for curr_index in 0..n {
+            if subarray_count == 1 {
+                memo[curr_index][subarray_count] = prefix_sum[n] - prefix_sum[curr_index];
+                continue;
+            }
+
+            let mut minimum_largest_split_sum = i32::MAX;
+            for i in curr_index..=n - subarray_count {
+                let first_split_sum = prefix_sum[i + 1] - prefix_sum[curr_index];
+
+                let largest_split_sum = first_split_sum.max(memo[i + 1][subarray_count - 1]);
+
+                minimum_largest_split_sum = minimum_largest_split_sum.min(largest_split_sum);
+
+                if first_split_sum >= minimum_largest_split_sum {
+                    break;
+                }
+            }
+
+            memo[curr_index][subarray_count] = minimum_largest_split_sum;
+        }
+    }
+
+    memo[0][k as usize]
+}

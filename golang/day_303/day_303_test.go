@@ -1,5 +1,10 @@
 package day303
 
+import (
+	"fmt"
+	"testing"
+)
+
 // https://leetcode.com/problems/group-the-people-given-the-group-size-they-belong-to/submissions
 func groupThePeople(groupSizes []int) [][]int {
 	ans := [][]int{}
@@ -74,6 +79,11 @@ func splitArray(nums []int, k int) int {
 	}
 
 	return getMinimumLargestSplitSum(0, k)
+}
+
+func TestGetMininumLargestSplitSum(t *testing.T) {
+	res := splitArray([]int{7, 2, 5, 10, 8}, 2)
+	fmt.Println(res)
 }
 
 func splitArrayBinarySearch(nums []int, k int) int {
