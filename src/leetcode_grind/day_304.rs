@@ -164,3 +164,36 @@ fn test_min_dels() {
     ]);
     println!("{res}"); // 11
 }
+
+// https://leetcode.com/problems/minimum-deletions-to-make-array-beautiful/description/
+pub fn min_deletion_i(nums: Vec<i32>) -> i32 {
+    let mut stack = vec![];
+    for &n in &nums {
+        while stack.len() > 0 && (stack.len() % 2 == 1 && stack[stack.len() - 1] == n) {
+            stack.pop();
+        }
+        stack.push(n);
+    }
+    if stack.len() % 2 == 1 {
+        stack.pop();
+    }
+    nums.len() as i32 - stack.len() as i32
+}
+
+pub fn min_deletion_ii(nums: Vec<i32>) -> i32 {
+    let n = nums.len();
+    let mut dels = 0;
+    let mut i = 0;
+    while i < n - 1 {
+        if nums[i] == nums[i + 1] {
+            dels += 1;
+            i += 1;
+        } else {
+            i += 2;
+        }
+    }
+    if (n - dels) % 2 == 1 {
+        dels += 1;
+    }
+    dels as i32
+}
