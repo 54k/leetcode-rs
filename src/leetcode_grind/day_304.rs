@@ -97,3 +97,70 @@ pub fn equal_frequency(word: String) -> bool {
     }
     all_eq
 }
+
+// https://leetcode.com/problems/removing-minimum-and-maximum-from-array/description/
+pub fn minimum_deletions_i(nums: Vec<i32>) -> i32 {
+    let mut min_idx = 0;
+    let mut max_idx = 0;
+
+    for i in 0..nums.len() {
+        if nums[i] < nums[min_idx] {
+            min_idx = i;
+        }
+        if nums[i] > nums[max_idx] {
+            max_idx = i;
+        }
+    }
+
+    if min_idx > max_idx {
+        std::mem::swap(&mut min_idx, &mut max_idx);
+    }
+
+    let mut ans = 0;
+
+    let min_left = min_idx as i32 + 1;
+    let mut min_right = nums.len() as i32 - min_idx as i32;
+
+    let mut max_left = max_idx as i32 + 1;
+    let max_right = nums.len() as i32 - max_idx as i32;
+
+    ans += (min_left).min(max_right);
+
+    if ans == min_left {
+        max_left -= ans;
+        ans += (max_left).min(max_right);
+    } else {
+        min_right -= ans;
+        ans += (min_left).min(min_right);
+    }
+
+    ans
+}
+
+pub fn minimum_deletions_ii(nums: Vec<i32>) -> i32 {
+    let mut idx_max = 0;
+    let mut idx_min = 0;
+    for i in 0..nums.len() {
+        if nums[i] < nums[idx_max] {
+            idx_min = i;
+        }
+        if nums[i] > nums[idx_max] {
+            idx_max = i;
+        }
+    }
+
+    let front_deletions = (idx_min + 1).max(idx_max + 1);
+    let back_deletions = (nums.len() - idx_min).max(nums.len() - idx_max);
+    let both_sides_deletions =
+        (idx_min + 1).min(idx_max + 1) + (nums.len() - idx_min).min(nums.len() - idx_max);
+
+    both_sides_deletions.min(front_deletions.min(back_deletions)) as i32
+}
+
+#[test]
+fn test_min_dels() {
+    let res = minimum_deletions_i(vec![
+        -1, -53, 93, -42, 37, 94, 97, 82, 46, 42, -99, 56, -76, -66, -67, -13, 10, 66, 85, -28,
+    ]);
+    println!("{res}"); // 11
+}
