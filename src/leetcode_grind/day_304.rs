@@ -65,3 +65,35 @@ pub fn min_deletions_iii(s: String) -> i32 {
     }
     deletions_count
 }
+
+// https://leetcode.com/problems/remove-letter-to-equalize-frequency/description/
+pub fn equal_frequency(word: String) -> bool {
+    let word = word.chars().collect::<Vec<_>>();
+    let mut all_eq = true;
+    for i in 0..word.len() {
+        all_eq = true;
+        let mut freq = vec![0; 26];
+        for j in 0..word.len() {
+            if i == j {
+                continue;
+            }
+            freq[word[j] as usize - 'a' as usize] += 1;
+        }
+
+        let mut prev = -1;
+        for k in 0..26 {
+            if freq[k] == 0 {
+                continue;
+            }
+            if prev == -1 {
+                prev = freq[k];
+            } else if prev != freq[k] {
+                all_eq = false;
+            }
+        }
+        if all_eq {
+            return true;
+        }
+    }
+    all_eq
+}
