@@ -1,5 +1,10 @@
 package day305
 
+import (
+	"fmt"
+	"testing"
+)
+
 // https://leetcode.com/problems/candy/description/
 func candyTwoPasses(ratings []int) int {
 	candies := make([]int, len(ratings))
@@ -74,4 +79,9 @@ func candySinglePassConstantSpace(ratings []int) int {
 
 	candies += count(up) + count(down) + max(up, down) + 1
 	return candies
+}
+
+func TestCandy(t *testing.T) {
+	res := candySinglePassConstantSpace([]int{1, 2, 3, 4, 5, 3, 2, 1, 2, 6, 5, 4, 3, 3, 2, 1, 1, 3, 3, 3, 4, 2})
+	fmt.Println(res)
 }

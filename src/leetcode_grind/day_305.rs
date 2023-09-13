@@ -61,3 +61,44 @@ pub fn candy_iii(ratings: Vec<i32>) -> i32 {
     }
     sum
 }
+
+pub fn candy_iv(ratings: Vec<i32>) -> i32 {
+    fn count(i: i32) -> i32 {
+        (i * (i + 1)) / 2
+    }
+
+    let mut up = 0;
+    let mut down = 0;
+    let mut candies = 0;
+    let mut prev_slope = 0;
+
+    for i in 1..ratings.len() {
+        let new_slope = if ratings[i] > ratings[i - 1] {
+            1
+        } else if ratings[i] < ratings[i - 1] {
+            -1
+        } else {
+            0
+        }; // slope up, down or valley
+
+        if prev_slope > 0 && new_slope == 0 || prev_slope < 0 && new_slope >= 0 {
+            candies += count(up) + count(down) + up.max(down);
+            up = 0;
+            down = 0;
+        }
+
+        if new_slope > 0 {
+            up += 1;
+        } else if new_slope < 0 {
+            down += 1;
+        } else {
+            candies += 1;
+        }
+
+        prev_slope = new_slope;
+    }
+
+    candies += count(up) + count(down) + up.max(down) + 1;
+
+    candies
+}
