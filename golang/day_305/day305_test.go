@@ -1,7 +1,7 @@
 package day305
 
 // https://leetcode.com/problems/candy/description/
-func candy(ratings []int) int {
+func candyTwoPasses(ratings []int) int {
 	candies := make([]int, len(ratings))
 	for i := 0; i < len(candies); i++ {
 		candies[i] = 1
@@ -26,4 +26,52 @@ func candy(ratings []int) int {
 		sum += candies[i]
 	}
 	return sum
+}
+
+func candySinglePassConstantSpace(ratings []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	count := func(n int) int {
+		return (n * (n + 1)) / 2
+	}
+
+	if len(ratings) <= 1 {
+		return len(ratings)
+	}
+
+	candies := 0
+	up := 0
+	down := 0
+	oldSlope := 0
+
+	for i := 1; i < len(ratings); i++ {
+		newSlope := 0
+		if ratings[i] > ratings[i-1] {
+			newSlope++
+		} else if ratings[i] < ratings[i-1] {
+			newSlope--
+		}
+
+		if oldSlope > 0 && newSlope == 0 || oldSlope < 0 && newSlope >= 0 {
+			candies += count(up) + count(down) + max(up, down)
+			up, down = 0, 0
+		}
+
+		if newSlope > 0 {
+			up++
+		} else if newSlope < 0 {
+			down++
+		} else {
+			candies++
+		}
+
+		oldSlope = newSlope
+	}
+
+	candies += count(up) + count(down) + max(up, down) + 1
+	return candies
 }
