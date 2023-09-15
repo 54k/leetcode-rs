@@ -115,3 +115,27 @@ func minCostConnectPointsPrimOptimized(points [][]int) int {
 	}
 	return cost
 }
+
+// https://leetcode.com/problems/sparse-matrix-multiplication/description/
+func multiply(mat1 [][]int, mat2 [][]int) [][]int {
+	n := len(mat1)
+	k := len(mat1[0])
+	m := len(mat2[0])
+
+	ans := make([][]int, n)
+	for i := 0; i < n; i++ {
+		ans[i] = make([]int, m)
+	}
+
+	for rowIndex := 0; rowIndex < n; rowIndex++ {
+		for elementIndex := 0; elementIndex < k; elementIndex++ {
+			if mat1[rowIndex][elementIndex] != 0 {
+				for colIndex := 0; colIndex < m; colIndex++ {
+					ans[rowIndex][colIndex] += mat1[rowIndex][elementIndex] * mat2[elementIndex][colIndex]
+				}
+			}
+		}
+	}
+
+	return ans
+}
