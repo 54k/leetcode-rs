@@ -164,3 +164,44 @@ pub fn multiply_ii(mat1: Vec<Vec<i32>>, mat2: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     }
     res
 }
+
+pub fn multiply_iii(mat1: Vec<Vec<i32>>, mat2: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    fn compress_matrix_fun(mat: Vec<Vec<i32>>) -> Vec<Vec<(i32, usize)>> {
+        let rows = mat.len();
+        let cols = mat[0].len();
+        let mut compressed_matrix = vec![];
+
+        for r in 0..rows {
+            let mut cur_row = vec![];
+            for c in 0..cols {
+                if mat[r][c] != 0 {
+                    cur_row.push((mat[r][c], c));
+                }
+            }
+            compressed_matrix.push(cur_row);
+        }
+        compressed_matrix
+    }
+
+    let m = mat1.len();
+    let n = mat2[0].len();
+
+    let a = compress_matrix_fun(mat1);
+    let b = compress_matrix_fun(mat2);
+    let mut res = vec![vec![0; n]; m];
+
+    for mat1_row in 0..m {
+        for mat1_elem in &a[mat1_row] {
+            let elem1 = mat1_elem.0;
+            let mat1_col = mat1_elem.1;
+
+            for mat2_elem in &b[mat1_col] {
+                let elem2 = mat2_elem.0;
+                let mat2_col = mat2_elem.1;
+                res[mat1_row][mat2_col] += elem1 * elem2;
+            }
+        }
+    }
+
+    res
+}
