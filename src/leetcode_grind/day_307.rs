@@ -129,3 +129,20 @@ pub fn min_cost_connect_points_iii(points: Vec<Vec<i32>>) -> i32 {
 
     mst_cost
 }
+
+// https://leetcode.com/problems/sparse-matrix-multiplication/
+pub fn multiply(mat1: Vec<Vec<i32>>, mat2: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    let m = mat1.len();
+    let n = mat2[0].len();
+    let mut result = vec![vec![0; n]; m];
+
+    for i in 0..m {
+        for j in 0..n {
+            for k in 0..mat2.len() {
+                result[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+
+    result
+}
