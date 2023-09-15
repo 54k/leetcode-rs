@@ -139,3 +139,46 @@ func multiply(mat1 [][]int, mat2 [][]int) [][]int {
 
 	return ans
 }
+
+func multiplyCompressed(mat1 [][]int, mat2 [][]int) [][]int {
+	type pair struct {
+		val int
+		col int
+	}
+
+	compress := func(mat [][]int) [][]pair {
+		compressed := [][]pair{}
+		for r := 0; r < len(mat); r++ {
+			row := []pair{}
+			for c := 0; c < len(mat[0]); c++ {
+				if mat[r][c] == 0 {
+					continue
+				}
+				row = append(row, pair{mat[r][c], c})
+			}
+			compressed = append(compressed, row)
+		}
+		return compressed
+	}
+
+	A := compress(mat1)
+	B := compress(mat2)
+
+	C := make([][]int, len(mat1))
+	for i := 0; i < len(mat1); i++ {
+		C[i] = make([]int, len(mat2[0]))
+	}
+
+	for r := 0; r < len(mat1); r++ {
+		for _, p1 := range A[r] {
+			v1, col1 := p1.val, p1.col
+
+			for _, p2 := range B[col1] {
+				v2, col2 := p2.val, p2.col
+				C[r][col2] += v1 * v2
+			}
+		}
+	}
+
+	return C
+}
