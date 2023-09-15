@@ -1,5 +1,99 @@
 // https://leetcode.com/problems/min-cost-to-connect-all-points/description
-pub fn min_cost_connect_points(points: Vec<Vec<i32>>) -> i32 {
+pub fn min_cost_connect_points_i(points: Vec<Vec<i32>>) -> i32 {
+    struct UF {
+        repr: Vec<usize>,
+        size: Vec<usize>,
+    }
+    impl UF {
+        fn new(n: usize) -> Self {
+            let mut repr = vec![];
+            for i in 0..n {
+                repr.push(i);
+            }
+            UF {
+                repr,
+                size: vec![1; n],
+            }
+        }
+
+        fn find(&mut self, x: usize) -> usize {
+            if self.repr[x] != x {
+                self.repr[x] = self.find(self.repr[x]);
+            }
+            self.repr[x]
+        }
+
+        fn union(&mut self, x: usize, y: usize) -> bool {
+            let (mut x, mut y) = (self.find(x), self.find(y));
+            if x == y {
+                return false;
+            }
+            if self.size[x] > self.size[y] {
+                std::mem::swap(&mut x, &mut y);
+            }
+
+            self.repr[x] = y;
+            self.size[y] += self.size[x];
+            true
+        }
+    }
+
+    let mut edges = vec![];
+    for i in 0..points.len() {
+        for j in i + 1..points.len() {
+            let weight = (points[i][0] - points[j][0]).abs() + (points[j][1] - points[i][1]).abs();
+            edges.push((weight, i, j));
+        }
+    }
+    edges.sort();
+
+    let mut total_cost = 0;
+    let mut uf = UF::new(points.len());
+    for (w, f, t) in edges {
+        if uf.union(f, t) {
+            total_cost += w;
+        }
+    }
+    total_cost
+}
+
+pub fn min_cost_connect_points_ii(points: Vec<Vec<i32>>) -> i32 {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    let mut heap = BinaryHeap::new();
+
+    let mut total_cost = 0;
+    let n = points.len();
+    let mut used = 0;
+    let mut in_mst = vec![false; n];
+
+    heap.push(Reverse((0, 0)));
+
+    while used < n {
+        let Reverse((cur_weight, cur_node)) = heap.pop().unwrap();
+
+        if in_mst[cur_node] {
+            continue;
+        }
+
+        used += 1;
+        in_mst[cur_node] = true;
+        total_cost += cur_weight;
+
+        for next_node in 0..n {
+            if !in_mst[next_node] {
+                let next_weight = (points[cur_node][0] - points[next_node][0]).abs()
+                    + (points[cur_node][1] - points[next_node][1]).abs();
+                heap.push(Reverse((next_weight, next_node)));
+            }
+        }
+    }
+
+    total_cost
+}
+
+pub fn min_cost_connect_points_iii(points: Vec<Vec<i32>>) -> i32 {
     let n = points.len();
     let mut mst_cost = 0;
     let mut edges_used = 0;

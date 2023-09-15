@@ -1,9 +1,11 @@
 package day307
 
-import "sort"
+import (
+	"sort"
+)
 
 // https://leetcode.com/problems/min-cost-to-connect-all-points
-func minCostConnectPoints(points [][]int) int {
+func minCostConnectPointsKruskal(points [][]int) int {
 	dsu := make([]int, len(points))
 	rank := make([]int, len(points))
 
@@ -70,4 +72,46 @@ func minCostConnectPoints(points [][]int) int {
 	}
 
 	return total
+}
+
+func minCostConnectPointsPrimOptimized(points [][]int) int {
+	abs := func(a int) int {
+		if a < 0 {
+			return -a
+		}
+		return a
+	}
+
+	n := len(points)
+	cost, used := 0, 0
+
+	inMST := make([]bool, n)
+	dist := make([]int, n)
+	dist[0] = 0
+	for i := 1; i < n; i++ {
+		dist[i] = 1 << 31
+	}
+
+	for used < n {
+		minCost := 1 << 31
+		node := 0
+		for i := 0; i < n; i++ {
+			if !inMST[i] && minCost > dist[i] {
+				minCost = dist[i]
+				node = i
+			}
+		}
+
+		cost += minCost
+		used++
+		inMST[node] = true
+
+		for next := 0; next < n; next++ {
+			weight := abs(points[node][0]-points[next][0]) + abs(points[node][1]-points[next][1])
+			if !inMST[next] && dist[next] > weight {
+				dist[next] = weight
+			}
+		}
+	}
+	return cost
 }
