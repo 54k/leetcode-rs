@@ -95,6 +95,92 @@ pub fn minimum_effort_path_ii_dijkstra(heights: Vec<Vec<i32>>) -> i32 {
     diff_matrix[row as usize - 1][col as usize - 1]
 }
 
+pub fn minimum_effort_path_iii_dsu(heights: Vec<Vec<i32>>) -> i32 {
+    struct UF {
+        repr: Vec<usize>,
+        size: Vec<i32>,
+    }
+
+    impl UF {
+        fn new(n: usize) -> Self {
+            let mut repr = vec![];
+            for i in 0..n {
+                repr.push(i);
+            }
+            Self {
+                repr,
+                size: vec![1; n],
+            }
+        }
+
+        fn find(&mut self, x: usize) -> usize {
+            if self.repr[x] != x {
+                self.repr[x] = self.find(self.repr[x]);
+            }
+            self.repr[x]
+        }
+
+        fn union(&mut self, x: usize, y: usize) {
+            let (mut x, mut y) = (self.find(x), self.find(y));
+
+            if x == y {
+                return;
+            }
+
+            if self.size[x] > self.size[y] {
+                std::mem::swap(&mut x, &mut y);
+            }
+
+            self.repr[x] = y;
+            self.size[y] += self.size[x];
+        }
+    }
+
+    let row = heights.len();
+    let col = heights[0].len();
+    let mut edges = vec![(0, 0, 0); row * col];
+
+    fn fill_edges(
+        edges: &mut Vec<(usize, usize, i32)>,
+        heights: &Vec<Vec<i32>>,
+        row: usize,
+        col: usize,
+    ) {
+        for i in 0..row {
+            for j in 0..col {
+                if i > 0 {
+                    edges.push((
+                        i * col + j,
+                        (i - 1) * col + j,
+                        i32::abs(heights[i][j] - heights[i - 1][j]),
+                    ));
+                }
+
+                if j > 0 {
+                    edges.push((
+                        i * col + j,
+                        i * col + j - 1,
+                        i32::abs(heights[i][j] - heights[i][j - 1]),
+                    ));
+                }
+            }
+        }
+    }
+
+    fill_edges(&mut edges, &heights, row, col);
+    edges.sort_by_key(|e| e.2);
+    let mut uf = UF::new(row * col);
+
+    for (x, y, diff) in edges {
+        uf.union(x, y);
+        if uf.find(0) == uf.find(row * col - 1) {
+            return diff;
+        }
+    }
+
+    -1
+}
+
 #[test]
 fn test_min_effort_path() {
     let res = minimum_effort_path_ii_dijkstra(vec![
