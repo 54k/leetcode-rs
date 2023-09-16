@@ -195,3 +195,84 @@ fn test_min_effort_path() {
     let res = minimum_effort_path_ii_dijkstra(vec![vec![1, 10, 6, 7, 9, 10, 4, 9]]);
     println!("{res}");
 }
+
+// https://leetcode.com/problems/path-with-maximum-minimum-value/description/
+pub fn maximum_minimum_path(grid: Vec<Vec<i32>>) -> i32 {
+    struct UF {
+        repr: Vec<usize>,
+        size: Vec<usize>,
+    }
+
+    impl UF {
+        fn new(n: usize) -> Self {
+            let mut repr = vec![];
+            for i in 0..n {
+                repr.push(i);
+            }
+            Self {
+                repr,
+                size: vec![1; n],
+            }
+        }
+
+        fn find(&mut self, x: usize) -> usize {
+            if self.repr[x] != x {
+                self.repr[x] = self.find(self.repr[x]);
+            }
+            self.repr[x]
+        }
+
+        fn union(&mut self, x: usize, y: usize) {
+            let (mut x, mut y) = (self.find(x), self.find(y));
+            if x == y {
+                return;
+            }
+
+            if self.size[x] > self.size[y] {
+                std::mem::swap(&mut x, &mut y);
+            }
+
+            self.repr[x] = y;
+            self.size[y] += self.size[x];
+        }
+    }
+
+    let row = grid.len();
+    let col = grid[0].len();
+    let mut visited = vec![vec![false; col]; row];
+
+    let mut cells = vec![];
+    for i in 0..row {
+        for j in 0..col {
+            cells.push((i, j, grid[i][j]));
+        }
+    }
+    cells.sort_by_key(|e| e.2);
+    cells.reverse();
+    let mut uf = UF::new(row * col);
+
+    for (x, y, val) in cells {
+        visited[x][y] = true;
+        let from = x * col + y;
+
+        for (dx, dy) in [(-1, 0), (1, 0), (0, 1), (0, -1)] {
+            let nx = x as i32 + dx;
+            let ny = y as i32 + dy;
+
+            if nx >= 0
+                && nx < row as i32
+                && ny >= 0
+                && ny < col as i32
+                && visited[nx as usize][ny as usize]
+            {
+                let to = nx as usize * col + ny as usize;
+                uf.union(from, to);
+                if uf.find(0) == uf.find(row * col - 1) {
+                    return val;
+                }
+            }
+        }
+    }
+
+    -1
+}
