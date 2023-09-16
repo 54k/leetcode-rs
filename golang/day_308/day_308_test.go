@@ -152,3 +152,65 @@ func TestMinEffortPath(t *testing.T) {
 	res := minimumEffortPathBfs([][]int{{1, 2, 2}, {3, 8, 2}, {5, 3, 5}})
 	fmt.Println(res) // 2
 }
+
+// https://leetcode.com/problems/path-with-maximum-minimum-value/description/
+func maximumMinimumPathBruteForce(grid [][]int) int {
+	row, col := len(grid), len(grid[0])
+
+	isValidMove := func(x, y int) bool {
+		return x >= 0 && y >= 0 && x < row && y < col
+	}
+
+	type pair struct {
+		x, y int
+	}
+
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	bfs := func(threshold int) bool {
+		visited := [][]bool{}
+		for i := 0; i < row; i++ {
+			visited = append(visited, make([]bool, col))
+		}
+		visited[0][0] = true
+
+		cur := []pair{{0, 0}}
+		for len(cur) > 0 {
+			next := []pair{}
+
+			for _, c := range cur {
+				x, y := c.x, c.y
+
+				if x == row-1 && y == col-1 {
+					return true
+				}
+
+				for _, d := range []pair{{-1, 0}, {1, 0}, {0, 1}, {0, -1}} {
+					nx, ny := x+d.x, y+d.y
+
+					if isValidMove(nx, ny) && !visited[nx][ny] && grid[nx][ny] >= threshold {
+						visited[nx][ny] = true
+						next = append(next, pair{nx, ny})
+					}
+				}
+			}
+			cur = next
+		}
+		return false
+	}
+
+	threshold := min(grid[0][0], grid[row-1][col-1])
+	for threshold >= 0 {
+		if bfs(threshold) {
+			return threshold
+		}
+		threshold--
+	}
+
+	return -1
+}
