@@ -1,9 +1,67 @@
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class Day308 {
     static class Solution {
-        public int minimumEffortPath(int[][] heights) {
+        public int minimumEffortPathBruteForceTLE(int[][] heights) {
+            var backtrack = new Object() {
+                static final int[][] DIRS = new int[][] {
+                        { 1, 0 },
+                        { -1, 0 },
+                        { 0, 1 },
+                        { 0, -1 },
+                };
+
+                int ans = Integer.MAX_VALUE;
+                int row = heights.length;
+                int col = heights[0].length;
+
+                List<int[]> nextValidMoves(int x, int y) {
+                    var moves = new ArrayList<int[]>();
+                    for (var dir : DIRS) {
+                        var nx = x + dir[0];
+                        var ny = y + dir[1];
+
+                        if (nx >= 0 && nx < row && ny >= 0 && ny < col) {
+                            if (heights[nx][ny] != 0) {
+                                moves.add(new int[] { nx, ny });
+                            }
+                        }
+                    }
+                    return moves;
+                }
+
+                int dfs(int x, int y, int maxDiff) {
+                    if (x == row - 1 && y == col - 1) {
+                        ans = Math.min(ans, maxDiff);
+                        return maxDiff;
+                    }
+
+                    var val = heights[x][y];
+                    heights[x][y] = 0;
+
+                    var ans = Integer.MAX_VALUE;
+                    for (var move : nextValidMoves(x, y)) {
+                        var nx = move[0];
+                        var ny = move[1];
+
+                        var curDiff = Math.abs(val - heights[nx][ny]);
+                        var res = dfs(nx, ny, Math.max(maxDiff, curDiff));
+                        ans = Math.min(ans, res);
+                    }
+
+                    heights[x][y] = val;
+                    return maxDiff;
+                }
+            };
+
+            backtrack.dfs(0, 0, 0);
+            return backtrack.ans;
+        }
+
+        public int minimumEffortPathDijkstra(int[][] heights) {
             @FunctionalInterface
             interface Function2<A, B> {
                 boolean apply(A x, B y);
