@@ -157,14 +157,6 @@ func TestMinEffortPath(t *testing.T) {
 func maximumMinimumPathBruteForce(grid [][]int) int {
 	row, col := len(grid), len(grid[0])
 
-	isValidMove := func(x, y int) bool {
-		return x >= 0 && y >= 0 && x < row && y < col
-	}
-
-	type pair struct {
-		x, y int
-	}
-
 	min := func(a, b int) int {
 		if a < b {
 			return a
@@ -172,45 +164,70 @@ func maximumMinimumPathBruteForce(grid [][]int) int {
 		return b
 	}
 
-	bfs := func(threshold int) bool {
-		visited := [][]bool{}
-		for i := 0; i < row; i++ {
-			visited = append(visited, make([]bool, col))
+	hasPathWithThreshold := func(threshold int) bool {
+		isValidMove := func(x, y int) bool {
+			return x >= 0 && y >= 0 && x < row && y < col
 		}
-		visited[0][0] = true
 
-		cur := []pair{{0, 0}}
-		for len(cur) > 0 {
-			next := []pair{}
+		type pair struct {
+			x, y int
+		}
+		bfs := func(threshold int) bool {
+			visited := [][]bool{}
+			for i := 0; i < row; i++ {
+				visited = append(visited, make([]bool, col))
+			}
+			visited[0][0] = true
 
-			for _, c := range cur {
-				x, y := c.x, c.y
+			cur := []pair{{0, 0}}
+			for len(cur) > 0 {
+				next := []pair{}
 
-				if x == row-1 && y == col-1 {
-					return true
-				}
+				for _, c := range cur {
+					x, y := c.x, c.y
 
-				for _, d := range []pair{{-1, 0}, {1, 0}, {0, 1}, {0, -1}} {
-					nx, ny := x+d.x, y+d.y
+					if x == row-1 && y == col-1 {
+						return true
+					}
 
-					if isValidMove(nx, ny) && !visited[nx][ny] && grid[nx][ny] >= threshold {
-						visited[nx][ny] = true
-						next = append(next, pair{nx, ny})
+					for _, d := range []pair{{-1, 0}, {1, 0}, {0, 1}, {0, -1}} {
+						nx, ny := x+d.x, y+d.y
+
+						if isValidMove(nx, ny) && !visited[nx][ny] && grid[nx][ny] >= threshold {
+							visited[nx][ny] = true
+							next = append(next, pair{nx, ny})
+						}
 					}
 				}
+				cur = next
 			}
-			cur = next
+			return false
 		}
-		return false
+		return bfs(threshold)
 	}
 
-	threshold := min(grid[0][0], grid[row-1][col-1])
-	for threshold >= 0 {
-		if bfs(threshold) {
-			return threshold
+	// brute force approach
+	// threshold := min(grid[0][0], grid[row-1][col-1])
+	// for threshold >= 0 {
+	// 	if hasPathWithThreshold(threshold) {
+	// 		return threshold
+	// 	}
+	// 	threshold--
+	// }
+
+	// return -1
+
+	left := 0
+	right := min(grid[1][0], grid[row-1][col-1])
+
+	for left < right {
+		mid := (left + right + 1) / 2
+		if hasPathWithThreshold(mid) {
+			left = mid
+		} else {
+			right = mid - 1
 		}
-		threshold--
 	}
 
-	return -1
+	return left
 }

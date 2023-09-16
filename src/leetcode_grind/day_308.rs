@@ -197,7 +197,7 @@ fn test_min_effort_path() {
 }
 
 // https://leetcode.com/problems/path-with-maximum-minimum-value/description/
-pub fn maximum_minimum_path(grid: Vec<Vec<i32>>) -> i32 {
+pub fn maximum_minimum_path_i_dsu(grid: Vec<Vec<i32>>) -> i32 {
     struct UF {
         repr: Vec<usize>,
         size: Vec<usize>,
@@ -275,4 +275,38 @@ pub fn maximum_minimum_path(grid: Vec<Vec<i32>>) -> i32 {
     }
 
     -1
+}
+
+pub fn maximum_minimum_path_ii_dijkstra(grid: Vec<Vec<i32>>) -> i32 {
+    use std::collections::BinaryHeap;
+    let (row, col) = (grid.len(), grid[0].len());
+
+    let mut heap = BinaryHeap::new();
+    heap.push((grid[0][0], 0, 0));
+
+    let mut visited = vec![vec![false; col]; row];
+    visited[0][0] = true;
+
+    let mut min_val = i32::MAX;
+    while let Some((val, x, y)) = heap.pop() {
+        min_val = min_val.min(val);
+        if x == row as i32 - 1 && y == col as i32 - 1 {
+            return min_val;
+        }
+
+        for d in [(-1, 0), (1, 0), (0, 1), (0, -1)] {
+            let (nx, ny) = (x as i32 + d.0, y as i32 + d.1);
+            if nx >= 0
+                && ny >= 0
+                && nx < row as i32
+                && ny < col as i32
+                && !visited[nx as usize][ny as usize]
+            {
+                visited[nx as usize][ny as usize] = true;
+                heap.push((grid[nx as usize][ny as usize], nx, ny))
+            }
+        }
+    }
+
+    min_val
 }
