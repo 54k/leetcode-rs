@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,35 @@ public class Day309 {
                 }
                 lvl++;
                 queue = nextQueue;
+            }
+
+            if (dist[dst] == Integer.MAX_VALUE) {
+                return -1;
+            }
+            return dist[dst];
+        }
+
+        public int findCheapestPriceBellmanFord(int n, int[][] flights, int src, int dst, int k) {
+            var dist = new int[n];
+            for (int i = 0; i < dist.length; i++) {
+                dist[i] = Integer.MAX_VALUE;
+            }
+
+            dist[src] = 0;
+            for (int i = 0; i <= k; i++) {
+                var temp = Arrays.copyOf(dist, n);
+
+                for (var flight : flights) {
+                    var from = flight[0];
+                    var to = flight[1];
+                    var cost = flight[2];
+
+                    if (dist[from] != Integer.MAX_VALUE) {
+                        temp[to] = Math.min(temp[to], dist[from] + cost);
+                    }
+                }
+
+                dist = temp;
             }
 
             if (dist[dst] == Integer.MAX_VALUE) {
