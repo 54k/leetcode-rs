@@ -48,5 +48,72 @@ func shortestPathLengthBFS(graph [][]int) int {
 }
 
 func shortestPathLengthFloydWarshall(graph [][]int) int {
-	return 0
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	distMatrix := make([][]int, len(graph))
+	for i := 0; i < len(graph); i++ {
+		distMatrix[i] = make([]int, len(graph))
+		for j := 0; j < len(graph); j++ {
+			distMatrix[i][j] = int(10e5)
+		}
+	}
+
+	for i := 0; i < len(graph); i++ {
+		distMatrix[i][i] = 0
+		for _, j := range graph[i] {
+			distMatrix[i][j] = 1
+		}
+	}
+
+	for k := 0; k < len(graph); k++ {
+		for i := 0; i < len(graph); i++ {
+			for j := 0; j < len(graph); j++ {
+				if distMatrix[i][j] > distMatrix[i][k]+distMatrix[k][j] {
+					distMatrix[i][j] = distMatrix[i][k] + distMatrix[k][j]
+				}
+			}
+		}
+	}
+
+	endMask := (1 << len(graph)) - 1
+	memo := [][]int{}
+	for i := 0; i < len(graph); i++ {
+		memo = append(memo, make([]int, endMask+1))
+		for j := 0; j < endMask; j++ {
+			memo[i][j] = -1
+		}
+	}
+
+	var dfs func(int, int) int
+	dfs = func(node int, mask int) int {
+		if mask == endMask {
+			return 0
+		}
+
+		if memo[node][mask] != -1 {
+			return memo[node][mask]
+		}
+
+		minDist := int(10e5)
+		for next := 0; next < len(graph); next++ {
+			if mask&(1<<next) == 0 {
+				minDist = min(minDist, dfs(next, mask|(1<<next))+distMatrix[node][next])
+			}
+		}
+
+		memo[node][mask] = minDist
+		return minDist
+	}
+
+	ans := int(10e6)
+	for start := 0; start < len(graph); start++ {
+		ans = min(ans, dfs(start, 1<<start))
+	}
+
+	return ans
 }
