@@ -117,3 +117,50 @@ func shortestPathLengthFloydWarshall(graph [][]int) int {
 
 	return ans
 }
+
+func shortestPathLengthDPBitmask(graph [][]int) int {
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	n := len(graph)
+	endMask := (1 << n) - 1
+
+	memo := [][]int{}
+	for i := 0; i <= n; i++ {
+		memo = append(memo, make([]int, endMask+1))
+	}
+
+	var dfs func(int, int) int
+	dfs = func(node int, mask int) int {
+		if memo[node][mask] != 0 {
+			return memo[node][mask]
+		}
+		if mask&(mask-1) == 0 {
+			return 0
+		}
+
+		memo[node][mask] = int(10e6)
+		for _, next := range graph[node] {
+			if mask&(1<<next) == 0 {
+				continue
+			}
+
+			visited := dfs(next, mask)
+			notVisited := dfs(next, mask^(1<<node))
+			best := min(visited, notVisited) + 1
+			memo[node][mask] = min(memo[node][mask], best)
+		}
+
+		return memo[node][mask]
+	}
+
+	ans := int(10e6)
+	for end := 0; end < n; end++ {
+		ans = min(ans, dfs(end, endMask))
+	}
+	return ans
+}
