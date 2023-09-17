@@ -72,3 +72,88 @@ pub fn shortest_path_length_ii(graph: Vec<Vec<i32>>) -> i32 {
 
     -1
 }
+
+pub fn shortest_path_length_iii(graph: Vec<Vec<i32>>) -> i32 {
+    let n = graph.len();
+    let mut dist_matrix = vec![vec![n as i32 + 1; n]; n];
+
+    for node in 0..n {
+        dist_matrix[node][node] = 0;
+        for &neighbor in &graph[node] {
+            let neighbor = neighbor as usize;
+            dist_matrix[node][neighbor] = 1;
+        }
+    }
+
+    for k in 0..n {
+        for i in 0..n {
+            for j in 0..n {
+                dist_matrix[i][j] = dist_matrix[i][j].min(dist_matrix[i][k] + dist_matrix[k][j]);
+            }
+        }
+    }
+
+    println!("{:?}", dist_matrix);
+
+    let end_mask = (1 << n) - 1;
+    let mut memo = vec![vec![-1; end_mask + 1]; n];
+
+    fn solve(
+        node: usize,
+        mask: usize,
+        end_mask: usize,
+        memo: &mut Vec<Vec<i32>>,
+        graph: &Vec<Vec<i32>>,
+        dist_matrix: &Vec<Vec<i32>>,
+    ) -> i32 {
+        if mask == end_mask {
+            return 0;
+        }
+
+        if memo[node][mask] != -1 {
+            return memo[node][mask];
+        }
+
+        let mut shortest_path = 10e5 as i32;
+
+        for neighbor in 0..graph.len() {
+            if (mask & (1 << neighbor)) != 0 {
+                continue;
+            }
+
+            shortest_path = shortest_path.min(
+                solve(
+                    neighbor,
+                    mask | (1 << neighbor),
+                    end_mask,
+                    memo,
+                    graph,
+                    dist_matrix,
+                ) + dist_matrix[node as usize][neighbor],
+            );
+        }
+
+        memo[node][mask] = shortest_path;
+        shortest_path
+    }
+
+    let mut ans = i32::MAX;
+    for start in 0..n {
+        ans = ans.min(solve(
+            start,
+            1 << start,
+            end_mask,
+            &mut memo,
+            &graph,
+            &dist_matrix,
+        ));
+    }
+
+    ans
+}
+
+#[test]
+fn test_shortest_path_length() {
+    let res = shortest_path_length_iii(vec![vec![1, 2, 3], vec![0], vec![0], vec![0]]);
+    println!("{res}");
+}
