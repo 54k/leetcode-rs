@@ -1,4 +1,20 @@
 // https://leetcode.com/problems/find-the-duplicate-number/description
+pub fn find_duplicate_negative_marking(nums: Vec<i32>) -> i32 {
+    let mut nums = nums;
+    let mut duplicate = -1;
+
+    for i in 0..nums.len() {
+        let cur = nums[i].abs() as usize;
+        if nums[cur] < 0 {
+            duplicate = cur as i32;
+            break;
+        }
+        nums[cur] *= -1;
+    }
+
+    duplicate
+}
+
 pub fn find_duplicate_bin_search(nums: Vec<i32>) -> i32 {
     let mut low = 1;
     let mut high = nums.len() - 1;

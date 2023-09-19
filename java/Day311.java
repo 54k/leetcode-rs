@@ -23,5 +23,18 @@ public class Day311 {
             }
             return -1;
         }
+
+        public int findDuplicatNegativeMarking(int[] nums) {
+            var duplicate = -1;
+            for (var i = 0; i < nums.length; i++) {
+                var cur = Math.abs(nums[i]);
+                if (nums[cur] < 0) {
+                    duplicate = cur;
+                    break;
+                }
+                nums[cur] *= -1;
+            }
+            return duplicate;
+        }
     }
 }
