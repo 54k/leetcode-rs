@@ -169,4 +169,24 @@ public class Day312 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/sparse-matrix-multiplication/
+    static class Solution3 {
+        public int[][] multiplyNaive(int[][] mat1, int[][] mat2) {
+            var m = mat1.length;
+            var n = mat2[0].length;
+            var k = mat1[0].length;
+
+            var result = new int[m][n];
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    for (int z = 0; z < k; z++) {
+                        result[i][j] += mat1[i][z] * mat2[z][j];
+                    }
+                }
+
+            }
+            return result;
+        }
+    }
 }
