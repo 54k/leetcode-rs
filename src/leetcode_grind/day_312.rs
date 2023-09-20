@@ -91,3 +91,26 @@ pub fn min_operations_ii(nums: Vec<i32>, x: i32) -> i32 {
         -1
     }
 }
+
+// https://leetcode.com/problems/find-the-duplicate-number/description/
+pub fn find_duplicate_arr_as_hash_map_rec(nums: Vec<i32>) -> i32 {
+    let mut nums = nums;
+    fn store(idx: usize, nums: &mut Vec<i32>) -> i32 {
+        if nums[idx] != idx as i32 {
+            let next = nums[idx];
+            nums[idx] = idx as i32;
+            return store(next as usize, nums);
+        }
+        nums[idx]
+    }
+    store(0, &mut nums)
+}
+
+pub fn find_duplicate_arr_as_hash_map_iterative(nums: Vec<i32>) -> i32 {
+    let mut nums = nums;
+    while nums[0] != nums[nums[0] as usize] {
+        let next = nums[0] as usize;
+        nums.swap(0, next);
+    }
+    nums[0]
+}
