@@ -230,7 +230,6 @@ public class Day312 {
             };
 
             var m = mat1.length;
-            var k = mat1[0].length;
             var n = mat2[0].length;
 
             var result = new int[m][n];
