@@ -36,5 +36,28 @@ public class Day311 {
             }
             return duplicate;
         }
+
+        public int findDuplicateArrayAsHashMap(int[] nums) {
+            var store = new Object() {
+                int store(int idx) {
+                    if (nums[idx] != idx) {
+                        var next = nums[idx];
+                        nums[idx] = idx;
+                        return store(next);
+                    }
+                    return nums[idx];
+                }
+            };
+            return store.store(0);
+        }
+
+        public int findDuplicateArrayAsHashMapIterative(int[] nums) {
+            while (nums[0] != nums[nums[0]]) {
+                var tmp = nums[nums[0]];
+                nums[nums[0]] = nums[0];
+                nums[0] = tmp;
+            }
+            return nums[0];
+        }
     }
 }
