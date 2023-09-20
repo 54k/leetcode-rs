@@ -188,5 +188,24 @@ public class Day312 {
             }
             return result;
         }
+
+        public int[][] multiply2Optimized(int[][] mat1, int[][] mat2) {
+            var m = mat1.length;
+            var n = mat2[0].length;
+            var k = mat1[0].length;
+
+            var result = new int[m][n];
+            for (var i = 0; i < m; i++) {
+                for (var elementPos = 0; elementPos < k; elementPos++) {
+                    for (var j = 0; j < n; j++) {
+                        if (mat1[i][elementPos] != 0) {
+                            result[i][j] += mat1[i][elementPos] * mat2[elementPos][j];
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }
