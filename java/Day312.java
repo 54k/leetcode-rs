@@ -1,9 +1,10 @@
+import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Day312 {
     // https://leetcode.com/problems/find-the-duplicate-number/description/
-    static class Solution {
+    static class Solution1 {
         public int findDuplicateBinarySearch(int[] nums) {
             var left = 1;
             var right = nums.length;
@@ -85,6 +86,87 @@ public class Day312 {
                     return slow;
                 }
             }
+        }
+    }
+
+    // https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/description/
+    static class Solution2 {
+        public int minOperationsIndirect(int[] nums, int x) {
+            var sum = 0;
+            for (var num : nums) {
+                sum += num;
+            }
+            var current = 0;
+            var ans = -1;
+            var left = 0;
+            for (var right = 0; right < nums.length; right++) {
+                current += nums[right];
+
+                while (current > sum - x && left <= right) {
+                    current -= nums[left++];
+                }
+
+                if (sum - current == x) {
+                    ans = Math.max(ans, right - left + 1);
+                }
+            }
+
+            if (ans == -1) {
+                return -1;
+            }
+            return nums.length - ans;
+        }
+
+        public int minOperationsDirect(int[] nums, int x) {
+            var current = 0;
+            for (var num : nums) {
+                current += num;
+            }
+
+            var ans = Integer.MAX_VALUE;
+            var left = 0;
+
+            for (var right = 0; right < nums.length; right++) {
+                current -= nums[right];
+
+                while (current < x && left <= right) {
+                    current += nums[left++];
+                }
+
+                if (current == x) {
+                    ans = Math.min(ans, (nums.length - 1 - right) + left);
+                }
+            }
+
+            if (ans == Integer.MAX_VALUE) {
+                return -1;
+            }
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
+    static class Solution {
+        public int maxSubArrayLen(int[] nums, int k) {
+            var indices = new HashMap<Integer, Integer>();
+            var current = 0;
+            var ans = 0;
+
+            for (var right = 0; right < nums.length; right++) {
+                current += nums[right];
+                if (!indices.containsKey(current)) {
+                    indices.put(current, right);
+                }
+
+                if (current == k) {
+                    ans = right + 1;
+                }
+
+                if (indices.containsKey(current - k)) {
+                    ans = Math.max(ans, right - indices.get(current - k));
+                }
+            }
+            return ans;
         }
     }
 }
