@@ -131,3 +131,43 @@ func findDuplicateBinarySearch(nums []int) int {
 	}
 	return ans
 }
+
+func findDuplicateSumOfSetBits(nums []int) int {
+	max := 0
+	for _, num := range nums {
+		if num > max {
+			max = num
+		}
+	}
+	maxBitPos := func(num int) int {
+		ans := 0
+		for num > 0 {
+			ans++
+			num >>= 1
+		}
+		return ans
+	}
+
+	maxBit := maxBitPos(max)
+	duplicate := 0
+	for i := 0; i < maxBit; i++ {
+		mask := 1 << i
+		baseCount := 0
+		freqOfBit := 0
+
+		for i, num := range nums {
+			if mask&i > 1 {
+				baseCount++
+			}
+			if mask&num > 0 {
+				freqOfBit++
+			}
+		}
+
+		if freqOfBit > baseCount {
+			duplicate |= mask
+		}
+	}
+
+	return duplicate
+}
