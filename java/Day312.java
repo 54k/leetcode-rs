@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -189,7 +191,7 @@ public class Day312 {
             return result;
         }
 
-        public int[][] multiply2Optimized(int[][] mat1, int[][] mat2) {
+        public int[][] multiplyOptimized(int[][] mat1, int[][] mat2) {
             var m = mat1.length;
             var n = mat2[0].length;
             var k = mat1[0].length;
@@ -201,6 +203,50 @@ public class Day312 {
                         if (mat1[i][elementPos] != 0) {
                             result[i][j] += mat1[i][elementPos] * mat2[elementPos][j];
                         }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int[][] multiplyOptimized2(int[][] mat1, int[][] mat2) {
+            Function<int[][], List<List<int[]>>> compressMatrix = (int[][] mat) -> {
+                var rows = mat.length;
+                var cols = mat[0].length;
+                var comressedMatrix = new ArrayList<List<int[]>>();
+
+                for (var row = 0; row < rows; row++) {
+                    var currRow = new ArrayList<int[]>();
+                    for (int col = 0; col < cols; col++) {
+                        if (mat[row][col] != 0) {
+                            currRow.add(new int[] { mat[row][col], col });
+                        }
+                    }
+                    comressedMatrix.add(currRow);
+                }
+
+                return comressedMatrix;
+            };
+
+            var m = mat1.length;
+            var k = mat1[0].length;
+            var n = mat2[0].length;
+
+            var result = new int[m][n];
+            var A = compressMatrix.apply(mat1);
+            var B = compressMatrix.apply(mat2);
+
+            for (var mat1Row = 0; mat1Row < m; mat1Row++) {
+                for (var mat1Element : A.get(mat1Row)) {
+                    var element1 = mat1Element[0];
+                    var mat1Col = mat1Element[1];
+
+                    for (var mat2Element : B.get(mat1Col)) {
+                        var element2 = mat2Element[0];
+                        var mat2Col = mat2Element[1];
+
+                        result[mat1Row][mat2Col] += element1 * element2;
                     }
                 }
             }
