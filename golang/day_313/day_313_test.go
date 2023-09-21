@@ -47,7 +47,7 @@ func findMedianSortedArraysBinSearch(nums1 []int, nums2 []int) float64 {
 }
 
 // https://leetcode.com/problems/median-of-a-row-wise-sorted-matrix/description/
-func matrixMedian(grid [][]int) int {
+func matrixMedian1(grid [][]int) int {
 	binSearch := func(col []int, target int) int {
 		left, right := 0, len(col)-1
 		for left < right {
@@ -88,7 +88,43 @@ func matrixMedian(grid [][]int) int {
 	return right
 }
 
+func matrixMedian2(grid [][]int) int {
+	binSearch := func(col []int, target int) int {
+		left, right := 0, len(col)-1
+		for left <= right {
+			mid := (right + left) / 2
+
+			if col[mid] >= target {
+				right = mid - 1
+			} else {
+				left = mid + 1
+			}
+		}
+		return left
+	}
+
+	left, right := 1, int(10e6)
+	m, n := len(grid), len(grid[0])
+	target := m * n / 2
+
+	for left+1 < right {
+		mid := (right + left) / 2
+		sum := 0
+		for _, col := range grid {
+			sum += n - binSearch(col, mid)
+		}
+
+		if sum > target {
+			left = mid
+		} else {
+			right = mid
+		}
+	}
+
+	return left
+}
+
 func TestMatrixMedian(t *testing.T) {
-	res := matrixMedian([][]int{{1, 1, 2}, {2, 3, 3}, {1, 3, 4}})
-	fmt.Println(res)
+	res := matrixMedian1([][]int{{1, 1, 2}, {2, 3, 3}, {1, 3, 4}})
+	fmt.Println(res) // 2
 }
