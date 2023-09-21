@@ -1,5 +1,10 @@
 package day313
 
+import (
+	"fmt"
+	"testing"
+)
+
 // https://leetcode.com/problems/median-of-two-sorted-arrays/description
 func findMedianSortedArraysBinSearch(nums1 []int, nums2 []int) float64 {
 	var solve func(int, int, int, int, int) int
@@ -39,4 +44,87 @@ func findMedianSortedArraysBinSearch(nums1 []int, nums2 []int) float64 {
 	} else {
 		return float64(solve(n/2, 0, an-1, 0, bn-1))
 	}
+}
+
+// https://leetcode.com/problems/median-of-a-row-wise-sorted-matrix/description/
+func matrixMedian1(grid [][]int) int {
+	binSearch := func(col []int, target int) int {
+		left, right := 0, len(col)-1
+		for left < right {
+			mid := (right + left) / 2
+
+			if col[mid] >= target {
+				right = mid
+			} else {
+				left = mid + 1
+			}
+		}
+
+		if col[right] >= target {
+			return right
+		} else {
+			return right + 1
+		}
+	}
+
+	left, right := 1, int(10e6)
+	m, n := len(grid), len(grid[0])
+	target := m*n/2 + 1
+
+	for left < right {
+		mid := (right + left + 1) / 2
+		sum := 0
+		for _, col := range grid {
+			sum += binSearch(col, mid)
+		}
+
+		if sum >= target {
+			right = mid - 1
+		} else {
+			left = mid
+		}
+	}
+
+	return right
+}
+
+func matrixMedian2(grid [][]int) int {
+	binSearch := func(col []int, target int) int {
+		left, right := 0, len(col)-1
+		for left <= right {
+			mid := (right + left) / 2
+
+			if col[mid] >= target {
+				right = mid - 1
+			} else {
+				left = mid + 1
+			}
+		}
+		return left
+	}
+
+	left, right := 1, int(10e6)
+	m, n := len(grid), len(grid[0])
+	target := m * n / 2
+
+	for left+1 < right {
+		mid := (right + left) / 2
+		sum := 0
+		for _, col := range grid {
+			sum += n - binSearch(col, mid)
+		}
+
+		if sum > target {
+			left = mid
+		} else {
+			right = mid
+		}
+	}
+
+	return left
+}
+
+func TestMatrixMedian(t *testing.T) {
+	res := matrixMedian1([][]int{{1, 1, 2}, {2, 3, 3}, {1, 3, 4}})
+	fmt.Println(res) // 2
 }
