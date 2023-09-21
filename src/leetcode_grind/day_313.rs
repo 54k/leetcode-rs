@@ -144,3 +144,49 @@ fn test_median_of_sorted() {
     let res = find_median_sorted_arrays_bin_search(vec![1, 3], vec![2]);
     println!("{res}");
 }
+
+pub fn matrix_median(grid: Vec<Vec<i32>>) -> i32 {
+    fn bin_search(nums: &Vec<i32>, target: i32) -> i32 {
+        let mut left = 0;
+        let mut right = nums.len() as i32 - 1;
+
+        while left <= right {
+            let mid = left + (right - left) / 2;
+            if nums[mid as usize] >= target {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        left
+    }
+
+    let (m, n) = (grid.len() as i32, grid[0].len() as i32);
+    let target = m * n / 2;
+
+    let mut left = 1;
+    let mut right = 10e6 as i32;
+
+    while left <= right {
+        let mid = left + (right - left) / 2;
+
+        let mut found_pos = 0;
+        for col in &grid {
+            found_pos += bin_search(col, mid);
+        }
+
+        if found_pos > target {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    right
+}
+
+#[test]
+fn test_matrix_median() {
+    let res = matrix_median(vec![vec![1, 1, 2], vec![2, 3, 3], vec![1, 3, 4]]);
+    println!("{res}"); // 2
+}
