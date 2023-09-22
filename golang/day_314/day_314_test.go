@@ -82,3 +82,35 @@ func isSubsequenceDivideAndConquer(s string, t string) bool {
 
 	return recIsSibsequeence(0, 0)
 }
+
+// https://leetcode.com/problems/number-of-matching-subsequences/description/
+func numMatchingSubseq(s string, words []string) int {
+	type node struct {
+		word  string
+		index int
+	}
+
+	buckets := [][]node{}
+	for i := 0; i < 26; i++ {
+		buckets = append(buckets, []node{})
+	}
+	for _, w := range words {
+		buckets[w[0]-'a'] = append(buckets[w[0]-'a'], node{w, 0})
+	}
+	ans := 0
+	for _, ch := range s {
+		bucket := buckets[ch-'a']
+		buckets[ch-'a'] = []node{}
+
+		for _, n := range bucket {
+			n.index++
+			if n.index == len(n.word) {
+				ans++
+			} else {
+				buckets[n.word[n.index]-'a'] = append(buckets[n.word[n.index]-'a'], n)
+			}
+		}
+	}
+
+	return ans
+}
