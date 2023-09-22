@@ -114,3 +114,30 @@ func numMatchingSubseq(s string, words []string) int {
 
 	return ans
 }
+
+// https://leetcode.com/problems/shortest-way-to-form-string/description/
+func shortestWay(source string, target string) int {
+	sm := map[rune]bool{}
+	for _, ch := range source {
+		sm[ch] = true
+	}
+	for _, ch := range target {
+		if !sm[ch] {
+			return -1
+		}
+	}
+
+	ans := 0
+	i, j := 0, 0
+	for i < len(target) {
+		if j == 0 {
+			ans++
+		}
+		if target[i] == source[j] {
+			i++
+		}
+		j = (j + 1) % len(source)
+	}
+
+	return ans
+}

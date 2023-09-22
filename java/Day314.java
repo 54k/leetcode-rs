@@ -1,7 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Day314 {
     // https://leetcode.com/problems/median-of-a-row-wise-sorted-matrix/description/
@@ -85,7 +87,7 @@ public class Day314 {
     }
 
     // https://leetcode.com/problems/number-of-matching-subsequences/description/
-    static class Solution {
+    static class Solution3 {
         public int numMatchingSubseqHashMapTLE(String s, String[] words) {
             var indices = new HashMap<Character, List<Integer>>();
             var i = 0;
@@ -165,6 +167,46 @@ public class Day314 {
             }
 
             return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/shortest-way-to-form-string/description/
+    static class Solution4 {
+        public int shortestWay(String source, String target) {
+            var invertedIndex = new HashMap<Character, List<Integer>>();
+            var i = 0;
+            for (var ch : source.toCharArray()) {
+                invertedIndex.putIfAbsent(ch, new ArrayList<>());
+                invertedIndex.get(ch).add(i);
+                i++;
+            }
+
+            for (var ch : target.toCharArray()) {
+                if (!invertedIndex.containsKey(ch)) {
+                    return -1;
+                }
+            }
+
+            var sourceIterator = 0;
+            var count = 1;
+
+            for (var ch : target.toCharArray()) {
+                var indices = invertedIndex.get(ch);
+                var index = Collections.binarySearch(indices, sourceIterator);
+
+                if (index < 0) {
+                    index = -index - 1;
+                }
+
+                if (index == indices.size()) {
+                    count++;
+                    sourceIterator = indices.get(0) + 1;
+                } else {
+                    sourceIterator = indices.get(index) + 1;
+                }
+            }
+
+            return count;
         }
     }
 }

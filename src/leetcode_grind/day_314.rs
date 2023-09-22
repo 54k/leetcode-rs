@@ -66,7 +66,7 @@ pub fn is_subsequence_dp_lcs_ii(s: String, t: String) -> bool {
 }
 
 // https://leetcode.com/problems/shortest-way-to-form-string/description/
-pub fn shortest_way(source: String, target: String) -> i32 {
+pub fn shortest_way_bin_search(source: String, target: String) -> i32 {
     fn is_subsequece(s: &Vec<char>, t: &Vec<char>) -> bool {
         let mut i = 0;
         for &ch in t {
@@ -101,4 +101,40 @@ pub fn shortest_way(source: String, target: String) -> i32 {
         return -1;
     }
     left
+}
+
+pub fn shortest_way_2d_array(source: String, target: String) -> i32 {
+    let source = source.chars().collect::<Vec<_>>();
+    let target = target.chars().collect::<Vec<_>>();
+
+    let mut next_occurence = vec![vec![-1; 26]; source.len()];
+    next_occurence[source.len() - 1][source[source.len() - 1] as usize - 'a' as usize] =
+        source.len() as i32 - 1;
+
+    for idx in (0..source.len() - 1).rev() {
+        for c in 0..26 {
+            next_occurence[idx][c] = next_occurence[idx + 1][c];
+        }
+        next_occurence[idx][source[idx] as usize - 'a' as usize] = idx as i32;
+    }
+
+    let mut source_iterator = 0;
+    let mut count = 1;
+
+    for c in target {
+        if next_occurence[0][c as usize - 'a' as usize] == -1 {
+            return -1;
+        }
+
+        if source_iterator == source.len()
+            || next_occurence[source_iterator][c as usize - 'a' as usize] == -1
+        {
+            count += 1;
+            source_iterator = 0;
+        }
+
+        source_iterator = next_occurence[source_iterator][c as usize - 'a' as usize] as usize + 1;
+    }
+
+    count
 }

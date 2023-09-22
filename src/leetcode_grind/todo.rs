@@ -1,3 +1,8 @@
+// https://leetcode.com/problems/minimum-window-subsequence/description/
+pub fn min_window(s1: String, s2: String) -> String {
+    todo!()
+}
+
 // https://leetcode.com/list/oqv95d22/ intervals problems
 
 // https://leetcode.com/problems/subarrays-with-k-different-integers/solutions/523136/java-c-python-sliding-window/
