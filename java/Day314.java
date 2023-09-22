@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 public class Day314 {
     // https://leetcode.com/problems/median-of-a-row-wise-sorted-matrix/description/
@@ -50,7 +51,7 @@ public class Day314 {
     }
 
     // https://leetcode.com/problems/is-subsequence/description
-    class Solution2 {
+    static class Solution2 {
         public boolean isSubsequence(String s, String t) {
             var indices = new HashMap<Character, List<Integer>>();
             var i = 0;
@@ -80,6 +81,90 @@ public class Day314 {
             }
 
             return true;
+        }
+    }
+
+    // https://leetcode.com/problems/number-of-matching-subsequences/description/
+    static class Solution {
+        public int numMatchingSubseqHashMapTLE(String s, String[] words) {
+            var indices = new HashMap<Character, List<Integer>>();
+            var i = 0;
+            for (var ch : s.toCharArray()) {
+                indices.putIfAbsent(ch, new ArrayList<>());
+                indices.get(ch).add(i);
+                i++;
+            }
+
+            Function<String, Boolean> check = (str) -> {
+                var last = -1;
+                for (var ch : str.toCharArray()) {
+                    if (!indices.containsKey(ch)) {
+                        return false;
+                    }
+                    var found = false;
+
+                    for (var idx : indices.get(ch)) {
+                        if (idx > last) {
+                            last = idx;
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        return false;
+                    }
+                }
+
+                return true;
+            };
+
+            var ans = 0;
+            for (var w : words) {
+                if (check.apply(w)) {
+                    ans++;
+                }
+            }
+            return ans;
+        }
+
+        public int numMatchingSubseqBucketsApproach(String s, String[] words) {
+            class Node {
+                String word;
+                int index;
+
+                Node(String w, int i) {
+                    word = w;
+                    index = i;
+                }
+            }
+
+            var ans = 0;
+            @SuppressWarnings("unchecked")
+            ArrayList<Node>[] heads = new ArrayList[26];
+            for (var i = 0; i < 26; ++i) {
+                heads[i] = new ArrayList<Node>();
+            }
+
+            for (var word : words) {
+                heads[word.charAt(0) - 'a'].add(new Node(word, 0));
+            }
+
+            for (var c : s.toCharArray()) {
+                var oldBucket = heads[c - 'a'];
+                heads[c - 'a'] = new ArrayList<>();
+
+                for (var node : oldBucket) {
+                    node.index++;
+                    if (node.index == node.word.length()) {
+                        ans++;
+                    } else {
+                        heads[node.word.charAt(node.index) - 'a'].add(node);
+                    }
+                }
+            }
+
+            return ans;
         }
     }
 }
