@@ -12,3 +12,55 @@ pub fn is_subsequence_two_pointers(s: String, t: String) -> bool {
     }
     left == s.len()
 }
+
+pub fn is_subsequence_dp_lcs_i(s: String, t: String) -> bool {
+    let s = s.chars().collect::<Vec<_>>();
+    let t = t.chars().collect::<Vec<_>>();
+
+    let (m, n) = (s.len(), t.len());
+    let mut dp = vec![vec![0; n + 1]; m + 1];
+
+    for row in 1..=m {
+        for col in 1..=n {
+            if s[row - 1] == t[col - 1] {
+                dp[row][col] = dp[row - 1][col - 1] + 1;
+            } else {
+                dp[row][col] = dp[row][col - 1].max(dp[row - 1][col]);
+            }
+        }
+    }
+
+    for &val in &dp[m] {
+        if val == s.len() {
+            return true;
+        }
+    }
+
+    false
+}
+
+pub fn is_subsequence_dp_lcs_ii(s: String, t: String) -> bool {
+    let s = s.chars().collect::<Vec<_>>();
+    let t = t.chars().collect::<Vec<_>>();
+
+    let (m, n) = (s.len(), t.len());
+
+    if m == 0 {
+        return true;
+    }
+
+    let mut dp = vec![vec![0; n + 1]; m + 1];
+    for col in 1..=n {
+        for row in 1..=m {
+            if s[row - 1] == t[col - 1] {
+                dp[row][col] = dp[row - 1][col - 1] + 1;
+            } else {
+                dp[row][col] = dp[row - 1][col].max(dp[row][col - 1]);
+            }
+        }
+        if dp[m][col] == m {
+            return true;
+        }
+    }
+    false
+}
