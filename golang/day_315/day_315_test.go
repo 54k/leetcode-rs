@@ -1,5 +1,7 @@
 package day315
 
+import "sort"
+
 // https://leetcode.com/problems/shortest-way-to-form-string/description/
 func shortestWay(source string, target string) int {
 	nextOccurences := make([][]int, len(source))
@@ -35,4 +37,68 @@ func shortestWay(source string, target string) int {
 	}
 
 	return count
+}
+
+// https://leetcode.com/problems/longest-string-chain/description
+func longestStrChain(words []string) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	isSubseq := func(s, t string) bool {
+		i := 0
+		for _, c := range t {
+			if c == rune(s[i]) {
+				i++
+			}
+			if i == len(s) {
+				return true
+			}
+		}
+		return false
+	}
+
+	sort.Slice(words, func(i, j int) bool {
+		return len(words[i]) < len(words[j])
+	})
+
+	n := len(words)
+
+	ans := 1
+	dp := make([]int, n)
+	for i := 0; i < n; i++ {
+		dp[i] = max(dp[i], 1)
+		for j := 0; j < i; j++ {
+			if len(words[j])+1 == len(words[i]) && isSubseq(words[j], words[i]) {
+				dp[i] = max(dp[i], dp[j]+1)
+				ans = max(ans, dp[i])
+			}
+		}
+	}
+	return ans
+}
+
+// https://leetcode.com/problems/find-root-of-n-ary-tree/description/
+type Node struct {
+	Val      int
+	Children []*Node
+}
+
+func findRoot(tree []*Node) *Node {
+	inDegrees := make([]int, len(tree))
+	for _, node := range tree {
+		for _, child := range node.Children {
+			inDegrees[child.Val]++
+		}
+	}
+
+	for i, degree := range inDegrees {
+		if degree == 0 {
+			return tree[i]
+		}
+	}
+	return nil
 }
