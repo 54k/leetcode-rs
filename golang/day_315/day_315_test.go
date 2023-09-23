@@ -122,16 +122,15 @@ type Node struct {
 }
 
 func findRoot(tree []*Node) *Node {
-	inDegrees := make([]int, len(tree))
-	for _, node := range tree {
-		for _, child := range node.Children {
-			inDegrees[child.Val]++
+	seen := map[*Node]bool{}
+	for _, n := range tree {
+		for _, c := range n.Children {
+			seen[c] = true
 		}
 	}
-
-	for i, degree := range inDegrees {
-		if degree == 0 {
-			return tree[i]
+	for _, n := range tree {
+		if _, ok := seen[n]; !ok {
+			return n
 		}
 	}
 	return nil
