@@ -121,7 +121,7 @@ type Node struct {
 	Children []*Node
 }
 
-func findRoot(tree []*Node) *Node {
+func findRootExtraSpace(tree []*Node) *Node {
 	seen := map[*Node]bool{}
 	for _, n := range tree {
 		for _, c := range n.Children {
@@ -130,6 +130,23 @@ func findRoot(tree []*Node) *Node {
 	}
 	for _, n := range tree {
 		if _, ok := seen[n]; !ok {
+			return n
+		}
+	}
+	return nil
+}
+
+func findRootConstantSpace(tree []*Node) *Node {
+	valueSum := 0
+	for _, n := range tree {
+		valueSum += n.Val // or use XOR
+		for _, c := range n.Children {
+			valueSum -= c.Val // or use XOR
+		}
+	}
+
+	for _, n := range tree {
+		if n.Val == valueSum {
 			return n
 		}
 	}
