@@ -81,6 +81,40 @@ func longestStrChain(words []string) int {
 	return ans
 }
 
+// https://leetcode.com/problems/minimum-window-subsequence/description/
+func minWindow(s1 string, s2 string) string {
+	n, m := len(s1), len(s2)
+
+	g := make([]int, m+1)
+	f := make([]int, m+1)
+	for i := 0; i < len(f); i++ {
+		f[i] = int(10e6)
+	}
+	f[0] = 0
+	end := 0
+	length := n + 1
+
+	for i := 1; i <= n; i++ {
+		g[0] = 0
+		for j := 1; j <= m; j++ {
+			if s1[i-1] == s2[j-1] {
+				g[j] = f[j-1] + 1
+			} else {
+				g[j] = f[j] + 1
+			}
+		}
+		copy(f, g)
+		if f[m] < length {
+			length = f[m]
+			end = i
+		}
+	}
+	if length > n {
+		return ""
+	}
+	return s1[end-length : end]
+}
+
 // https://leetcode.com/problems/find-root-of-n-ary-tree/description/
 type Node struct {
 	Val      int
