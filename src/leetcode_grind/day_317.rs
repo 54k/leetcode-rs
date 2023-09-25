@@ -134,7 +134,31 @@ mod map_sum_trie {
 }
 
 // https://leetcode.com/problems/replace-words/description/
-pub fn replace_words(dictionary: Vec<String>, sentence: String) -> String {
+pub fn replace_words_prefix_set(dictionary: Vec<String>, sentence: String) -> String {
+    use std::collections::HashSet;
+    let mut prefixes = HashSet::new();
+
+    for w in dictionary {
+        prefixes.insert(w);
+    }
+
+    let mut ans = vec![];
+
+    for w in sentence.split(" ") {
+        let mut s = String::new();
+        for ch in w.chars() {
+            s.push(ch);
+            if prefixes.contains(&s) {
+                break;
+            }
+        }
+        ans.push(s.to_string());
+    }
+
+    ans.join(" ")
+}
+
+pub fn replace_words_trie(dictionary: Vec<String>, sentence: String) -> String {
     use std::collections::HashMap;
 
     struct TrieNode {
