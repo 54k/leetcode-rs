@@ -132,3 +132,64 @@ mod map_sum_trie {
         }
     }
 }
+
+// https://leetcode.com/problems/replace-words/description/
+pub fn replace_words(dictionary: Vec<String>, sentence: String) -> String {
+    use std::collections::HashMap;
+
+    struct TrieNode {
+        children: HashMap<char, TrieNode>,
+        is_end: bool,
+    }
+
+    impl TrieNode {
+        fn new() -> Self {
+            Self {
+                children: HashMap::new(),
+                is_end: false,
+            }
+        }
+
+        fn add(&mut self, key: &str) {
+            let mut cur = self;
+            for ch in key.chars() {
+                cur.children.entry(ch).or_insert(TrieNode::new());
+                cur = cur.children.get_mut(&ch).unwrap();
+            }
+            cur.is_end = true;
+        }
+
+        fn find_root(&self, key: &str) -> String {
+            let mut ans = "".to_string();
+            let mut cur = self;
+            for ch in key.chars() {
+                if cur.children.contains_key(&ch) {
+                    cur = cur.children.get(&ch).unwrap();
+                    ans.push(ch);
+                    if cur.is_end {
+                        return ans;
+                    }
+                } else {
+                    return key.to_string();
+                }
+            }
+
+            if cur.is_end {
+                return ans;
+            }
+            return key.to_string();
+        }
+    }
+
+    let mut ans = vec![];
+    let mut root = TrieNode::new();
+    for w in &dictionary {
+        root.add(w);
+    }
+
+    for w in sentence.split(" ") {
+        ans.push(root.find_root(w));
+    }
+
+    ans.join(" ")
+}
