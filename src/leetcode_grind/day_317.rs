@@ -300,7 +300,7 @@ mod autocomplete_trie {
                 let a_hot = *self.curr_node.borrow().sentences.get(a).unwrap();
                 let b_hot = *self.curr_node.borrow().sentences.get(b).unwrap();
                 if a_hot == b_hot {
-                    b.len().cmp(&a.len())
+                    a.cmp(&b)
                 } else {
                     b_hot.cmp(&a_hot)
                 }
