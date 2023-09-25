@@ -67,3 +67,53 @@ func replaceWords(dictionary []string, sentence string) string {
 
 	return ans
 }
+
+// https://leetcode.com/problems/map-sum-pairs/description/
+type TrieNode struct {
+	children map[rune]*TrieNode
+	score    int
+}
+
+func newTrieNode() *TrieNode {
+	return &TrieNode{
+		children: map[rune]*TrieNode{},
+		score:    0,
+	}
+}
+
+type MapSum struct {
+	root        *TrieNode
+	prefixScore map[string]int
+}
+
+func Constructor() MapSum {
+	return MapSum{
+		root:        newTrieNode(),
+		prefixScore: map[string]int{},
+	}
+}
+
+func (this *MapSum) Insert(key string, val int) {
+	delta := val - this.prefixScore[key]
+	this.prefixScore[key] = val
+
+	node := this.root
+	for _, ch := range key {
+		if _, ok := node.children[ch]; !ok {
+			node.children[ch] = newTrieNode()
+		}
+		node = node.children[ch]
+		node.score += delta
+	}
+}
+
+func (this *MapSum) Sum(prefix string) int {
+	node := this.root
+	for _, ch := range prefix {
+		if _, ok := node.children[ch]; !ok {
+			return 0
+		}
+		node = node.children[ch]
+	}
+	return node.score
+}
