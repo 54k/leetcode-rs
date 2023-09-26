@@ -1,13 +1,17 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Day318 {
     // https://leetcode.com/problems/remove-duplicate-letters/description
-    class Solution {
+    class Solution1 {
         public String removeDuplicateLettersGreedy(String s) {
             var cnt = new int[26];
             for (int i = 0; i < s.length(); i++) {
@@ -107,6 +111,61 @@ public class Day318 {
             }
 
             return false;
+        }
+    }
+
+    // https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/
+    static class Solution2 {
+        public int[] twoSum(int[] numbers, int target) {
+            var lo = 0;
+            var hi = numbers.length - 1;
+            while (lo < hi) {
+                var sum = numbers[lo] + numbers[hi];
+                if (sum < target) {
+                    lo++;
+                } else if (sum > target) {
+                    hi--;
+                } else {
+                    return new int[] { lo + 1, hi + 1 };
+                }
+            }
+            return new int[] { -1, -1 };
+        }
+    }
+
+    // https://leetcode.com/problems/3sum/description
+    static class Solution3 {
+        public List<List<Integer>> threeSumTwoPointers(int[] nums) {
+            @FunctionalInterface
+            interface TwoSumII {
+                void apply(int i, List<List<Integer>> res);
+            }
+            TwoSumII twoSumII = (i, res) -> {
+                var lo = i + 1;
+                var hi = nums.length - 1;
+                while (lo < hi) {
+                    var sum = nums[i] + nums[lo] + nums[hi];
+                    if (sum < 0) {
+                        lo++;
+                    } else if (sum > 0) {
+                        hi--;
+                    } else {
+                        res.add(Arrays.asList(nums[i], nums[lo++], nums[hi--]));
+                        while (lo < hi && nums[lo] == nums[lo - 1]) {
+                            lo++;
+                        }
+                    }
+                }
+            };
+
+            Arrays.sort(nums);
+            var res = new ArrayList<List<Integer>>();
+            for (int i = 0; i < nums.length && nums[i] <= 0; i++) {
+                if (i == 0 || nums[i] != nums[i - 1]) {
+                    twoSumII.apply(i, res);
+                }
+            }
+            return res;
         }
     }
 }
