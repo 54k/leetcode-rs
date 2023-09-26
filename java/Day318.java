@@ -5,7 +5,30 @@ import java.util.stream.Collectors;
 public class Day318 {
     class Solution {
         // https://leetcode.com/problems/remove-duplicate-letters/description
-        public String removeDuplicateLetters(String s) {
+        public String removeDuplicateLettersGreedy(String s) {
+            var cnt = new int[26];
+            for (int i = 0; i < s.length(); i++) {
+                cnt[s.charAt(i) - 'a']++;
+            }
+
+            var pos = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) < s.charAt(pos)) {
+                    pos = i;
+                }
+                if (--cnt[s.charAt(i) - 'a'] == 0) {
+                    break;
+                }
+            }
+
+            if (s.length() == 0) {
+                return "";
+            }
+            return s.charAt(pos)
+                    + removeDuplicateLettersGreedy(s.substring(pos + 1).replaceAll("" + s.charAt(pos), ""));
+        }
+
+        public String removeDuplicateLettersWithStack(String s) {
             var freq = new char[26];
             for (var ch : s.toCharArray()) {
                 freq[ch - 'a']++;
