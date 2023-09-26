@@ -1,3 +1,4 @@
+package grind;
 // https://leetcode.com/problems/lfu-cache/solutions/2815229/lfu-cache/
 class LFUCache {
     // key: original key, value: frequency and original value.

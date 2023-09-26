@@ -1,3 +1,4 @@
+package grind;
 import java.util.PriorityQueue;
 
 class MaxAvgPassRatio1792 {

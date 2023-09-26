@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 // Main class should be named 'Solution'
-class Solution {
+class CubeJsDevopsTask2 {
     public static final String SRC = "/root/devops/";
 
     public static void main(String[] args) throws Exception {

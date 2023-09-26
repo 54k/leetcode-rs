@@ -1,11 +1,11 @@
 import java.util.Iterator;
 import java.util.List;
 
-class EvenIterator implements Iterator<Integer> {
+class YandexEvenIterator implements Iterator<Integer> {
     private Iterator<Integer> iter;
     private Integer next;
 
-    public EvenIterator(Iterator<Integer> iter) {
+    public YandexEvenIterator(Iterator<Integer> iter) {
         this.iter = iter;
     }
 
@@ -37,7 +37,7 @@ class EvenIterator implements Iterator<Integer> {
 
     public static void main(String[] args) {
         var list = List.of(1, 1, 2, 3, 3, 4, 5, 5, 6, 7, 7, 8, 9, 9);
-        var iter = new EvenIterator(list.iterator());
+        var iter = new YandexEvenIterator(list.iterator());
         while (iter.hasNext()) {
             System.out.println(iter.next());
         }
