@@ -81,3 +81,35 @@ func threeSumSmallerTwoPointers(nums []int, target int) int {
 	}
 	return sum
 }
+
+// https://leetcode.com/problems/maximum-binary-tree/description/
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func constructMaximumBinaryTree(nums []int) *TreeNode {
+	max := func(left, right int) int {
+		maxi := left
+		for i := left; i <= right; i++ {
+			if nums[i] > nums[maxi] {
+				maxi = i
+			}
+		}
+		return maxi
+	}
+
+	var buildRec func(left, right int) *TreeNode
+	buildRec = func(left, right int) *TreeNode {
+		if left > right {
+			return nil
+		}
+		maxi := max(left, right)
+		root := &TreeNode{nums[maxi], nil, nil}
+		root.Left = buildRec(left, maxi-1)
+		root.Right = buildRec(maxi+1, right)
+		return root
+	}
+	return buildRec(0, len(nums)-1)
+}

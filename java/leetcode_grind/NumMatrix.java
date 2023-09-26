@@ -1,4 +1,4 @@
-package grind;
+package leetcode_grind;
 class NumMatrix {
     private int[][] dp;
 

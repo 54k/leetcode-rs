@@ -1,4 +1,4 @@
-package grind;
+package leetcode_grind;
 // https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description/
 public class Day300 {
     public int minAddToMakeValid(String s) {

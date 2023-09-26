@@ -1,4 +1,4 @@
-package grind;
+package leetcode_grind;
 import java.util.PriorityQueue;
 
 class MaxAvgPassRatio1792 {

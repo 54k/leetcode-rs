@@ -1,4 +1,4 @@
-package grind;
+package leetcode_grind;
 abstract class Node {
     public abstract int evaluate();
     // define your fields here

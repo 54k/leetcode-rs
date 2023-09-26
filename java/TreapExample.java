@@ -41,7 +41,12 @@ public class TreapExample {
         right.left = merge(left, right.left);
         return right;
     }
-
+    /**
+     * Splits treap for left and right subtrees where left subtree keys <= x
+     * @param p
+     * @param x
+     * @return
+     */
     Node[] split(Node p, int x) {
         if (p == null) {
             return new Node[] { null, null };
