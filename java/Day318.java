@@ -114,8 +114,23 @@ public class Day318 {
         }
     }
 
+    // https://leetcode.com/problems/two-sum/description/
+    class Solution2 {
+        public int[] twoSum(int[] nums, int target) {
+            var seen = new HashMap<Integer, Integer>();
+            for (int i = 0; i < nums.length; i++) {
+                var complement = target - nums[i];
+                if (seen.containsKey(complement)) {
+                    return new int[] { seen.get(complement), i };
+                }
+                seen.put(nums[i], i);
+            }
+            return new int[] { -1, -1 };
+        }
+    }
+
     // https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/
-    static class Solution2 {
+    static class Solution3 {
         public int[] twoSum(int[] numbers, int target) {
             var lo = 0;
             var hi = numbers.length - 1;
@@ -134,12 +149,13 @@ public class Day318 {
     }
 
     // https://leetcode.com/problems/3sum/description
-    static class Solution3 {
+    static class Solution4 {
         public List<List<Integer>> threeSumTwoPointers(int[] nums) {
             @FunctionalInterface
             interface TwoSumII {
                 void apply(int i, List<List<Integer>> res);
             }
+
             TwoSumII twoSumII = (i, res) -> {
                 var lo = i + 1;
                 var hi = nums.length - 1;
@@ -166,6 +182,57 @@ public class Day318 {
                 }
             }
             return res;
+        }
+
+        public List<List<Integer>> threeSumHashSet(int[] nums) {
+            @FunctionalInterface
+            interface TwoSum {
+                void apply(int i, List<List<Integer>> res);
+            }
+
+            TwoSum twoSum = (i, res) -> {
+                var seen = new HashSet<Integer>();
+                for (int j = i + 1; j < nums.length; j++) {
+                    var complement = -nums[i] - nums[j];
+                    if (seen.contains(complement)) {
+                        res.add(Arrays.asList(nums[i], nums[j], complement));
+                        while (j + 1 < nums.length && nums[j] == nums[j + 1]) {
+                            j++;
+                        }
+                    }
+                    seen.add(nums[j]);
+                }
+            };
+
+            Arrays.sort(nums);
+            var res = new ArrayList<List<Integer>>();
+            for (int i = 0; i < nums.length && nums[i] != 0; i++) {
+                if (i == 0 || nums[i] != nums[i - 1]) {
+                    twoSum.apply(i, res);
+                }
+            }
+            return res;
+        }
+
+        public List<List<Integer>> threeSumNoSort(int[] nums) {
+            var res = new HashSet<List<Integer>>();
+            var dups = new HashSet<Integer>();
+            var seen = new HashMap<Integer, Integer>();
+
+            for (int i = 0; i < nums.length; i++) {
+                if (dups.add(nums[i])) {
+                    for (int j = i + 1; j < nums.length; j++) {
+                        var complement = -nums[i] - nums[j];
+                        if (seen.containsKey(complement) && seen.get(complement) == i) {
+                            var triplet = Arrays.asList(nums[i], nums[j], complement);
+                            Collections.sort(triplet);
+                            res.add(triplet);
+                        }
+                        seen.put(nums[j], i);
+                    }
+                }
+            }
+            return new ArrayList<>(res);
         }
     }
 }
