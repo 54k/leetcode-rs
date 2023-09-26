@@ -1,6 +1,9 @@
 package day318
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 // https://leetcode.com/problems/remove-duplicate-letters/description
 func removeDuplicateLetters(s string) string {
@@ -22,4 +25,59 @@ func removeDuplicateLetters(s string) string {
 		return ""
 	}
 	return string(s[pos]) + removeDuplicateLetters(strings.ReplaceAll(s[pos+1:], string(s[pos]), ""))
+}
+
+// https://leetcode.com/problems/3sum-smaller/submissions/
+func threeSumSmallerBinSearch(nums []int, target int) int {
+	search := func(start int, target int) int {
+		lo, hi := start, len(nums)-1
+		for lo < hi {
+			mid := (lo + hi + 1) / 2
+			if nums[mid] < target {
+				lo = mid
+			} else {
+				hi = mid - 1
+			}
+		}
+		return lo
+	}
+
+	twoSmaller := func(start int, target int) int {
+		sum := 0
+		for i := start; i < len(nums)-1; i++ {
+			sum += search(i, target-nums[i]) - i
+		}
+		return sum
+	}
+
+	sort.Ints(nums)
+	sum := 0
+	for i := 0; i < len(nums)-2; i++ {
+		sum += twoSmaller(i+1, target-nums[i])
+	}
+
+	return sum
+}
+
+func threeSumSmallerTwoPointers(nums []int, target int) int {
+	twoSmaller := func(start int, target int) int {
+		sum := 0
+		for i, j := start, len(nums)-1; i < j; {
+			s := nums[i] + nums[j]
+			if s < target {
+				sum += j - i
+				i++
+			} else {
+				j--
+			}
+		}
+		return sum
+	}
+
+	sort.Ints(nums)
+	sum := 0
+	for i := 0; i < len(nums); i++ {
+		sum += twoSmaller(i+1, target-nums[i])
+	}
+	return sum
 }
