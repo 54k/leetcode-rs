@@ -1,4 +1,4 @@
-// https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/description/
+// https://leetcode.com/problems/remove-duplicate-letters/description
 pub fn remove_duplicate_letters(s: String) -> String {
     use std::collections::HashMap;
     use std::collections::HashSet;
