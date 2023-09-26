@@ -13,8 +13,8 @@ func removeDuplicateLetters(s string) string {
 		if ch < rune(s[pos]) {
 			pos = i
 		}
-		cnt[rune(s[pos])-'a']--
-		if cnt[rune(s[pos])-'a'] == 0 {
+		cnt[rune(s[i])-'a']--
+		if cnt[rune(s[i])-'a'] == 0 {
 			break
 		}
 	}

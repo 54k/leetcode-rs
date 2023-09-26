@@ -1,10 +1,13 @@
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Day318 {
+    // https://leetcode.com/problems/remove-duplicate-letters/description
     class Solution {
-        // https://leetcode.com/problems/remove-duplicate-letters/description
         public String removeDuplicateLettersGreedy(String s) {
             var cnt = new int[26];
             for (int i = 0; i < s.length(); i++) {
@@ -51,6 +54,59 @@ public class Day318 {
             }
 
             return stack.stream().map(ch -> Character.toString(ch)).collect(Collectors.joining());
+        }
+    }
+
+    // https://leetcode.com/problems/design-add-and-search-words-data-structure/description/
+    static class WordDictionary {
+        static class TrieNode {
+            Map<Character, TrieNode> children = new HashMap<>();
+            boolean word;
+        }
+
+        TrieNode root;
+
+        public WordDictionary() {
+            root = new TrieNode();
+        }
+
+        public void addWord(String word) {
+            var cur = root;
+            for (var ch : word.toCharArray()) {
+                cur.children.putIfAbsent(ch, new TrieNode());
+                cur = cur.children.get(ch);
+            }
+            cur.word = true;
+        }
+
+        public boolean search(String word) {
+            var curStack = new LinkedList<TrieNode>();
+            curStack.push(root);
+
+            for (var ch : word.toCharArray()) {
+                var nextStack = new LinkedList<TrieNode>();
+                while (curStack.size() > 0) {
+                    var cur = curStack.pop();
+                    if (ch == '.') {
+                        for (var next : cur.children.values()) {
+                            nextStack.push(next);
+                        }
+                    } else {
+                        if (cur.children.containsKey(ch)) {
+                            nextStack.push(cur.children.get(ch));
+                        }
+                    }
+                }
+                curStack = nextStack;
+            }
+
+            while (curStack.size() > 0) {
+                if (curStack.pop().word) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
