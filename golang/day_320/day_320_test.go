@@ -1,3 +1,5 @@
+package day320
+
 // https://leetcode.com/problems/sort-array-by-parity/description
 func sortArrayByParity(nums []int) []int {
 	left := 0
