@@ -1,7 +1,3 @@
-use std::hash::Hash;
-
-use crate::leetcode_grind::day_119::TreeNode;
-
 // https://leetcode.com/problems/132-pattern/description
 pub fn find132pattern_search_interval(nums: Vec<i32>) -> bool {
     let mut intervals = vec![];
