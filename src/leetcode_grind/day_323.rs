@@ -124,3 +124,79 @@ pub fn word_squares(words: Vec<String>) -> Vec<Vec<String>> {
     }
     result
 }
+
+// https://leetcode.com/problems/palindrome-pairs/description/
+pub fn palindrome_pairs(words: Vec<String>) -> Vec<Vec<i32>> {
+    fn is_palindrome_between(word: &Vec<char>, mut start: usize, mut end: usize) -> bool {
+        while start < end {
+            if word[start] != word[end] {
+                return false;
+            }
+            start += 1;
+            end -= 1;
+        }
+        true
+    }
+
+    fn all_valid_prefixes(word: &Vec<char>) -> Vec<Vec<char>> {
+        let mut valid_prefixes = vec![];
+        for i in 0..word.len() {
+            if is_palindrome_between(&word, i, word.len() - 1) {
+                valid_prefixes.push(word[0..i].iter().copied().collect());
+            }
+        }
+        valid_prefixes
+    }
+
+    fn all_valid_suffixes(word: &Vec<char>) -> Vec<Vec<char>> {
+        let mut valid_prefixes = vec![];
+        for i in 0..word.len() {
+            if is_palindrome_between(&word, 0, i) {
+                valid_prefixes.push(word[i + 1..].iter().copied().collect());
+            }
+        }
+        valid_prefixes
+    }
+
+    use std::collections::HashMap;
+    let mut word_set = HashMap::new();
+    for (i, word) in words.iter().enumerate() {
+        word_set.insert(word.chars().collect::<Vec<_>>(), i);
+    }
+
+    let mut solution = vec![];
+    for (current_idx, word) in words.iter().enumerate() {
+        let word = word.chars().collect::<Vec<_>>();
+        let mut reversed = word.clone();
+        reversed.reverse();
+
+        if word_set.contains_key(&reversed) && *word_set.get(&reversed).unwrap() != current_idx {
+            solution.push(vec![
+                current_idx as i32,
+                *word_set.get(&reversed).unwrap() as i32,
+            ]);
+        }
+
+        for mut suffix in all_valid_suffixes(&word) {
+            suffix.reverse();
+            if word_set.contains_key(&suffix) {
+                solution.push(vec![
+                    *word_set.get(&suffix).unwrap() as i32,
+                    current_idx as i32,
+                ]);
+            }
+        }
+
+        for mut prefix in all_valid_prefixes(&word) {
+            prefix.reverse();
+            if word_set.contains_key(&prefix) {
+                solution.push(vec![
+                    current_idx as i32,
+                    *word_set.get(&prefix).unwrap() as i32,
+                ]);
+            }
+        }
+    }
+
+    solution
+}
