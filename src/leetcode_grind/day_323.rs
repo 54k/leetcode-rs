@@ -45,3 +45,82 @@ pub fn reverse_words_two_pointers(s: String) -> String {
     }
     s.into_iter().collect()
 }
+
+// https://leetcode.com/problems/word-squares/description/
+pub fn word_squares(words: Vec<String>) -> Vec<Vec<String>> {
+    use std::collections::HashMap;
+
+    struct TrieNode {
+        children: HashMap<char, TrieNode>,
+        words: Vec<String>,
+    }
+    impl TrieNode {
+        fn new(words: Vec<String>) -> Self {
+            let mut root = Self {
+                children: HashMap::new(),
+                words: vec![],
+            };
+            for word in words {
+                root.insert(word)
+            }
+            root
+        }
+
+        fn insert(&mut self, word: String) {
+            let mut node = self;
+            for ch in word.chars() {
+                node.children.entry(ch).or_insert(TrieNode {
+                    children: HashMap::new(),
+                    words: vec![],
+                });
+                node = node.children.get_mut(&ch).unwrap();
+                node.words.push(word.clone());
+            }
+        }
+
+        fn find(&mut self, prefix: String) -> Vec<String> {
+            let mut node = self;
+            for ch in prefix.chars() {
+                node.children.entry(ch).or_insert(TrieNode {
+                    children: HashMap::new(),
+                    words: vec![],
+                });
+                node = node.children.get_mut(&ch).unwrap();
+            }
+            node.words.clone()
+        }
+    }
+
+    fn backtrack(
+        step: usize,
+        len: usize,
+        cur: &mut Vec<String>,
+        result: &mut Vec<Vec<String>>,
+        trie: &mut TrieNode,
+    ) {
+        if step == len {
+            result.push(cur.clone());
+            return;
+        }
+
+        let mut prefix = String::new();
+        for w in cur.iter() {
+            prefix.push(w.chars().nth(step).unwrap());
+        }
+
+        for word in trie.find(prefix) {
+            cur.push(word);
+            backtrack(step + 1, len, cur, result, trie);
+            cur.pop();
+        }
+    }
+
+    let len = words[0].len();
+    let mut trie = TrieNode::new(words.clone());
+    let mut result = vec![];
+    for word in words {
+        let mut cur = vec![word];
+        backtrack(1, len, &mut cur, &mut result, &mut trie)
+    }
+    result
+}
