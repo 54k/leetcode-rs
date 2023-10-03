@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +66,117 @@ public class Day325 {
                 }
             }
             return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/encode-n-ary-tree-to-binary-tree/description/
+    class Solution3 {
+        class Node {
+            public int val;
+            public List<Node> children;
+
+            public Node() {
+            }
+
+            public Node(int _val) {
+                val = _val;
+            }
+
+            public Node(int _val, List<Node> _children) {
+                val = _val;
+                children = _children;
+            }
+        };
+
+        public class TreeNode {
+            int val;
+            TreeNode left;
+            TreeNode right;
+
+            TreeNode(int x) {
+                val = x;
+            }
+        }
+
+        class Codec {
+            static class Pair<U, V> {
+                U first;
+                V second;
+
+                Pair(U f, V s) {
+                    first = f;
+                    second = s;
+                }
+            }
+
+            // Encodes an n-ary tree to a binary tree.
+            public TreeNode encode(Node root) {
+                if (root == null) {
+                    return null;
+                }
+                var newRoot = new TreeNode(root.val);
+
+                var queue = new ArrayDeque<Pair<TreeNode, Node>>();
+                var head = new Pair<TreeNode, Node>(newRoot, root);
+                queue.add(head);
+
+                while (queue.size() > 0) {
+                    var pair = queue.remove();
+                    var bNode = pair.first;
+                    var nNode = pair.second;
+
+                    TreeNode prevBNode = null;
+                    TreeNode headBNode = null;
+
+                    for (var nChild : nNode.children) {
+                        var newBNode = new TreeNode(nChild.val);
+                        if (prevBNode == null) {
+                            headBNode = newBNode;
+                        } else {
+                            prevBNode.right = newBNode;
+                        }
+                        prevBNode = newBNode;
+                        var nextEntry = new Pair<TreeNode, Node>(newBNode, nChild);
+                        queue.add(nextEntry);
+                    }
+
+                    bNode.left = headBNode;
+                }
+
+                return newRoot;
+            }
+
+            // Decodes your binary tree to an n-ary tree.
+            public Node decode(TreeNode root) {
+                if (root == null) {
+                    return null;
+                }
+
+                var newRoot = new Node(root.val, new ArrayList<Node>());
+                var queue = new ArrayDeque<Pair<Node, TreeNode>>();
+                var head = new Pair<Node, TreeNode>(newRoot, root);
+                queue.add(head);
+
+                while (queue.size() > 0) {
+                    var entry = queue.remove();
+                    var nNode = entry.first;
+                    var bNode = entry.second;
+
+                    var sibling = bNode.left;
+
+                    while (sibling != null) {
+                        var nChild = new Node(sibling.val, new ArrayList<Node>());
+                        nNode.children.add(nChild);
+
+                        var nextEntry = new Pair<Node, TreeNode>(nChild, sibling);
+                        queue.add(nextEntry);
+
+                        sibling = sibling.right;
+                    }
+                }
+
+                return newRoot;
+            }
         }
     }
 }
