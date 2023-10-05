@@ -1,4 +1,4 @@
-package day326
+package day327
 
 // https://leetcode.com/problems/design-hashmap/description
 type MyHashMap struct {
