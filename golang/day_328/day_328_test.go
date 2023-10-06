@@ -31,3 +31,57 @@ func integerBreak(n int) int {
 	}
 	return dp(n)
 }
+
+// https://leetcode.com/problems/encode-n-ary-tree-to-binary-tree/description/
+type Node struct {
+	Val      int
+	Children []*Node
+}
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+type Codec struct {
+}
+
+func Constructor() *Codec {
+	return &Codec{}
+}
+
+func (this *Codec) encode(root *Node) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	newRoot := &TreeNode{root.Val, nil, nil}
+
+	if len(root.Children) > 0 {
+		firstChild := root.Children[0]
+		newRoot.Left = this.encode(firstChild)
+	}
+
+	sibling := newRoot.Left
+	for i := 1; i < len(root.Children); i++ {
+		sibling.Right = this.encode(root.Children[i])
+		sibling = sibling.Right
+	}
+
+	return newRoot
+}
+
+func (this *Codec) decode(root *TreeNode) *Node {
+	if root == nil {
+		return nil
+	}
+	newRoot := &Node{root.Val, []*Node{}}
+
+	sibling := root.Left
+	for sibling != nil {
+		newRoot.Children = append(newRoot.Children, this.decode(sibling))
+		sibling = sibling.Right
+	}
+	return newRoot
+}
