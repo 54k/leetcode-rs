@@ -3,7 +3,7 @@ package leetcode_grind;
 public class Day329 {
     // https://leetcode.com/problems/build-array-where-you-can-find-the-maximum-exactly-k-comparisons
     static class Solution {
-        public int numOfArrays(int n, int m, int k) {
+        public int numOfArraysBottomUp(int n, int m, int k) {
             var dp = new int[n + 1][m + 1][k + 1];
             var MOD = 1000000007;
 
@@ -32,6 +32,35 @@ public class Day329 {
             }
 
             return dp[0][0][k];
+        }
+
+        public int numOfArraysPerfixSum(int n, int m, int k) {
+            var dp = new long[n + 1][m + 1][k + 1];
+            var prefix = new long[n + 1][m + 1][k + 1];
+            var MOD = 1000000007;
+
+            for (var num = 1; num <= m; num++) {
+                dp[1][num][1] = 1;
+                prefix[1][num][1] = prefix[1][num - 1][1] + 1;
+            }
+
+            for (var i = 1; i <= n; i++) {
+                for (var maxNum = 1; maxNum <= m; maxNum++) {
+                    for (var cost = 1; cost <= k; cost++) {
+                        long ans = (maxNum * dp[i - 1][maxNum][cost]) % MOD;
+                        ans = (ans + prefix[i - 1][maxNum - 1][cost - 1]) % MOD;
+
+                        dp[i][maxNum][cost] += ans;
+                        dp[i][maxNum][cost] %= MOD;
+
+                        prefix[i][maxNum][cost] = prefix[i][maxNum - 1][cost] + dp[i][maxNum][cost];
+
+                        prefix[i][maxNum][cost] %= MOD;
+                    }
+                }
+            }
+
+            return (int) prefix[n][m][k];
         }
     }
 }
