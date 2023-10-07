@@ -1,5 +1,9 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Day329 {
     // https://leetcode.com/problems/build-array-where-you-can-find-the-maximum-exactly-k-comparisons
     static class Solution {
@@ -61,6 +65,105 @@ public class Day329 {
             }
 
             return (int) prefix[n][m][k];
+        }
+    }
+
+    // https://leetcode.com/problems/encode-n-ary-tree-to-binary-tree/description/
+    static class NaryTreeEncoder {
+        static class Node {
+            public int val;
+            public List<Node> children;
+
+            public Node() {
+            }
+
+            public Node(int _val) {
+                val = _val;
+            }
+
+            public Node(int _val, List<Node> _children) {
+                val = _val;
+                children = _children;
+            }
+        }
+
+        static class TreeNode {
+            int val;
+            TreeNode left;
+            TreeNode right;
+
+            TreeNode(int x) {
+                val = x;
+            }
+        }
+
+        static class Codec {
+            static class Pair<F, S> {
+                F first;
+                S second;
+
+                Pair(F f, S s) {
+                    first = f;
+                    second = s;
+                }
+            }
+
+            // Encodes an n-ary tree to a binary tree.
+            public TreeNode encode(Node root) {
+                if (root == null) {
+                    return null;
+                }
+                var h = new TreeNode(root.val);
+                var queue = new LinkedList<Pair<TreeNode, Node>>();
+                queue.add(new Pair<>(h, root));
+
+                while (queue.size() > 0) {
+                    var pop = queue.pop();
+
+                    TreeNode head = null;
+                    TreeNode next = null;
+
+                    for (var child : pop.second.children) {
+                        var ch = new TreeNode(child.val);
+                        if (next == null) {
+                            next = ch;
+                            head = next;
+                        } else {
+                            next.right = ch;
+                            next = ch;
+                        }
+                        queue.push(new Pair<>(ch, child));
+                    }
+
+                    pop.first.left = head;
+                }
+
+                return h;
+            }
+
+            // Decodes your binary tree to an n-ary tree.
+            public Node decode(TreeNode root) {
+                if (root == null) {
+                    return null;
+                }
+                var h = new Node(root.val, new ArrayList<>());
+                var queue = new LinkedList<Pair<Node, TreeNode>>();
+                queue.push(new Pair<>(h, root));
+
+                while (queue.size() > 0) {
+                    var pop = queue.pop();
+                    var child = pop.second.left;
+
+                    while (child != null) {
+                        var node = new Node(child.val, new ArrayList<>());
+                        queue.add(new Pair<>(node, child));
+                        pop.first.children.add(node);
+                        child = child.right;
+                    }
+                }
+
+                return h;
+            }
         }
     }
 }
