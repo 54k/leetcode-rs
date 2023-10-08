@@ -2,7 +2,7 @@ package leetcode_grind;
 
 public class Day330 {
     // https://leetcode.com/problems/max-dot-product-of-two-subsequences/description/
-    static class Solution {
+    static class Solution1 {
         public int maxDotProduct(int[] nums1, int[] nums2) {
             var maxNum1 = Integer.MIN_VALUE;
             var minNum1 = Integer.MAX_VALUE;
@@ -39,6 +39,48 @@ public class Day330 {
             }
 
             return dp[0];
+        }
+    }
+
+    // https://leetcode.com/problems/subarray-product-less-than-k/description/
+    static class Solution2 {
+        public int numSubarrayProductLessThanKBinSearch(int[] nums, int k) {
+            if (k == 0)
+                return 0;
+            var logk = Math.log(k);
+            var prefix = new double[nums.length + 1];
+            for (var i = 0; i < nums.length; i++) {
+                prefix[i + 1] = prefix[i] + Math.log(nums[i]);
+            }
+
+            var ans = 0;
+            for (var i = 0; i < prefix.length; i++) {
+                int lo = i + 1, hi = prefix.length;
+                while (lo < hi) {
+                    var mid = lo + (hi - lo) / 2;
+                    if (prefix[mid] < prefix[i] + logk - 1e-9) {
+                        lo = mid + 1;
+                    } else {
+                        hi = mid;
+                    }
+                }
+                ans += lo - i - 1;
+            }
+            return ans;
+        }
+
+        public int numSubarrayProductLessThanKSlidingWindow(int[] nums, int k) {
+            var left = 0;
+            var product = 1;
+            var ans = 0;
+            for (var right = 0; right < nums.length; right++) {
+                product *= nums[right];
+                while (left <= right && product >= k) {
+                    product /= nums[left++];
+                }
+                ans += right - left + 1;
+            }
+            return ans;
         }
     }
 }
