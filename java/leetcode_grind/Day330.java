@@ -2,7 +2,6 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class Day330 {
     // https://leetcode.com/problems/max-dot-product-of-two-subsequences/description/
@@ -90,7 +89,7 @@ public class Day330 {
 
     // https://leetcode.com/problems/maximum-gap/description/
     static class Solution3 {
-        public int maximumGapRadixSort(int[] nums) {
+        public int maximumGapRadixSort1(int[] nums) {
             if (nums.length < 2) {
                 return 0;
             }
@@ -126,6 +125,43 @@ public class Day330 {
             }
 
             var ans = Integer.MIN_VALUE;
+            for (int i = 0; i < nums.length - 1; i++) {
+                ans = Math.max(ans, nums[i + 1] - nums[i]);
+            }
+
+            return ans;
+        }
+
+        public int maximumGapRadixSort2(int[] nums) {
+            if (nums.length <= 1)
+                return 0;
+
+            var max = Integer.MIN_VALUE;
+            for (var num : nums) {
+                max = Math.max(max, num);
+            }
+
+            var ans = Integer.MIN_VALUE;
+            var aux = new int[nums.length];
+            var exp = 1;
+
+            while ((max / exp) > 0) {
+                var count = new int[10];
+                for (var num : nums) {
+                    count[(num / exp) % 10]++;
+                }
+                for (int i = 1; i < count.length; i++) {
+                    count[i] += count[i - 1];
+                }
+                for (int i = nums.length - 1; i >= 0; i--) {
+                    aux[--count[(nums[i] / exp) % 10]] = nums[i];
+                }
+                for (int i = 0; i < aux.length; i++) {
+                    nums[i] = aux[i];
+                }
+                exp *= 10;
+            }
+
             for (int i = 0; i < nums.length - 1; i++) {
                 ans = Math.max(ans, nums[i + 1] - nums[i]);
             }
