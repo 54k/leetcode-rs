@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Day331 {
 
@@ -391,6 +393,49 @@ public class Day331 {
                     }
                 }
             }
+        }
+    }
+
+    // https://leetcode.com/problems/valid-number/description/
+    class Solution6 {
+        public boolean isNumber(String s) {
+            var dfa = List.of(
+                    Map.of("digit", 1, "sign", 2, "dot", 3), // 0
+                    Map.of("digit", 1, "dot", 4, "exponent", 5), // 1
+                    Map.of("digit", 1, "dot", 3), // 2
+                    Map.of("digit", 4), // 3
+                    Map.of("digit", 4, "exponent", 5), // 4
+                    Map.of("sign", 6, "digit", 7), // 5
+                    Map.of("digit", 7), // 6
+                    Map.of("digit", 7)); // 7
+
+            var validFinalStates = Set.of(1, 4, 7);
+
+            var currentState = 0;
+            var group = "";
+
+            for (var i = 0; i < s.length(); i++) {
+                var curr = s.charAt(i);
+                if (Character.isDigit(curr)) {
+                    group = "digit";
+                } else if (curr == '+' || curr == '-') {
+                    group = "sign";
+                } else if (curr == 'e' || curr == 'E') {
+                    group = "exponent";
+                } else if (curr == '.') {
+                    group = "dot";
+                } else {
+                    return false;
+                }
+
+                if (!dfa.get(currentState).containsKey(group)) {
+                    return false;
+                }
+
+                currentState = dfa.get(currentState).get(group);
+            }
+
+            return validFinalStates.contains(currentState);
         }
     }
 }
