@@ -52,8 +52,8 @@ pub fn full_bloom_flowers_binary_search(flowers: Vec<Vec<i32>>, people: Vec<i32>
         left as usize
     }
 
-    use std::collections::BTreeMap;
-    let mut difference = BTreeMap::new();
+    use std::collections::HashMap;
+    let mut difference = HashMap::new();
     difference.insert(0, 0);
 
     for flower in flowers {
@@ -67,6 +67,7 @@ pub fn full_bloom_flowers_binary_search(flowers: Vec<Vec<i32>>, people: Vec<i32>
     let mut positions = vec![];
     let mut prefix = vec![];
     let mut curr = 0;
+
     for &key in difference.keys() {
         positions.push(key);
         curr += difference[&key];
@@ -77,6 +78,45 @@ pub fn full_bloom_flowers_binary_search(flowers: Vec<Vec<i32>>, people: Vec<i32>
     for j in 0..people.len() {
         let i = binary_search(&positions, people[j]) - 1;
         ans[j] = prefix[i];
+    }
+    ans
+}
+
+pub fn full_bloom_flowers_simpler_binary_search(
+    flowers: Vec<Vec<i32>>,
+    people: Vec<i32>,
+) -> Vec<i32> {
+    fn binary_search(arr: &Vec<i32>, target: i32) -> i32 {
+        let mut lo = 0;
+        let mut hi = arr.len() as i32;
+        while lo < hi {
+            let mid = (lo + hi) / 2;
+            if arr[mid as usize] <= target {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        lo
+    }
+
+    let mut starts = vec![];
+    let mut ends = vec![];
+
+    for flower in flowers {
+        let start = flower[0];
+        let end = flower[1];
+        starts.push(start);
+        ends.push(end + 1);
+    }
+    starts.sort();
+    ends.sort();
+
+    let mut ans = vec![];
+    for person in people {
+        let s = binary_search(&starts, person);
+        let e = binary_search(&ends, person);
+        ans.push(s - e);
     }
     ans
 }
