@@ -118,4 +118,22 @@ public class Day333 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/description/
+    static class Solution2 {
+        public int minOperations(int[] nums) {
+            var n = nums.length;
+            var newNums = Arrays.stream(nums).distinct().sorted().toArray();
+            var ans = Integer.MAX_VALUE;
+            var j = 0;
+            for (int i = 0; i < newNums.length; i++) {
+                while (j < newNums.length && newNums[j] < newNums[i] + n) {
+                    j++;
+                }
+                var count = j - i;
+                ans = Math.min(ans, n - count);
+            }
+            return ans;
+        }
+    }
 }
