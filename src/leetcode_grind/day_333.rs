@@ -52,8 +52,8 @@ pub fn full_bloom_flowers_binary_search(flowers: Vec<Vec<i32>>, people: Vec<i32>
         left as usize
     }
 
-    use std::collections::HashMap;
-    let mut difference = HashMap::new();
+    use std::collections::BTreeMap;
+    let mut difference = BTreeMap::new();
     difference.insert(0, 0);
 
     for flower in flowers {
