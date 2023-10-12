@@ -124,3 +124,26 @@ func minimumMountainRemovals(nums []int) int {
 	}
 	return len(nums) - ans
 }
+
+// https://leetcode.com/problems/longest-increasing-subsequence/description/
+func lengthOfLIS(nums []int) int {
+	lis := []int{}
+	for _, num := range nums {
+		if len(lis) == 0 || lis[len(lis)-1] < num {
+			lis = append(lis, num)
+		} else {
+			lo := 0
+			hi := len(lis) - 1
+			for lo < hi {
+				mid := (lo + hi) >> 1
+				if lis[mid] >= num {
+					hi = mid
+				} else {
+					lo = mid + 1
+				}
+			}
+			lis[lo] = num
+		}
+	}
+	return len(lis)
+}
