@@ -87,3 +87,40 @@ func findInMountainArray(target int, mountainArr *MountainArray) int {
 	}
 	return -1
 }
+
+// https://leetcode.com/problems/minimum-number-of-removals-to-make-mountain-array/description/
+func minimumMountainRemovals(nums []int) int {
+	lisUp := make([]int, len(nums))
+	for i := 0; i < len(nums); i++ {
+		lisUp[i] = 1
+		for j := 0; j < i; j++ {
+			if nums[i] > nums[j] {
+				if lisUp[i] < lisUp[j]+1 {
+					lisUp[i] = lisUp[j] + 1
+				}
+			}
+		}
+	}
+
+	lisDown := make([]int, len(nums))
+	for i := len(nums) - 1; i >= 0; i-- {
+		lisDown[i] = 1
+		for j := len(nums) - 1; j > i; j-- {
+			if nums[i] > nums[j] {
+				if lisDown[i] < lisDown[j]+1 {
+					lisDown[i] = lisDown[j] + 1
+				}
+			}
+		}
+	}
+
+	ans := 0
+	for i := 0; i < len(nums); i++ {
+		if lisUp[i] >= 2 && lisDown[i] >= 2 {
+			if ans < lisUp[i]+lisDown[i]-1 {
+				ans = lisUp[i] + lisDown[i] - 1
+			}
+		}
+	}
+	return len(nums) - ans
+}
