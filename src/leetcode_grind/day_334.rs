@@ -29,3 +29,56 @@ pub fn minimum_mountain_removals(nums: Vec<i32>) -> i32 {
 
     n as i32 - max_len
 }
+
+// https://leetcode.com/problems/find-in-mountain-array/description
+pub struct MountainArray;
+impl MountainArray {
+    fn get(&self, index: i32) -> i32 {
+        0
+    }
+    fn length(&self) -> i32 {
+        0
+    }
+}
+
+pub fn find_in_mountain_array(target: i32, mountainArr: &MountainArray) -> i32 {
+    let mut lo = 0;
+    let mut hi = mountainArr.length() as i32 - 1;
+    while lo < hi {
+        let mid = (lo + hi) / 2;
+        if mountainArr.get(mid) < mountainArr.get(mid + 1) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    let peak_idx = lo;
+
+    lo = 0;
+    hi = peak_idx;
+    while lo < hi {
+        let mid = (lo + hi) / 2;
+        if mountainArr.get(mid) < target {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    if mountainArr.get(lo) != target {
+        lo = peak_idx + 1;
+        hi = mountainArr.length() - 1;
+        while lo < hi {
+            let mid = (lo + hi) / 2;
+            if mountainArr.get(mid) > target {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        if mountainArr.get(lo) != target {
+            return -1;
+        }
+        return lo;
+    }
+    lo
+}
