@@ -49,6 +49,7 @@ public class Day334 {
 
             for (int i = 0; i < dp.length; i++) {
                 dp[i][i] = true;
+                ans = s.substring(i, i + 1);
             }
 
             for (int i = 0; i < dp.length - 1; i++) {
