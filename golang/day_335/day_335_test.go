@@ -33,3 +33,35 @@ func preorderTraversalMorris(root *TreeNode) []int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together/description/
+func minSwaps_SlidingWindow(data []int) int {
+	ones := 0
+	for _, n := range data {
+		if n == 1 {
+			ones++
+		}
+	}
+
+	count := 0
+	ans := 1 << 30
+	j := 0
+
+	for i := 0; i < len(data); i++ {
+		if data[i] == 1 {
+			count++
+		}
+
+		if i >= ones {
+			if data[j] == 1 {
+				count--
+			}
+			j++
+		}
+
+		if ans > ones-count {
+			ans = ones - count
+		}
+	}
+	return ans
+}

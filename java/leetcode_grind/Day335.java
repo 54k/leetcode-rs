@@ -2,6 +2,7 @@ package leetcode_grind;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Day335 {
@@ -130,6 +131,27 @@ public class Day335 {
                     }
                 }
             }
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together/description/
+    static class Solution4 {
+        public int minSwapsDeque(int[] data) {
+            var ones = Arrays.stream(data).sum();
+            var current = 0;
+            var ans = Integer.MAX_VALUE;
+
+            var deq = new ArrayDeque<Integer>();
+            for (var num : data) {
+                deq.addLast(num);
+                current += num;
+                if (deq.size() > ones) {
+                    current -= deq.pollFirst();
+                }
+                ans = Math.min(ans, ones - current);
+            }
+
             return ans;
         }
     }
