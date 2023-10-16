@@ -77,3 +77,35 @@ pub fn num_ways(steps: i32, arr_len: i32) -> i32 {
 
     prev[0]
 }
+
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+
+impl ListNode {
+    #[inline]
+    fn new(val: i32) -> Self {
+        ListNode { next: None, val }
+    }
+}
+
+// https://leetcode.com/problems/next-greater-node-in-linked-list/description/
+pub fn next_larger_nodes(head: Option<Box<ListNode>>) -> Vec<i32> {
+    let mut ans = vec![];
+    let mut stack: Vec<(usize, i32)> = vec![];
+    let mut ptr = head.as_ref();
+
+    while let Some(node) = ptr {
+        while stack.len() > 0 && stack[stack.len() - 1].1 < node.val {
+            let top = stack.pop().unwrap();
+            ans[top.0] = node.val;
+        }
+
+        ans.push(0);
+        stack.push((ans.len() - 1, node.val));
+        ptr = node.next.as_ref();
+    }
+    ans
+}
