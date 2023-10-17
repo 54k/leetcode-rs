@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class Day339 {
@@ -40,7 +41,7 @@ public class Day339 {
         }
     }
 
-    static class Solution {
+    static class Solution1 {
         public int[] nextLargerNodes(ListNode head) {
             var ans = new ArrayList<Integer>();
             var stack = new Stack<Pair<Integer, Integer>>();
@@ -54,6 +55,56 @@ public class Day339 {
                 head = head.next;
             }
             return ans.stream().mapToInt(int.class::cast).toArray();
+        }
+    }
+
+    // https://leetcode.com/problems/validate-binary-tree-nodes/
+    static class Solution2 {
+        public boolean validateBinaryTreeNodes(int n, int[] leftChild, int[] rightChild) {
+            class DSU {
+                int[] parents;
+                int components;
+
+                DSU(int n) {
+                    parents = new int[n];
+                    for (int i = 0; i < n; i++) {
+                        parents[i] = i;
+                    }
+                    components = n;
+                }
+
+                int find(int x) {
+                    if (parents[x] != x) {
+                        parents[x] = find(parents[x]);
+                    }
+                    return parents[x];
+                }
+
+                boolean union(int parent, int child) {
+                    var pParent = find(parent);
+                    var cParent = find(child);
+                    if (cParent != child || pParent == cParent) {
+                        return false;
+                    }
+                    components--;
+                    parents[cParent] = pParent;
+                    return true;
+                }
+            }
+
+            var dsu = new DSU(n);
+            for (int i = 0; i < n; i++) {
+                var children = new int[] { leftChild[i], rightChild[i] };
+                for (var child : children) {
+                    if (child == -1) {
+                        continue;
+                    }
+                    if (!dsu.union(i, child)) {
+                        return false;
+                    }
+                }
+            }
+            return dsu.components == 1;
         }
     }
 }
