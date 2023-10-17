@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class Day339 {
+    // https://leetcode.com/problems/next-greater-node-in-linked-list/description/
     public class ListNode {
         int val;
         ListNode next;
