@@ -1,7 +1,6 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 public class Day339 {
@@ -156,6 +155,43 @@ public class Day339 {
                 stack.push(operand);
             }
             return evaluateExpr(stack);
+        }
+
+        // "(1+(4+5+2)-3)+(6+8)"
+        public int calculateForward(String s) {
+            var stack = new Stack<Integer>();
+
+            var operand = 0;
+            var sign = 1;
+            var result = 0;
+
+            for (var ch : s.toCharArray()) {
+                if (Character.isDigit(ch)) {
+                    operand = operand * 10 + (ch - '0');
+                } else if (ch == '+' || ch == '-') {
+                    result += operand * sign;
+                    operand = 0;
+                    if (ch == '+') {
+                        sign = 1;
+                    } else {
+                        sign = -1;
+                    }
+                } else if (ch == '(') {
+                    stack.push(result);
+                    stack.push(sign);
+                    operand = 0;
+                    sign = 1;
+                    result = 0;
+                } else if (ch == ')') {
+                    result += operand * sign;
+                    result *= stack.pop();
+                    result += stack.pop();
+                    operand = 0;
+                    sign = 1;
+                }
+            }
+
+            return result + (sign * operand);
         }
     }
 }
