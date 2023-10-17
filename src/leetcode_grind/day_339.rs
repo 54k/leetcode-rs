@@ -80,3 +80,50 @@ pub fn validate_binary_tree_nodes_bfs(n: i32, left_child: Vec<i32>, right_child:
     }
     seen.len() == n as usize
 }
+
+pub fn validate_binary_tree_nodes_dsu(n: i32, left_child: Vec<i32>, right_child: Vec<i32>) -> bool {
+    struct UF {
+        repr: Vec<usize>,
+        cmp: usize,
+    }
+    impl UF {
+        fn new(n: usize) -> Self {
+            let mut repr = vec![];
+            for i in 0..n {
+                repr.push(i);
+            }
+            Self { repr, cmp: n }
+        }
+        fn find(&mut self, x: usize) -> usize {
+            if self.repr[x] != x {
+                self.repr[x] = self.find(self.repr[x]);
+            }
+            self.repr[x]
+        }
+        fn union(&mut self, x: usize, y: usize) -> bool {
+            let mut px = self.find(x);
+            let mut py = self.find(y);
+            if py != y || px == py {
+                return false;
+            }
+            self.repr[py] = px;
+            self.cmp -= 1;
+            true
+        }
+    }
+
+    let mut uf = UF::new(n as usize);
+    for parent in 0..n as usize {
+        let children = vec![left_child[parent], right_child[parent]];
+        for ch in children {
+            if ch == -1 {
+                continue;
+            }
+            if !uf.union(parent, ch as usize) {
+                return false;
+            }
+        }
+    }
+
+    uf.cmp == 1
+}
