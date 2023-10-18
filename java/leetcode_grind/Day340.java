@@ -116,5 +116,54 @@ public class Day340 {
 
             return heap.size();
         }
+
+        public int scheduleCourseIterativeOptimized(int[][] courses) {
+            Arrays.sort(courses, (a, b) -> a[1] - b[1]);
+            int time = 0, count = 0;
+            for (int i = 0; i < courses.length; i++) {
+                if (time + courses[i][0] <= courses[i][1]) {
+                    time += courses[i][0];
+                    courses[count++] = courses[i];
+                } else {
+                    int max_i = i;
+                    for (int j = 0; j < count; j++) {
+                        if (courses[j][0] > courses[max_i][0]) {
+                            max_i = j;
+                        }
+                    }
+
+                    if (courses[max_i][0] > courses[i][0]) {
+                        time += courses[i][0] - courses[max_i][0];
+                        courses[max_i] = courses[i];
+                    }
+                }
+            }
+            return count;
+        }
+
+        public int scheduleCourseSecondList(int[][] courses) {
+            Arrays.sort(courses, (a, b) -> a[1] - b[1]);
+            List<Integer> validList = new ArrayList<>();
+            int time = 0;
+            for (int[] c : courses) {
+                if (time + c[0] <= c[1]) {
+                    validList.add(c[0]);
+                    time += c[0];
+                } else {
+                    int max_i = 0;
+                    for (int j = 1; j < validList.size(); j++) {
+                        if (validList.get(j) > validList.get(max_i)) {
+                            max_i = j;
+                        }
+                    }
+
+                    if (validList.size() > 0 && validList.get(max_i) > c[0]) {
+                        time += c[0] - validList.get(max_i);
+                        validList.set(max_i, c[0]);
+                    }
+                }
+            }
+            return validList.size();
+        }
     }
 }
