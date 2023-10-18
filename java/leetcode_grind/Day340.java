@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class Day340 {
     // https://leetcode.com/problems/parallel-courses-iii/description/
@@ -96,6 +97,24 @@ public class Day340 {
                 }
             }
             return count;
+        }
+
+        public int scheduleCourseHeap(int[][] courses) {
+            Arrays.sort(courses, (a, b) -> a[1] - b[1]);
+            int time = 0;
+            PriorityQueue<Integer> heap = new PriorityQueue<>((a, b) -> b - a);
+
+            for (var c : courses) {
+                if (time + c[0] <= c[1]) {
+                    heap.offer(c[0]);
+                    time += c[0];
+                } else if (heap.size() > 0 && heap.peek() > c[0]) {
+                    time += c[0] - heap.poll();
+                    heap.offer(c[0]);
+                }
+            }
+
+            return heap.size();
         }
     }
 }
