@@ -1,5 +1,7 @@
 package day341
 
+import "unicode"
+
 // https://leetcode.com/problems/backspace-string-compare/description
 func backspaceCompare(s string, t string) bool {
 	i, j := len(s)-1, len(t)-1
@@ -39,4 +41,45 @@ func backspaceCompare(s string, t string) bool {
 		j--
 	}
 	return i == j
+}
+
+// https://leetcode.com/problems/basic-calculator/
+func calculate(s string) int {
+	result := 0
+	stack := []int{}
+	operator := 1
+	curr := 0
+
+	for _, ch := range s {
+		if unicode.IsDigit(ch) {
+			curr = curr*10 + int(ch-'0')
+		} else if ch == '+' || ch == '-' {
+			result += curr * operator
+			curr = 0
+			operator = 1
+			if ch == '-' {
+				operator = -1
+			}
+		} else if ch == '(' {
+			stack = append(stack, result)
+			stack = append(stack, operator)
+
+			result = 0
+			operator = 1
+			curr = 0
+		} else if ch == ')' {
+			result += curr * operator
+
+			result *= stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+
+			result += stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+
+			curr = 0
+			operator = 1
+		}
+	}
+
+	return result + (curr * operator)
 }

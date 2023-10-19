@@ -38,3 +38,34 @@ pub fn calculate_with_stack(s: String) -> i32 {
 
     stack.into_iter().sum()
 }
+
+pub fn calculate_no_stack(s: String) -> i32 {
+    let n = s.len();
+
+    let mut result = 0;
+    let mut curr = 0;
+    let mut prev_op = '+';
+    let mut stack_top = 0; // prev num
+
+    for (i, ch) in s.chars().enumerate() {
+        if char::is_digit(ch, 10) {
+            curr = curr * 10 + (ch as i32 - '0' as i32);
+        }
+
+        if !char::is_digit(ch, 10) && !char::is_whitespace(ch) || i == n - 1 {
+            if prev_op == '+' || prev_op == '-' {
+                result += stack_top;
+                stack_top = if prev_op == '-' { -stack_top } else { stack_top };
+            } else if prev_op == '*' {
+                stack_top *= curr;
+            } else if prev_op == '/' {
+                stack_top /= curr;
+            }
+
+            prev_op = ch;
+            curr = 0;
+        }
+    }
+
+    result * stack_top
+}
