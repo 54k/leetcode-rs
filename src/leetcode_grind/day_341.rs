@@ -55,7 +55,7 @@ pub fn calculate_no_stack(s: String) -> i32 {
         if !char::is_digit(ch, 10) && !char::is_whitespace(ch) || i == n - 1 {
             if prev_op == '+' || prev_op == '-' {
                 result += stack_top;
-                stack_top = if prev_op == '-' { -stack_top } else { stack_top };
+                stack_top = if prev_op == '-' { -curr } else { curr };
             } else if prev_op == '*' {
                 stack_top *= curr;
             } else if prev_op == '/' {
