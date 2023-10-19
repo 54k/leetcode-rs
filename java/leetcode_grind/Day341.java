@@ -3,7 +3,8 @@ package leetcode_grind;
 import java.util.Stack;
 
 public class Day341 {
-    static class Solution {
+    // https://leetcode.com/problems/basic-calculator-iii/description/
+    static class Solution1 {
         public int calculate(String s) {
             var eval = new Object() {
                 int apply(char op, int x, int y) {
@@ -58,6 +59,64 @@ public class Day341 {
                 result += (int) stack.pop();
             }
             return result;
+        }
+    }
+
+    // https://leetcode.com/problems/basic-calculator-iii/description/
+    static class Solution2 {
+        private int evaluate(char operator, int x, int y) {
+            if (operator == '+') {
+                return x;
+            } else if (operator == '-') {
+                return -x;
+            } else if (operator == '*') {
+                return x * y;
+            }
+            return x / y;
+        }
+
+        private int solve(String s, int[] i) {
+            Stack<Integer> stack = new Stack<>();
+            int curr = 0;
+            char previousOperator = '+';
+
+            while (i[0] < s.length()) {
+                char c = s.charAt(i[0]);
+
+                if (c == '(') {
+                    i[0]++;
+                    curr = solve(s, i);
+                } else if (Character.isDigit(c)) {
+                    curr = curr * 10 + (c - '0');
+                } else {
+                    if (previousOperator == '+' || previousOperator == '-') {
+                        stack.push(evaluate(previousOperator, curr, 0));
+                    } else {
+                        stack.push(evaluate(previousOperator, stack.pop(), curr));
+                    }
+
+                    if (c == ')') {
+                        break;
+                    }
+
+                    previousOperator = c;
+                    curr = 0;
+                }
+
+                i[0]++;
+            }
+
+            int result = 0;
+            while (stack.size() > 0) {
+                result += stack.pop();
+            }
+            return result;
+        }
+
+        public int calculate(String s) {
+            s += "@";
+            int[] i = new int[1];
+            return solve(s, i);
         }
     }
 }
