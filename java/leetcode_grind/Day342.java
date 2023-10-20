@@ -64,11 +64,11 @@ public class Day342 {
             }
         }
 
-        public class NestedIterator implements Iterator<Integer> {
+        public class NestedIteratorStack implements Iterator<Integer> {
 
             private Deque<NestedInteger> stack;
 
-            public NestedIterator(List<NestedInteger> nestedList) {
+            public NestedIteratorStack(List<NestedInteger> nestedList) {
                 stack = new ArrayDeque<NestedInteger>(nestedList);
             }
 
@@ -91,6 +91,49 @@ public class Day342 {
                     for (int i = nestedList.size() - 1; i >= 0; i--) {
                         stack.addFirst(nestedList.get(i));
                     }
+                }
+            }
+        }
+
+        public class NestedIteratorTwoStacks implements Iterator<Integer> {
+            Deque<List<NestedInteger>> listStack = new ArrayDeque<>();
+            Deque<Integer> indexStack = new ArrayDeque<>();
+
+            public NestedIteratorTwoStacks(List<NestedInteger> nestedList) {
+                listStack.addFirst(nestedList);
+                indexStack.addFirst(0);
+            }
+
+            @Override
+            public Integer next() {
+                if (!hasNext())
+                    throw new Error();
+                int currentPosition = indexStack.removeFirst();
+                indexStack.addFirst(currentPosition + 1);
+                return listStack.peekFirst().get(currentPosition).getInteger();
+            }
+
+            @Override
+            public boolean hasNext() {
+                makeStackTopAnInteger();
+                return !indexStack.isEmpty();
+            }
+
+            private void makeStackTopAnInteger() {
+                while (!indexStack.isEmpty()) {
+                    if (indexStack.peekFirst() >= listStack.peekFirst().size()) {
+                        indexStack.removeFirst();
+                        listStack.removeFirst();
+                        continue;
+                    }
+
+                    if (listStack.peekFirst().get(indexStack.peekFirst()).isInteger()) {
+                        break;
+                    }
+
+                    listStack.addFirst(listStack.peekFirst().get(indexStack.peekFirst()).getList());
+                    indexStack.addFirst(indexStack.removeFirst() + 1);
+                    indexStack.addFirst(0);
                 }
             }
         }
