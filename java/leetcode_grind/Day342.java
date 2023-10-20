@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
@@ -23,11 +25,11 @@ public class Day342 {
             public List<NestedInteger> getList();
         }
 
-        public class NestedIterator implements Iterator<Integer> {
+        public class NestedIteratorMyApproach implements Iterator<Integer> {
             Integer ret;
             Stack<Iterator<NestedInteger>> list = new Stack<>();
 
-            public NestedIterator(List<NestedInteger> nestedList) {
+            public NestedIteratorMyApproach(List<NestedInteger> nestedList) {
                 list.push(nestedList.iterator());
             }
 
@@ -61,8 +63,39 @@ public class Day342 {
                 return ret != null;
             }
         }
+
+        public class NestedIterator implements Iterator<Integer> {
+
+            private Deque<NestedInteger> stack;
+
+            public NestedIterator(List<NestedInteger> nestedList) {
+                stack = new ArrayDeque<NestedInteger>(nestedList);
+            }
+
+            @Override
+            public Integer next() {
+                if (!hasNext())
+                    throw new RuntimeException();
+                return stack.removeFirst().getInteger();
+            }
+
+            @Override
+            public boolean hasNext() {
+                makeStackTopAnInteger();
+                return !stack.isEmpty();
+            }
+
+            private void makeStackTopAnInteger() {
+                while (!stack.isEmpty() && !stack.peekFirst().isInteger()) {
+                    List<NestedInteger> nestedList = stack.removeFirst().getList();
+                    for (int i = nestedList.size() - 1; i >= 0; i--) {
+                        stack.addFirst(nestedList.get(i));
+                    }
+                }
+            }
+        }
     }
-    
+
     // https://leetcode.com/problems/mini-parser/description/
     static class NestedListParserProblem {
         public static class NestedInteger {
