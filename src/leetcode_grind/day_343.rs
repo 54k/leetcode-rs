@@ -1,5 +1,5 @@
 // https://leetcode.com/problems/constrained-subsequence-sum/description
-pub fn constrained_subset_sum(nums: Vec<i32>, k: i32) -> i32 {
+pub fn constrained_subset_sum_deque(nums: Vec<i32>, k: i32) -> i32 {
     use std::collections::VecDeque;
     let mut queue = VecDeque::new();
     let mut dp = vec![0; nums.len()];
@@ -45,4 +45,37 @@ pub fn constrained_subset_sum_heap(nums: Vec<i32>, k: i32) -> i32 {
     }
 
     ans
+}
+
+pub fn constrained_subset_sum_tree_map(nums: Vec<i32>, k: i32) -> i32 {
+    use std::collections::BTreeMap;
+
+    let mut window = BTreeMap::new();
+    window.insert(0, 0);
+
+    let mut dp = vec![0; nums.len()];
+    for i in 0..nums.len() {
+        dp[i] = *window.iter().last().unwrap().0 + nums[i];
+        *window.entry(dp[i]).or_insert(0) += 1;
+
+        if i >= k as usize {
+            let e = window.entry(dp[i - k as usize]).or_insert(0);
+            *e -= 1;
+            if *e == 0 {
+                window.remove(&dp[i - k as usize]);
+            }
+        }
+    }
+    dp.into_iter().max().unwrap()
+}
+
+// https://leetcode.com/problems/maximum-subarray/description/
+pub fn max_sub_array(nums: Vec<i32>) -> i32 {
+    let mut max_sub_array = nums[0];
+    let mut running_sub_array = nums[0];
+    for i in 1..nums.len() {
+        running_sub_array = (running_sub_array + nums[i]).max(nums[i]);
+        max_sub_array = max_sub_array.max(running_sub_array);
+    }
+    return max_sub_array.max(running_sub_array);
 }
