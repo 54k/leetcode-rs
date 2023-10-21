@@ -1,5 +1,3 @@
-use core::num;
-
 // https://leetcode.com/problems/constrained-subsequence-sum/description
 pub fn constrained_subset_sum(nums: Vec<i32>, k: i32) -> i32 {
     use std::collections::VecDeque;
