@@ -2,7 +2,9 @@ package leetcode_grind;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Stack;
 import java.util.TreeMap;
 
 public class Day343 {
@@ -160,6 +162,90 @@ public class Day343 {
                     nums[left] = tmp;
                     left++;
                 }
+            }
+        }
+    }
+
+    // https://leetcode.com/problems/mini-parser/description/
+    static class NestedListParserProblem {
+        public static class NestedInteger {
+            // Constructor initializes an empty nested list.
+            public NestedInteger() {
+            }
+
+            // Constructor initializes a single integer.
+            public NestedInteger(int value) {
+            }
+
+            // @return true if this NestedInteger holds a single integer, rather than a
+            // nested list.
+            public boolean isInteger() {
+                return false;
+            }
+
+            // @return the single integer that this NestedInteger holds, if it holds a
+            // single integer
+            // Return null if this NestedInteger holds a nested list
+            public Integer getInteger() {
+                return 0;
+            }
+
+            // Set this NestedInteger to hold a single integer.
+            public void setInteger(int value) {
+            }
+
+            // Set this NestedInteger to hold a nested list and adds a nested integer to it.
+            public void add(NestedInteger ni) {
+            }
+
+            // @return the nested list that this NestedInteger holds, if it holds a nested
+            // list
+            // Return empty list if this NestedInteger holds a single integer
+            public List<NestedInteger> getList() {
+                return List.of();
+            }
+        }
+
+        static class SolutionIterative {
+            public NestedInteger deserialize(String s) {
+                var stack = new Stack<NestedInteger>();
+
+                NestedInteger result = new NestedInteger();
+                Integer currentNum = null;
+                int sign = 1;
+
+                for (var ch : s.toCharArray()) {
+                    if (Character.isDigit(ch)) {
+                        currentNum = currentNum == null ? 0 : currentNum;
+                        currentNum = currentNum * 10 + (ch - '0');
+                    } else if (ch == '-') {
+                        sign = -1;
+                    } else if (ch == '[') {
+                        stack.push(result);
+
+                        result = new NestedInteger();
+                        currentNum = null;
+                        sign = 1;
+                    } else if (ch == ',' || ch == ']') {
+                        if (currentNum != null) {
+                            result.add(new NestedInteger(currentNum * sign));
+                        }
+                        currentNum = null;
+                        sign = 1;
+
+                        if (ch == ']') {
+                            stack.peek().add(result);
+                            result = stack.pop();
+                        }
+                    }
+                }
+
+                if (currentNum != null) {
+                    var ni = new NestedInteger(currentNum * sign);
+                    result.add(ni);
+                }
+
+                return result.getList().get(0);
             }
         }
     }
