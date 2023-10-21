@@ -1,0 +1,29 @@
+package leetcode_grind;
+
+import java.util.PriorityQueue;
+
+public class Day343 {
+    // https://leetcode.com/problems/constrained-subsequence-sum/description
+    static class Solution {
+        public int constrainedSubsetSum(int[] nums, int k) {
+            var heap = new PriorityQueue<int[]>((a, b) -> {
+                return b[0] - a[0];
+            });
+
+            heap.add(new int[] { nums[0], 0 });
+            var ans = nums[0];
+
+            for (var i = 1; i < nums.length; i++) {
+                while (i - heap.peek()[1] > k) {
+                    heap.remove();
+                }
+
+                var curr = Math.max(0, heap.peek()[0]) + nums[i];
+                ans = Math.max(ans, curr);
+                heap.add(new int[] { curr, i });
+            }
+
+            return ans;
+        }
+    }
+}
