@@ -1,5 +1,6 @@
 package leetcode_grind;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
@@ -74,6 +75,29 @@ public class Day344 {
             Arrays.fill(ans, -1);
             for (var i = 0; i < nums1.length; i++) {
                 ans[i] = hash.getOrDefault(idx.get(nums1[i]), -1);
+            }
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/sliding-window-maximum/description/
+    static class Solution2 {
+        public int[] maxSlidingWindow(int[] nums, int k) {
+            var deque = new ArrayDeque<Integer>();
+            var ans = new int[nums.length - k + 1];
+            for (int i = 0; i < nums.length; i++) {
+                while (deque.size() > 0 && nums[deque.peekLast()] <= nums[i]) {
+                    deque.removeLast();
+                }
+
+                deque.addLast(i);
+
+                while (deque.size() > 0 && deque.peekFirst() < i - k + 1) {
+                    deque.removeFirst();
+                }
+
+                if (i >= k - 1)
+                    ans[i - k + 1] = nums[deque.peekFirst()];
             }
             return ans;
         }

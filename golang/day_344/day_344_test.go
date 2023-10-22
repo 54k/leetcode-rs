@@ -59,3 +59,23 @@ func maxArea(height []int) int {
 	}
 	return ans
 }
+
+// https://leetcode.com/problems/maximum-subarray/description/
+func maxSubArray(nums []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	ans := nums[0]
+	curr := nums[0]
+	for i, num := range nums {
+		if i == 0 {
+			continue
+		}
+		curr = max(curr+num, num)
+		ans = max(ans, curr)
+	}
+	return ans
+}
