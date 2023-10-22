@@ -1,3 +1,24 @@
+// https://leetcode.com/problems/remove-interval/description/
+pub fn remove_interval(intervals: Vec<Vec<i32>>, to_be_removed: Vec<i32>) -> Vec<Vec<i32>> {
+    let mut ans = vec![];
+    for int in intervals {
+        let s = int[0];
+        let e = int[1];
+        if e < to_be_removed[0] || s > to_be_removed[1] {
+            ans.push(vec![s, e]);
+        } else {
+            if s < to_be_removed[0] {
+                ans.push(vec![s, to_be_removed[0]]);
+            }
+            
+            if e > to_be_removed[1] {
+                ans.push(vec![to_be_removed[1], e]);
+            }
+        }
+    }
+    ans
+}
+
 // https://leetcode.com/problems/maximum-score-of-a-good-subarray/description/
 pub fn maximum_score_bin_search(nums: Vec<i32>, k: i32) -> i32 {
     fn binary_search(nums: &[i32], target: i32) -> i32 {
