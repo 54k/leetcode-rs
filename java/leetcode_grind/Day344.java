@@ -1,6 +1,8 @@
 package leetcode_grind;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Day344 {
     // https://leetcode.com/problems/next-greater-element-i/description/
@@ -50,6 +52,29 @@ public class Day344 {
                 }
             }
 
+            return ans;
+        }
+
+        public int[] nextGreaterElementMonotonicStack(int[] nums1, int[] nums2) {
+            var idx = new HashMap<Integer, Integer>();
+            for (var i = 0; i < nums2.length; i++) {
+                idx.put(nums2[i], i);
+            }
+
+            var hash = new HashMap<Integer, Integer>();
+            var stack = new Stack<Integer>();
+            for (var i = 0; i < nums2.length; i++) {
+                while (!stack.isEmpty() && nums2[stack.peek()] <= nums2[i]) {
+                    hash.put(stack.pop(), nums2[i]);
+                }
+                stack.push(i);
+            }
+
+            var ans = new int[nums1.length];
+            Arrays.fill(ans, -1);
+            for (var i = 0; i < nums1.length; i++) {
+                ans[i] = hash.getOrDefault(idx.get(nums1[i]), -1);
+            }
             return ans;
         }
     }
