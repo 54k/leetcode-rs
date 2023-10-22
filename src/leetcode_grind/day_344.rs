@@ -65,7 +65,7 @@ pub fn maximum_score_monotonic_stack(nums: Vec<i32>, k: i32) -> i32 {
 
     for i in 0..n {
         while !stack.is_empty() && nums[stack[stack.len() - 1] as usize] > nums[i] {
-           right[stack.pop().unwrap() as usize] = i as i32;
+            right[stack.pop().unwrap() as usize] = i as i32;
         }
         stack.push(i as i32);
     }
@@ -75,6 +75,40 @@ pub fn maximum_score_monotonic_stack(nums: Vec<i32>, k: i32) -> i32 {
         if left[i] < k && right[i] > k {
             ans = ans.max(nums[i] * (right[i] - left[i] - 1));
         }
+    }
+
+    ans
+}
+
+pub fn maximum_score_greedy(nums: Vec<i32>, k: i32) -> i32 {
+    let n = nums.len();
+    let mut left = k as usize;
+    let mut right = k as usize;
+    let mut ans = nums[k as usize];
+    let mut curr_min = nums[k as usize];
+
+    while left > 0 || right < n - 1 {
+        let next_left = if left > 0 {
+            nums[left - 1]
+        } else {
+            0
+        };
+
+        let next_right = if right < n - 1 { 
+            nums[right + 1]
+        } else {
+            0
+        };
+
+        if next_left < next_right {
+            right += 1;
+            curr_min = curr_min.min(nums[right]);
+        } else {
+            left -= 1;
+            curr_min = curr_min.min(nums[left]);
+        }
+
+        ans = ans.max(curr_min * (right - left + 1) as i32);
     }
 
     ans
