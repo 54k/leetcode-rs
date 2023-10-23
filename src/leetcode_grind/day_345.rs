@@ -46,3 +46,61 @@ pub fn can_attend_meetings(intervals: Vec<Vec<i32>>) -> bool {
     }
     true
 }
+
+// https://leetcode.com/problems/points-that-intersect-with-cars/description/
+pub fn number_of_points_brute(nums: Vec<Vec<i32>>) -> i32 {
+    let max = nums.iter().map(|x| x[1]).max().unwrap();
+    let mut points = vec![false; max as usize + 1];
+    for num in nums {
+        let start = num[0];
+        let end = num[1];
+        for i in start..=end {
+            points[i as usize] = true;
+        }
+    }
+    let mut ans = 0;
+    for i in 1..points.len() {
+        if points[i] {
+            ans += 1;
+        }
+    }
+    ans
+}
+
+pub fn number_of_points_better_brute(nums: Vec<Vec<i32>>) -> i32 {
+    let mut covered = vec![0; 102];
+    for num in nums {
+        covered[num[0] as usize] += 1;
+        covered[num[1] as usize + 1] -= 1;
+    }
+    for i in 1..covered.len() {
+        covered[i] += covered[i - 1];
+    }
+    let mut ans = covered.len() as i32;
+    for c in covered {
+        if c == 0 {
+            ans -= 1;
+        }
+    }
+    ans
+}
+
+pub fn number_of_points_sort(nums: Vec<Vec<i32>>) -> i32 {
+    let mut nums = nums;
+    nums.sort_by_key(|x| x[0]);
+
+    let mut ans = 0;
+    let mut curr = nums[0].clone();
+
+    for num in nums {
+        if num[0] > curr[1] {
+            ans += curr[1] - curr[0] + 1;
+            curr = num;
+        } else {
+            // remove overlap/merge
+            curr[1] = curr[1].max(num[1]);
+        }
+    }
+    ans += curr[1] - curr[0] + 1;
+    ans
+}
