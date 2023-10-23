@@ -99,6 +99,53 @@ public class Day345 {
         }
 
         public int[][] insertBinSearch(int[][] intervals, int[] newInterval) {
+            @FunctionalInterface
+            interface Function2<P1, P2, R> {
+                R apply(P1 p1, P2 p2);
+            }
+
+            Function2<int[], int[], Boolean> isOverlap = (a, b) -> Math.min(b[1], b[1]) - Math.max(a[0], b[0]) >= 0;
+
+            Function2<int[], int[], int[]> mergeInterval = (a,
+                    b) -> new int[] { Math.min(a[0], b[0]), Math.max(a[1], b[1]) };
+
+            Function2<int[][], int[], int[][]> insert = (a, b) -> {
+                var result = new ArrayList<int[]>(Arrays.asList(a));
+                var lo = 0;
+                var hi = a.length - 1;
+                var insertIdx = a.length;
+                while (lo <= hi) {
+                    var mid = (lo + hi) / 2;
+                    if (a[mid][0] >= b[0]) {
+                        insertIdx = mid;
+                        hi = mid - 1;
+                    } else {
+                        lo = mid + 1;
+                    }
+                }
+                if (insertIdx < result.size()) {
+                    result.add(insertIdx, newInterval);
+                } else {
+                    result.add(newInterval);
+                }
+                return result.toArray(new int[][] {});
+            };
+
+            intervals = insert.apply(intervals, newInterval);
+            var ans = new ArrayList<int[]>();
+            for (int i = 0; i < intervals.length; i++) {
+                var curr = intervals[i];
+                while (i < intervals.length && isOverlap.apply(intervals[i], curr)) {
+                    curr = mergeInterval.apply(intervals[i], curr);
+                    i++;
+                }
+                i--;
+                ans.add(curr);
+            }
+            return ans.toArray(new int[0][0]);
+        }
+
+        public int[][] insertBinSearch2(int[][] intervals, int[] newInterval) {
             var list = new ArrayList<int[]>(Arrays.asList(intervals));
             var lo = 0;
             var hi = intervals.length;
@@ -121,7 +168,7 @@ public class Day345 {
                 if (res.isEmpty() || (res.get(res.size() - 1)[1] < list.get(i)[0])) {
                     res.add(list.get(i));
                 } else {
-                    res.get(res.size() - 1)[1] = Math.max(res.get(res.size() - 1)[1], list.get(1)[1]);
+                    res.get(res.size() - 1)[1] = Math.max(res.get(res.size() - 1)[1], list.get(i)[1]);
                 }
             }
             return res.toArray(new int[][] {});
