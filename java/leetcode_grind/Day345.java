@@ -48,6 +48,7 @@ public class Day345 {
         }
     }
 
+    // https://leetcode.com/problems/insert-interval/description/
     static class Solution4 {
         public int[][] insertLinear(int[][] intervals, int[] newInterval) {
             var doesIntervalsOverlap = new Object() {
@@ -172,6 +173,39 @@ public class Day345 {
                 }
             }
             return res.toArray(new int[][] {});
+        }
+    }
+
+    // https://leetcode.com/problems/merge-intervals/description/
+    static class Solution5 {
+        public int[][] merge(int[][] intervals) {
+            Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+            var ans = new ArrayList<int[]>();
+            for (int i = 0; i < intervals.length; i++) {
+                if (ans.isEmpty() || ans.get(ans.size() - 1)[1] < intervals[i][0]) {
+                    ans.add(intervals[i]);
+                } else {
+                    ans.get(ans.size() - 1)[1] = Math.max(ans.get(ans.size() - 1)[1], intervals[i][1]);
+                }
+            }
+            return ans.toArray(new int[][] {});
+        }
+    }
+
+    // https://leetcode.com/problems/non-overlapping-intervals/description/
+    static class Solution6 {
+        public int eraseOverlapIntervalsFindMaxNonOverlaping(int[][] intervals) {
+            Arrays.sort(intervals, (a, b) -> a[1] - b[1]);
+            var ans = 0;
+            var k = Integer.MIN_VALUE; // most recent end time
+            for (var interval : intervals) {
+                if (interval[0] >= k) {
+                    k = interval[1];
+                } else {
+                    ans++;
+                }
+            }
+            return ans;
         }
     }
 }
