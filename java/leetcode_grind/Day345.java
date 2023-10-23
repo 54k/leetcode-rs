@@ -1,5 +1,8 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Day345 {
@@ -42,6 +45,86 @@ public class Day345 {
     static class Solution3 {
         public boolean isPowerOfFour(int num) {
             return (num > 0) && (num & (num - 1)) == 0 && (num & 0xaaaaaaaa) == 0;
+        }
+    }
+
+    static class Solution4 {
+        public int[][] insertLinear(int[][] intervals, int[] newInterval) {
+            var doesIntervalsOverlap = new Object() {
+                boolean apply(int[] a, int[] b) {
+                    return Math.min(a[1], b[1]) - Math.max(a[0], b[0]) >= 0;
+                }
+            };
+            var mergeIntervals = new Object() {
+                int[] apply(int[] a, int[] b) {
+                    var newInterval = new int[2];
+                    newInterval[0] = Math.min(a[0], b[0]);
+                    newInterval[1] = Math.max(a[1], b[1]);
+                    return newInterval;
+                }
+            };
+            var insertInterval = new Object() {
+                int[][] apply(int[][] intervals, int[] newInterval) {
+                    var isIntervalInserted = false;
+                    List<int[]> list = new ArrayList<>(Arrays.asList(intervals));
+
+                    for (int i = 0; i < intervals.length; i++) {
+                        if (newInterval[0] < intervals[i][0]) {
+                            list.add(i, newInterval);
+                            isIntervalInserted = true;
+                            break;
+                        }
+                    }
+
+                    if (!isIntervalInserted) {
+                        list.add(newInterval);
+                    }
+                    return list.toArray(new int[list.size()][2]);
+                }
+            };
+
+            intervals = insertInterval.apply(intervals, newInterval);
+            List<int[]> answer = new ArrayList<>();
+
+            for (int i = 0; i < intervals.length; i++) {
+                int[] currInterval = { intervals[i][0], intervals[i][1] };
+                while (i < intervals.length && doesIntervalsOverlap.apply(currInterval, intervals[i])) {
+                    currInterval = mergeIntervals.apply(intervals[i], currInterval);
+                    i++;
+                }
+                i--;
+                answer.add(currInterval);
+            }
+            return answer.toArray(new int[][] {});
+        }
+
+        public int[][] insertBinSearch(int[][] intervals, int[] newInterval) {
+            var list = new ArrayList<int[]>(Arrays.asList(intervals));
+            var lo = 0;
+            var hi = intervals.length;
+            while (lo < hi) {
+                var mid = (lo + hi) / 2;
+                if (intervals[mid][0] <= newInterval[0]) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            if (lo < list.size()) {
+                list.add(lo, newInterval);
+            } else {
+                list.add(newInterval);
+            }
+
+            var res = new ArrayList<int[]>();
+            for (int i = 0; i < list.size(); i++) {
+                if (res.isEmpty() || (res.get(res.size() - 1)[1] < list.get(i)[0])) {
+                    res.add(list.get(i));
+                } else {
+                    res.get(res.size() - 1)[1] = Math.max(res.get(res.size() - 1)[1], list.get(1)[1]);
+                }
+            }
+            return res.toArray(new int[][] {});
         }
     }
 }
