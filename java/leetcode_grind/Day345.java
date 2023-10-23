@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.PriorityQueue;
 
 public class Day345 {
     // https://leetcode.com/problems/power-of-two/description/
@@ -204,6 +205,51 @@ public class Day345 {
                 } else {
                     ans++;
                 }
+            }
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/meeting-rooms-ii/description/
+    static class Solution7 {
+        public int minMeetingRoomsPriorityQueue(int[][] intervals) {
+            Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+            var pq = new PriorityQueue<Integer>();
+            var ans = 0;
+            for (var i : intervals) {
+                if (!pq.isEmpty() && pq.peek() <= i[0]) {
+                    pq.poll();
+                    ans--;
+                }
+                pq.add(i[1]);
+                ans++;
+            }
+            return ans;
+        }
+
+        public int minMeetingRoomsChronoOrdering(int[][] intervals) {
+            var n = intervals.length;
+            var starts = new int[n];
+            var ends = new int[n];
+            for (int i = 0; i < n; i++) {
+                starts[i] = intervals[i][0];
+                ends[i] = intervals[i][1];
+            }
+
+            Arrays.sort(starts);
+            Arrays.sort(ends);
+
+            var sPtr = 0;
+            var ePtr = 0;
+
+            var ans = 0;
+            while (sPtr < n) {
+                if (starts[sPtr] >= ends[ePtr]) {
+                    ans--;
+                    ePtr++;
+                }
+                sPtr++;
+                ans++;
             }
             return ans;
         }
