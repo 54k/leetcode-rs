@@ -240,6 +240,7 @@ pub mod day_319;
 pub mod day_32;
 pub mod day_320;
 pub mod day_321;
+pub mod day_346;
 pub mod day_322;
 pub mod day_323;
 pub mod day_324;
