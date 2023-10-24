@@ -216,4 +216,24 @@ public class ArrayAndString {
             return candidate;
         }
     }
+
+    // https://leetcode.com/problems/rotate-array/description
+    static class Solution6 {
+        public void rotate(int[] nums, int k) {
+            var reverse = new Object() {
+                void apply(int from, int to) {
+                    for (int i = from; i < (from + to) / 2; i++) {
+                        var temp = nums[i];
+                        nums[i] = nums[(from + to - 1) - i];
+                        nums[(from + to - 1) - i] = temp;
+                    }
+                }
+            };
+
+            var n = nums.length;
+            reverse.apply(0, n);
+            reverse.apply(0, k % n);
+            reverse.apply((k) % n, n);
+        }
+    }
 }
