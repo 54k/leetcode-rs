@@ -176,3 +176,17 @@ func longestPalindromeExpandAroundCenter(s string) string {
 
 	return s[ans[0] : ans[1]+1]
 }
+
+// https://leetcode.com/problems/palindrome-permutation/description/
+func canPermutePalindrome(s string) bool {
+	freq := map[rune]int{}
+	for _, ch := range s {
+		freq[ch]++
+	}
+
+	count := 0
+	for _, v := range freq {
+		count += v % 2
+	}
+	return count <= 1
+}
