@@ -190,3 +190,27 @@ func canPermutePalindrome(s string) bool {
 	}
 	return count <= 1
 }
+
+// https://leetcode.com/problems/longest-palindrome/description/
+func longestPalindrome(s string) int {
+	freq := map[rune]int{}
+	for _, ch := range s {
+		freq[ch]++
+	}
+	hasOdd := false
+	count := 0
+	for _, v := range freq {
+		if v%2 == 0 {
+			count += v
+		} else if v > 1 {
+			hasOdd = true
+			count += v - 1
+		} else {
+			hasOdd = true
+		}
+	}
+	if hasOdd {
+		return count + 1
+	}
+	return count
+}

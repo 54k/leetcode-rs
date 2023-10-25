@@ -254,4 +254,19 @@ public class ArrayAndString {
             reverse.apply((k) % n, n);
         }
     }
+
+    // https://leetcode.com/problems/best-time-to-buy-and-sell-stock
+    static class Solution7 {
+        public int maxProfit(int[] prices) {
+            var ans = 0;
+            var prev = prices[0];
+            for (var curr : prices) {
+                ans = Math.max(Math.max(ans, curr - prev), 0);
+                if (curr <= prev) {
+                    prev = curr;
+                }
+            }
+            return ans;
+        }
+    }
 }
