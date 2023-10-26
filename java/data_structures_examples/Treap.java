@@ -1,3 +1,4 @@
+package data_structures_examples;
 import java.util.Random;
 
 public class Treap {
