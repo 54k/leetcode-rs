@@ -25,7 +25,7 @@ public class Day348 {
     }
 
     // https://leetcode.com/problems/binary-tree-inorder-traversal/description/
-    static class Solution {
+    static class Solution1 {
         public List<Integer> inorderTraversalIterative(TreeNode root) {
             var result = new ArrayList<Integer>();
             var curr = root;
@@ -115,6 +115,43 @@ public class Day348 {
                     }
                 }
             }
+            return result;
+        }
+    }
+
+    // https://leetcode.com/problems/palindrome-partitioning/description/
+    static class Solution3 {
+        public List<List<String>> partition(String s) {
+            var check = new Object() {
+                boolean apply(int lo, int hi) {
+                    while (lo < hi) {
+                        if (s.charAt(lo++) != s.charAt(hi--)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            };
+
+            var result = new ArrayList<List<String>>();
+            var rec = new Object() {
+                void apply(int start, List<String> curList) {
+                    if (start == s.length()) {
+                        result.add(new ArrayList<>(curList));
+                        return;
+                    }
+
+                    for (var end = start; end < s.length(); end++) {
+                        if (check.apply(start, end)) {
+                            curList.add(s.substring(start, end + 1));
+                            apply(end + 1, curList);
+                            curList.remove(curList.size() - 1);
+                        }
+                    }
+                }
+            };
+
+            rec.apply(0, new ArrayList<>());
             return result;
         }
     }
