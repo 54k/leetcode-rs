@@ -1,6 +1,9 @@
 package data_structures_examples;
+
 import java.util.Random;
 
+// https://en.wikipedia.org/wiki/Treap
+// https://ru.algorithmica.org/cs/tree-structures/treap/
 public class Treap {
     static class Split {
         Node left, right;
