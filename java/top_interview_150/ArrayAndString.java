@@ -1,6 +1,7 @@
 package top_interview_150;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Consumer;
 
 // https://leetcode.com/studyplan/top-interview-150/
@@ -219,6 +220,16 @@ public class ArrayAndString {
 
     // https://leetcode.com/problems/rotate-array/description
     static class Solution6 {
+        public void rotate2(int[] nums, int k) {
+            var a = new int[nums.length];
+            for (int i = 0; i < nums.length; i++) {
+                a[(i + k) % nums.length] = nums[i];
+            }
+            for (int i = 0; i < a.length; i++) {
+                nums[i] = a[i];
+            }
+        }
+
         public void rotate3(int[] nums, int k) {
             k = k % nums.length;
             int count = 0;
@@ -257,7 +268,20 @@ public class ArrayAndString {
 
     // https://leetcode.com/problems/best-time-to-buy-and-sell-stock
     static class Solution7 {
-        public int maxProfit(int[] prices) {
+        public int maxProfit1(int[] prices) {
+            var minPrice = prices[0];
+            var maxProfit = 0;
+            for (int i = 0; i < prices.length; i++) {
+                if (prices[i] < minPrice) {
+                    minPrice = prices[i];
+                } else if (prices[i] - minPrice > maxProfit) {
+                    maxProfit = prices[i] - minPrice;
+                }
+            }
+            return maxProfit;
+        }
+
+        public int maxProfit2(int[] prices) {
             var ans = 0;
             var prev = prices[0];
             for (var curr : prices) {
@@ -284,6 +308,32 @@ public class ArrayAndString {
                 }
             }
             return maxProfit;
+        }
+    }
+
+    // https://leetcode.com/problems/roman-to-integer
+    static class Solution {
+        public int romanToInt(String s) {
+            var map = Map.of(
+                    'I', 1,
+                    'V', 5,
+                    'X', 10,
+                    'L', 50,
+                    'C', 100,
+                    'D', 500,
+                    'M', 1000);
+
+            var res = 0;
+            for (int i = 0; i < s.length(); i++) {
+                var ch = s.charAt(i);
+                if (i < s.length() - 1 && map.get(ch) < map.get(s.charAt(i + 1))) {
+                    res += map.get(s.charAt(i + 1)) - map.get(ch);
+                    i++;
+                } else {
+                    res += map.get(ch);
+                }
+            }
+            return res;
         }
     }
 }
