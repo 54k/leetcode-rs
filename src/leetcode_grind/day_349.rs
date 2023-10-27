@@ -89,7 +89,7 @@ pub fn largest_local(grid: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
 }
 
 // https://leetcode.com/problems/check-if-every-row-and-column-contains-all-numbers/description/
-pub fn check_valid_1(matrix: Vec<Vec<i32>>) -> bool {
+pub fn check_valid(matrix: Vec<Vec<i32>>) -> bool {
     use std::collections::{HashMap, HashSet};
 
     let mut rows = HashMap::new();
