@@ -248,3 +248,45 @@ pub fn flip_and_invert_image(image: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
 
     image
 }
+
+// https://leetcode.com/problems/delete-greatest-value-in-each-row/
+pub fn delete_greatest_value(grid: Vec<Vec<i32>>) -> i32 {
+    let mut grid = grid;
+    let mut m = grid.len();
+    let mut n = grid[0].len();
+
+    let mut ans = 0;
+
+    for (r, row) in grid.iter_mut().enumerate() {
+        row.sort();
+    }
+
+    let mut c = n as i32 - 1;
+    while c >= 0 {
+        let mut max = 0;
+        for r in 0..m {
+            max = max.max(grid[r][c as usize]);
+        }
+        ans += max;
+        c -= 1;
+    }
+
+    ans
+}
+
+// https://leetcode.com/problems/row-with-maximum-ones/description/
+pub fn row_and_maximum_ones(mat: Vec<Vec<i32>>) -> Vec<i32> {
+    let mut mat = mat;
+    let mut rmax = 0;
+    let mut count = 0;
+    for r in 0..mat.len() {
+        for c in (0..mat[0].len() - 1).rev() {
+            mat[r][c] += mat[r][c + 1];
+        }
+        if mat[r][0] > count {
+            rmax = r;
+            count = mat[r][0];
+        }
+    }
+    return vec![rmax as i32, count];
+}
