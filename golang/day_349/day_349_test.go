@@ -41,7 +41,7 @@ func maxCoinsTopDown(nums []int) int {
 	return dp(1, n-2)
 }
 
-func maxCoinsBottomUp(nums []int) int {
+func maxCoinsBottomUp1(nums []int) int {
 	arr := make([]int, len(nums)+2)
 	for i := 0; i < len(arr); i++ {
 		arr[i] = 1
@@ -75,6 +75,44 @@ func maxCoinsBottomUp(nums []int) int {
 
 			if dp[left][right] < ans {
 				dp[left][right] = ans
+			}
+		}
+	}
+
+	return dp[1][n-2]
+}
+
+func maxCoinsBottomUp2(nums []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	arr := make([]int, len(nums)+2)
+	for i := 0; i < len(arr); i++ {
+		arr[i] = 1
+	}
+	for i := 0; i < len(nums); i++ {
+		arr[i+1] = nums[i]
+	}
+
+	nums = arr
+	n := len(nums)
+
+	dp := make([][]int, n)
+	for i := 0; i < n; i++ {
+		dp[i] = make([]int, n)
+	}
+
+	for left := n - 2; left >= 1; left-- {
+		for right := left; right <= n-2; right++ {
+
+			for i := left; i <= right; i++ {
+				gain := nums[left-1] * nums[i] * nums[right+1]
+				remaining := dp[left][i-1] + dp[i+1][right]
+
+				dp[left][right] = max(remaining+gain, dp[left][right])
 			}
 		}
 	}
