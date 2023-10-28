@@ -72,6 +72,7 @@ public class Day350 {
         }
     }
 
+    // https://leetcode.com/problems/decode-the-slanted-ciphertext/
     static class Solution2 {
         public String decodeCiphertext1(String encodedText, int rows) {
             var cols = encodedText.length() / rows;
