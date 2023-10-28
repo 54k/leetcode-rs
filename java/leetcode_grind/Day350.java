@@ -1,7 +1,6 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Day350 {
     // https://leetcode.com/problems/diagonal-traverse/description/
