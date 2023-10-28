@@ -58,7 +58,7 @@ func countVowelPermutationBottomUpOptimized(n int) int {
 	return result
 }
 
-func countVowelPermutationTopDown(n int) int {
+func countVowelPermutationTopDown1(n int) int {
 	const MOD = 1_000_000_007
 
 	memo := make([][]int, n)
@@ -92,6 +92,42 @@ func countVowelPermutationTopDown(n int) int {
 	result := 0
 	for i := 0; i < 5; i++ {
 		result = (result + dp(n-1, i)) % MOD
+	}
+	return result
+}
+
+func countVowelPermutationTopDown2(n int) int {
+	const MOD = 1_000_000_007
+
+	memo := make([][]int, n)
+	for i := 0; i < n; i++ {
+		memo[i] = make([]int, 5)
+	}
+
+	dfa := [][]int{{1}, {0, 2}, {0, 1, 3, 4}, {2, 4}, {0}}
+
+	var dp func(int, int) int
+	dp = func(i, vowel int) int {
+		if i == n-1 {
+			return 1
+		}
+
+		if memo[i][vowel] != 0 {
+			return memo[i][vowel]
+		}
+
+		ans := 0
+		for _, next := range dfa[vowel] {
+			ans = (ans + dp(i+1, next)) % MOD
+		}
+
+		memo[i][vowel] = ans
+		return ans
+	}
+
+	result := 0
+	for i := 0; i < 5; i++ {
+		result = (result + dp(0, i)) % MOD
 	}
 	return result
 }
