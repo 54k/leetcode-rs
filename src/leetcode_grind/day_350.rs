@@ -79,3 +79,21 @@ pub fn min_reorder(n: i32, connections: Vec<Vec<i32>>) -> i32 {
     }
     ans
 }
+
+// https://leetcode.com/problems/distribute-candies-to-people/description/
+pub fn distribute_candies(candies: i32, num_people: i32) -> Vec<i32> {
+    let mut candies = candies;
+    let mut ans = vec![0; num_people as usize];
+    let mut curr = 1;
+    let mut i = 0;
+
+    while candies > 0 {
+        let to_give = curr.min(candies);
+        curr += 1;
+        candies -= to_give;
+        ans[i] += to_give;
+        i = (i + 1) % num_people as usize;
+    }
+
+    ans
+}
