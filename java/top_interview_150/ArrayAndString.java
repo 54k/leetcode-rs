@@ -292,15 +292,53 @@ public class ArrayAndString {
             }
             return ans;
         }
+
+        public int maxProfit3(int[] prices) {
+            int largestDifference = 0;
+            int minSoFar = Integer.MAX_VALUE;
+            for (int i = 0; i < prices.length; i++) {
+                if (prices[i] < minSoFar) {
+                    minSoFar = prices[i];
+                } else {
+                    largestDifference = Math.max(largestDifference, prices[i] - minSoFar);
+                }
+            }
+            return largestDifference;
+        }
     }
 
     // https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/description
     static class Solution8 {
-        public int maxProfit1(int[] prices) {
-            return 0;
+        public int maxProfitPeaksAndValleys(int[] prices) {
+            var total = 0;
+            var peak = Integer.MAX_VALUE;
+            var valley = Integer.MAX_VALUE;
+
+            for (int i = 0; i < prices.length; i++) {
+                if (prices[i] < peak) {
+                    total += peak - valley;
+                    valley = prices[i];
+                    peak = valley;
+                } else {
+                    peak = prices[i];
+                }
+            }
+
+            total += peak - valley;
+            return total;
         }
 
-        public int maxProfitDP(int[] prices) {
+        public int maxProfitImprovedPeaksAndValleys(int[] prices) {
+            var total = 0;
+            for (int i = 1; i < prices.length; i++) {
+                if (prices[i] > prices[i - 1]) {
+                    total += prices[i] - prices[i - 1];
+                }
+            }
+            return total;
+        }
+
+        public int maxProfitBruteForce(int[] prices) {
             var dp = new int[prices.length];
             var maxProfit = 0;
             for (int i = 0; i < dp.length; i++) {
