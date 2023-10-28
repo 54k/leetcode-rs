@@ -1,10 +1,11 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Day350 {
     // https://leetcode.com/problems/diagonal-traverse/description/
-    static class Solution {
+    static class Solution1 {
         public int[] findDiagonalOrderTraverseAndReverse(int[][] mat) {
             var n = mat.length;
             var m = mat[0].length;
@@ -68,6 +69,65 @@ public class Day350 {
             }
 
             return result;
+        }
+    }
+
+    static class Solution2 {
+        public String decodeCiphertext1(String encodedText, int rows) {
+            var cols = encodedText.length() / rows;
+            var mat = new char[rows][cols];
+            for (int i = 0, c = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    var ch = encodedText.charAt(c++);
+                    mat[i][j] = ch;
+                }
+            }
+
+            var result = new StringBuilder();
+            var row = 0;
+            var col = 0;
+
+            var len = 0;
+            var last = 0;
+            var colIdx = 0;
+
+            while (col < cols) {
+                if (mat[row][col] != ' ') {
+                    last = len;
+                }
+                result.append(mat[row][col]);
+                len++;
+
+                var newRow = row + 1;
+                var newCol = col + 1;
+                if (newRow >= rows || newCol >= cols) {
+                    row = 0;
+                    col = ++colIdx;
+                } else {
+                    row = newRow;
+                    col = newCol;
+                }
+            }
+
+            if (len == 0) {
+                return result.toString();
+            }
+
+            return result.toString().substring(0, last + 1);
+        }
+
+        public String decodeCiphertext2(String encodedText, int rows) {
+            var n = encodedText.length();
+            var col = n / rows;
+            var sb = new StringBuilder();
+            for (int i = 0; i < col; i++) {
+                var j = i;
+                while (j < n) {
+                    sb.append(encodedText.charAt(j));
+                    j += col + 1;
+                }
+            }
+            return sb.toString().stripTrailing();
         }
     }
 }
