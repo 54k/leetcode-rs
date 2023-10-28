@@ -296,6 +296,10 @@ public class ArrayAndString {
 
     // https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/description
     static class Solution8 {
+        public int maxProfit1(int[] prices) {
+            return 0;
+        }
+
         public int maxProfitDP(int[] prices) {
             var dp = new int[prices.length];
             var maxProfit = 0;
@@ -308,6 +312,36 @@ public class ArrayAndString {
                 }
             }
             return maxProfit;
+        }
+    }
+
+    // https://leetcode.com/problems/jump-game/description
+    static class Solution9 {
+        public boolean canJump(int[] nums) {
+            var visited = new boolean[nums.length];
+
+            var dfs = new Object() {
+                boolean appy(int i) {
+                    if (i == nums.length - 1) {
+                        return true;
+                    }
+
+                    if (visited[i]) {
+                        return false;
+                    }
+                    visited[i] = true;
+
+                    for (var next = 1; next <= nums[i]; next++) {
+                        if (appy((i + next) % nums.length)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            };
+
+            return dfs.appy(0);
         }
     }
 
