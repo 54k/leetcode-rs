@@ -131,3 +131,49 @@ func countVowelPermutationTopDown2(n int) int {
 	}
 	return result
 }
+
+// https://leetcode.com/problems/diagonal-traverse/
+func findDiagonalOrder(mat [][]int) []int {
+	n := len(mat)
+	m := len(mat[0])
+
+	result := make([]int, n*m)
+	row, col, dir, r := 0, 0, 1, 0
+
+	for row < n && col < m {
+		result[r] = mat[row][col]
+		r++
+
+		newRow := row
+		newCol := col
+		if dir == 1 {
+			newRow -= 1
+			newCol += 1
+		} else {
+			newRow += 1
+			newCol -= 1
+		}
+
+		if newRow < 0 || newRow >= n || newCol < 0 || newCol >= m {
+			if dir == 1 {
+				if col < m-1 {
+					col++
+				} else {
+					row++
+				}
+			} else {
+				if row < n-1 {
+					row++
+				} else {
+					col++
+				}
+			}
+
+			dir = 1 - dir
+		} else {
+			row = newRow
+			col = newCol
+		}
+	}
+	return result
+}
