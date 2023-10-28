@@ -129,5 +129,29 @@ public class Day350 {
             }
             return sb.toString().stripTrailing();
         }
+
+        public String decodeCiphertext3(String encodedText, int rows) {
+            var cols = encodedText.length() / rows;
+            var mat = new char[rows][cols];
+
+            for (int i = 0, s = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    mat[i][j] = encodedText.charAt(s++);
+                }
+            }
+
+            var sb = new StringBuilder();
+            for (int i = 0; i < cols; i++) {
+                var x = 0;
+                var y = i;
+                while (x < rows && y < cols) {
+                    sb.append(mat[x][y]);
+                    x++;
+                    y++;
+                }
+            }
+
+            return sb.toString().stripTrailing();
+        }
     }
 }
