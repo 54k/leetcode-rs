@@ -25,5 +25,15 @@ pub fn eliminate_maximum_sort_by_arrival_time(dist: Vec<i32>, speed: Vec<i32>) -
 
 // https://leetcode.com/problems/brick-wall/description/
 pub fn least_bricks(wall: Vec<Vec<i32>>) -> i32 {
-    
+    use std::collections::HashMap;
+    let mut least_bricks_crossed = wall.len() as i32;
+    let mut gaps = HashMap::new();
+    for row in wall {
+        let mut position = 0;
+        for i in 0..row.len() - 1 {
+            position += row[i];
+            *gaps.entry(position).or_insert(0) += 1;
+        }
+    }
+    least_bricks_crossed - *gaps.values().max().unwrap_or(&0)
 }
