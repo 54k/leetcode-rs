@@ -1,3 +1,8 @@
+// https://leetcode.com/problems/bricks-falling-when-hit/description/
+pub fn hit_bricks(grid: Vec<Vec<i32>>, hits: Vec<Vec<i32>>) -> Vec<i32> {
+    todo!()
+}
+
 // https://leetcode.com/problems/find-root-of-n-ary-tree/description/
 
 // https://leetcode.com/problems/minimum-window-subsequence/description/
@@ -66,11 +71,6 @@ pub fn number_of_good_subsets(nums: Vec<i32>) -> i32 {
 
 // https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array/description/
 pub fn ways_to_partition(nums: Vec<i32>, k: i32) -> i32 {
-    todo!()
-}
-
-// https://leetcode.com/problems/bricks-falling-when-hit/description/
-pub fn hit_bricks(grid: Vec<Vec<i32>>, hits: Vec<Vec<i32>>) -> Vec<i32> {
     todo!()
 }
 
