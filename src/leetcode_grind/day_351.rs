@@ -22,3 +22,8 @@ pub fn eliminate_maximum_sort_by_arrival_time(dist: Vec<i32>, speed: Vec<i32>) -
     }
     ans
 }
+
+// https://leetcode.com/problems/brick-wall/description/
+pub fn least_bricks(wall: Vec<Vec<i32>>) -> i32 {
+    
+}
