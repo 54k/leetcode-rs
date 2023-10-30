@@ -355,7 +355,11 @@ public class ArrayAndString {
 
     // https://leetcode.com/problems/jump-game/description
     static class Solution9 {
-        public boolean canJump(int[] nums) {
+        public boolean canJumpBackTrack(int[] nums) {
+            return true;
+        }
+
+        public boolean canJumpDFS(int[] nums) {
             var visited = new boolean[nums.length];
 
             var dfs = new Object() {
