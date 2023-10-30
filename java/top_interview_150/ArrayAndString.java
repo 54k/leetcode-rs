@@ -484,6 +484,32 @@ public class ArrayAndString {
         }
     }
 
+    // https://leetcode.com/problems/h-index/description
+    static class Solution11 {
+        public int hIndexSorting(int[] citations) {
+            Arrays.sort(citations);
+            int i = 0;
+            while (i < citations.length && citations[citations.length - 1 - i] > i) {
+                i++;
+            }
+            return i;
+        }
+
+        public int hIndexCountingSort(int[] citations) {
+            int n = citations.length;
+            int[] papers = new int[n + 1];
+            for (int c : citations) {
+                papers[Math.min(n, c)]++;
+            }
+
+            int k = n;
+            for (int s = papers[n]; k > s; s += papers[k]) {
+                k--;
+            }
+            return k;
+        }
+    }
+
     // https://leetcode.com/problems/roman-to-integer
     static class Solution {
         public int romanToInt(String s) {
