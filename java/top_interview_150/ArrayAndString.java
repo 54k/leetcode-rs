@@ -355,10 +355,6 @@ public class ArrayAndString {
 
     // https://leetcode.com/problems/jump-game/description
     static class Solution9 {
-        public boolean canJumpBackTrack(int[] nums) {
-            return true;
-        }
-
         public boolean canJumpDFS(int[] nums) {
             var visited = new boolean[nums.length];
 
@@ -384,6 +380,107 @@ public class ArrayAndString {
             };
 
             return dfs.appy(0);
+        }
+
+        public boolean canJumpBackTrack(int[] nums) {
+            var backtrack = new Object() {
+                boolean apply(int position) {
+                    if (position == nums.length - 1) {
+                        return true;
+                    }
+
+                    var furthestJump = Math.min(position + nums[position], nums.length - 1);
+                    for (int nextPosition = position + 1; nextPosition <= furthestJump; nextPosition++) {
+                        if (apply(nextPosition)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            };
+            return backtrack.apply(0);
+        }
+
+        public boolean canJumpBackTrackMemo(int[] nums) {
+            var memo = new Boolean[nums.length];
+            var backtrack = new Object() {
+                boolean apply(int position) {
+                    if (position == nums.length - 1) {
+                        return true;
+                    }
+
+                    if (memo[position] != null) {
+                        return memo[position];
+                    }
+
+                    var furthestJump = Math.min(position + nums[position], nums.length - 1);
+                    for (int nextPosition = position + 1; nextPosition <= furthestJump; nextPosition++) {
+                        if (apply(nextPosition)) {
+                            memo[position] = true;
+                            return true;
+                        }
+                    }
+                    memo[position] = false;
+                    return false;
+                }
+            };
+            return backtrack.apply(0);
+        }
+
+        public boolean canJumpDPBottomUpBackward(int[] nums) {
+            var dp = new boolean[nums.length];
+            dp[nums.length - 1] = true;
+            for (int i = dp.length - 2; i >= 0; i--) {
+                var furthestJump = Math.min(i + nums[i], dp.length - 1);
+                for (int j = i + 1; j <= furthestJump; j++) {
+                    dp[i] |= dp[j];
+                    if (dp[j]) {
+                        break;
+                    }
+                }
+            }
+            return dp[0];
+        }
+
+        public boolean canJumpDPBottomUpForward(int[] nums) {
+            var dp = new boolean[nums.length];
+            dp[0] = true;
+            for (int k = 0; k < dp.length; k++) {
+                for (int k2 = k + 1; k2 <= Math.min(dp.length - 1, k + nums[k]); k2++) {
+                    dp[k2] |= dp[k];
+                }
+            }
+            return dp[nums.length - 1];
+        }
+
+        public boolean canJumpGreedy(int[] nums) {
+            var lastGood = nums.length - 1;
+            for (int i = nums.length - 2; i >= 0; i--) {
+                if (i + nums[i] >= lastGood) {
+                    lastGood = i;
+                }
+            }
+            return lastGood == 0;
+        }
+    }
+
+    // https://leetcode.com/problems/jump-game-ii/description
+    static class Solution10 {
+        public int jump(int[] nums) {
+            var end = 0;
+            var far = 0;
+            var answer = 0;
+
+            for (int i = 0; i < nums.length - 1; i++) {
+                far = Math.max(far, i + nums[i]);
+                if (i == end) {
+                    answer++;
+                    end = far;
+                }
+            }
+
+            return answer;
         }
     }
 
