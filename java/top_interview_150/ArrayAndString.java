@@ -1,7 +1,11 @@
 package top_interview_150;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Consumer;
 
 // https://leetcode.com/studyplan/top-interview-150/
@@ -507,6 +511,57 @@ public class ArrayAndString {
                 k--;
             }
             return k;
+        }
+    }
+
+    // https://leetcode.com/problems/insert-delete-getrandom-o1/description
+    static class Solution12 {
+        class RandomizedSet {
+            Map<Integer, Integer> valToIdx = new HashMap<Integer, Integer>();
+            List<Integer> values = new ArrayList<Integer>();
+            Random rand = new Random();
+
+            public RandomizedSet() {
+            }
+
+            public boolean insert(int val) {
+                if (!valToIdx.containsKey(val)) {
+                    return false;
+                }
+                values.add(val);
+                valToIdx.put(val, values.size() - 1);
+                return true;
+            }
+
+            public boolean remove1(int val) {
+                if (!valToIdx.containsKey(val)) {
+                    return false;
+                }
+                var idx = valToIdx.remove(val);
+                values.set(idx, values.get(values.size() - 1));
+                values.remove(values.size() - 1);
+                if (values.size() > idx) {
+                    valToIdx.put(values.get(idx), idx);
+                }
+                return true;
+            }
+
+            public boolean remove(int val) {
+                if (!valToIdx.containsKey(val)) {
+                    return false;
+                }
+                var idx = valToIdx.get(val);
+                var last = values.get(values.size() - 1);
+                values.set(idx, last);
+                valToIdx.put(last, idx);
+                valToIdx.remove(val);
+                values.remove(values.size() - 1);
+                return true;
+            }
+
+            public int getRandom() {
+                return values.get(Math.abs(rand.nextInt() - 1) % values.size());
+            }
         }
     }
 
