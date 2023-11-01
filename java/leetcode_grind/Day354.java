@@ -1,0 +1,168 @@
+package leetcode_grind;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
+
+public class Day354 {
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    // https://leetcode.com/problems/find-mode-in-binary-search-tree/description
+    static class Solution1 {
+        public int[] findModeDFSRecursive(TreeNode root) {
+            var freq = new HashMap<Integer, Integer>();
+            var maxFreq = new int[] { 0 };
+
+            var dfs = new Object() {
+                void go(TreeNode root) {
+                    if (root == null) {
+                        return;
+                    }
+
+                    freq.put(root.val, freq.getOrDefault(root.val, 0) + 1);
+                    maxFreq[0] = Math.max(freq.get(root.val), maxFreq[0]);
+
+                    go(root.left);
+                    go(root.right);
+                }
+            };
+
+            dfs.go(root);
+
+            List<Integer> result = new ArrayList<Integer>();
+            for (var e : freq.entrySet()) {
+                if (e.getValue() == maxFreq[0]) {
+                    result.add(e.getKey());
+                }
+            }
+            return result.stream().mapToInt(Integer::intValue).toArray();
+        }
+
+        public int[] findModeDFSIterative(TreeNode root) {
+            var freq = new HashMap<Integer, Integer>();
+            var maxFreq = 0;
+            var stack = new Stack<TreeNode>();
+            stack.push(root);
+
+            while (!stack.isEmpty()) {
+                var top = stack.pop();
+                if (top == null) {
+                    continue;
+                }
+                freq.put(top.val, freq.getOrDefault(top.val, 0) + 1);
+                maxFreq = Math.max(freq.get(top.val), maxFreq);
+                stack.push(top.right);
+                stack.push(top.left);
+            }
+
+            List<Integer> result = new ArrayList<Integer>();
+            for (var e : freq.entrySet()) {
+                if (e.getValue() == maxFreq) {
+                    result.add(e.getKey());
+                }
+            }
+            return result.stream().mapToInt(Integer::intValue).toArray();
+        }
+
+        public int[] findModeInorder(TreeNode root) {
+            var ans = new ArrayList<Integer>();
+
+            var inorder = new Object() {
+                int currNum = 0;
+                int currStreak = 0;
+                int maxStreak = 0;
+
+                void apply(TreeNode root) {
+                    if (root == null) {
+                        return;
+                    }
+                    apply(root.left);
+
+                    if (currNum == root.val) {
+                        currStreak++;
+                    } else {
+                        currStreak = 1;
+                    }
+
+                    if (currStreak > maxStreak) {
+                        ans.clear();
+                        maxStreak = currStreak;
+                    }
+                    if (currStreak == maxStreak) {
+                        ans.add(root.val);
+                    }
+
+                    currNum = root.val;
+
+                    apply(root.right);
+                }
+            };
+
+            inorder.apply(root);
+            return ans.stream().mapToInt(Integer::intValue).toArray();
+        }
+
+        public int[] findModeMorrisTraversal(TreeNode root) {
+            var res = new ArrayList<Integer>();
+
+            var curNum = 0;
+            var curStreak = 0;
+            var maxStreak = 0;
+
+            var curNode = root;
+            while (curNode != null) {
+                if (curNode.left == null) {
+                    var val = curNode.val;
+
+                    if (curNum == val) {
+                        curStreak++;
+                    } else {
+                        curStreak = 1;
+                        curNum = val;
+                    }
+
+                    if (curStreak > maxStreak) {
+                        res.clear();
+                        maxStreak = curStreak;
+                    }
+
+                    if (curStreak == maxStreak) {
+                        res.add(val);
+                    }
+
+                    curNode = curNode.right;
+                } else {
+                    var next = curNode.left;
+                    while (next.right != null) {
+                        next = next.right;
+                    }
+
+                    next.right = curNode;
+                    var tmp = curNode;
+                    curNode = curNode.left;
+                    tmp.left = null;
+                }
+            }
+
+            return res.stream().mapToInt(Integer::intValue).toArray();
+        }
+    }
+}
