@@ -196,7 +196,7 @@ public class Day354 {
     }
 
     // https://leetcode.com/problems/maximum-subarray-min-product/description/
-    static class Solution {
+    static class Solution3 {
         public int maxSumMinProduct(int[] nums) {
             var prefix = new long[nums.length + 1];
             var mono = new Stack<Integer>();
@@ -219,6 +219,36 @@ public class Day354 {
             }
 
             return (int) (ans % 1_000_000_007);
+        }
+    }
+
+    // https://leetcode.com/problems/edit-distance/description/
+    static class Solution4 {
+        public int minDistance(String word1, String word2) {
+            var word1Len = word1.length();
+            var word2Len = word2.length();
+
+            var dp = new int[word1Len + 1][word2Len + 1];
+            for (var i = 1; i <= word1Len; i++) {
+                dp[i][0] = dp[i - 1][0] + 1;
+            }
+            for (var i = 1; i <= word2Len; i++) {
+                dp[0][i] = dp[0][i - 1] + 1;
+            }
+
+            for (var w1 = 1; w1 <= word1Len; w1++) {
+                for (var w2 = 1; w2 <= word2Len; w2++) {
+                    if (word1.charAt(w1 - 1) == word2.charAt(w2 - 1)) {
+                        dp[w1][w2] = dp[w1 - 1][w2 - 1];
+                    } else {
+                        dp[w1][w2] = Math.min(
+                                dp[w1 - 1][w2 - 1],
+                                Math.min(dp[w1 - 1][w2], dp[w1][w2 - 1])) + 1;
+                    }
+                }
+            }
+
+            return dp[word1Len][word2Len];
         }
     }
 }
