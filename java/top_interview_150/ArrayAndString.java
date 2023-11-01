@@ -565,6 +565,44 @@ public class ArrayAndString {
         }
     }
 
+    // https://leetcode.com/problems/product-of-array-except-self
+    static class Solution13 {
+        public int[] productExceptSelf1(int[] nums) {
+            var L = new int[nums.length];
+            L[0] = 1;
+            var R = new int[nums.length];
+            R[nums.length - 1] = 1;
+
+            for (int i = 1; i < nums.length; i++) {
+                L[i] = nums[i - 1] * L[i - 1];
+            }
+            for (int i = nums.length - 2; i >= 0; i--) {
+                R[i] = nums[i + 1] * R[i + 1];
+            }
+            var ans = new int[nums.length];
+            for (int i = 0; i < nums.length; i++) {
+                ans[i] = L[i] * R[i];
+            }
+            return ans;
+        }
+
+        public int[] productExceptSelf2(int[] nums) {
+            var L = new int[nums.length];
+            L[0] = 1;
+            for (int i = 1; i < nums.length; i++) {
+                L[i] = L[i - 1] * nums[i - 1];
+            }
+
+            var R = 1;
+            for (int i = nums.length - 1; i >= 0; i--) {
+                L[i] *= R;
+                R *= nums[i];
+            }
+
+            return L;
+        }
+    }
+
     // https://leetcode.com/problems/roman-to-integer
     static class Solution {
         public int romanToInt(String s) {
