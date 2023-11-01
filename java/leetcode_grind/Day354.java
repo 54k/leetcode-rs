@@ -2,6 +2,7 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -163,6 +164,34 @@ public class Day354 {
             }
 
             return res.stream().mapToInt(Integer::intValue).toArray();
+        }
+    }
+
+    // https://leetcode.com/problems/diagonal-traverse-ii/description/
+    static class Solution2 {
+        public int[] findDiagonalOrder(List<List<Integer>> nums) {
+            var ans = new ArrayList<Integer>();
+
+            var queue = new LinkedList<int[]>();
+            queue.offer(new int[] { 0, 0 });
+
+            while (!queue.isEmpty()) {
+                var top = queue.poll();
+                var row = top[0];
+                var col = top[1];
+
+                ans.add(nums.get(row).get(col));
+
+                if (col == 0 && row + 1 < nums.size()) {
+                    queue.offer(new int[] { row + 1, col });
+                }
+
+                if (col + 1 < nums.get(row).size()) {
+                    queue.offer(new int[] { row, col + 1 });
+                }
+            }
+
+            return ans.stream().mapToInt(Integer::intValue).toArray();
         }
     }
 }
