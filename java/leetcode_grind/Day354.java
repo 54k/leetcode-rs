@@ -194,4 +194,31 @@ public class Day354 {
             return ans.stream().mapToInt(Integer::intValue).toArray();
         }
     }
+
+    // https://leetcode.com/problems/maximum-subarray-min-product/description/
+    static class Solution {
+        public int maxSumMinProduct(int[] nums) {
+            var prefix = new long[nums.length + 1];
+            var mono = new Stack<Integer>();
+
+            long ans = 0;
+            for (int i = 0; i < nums.length; i++) {
+                prefix[i + 1] = prefix[i] + nums[i];
+            }
+
+            for (int i = 0; i <= nums.length; i++) {
+                while (!mono.isEmpty() && (i == nums.length || nums[mono.peek()] > nums[i])) {
+                    var min = mono.pop();
+                    var left = mono.isEmpty() ? 0 : mono.peek() + 1;
+                    var prod = (prefix[i] - prefix[left]) * nums[min];
+                    ans = Math.max(ans, prod);
+                }
+                if (i < nums.length) {
+                    mono.add(i);
+                }
+            }
+
+            return (int) (ans % 1_000_000_007);
+        }
+    }
 }
