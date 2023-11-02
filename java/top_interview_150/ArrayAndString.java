@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Stack;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 // https://leetcode.com/studyplan/top-interview-150/
 public class ArrayAndString {
@@ -600,6 +602,282 @@ public class ArrayAndString {
             }
 
             return L;
+        }
+    }
+
+    // https://leetcode.com/problems/gas-station
+    static class Solution14 {
+        public int canCompleteCircuit1(int[] gas, int[] cost) {
+            var ans = 0;
+            var cur = 0;
+
+            var totalGas = 0;
+            var totalCost = 0;
+
+            for (int i = 0; i < gas.length; i++) {
+                totalCost += cost[i];
+                totalGas += gas[i];
+
+                cur += gas[i] - cost[i];
+                if (cur < 0) {
+                    ans = i + 1;
+                    cur = 0;
+                }
+            }
+
+            if (totalGas - totalCost < 0) {
+                return -1;
+            }
+            return ans;
+        }
+
+        public int canCompleteCircuit2(int[] gas, int[] cost) {
+            var minSum = Integer.MAX_VALUE;
+            var curSum = 0;
+            var ans = 0;
+            for (int i = 0; i < gas.length; i++) {
+                if (curSum < minSum) {
+                    minSum = curSum;
+                    ans = i;
+                }
+                curSum += gas[i] - cost[i];
+            }
+            if (curSum < 0) {
+                return -1;
+            }
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/candy/description
+    static class Solution15 {
+        public int candy1(int[] ratings) {
+            int[] candies = new int[ratings.length];
+            Arrays.fill(candies, 1);
+            boolean hasChanged = true;
+
+            while (hasChanged) {
+                hasChanged = false;
+                for (int i = 0; i < ratings.length; i++) {
+                    if (i != ratings.length - 1 && ratings[i] > ratings[i + 1] && candies[i] <= candies[i + 1]) {
+                        candies[i] = candies[i + 1] + 1;
+                        hasChanged = true;
+                    }
+                    if (i != 0 && ratings[i] > ratings[i - 1] && candies[i] <= candies[i - 1]) {
+                        candies[i] = candies[i - 1] + 1;
+                        hasChanged = true;
+                    }
+                }
+            }
+
+            var sum = 0;
+            for (var c : candies) {
+                sum += c;
+            }
+            return sum;
+        }
+
+        public int candy2(int[] ratings) {
+            var leftToRightCandies = new int[ratings.length];
+            var rightToLeftCandies = new int[ratings.length];
+
+            for (int i = 0; i < rightToLeftCandies.length; i++) {
+                leftToRightCandies[i]++;
+                rightToLeftCandies[i]++;
+            }
+
+            for (int i = 1; i < ratings.length; i++) {
+                if (ratings[i] > ratings[i - 1]) {
+                    leftToRightCandies[i] = leftToRightCandies[i - 1] + 1;
+                }
+            }
+
+            for (int i = ratings.length - 2; i >= 0; i--) {
+                if (ratings[i] > ratings[i + 1]) {
+                    rightToLeftCandies[i] = rightToLeftCandies[i + 1] + 1;
+                }
+            }
+
+            var sum = 0;
+            for (int i = 0; i < ratings.length; i++) {
+                sum += Math.max(leftToRightCandies[i], rightToLeftCandies[i]);
+            }
+            return sum;
+        }
+
+        public int candy3(int[] ratings) {
+            var candies = new int[ratings.length];
+            Arrays.fill(candies, 1);
+            for (int i = 1; i < candies.length; i++) {
+                if (ratings[i] > ratings[i - 1]) {
+                    candies[i] = candies[i - 1] + 1;
+                }
+            }
+            var sum = candies[ratings.length - 1];
+            for (int i = ratings.length - 2; i >= 0; i--) {
+                if (ratings[i] > ratings[i + 1]) {
+                    candies[i] = Math.max(candies[i + 1] + 1, candies[i]);
+                }
+                sum += candies[i];
+            }
+            return sum;
+        }
+
+        public int candy4(int[] ratings) {
+            Function<Integer, Integer> count = (n) -> (n * (n + 1)) / 2;
+
+            if (ratings.length <= 1) {
+                return ratings.length;
+            }
+
+            int candies = 0;
+            int up = 0;
+            int down = 0;
+            int oldSlope = 0;
+
+            for (int i = 1; i < ratings.length; i++) {
+                int newSlope = ratings[i] > ratings[i - 1] ? 1 : ratings[i] < ratings[i - 1] ? -1 : 0;
+
+                if ((oldSlope > 0 && newSlope == 0) || (oldSlope < 0 && newSlope >= 0)) {
+                    candies += count.apply(up) + count.apply(down) + Math.max(up, down);
+                    up = 0;
+                    down = 0;
+                }
+
+                if (newSlope > 0) {
+                    up++;
+                } else if (newSlope < 0) {
+                    down++;
+                } else {
+                    candies++;
+                }
+
+                oldSlope = newSlope;
+            }
+
+            candies += count.apply(up) + count.apply(down) + Math.max(up, down) + 1;
+            return candies;
+        }
+
+        // https://leetcode.com/problems/candy/solutions/135698/Simple-solution-with-one-pass-using-O(1)-space/
+        public int candy5(int[] ratings) {
+            if (ratings.length == 0)
+                return 0;
+            int ret = 1;
+            int up = 0, down = 0, peak = 0;
+            for (int i = 1; i < ratings.length; i++) {
+                if (ratings[i - 1] < ratings[i]) {
+                    peak = ++up;
+                    down = 0;
+                    ret += 1 + up;
+                } else if (ratings[i - 1] == ratings[i]) {
+                    peak = up = down = 0;
+                    ret += 1;
+                } else {
+                    up = 0;
+                    down++;
+                    ret += 1 + down + (peak >= down ? -1 : 0);
+                }
+            }
+            return ret;
+        }
+    }
+
+    // https://leetcode.com/problems/trapping-rain-water/description/
+    static class Solution16 {
+        public int trap1(int[] height) {
+            var ans = 0;
+            for (int i = 0; i < height.length; i++) {
+                int leftMax = 0;
+                int rightMax = 0;
+
+                for (int j = i; j >= 0; j--) {
+                    leftMax = Math.max(leftMax, height[j]);
+                }
+
+                for (int k = i; k < height.length; k++) {
+                    rightMax = Math.max(rightMax, height[k]);
+                }
+
+                ans += Math.min(leftMax, rightMax) - height[i];
+            }
+            return ans;
+        }
+
+        public int trap2(int[] height) {
+            if (height.length == 0) {
+                return 0;
+            }
+
+            var len = height.length;
+
+            var leftMax = new int[height.length];
+            leftMax[0] = height[0];
+
+            var rightMax = new int[height.length];
+            rightMax[height.length - 1] = height[height.length - 1];
+
+            for (int i = 1; i < len; i++) {
+                leftMax[i] = Math.max(height[i], leftMax[i - 1]);
+            }
+            for (int i = len - 2; i >= 0; i--) {
+                rightMax[i] = Math.max(height[i], rightMax[i + 1]);
+            }
+
+            var ans = 0;
+            for (int i = 0; i < len; i++) {
+                ans += Math.min(leftMax[i], rightMax[i]) - height[i];
+            }
+            return ans;
+        }
+
+        public int trap3(int[] height) {
+            var ans = 0;
+
+            var stack = new Stack<Integer>();
+            var current = 0;
+            while (current < height.length) {
+                while (!stack.isEmpty() && height[current] > height[stack.peek()]) {
+                    var top = stack.pop();
+                    if (stack.isEmpty()) {
+                        break;
+                    }
+
+                    var distance = current - stack.peek() - 1;
+                    var boundedHeight = Math.min(height[current], height[stack.peek()]) - height[top];
+                    ans += distance * boundedHeight;
+                }
+                stack.push(current++);
+            }
+
+            return ans;
+        }
+
+        public int trap4(int[] height) {
+            var leftMax = 0;
+            var rightMax = 0;
+            var ans = 0;
+
+            var left = 0;
+            var right = height.length - 1;
+            while (left < right) {
+                if (height[left] < height[right]) {
+                    if (height[left] >= leftMax) {
+                        leftMax = height[left];
+                    } else {
+                        ans += leftMax - height[left];
+                    }
+                    left++;
+                } else {
+                    if (height[right] >= rightMax) {
+                        rightMax = height[right];
+                    } else {
+                        ans += rightMax - height[right];
+                    }
+                    right--;
+                }
+            }
+            return ans;
         }
     }
 
