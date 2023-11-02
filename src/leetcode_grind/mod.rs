@@ -241,6 +241,7 @@ pub mod day_353;
 pub mod day_354;
 pub mod day_349;
 pub mod day_32;
+pub mod day_355;
 pub mod day_320;
 pub mod day_351;
 pub mod day_350;
