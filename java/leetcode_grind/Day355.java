@@ -45,4 +45,24 @@ public class Day355 {
             return ans[0];
         }
     }
+
+    // https://leetcode.com/problems/minimum-falling-path-sum/description/
+    static class Solution2 {
+        public int minFallingPathSum(int[][] matrix) {
+            var n = matrix[0].length;
+            for (int i = matrix.length - 2; i >= 0; i--) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] += Math.min(
+                            matrix[i + 1][j],
+                            Math.min(matrix[i + 1][Math.max(j - 1, 0)], matrix[i + 1][Math.min(j + 1, n - 1)]));
+                }
+            }
+
+            var ans = Integer.MAX_VALUE;
+            for (int i = 0; i < n; i++) {
+                ans = Math.min(ans, matrix[0][i]);
+            }
+            return ans;
+        }
+    }
 }
