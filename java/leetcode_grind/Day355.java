@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.PriorityQueue;
+
 public class Day355 {
     static public class TreeNode {
         int val;
@@ -63,6 +65,59 @@ public class Day355 {
                 ans = Math.min(ans, matrix[0][i]);
             }
             return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/trapping-rain-water-ii/description/
+    static class Solution3 {
+        public int trapRainWater(int[][] heightMap) {
+            if (heightMap.length == 0) {
+                return 0;
+            }
+
+            var m = heightMap.length;
+            var n = heightMap[0].length;
+            if (m < 3 || n < 3) {
+                return 0;
+            }
+
+            var heap = new PriorityQueue<int[]>((a, b) -> {
+                return a[0] - b[0];
+            });
+
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
+                        heap.add(new int[] { heightMap[i][j], i, j });
+                        heightMap[i][j] = -1;
+                    }
+                }
+            }
+
+            int level = 0, res = 0;
+
+            while (!heap.isEmpty()) {
+                var poll = heap.poll();
+                var x = poll[1];
+                var y = poll[2];
+                var height = poll[0];
+                level = Math.max(height, level);
+
+                for (var dir : new int[][] { { x - 1, y }, { x + 1, y }, { x, y - 1 }, { x, y + 1 } }) {
+                    var i = dir[0];
+                    var j = dir[1];
+                    if (0 <= i && i < m && 0 <= j && j < n && heightMap[i][j] != -1) {
+                        heap.add(new int[] { heightMap[i][j], i, j });
+
+                        if (heightMap[i][j] < level) {
+                            res += level - heightMap[i][j];
+                        }
+                        heightMap[i][j] = -1;
+                    }
+                }
+            }
+
+            return res;
         }
     }
 }
