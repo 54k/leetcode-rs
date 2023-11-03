@@ -882,8 +882,8 @@ public class ArrayAndString {
     }
 
     // https://leetcode.com/problems/roman-to-integer
-    static class Solution {
-        public int romanToInt(String s) {
+    static class Solution17 {
+        public int romanToIntForward(String s) {
             var map = Map.of(
                     'I', 1,
                     'V', 5,
@@ -904,6 +904,61 @@ public class ArrayAndString {
                 }
             }
             return res;
+        }
+
+        public int romanToIntBackwards(String s) {
+            Map<String, Integer> values = new HashMap<>();
+            values.put("M", 1000);
+            values.put("D", 500);
+            values.put("C", 100);
+            values.put("L", 50);
+            values.put("X", 10);
+            values.put("V", 5);
+            values.put("I", 1);
+
+            String lastSymbol = s.substring(s.length() - 1);
+            int lastValue = values.get(lastSymbol);
+            int total = lastValue;
+
+            for (int i = s.length() - 2; i >= 0; i--) {
+                String currentSymbol = s.substring(i, i + 1);
+                int currentValue = values.get(currentSymbol);
+
+                if (currentValue < lastValue) {
+                    total -= currentValue;
+                } else {
+                    total += currentValue;
+                }
+                lastValue = currentValue;
+            }
+
+            return total;
+        }
+    }
+
+    // https://leetcode.com/problems/integer-to-roman/description
+    static class Solution18 {
+        public String intToRomanGreedy(int num) {
+            var symbols = new String[] { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+            var values = new int[] { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+
+            var ans = new StringBuilder();
+            for (int i = 0; i < values.length && num > 0; i++) {
+                while (num >= values[i]) {
+                    num -= values[i];
+                    ans.append(symbols[i]);
+                }
+            }
+            return ans.toString();
+        }
+
+        public String intToRomanHardcodedDigits(int num) {
+            var thousands = new String[] { "", "M", "MM", "MMM" };
+            var hundreds = new String[] { "", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM" };
+            var tens = new String[] { "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC" };
+            var ones = new String[] { "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
+
+            return thousands[num / 1000] + hundreds[num % 1000 / 100] + tens[num % 100 / 10] + ones[num % 10];
         }
     }
 }
