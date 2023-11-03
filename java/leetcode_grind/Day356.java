@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Stack;
 
 public class Day356 {
     // https://leetcode.com/problems/build-an-array-with-stack-operations/description/
-    static class Solution {
+    static class Solution1 {
         public List<String> buildArray1(int[] target, int n) {
             var tptr = 0;
             var stack = new ArrayList<String>();
@@ -93,6 +94,66 @@ public class Day356 {
             }
 
             return dp[lastDay];
+        }
+    }
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    // https://leetcode.com/problems/add-one-row-to-tree/description/
+    class Solution3 {
+        public TreeNode addOneRow(TreeNode root, int val, int depth) {
+            class Node {
+                TreeNode node;
+                int depth;
+
+                Node(TreeNode n, int d) {
+                    node = n;
+                    depth = d;
+                }
+            }
+
+            if (depth == 1) {
+                return new TreeNode(val, root, null);
+            }
+
+            var stack = new Stack<Node>();
+            stack.push(new Node(root, 1));
+
+            while (!stack.isEmpty()) {
+                var top = stack.pop();
+                if (top.node == null) {
+                    continue;
+                }
+
+                if (top.depth == depth - 1) {
+                    var t = top.node.left;
+                    top.node.left = new TreeNode(val, t, null);
+                    t = top.node.right;
+                    top.node.right = new TreeNode(val, null, t);
+                } else {
+                    stack.push(new Node(top.node.left, top.depth + 1));
+                    stack.push(new Node(top.node.right, top.depth + 1));
+                }
+            }
+
+            return root;
         }
     }
 }
