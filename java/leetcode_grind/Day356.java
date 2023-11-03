@@ -3,6 +3,7 @@ package leetcode_grind;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -118,7 +119,7 @@ public class Day356 {
 
     // https://leetcode.com/problems/add-one-row-to-tree/description/
     static class Solution3 {
-        public TreeNode addOneRow(TreeNode root, int val, int depth) {
+        public TreeNode addOneRowStackDFS(TreeNode root, int val, int depth) {
             class Node {
                 TreeNode node;
                 int depth;
@@ -151,6 +152,43 @@ public class Day356 {
                     stack.push(new Node(top.node.left, top.depth + 1));
                     stack.push(new Node(top.node.right, top.depth + 1));
                 }
+            }
+
+            return root;
+        }
+
+        public TreeNode addOneRowQueueBFS(TreeNode root, int val, int depth) {
+            if (depth == 1) {
+                var n = new TreeNode(val);
+                n.left = root;
+                return n;
+            }
+
+            var queue = new LinkedList<TreeNode>();
+            queue.add(root);
+            var d = 1;
+
+            while (d < depth - 1) {
+                var temp = new LinkedList<TreeNode>();
+                while (!queue.isEmpty()) {
+                    var node = queue.remove();
+                    if (node.left != null) {
+                        temp.add(node.left);
+                    }
+                    if (node.right != null) {
+                        temp.add(node.right);
+                    }
+                }
+                queue = temp;
+                d++;
+            }
+
+            while (!queue.isEmpty()) {
+                var node = queue.remove();
+                var temp = node.left;
+                node.left = new TreeNode(val, temp, null);
+                temp = node.right;
+                node.right = new TreeNode(val, null, temp);
             }
 
             return root;
