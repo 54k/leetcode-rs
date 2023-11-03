@@ -97,7 +97,7 @@ public class Day356 {
         }
     }
 
-    public class TreeNode {
+    public static class TreeNode {
         int val;
         TreeNode left;
         TreeNode right;
@@ -117,7 +117,7 @@ public class Day356 {
     }
 
     // https://leetcode.com/problems/add-one-row-to-tree/description/
-    class Solution3 {
+    static class Solution3 {
         public TreeNode addOneRow(TreeNode root, int val, int depth) {
             class Node {
                 TreeNode node;
