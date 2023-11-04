@@ -105,3 +105,35 @@ mod freq_tracker {
         }
     }
 }
+
+// https://leetcode.com/problems/find-the-minimum-possible-sum-of-a-beautiful-array/description/
+pub fn minimum_possible_sum_brute_tle(n: i32, target: i32) -> i32 {
+    use std::collections::HashSet;
+    let mut added = HashSet::new();
+    let mut sum = 0;
+    let mut i = 1;
+
+    while (added.len() as i32) < n {
+        if !added.contains(&(target - i)) && !added.contains(&i) {
+            added.insert(i);
+            sum += i as i64;
+        }
+        i += 1;
+    }
+
+    (sum % 1000_000_007) as i32
+}
+
+pub fn minimum_possible_sum_math(n: i32, target: i32) -> i32 {
+    let n = n as i128;
+    let k = target as i128;
+
+    let take = n.min(k / 2);
+    let skip = n.min(k - 1);
+    let first = n.max(k - 1);
+
+    let before = n * (n + 1) / 2 - skip * (skip + 1) / 2 + take * (take + 1) / 2;
+    let last = first + skip - take;
+
+    ((before + last * (last + 1) / 2 - first * (first + 1) / 2) % 1_000_000_007) as i32
+}
