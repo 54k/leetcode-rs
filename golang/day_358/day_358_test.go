@@ -194,3 +194,41 @@ func deleteAndEarnBottomUpOptimized(nums []int) int {
 
 	return b
 }
+
+// https://leetcode.com/problems/2-keys-keyboard/
+func minSteps(n int) int {
+	ans, d := 0, 2
+	for n > 1 {
+		for n%d == 0 {
+			ans += d
+			n /= d
+		}
+		d++
+	}
+	return ans
+}
+
+// https://leetcode.com/problems/perfect-squares/description/
+func numSquaresBottomUp(n int) int {
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	dp := make([]int, n+1)
+	for i := 0; i < len(dp); i++ {
+		dp[i] = 1_000_000
+	}
+	dp[0] = 0
+
+	for i := 0; i < len(dp); i++ {
+		for j := 1; j*j <= n; j++ {
+			if (j * j) <= i {
+				dp[i] = min(dp[i], dp[i-(j*j)]+1)
+			}
+		}
+	}
+	return dp[n]
+}
