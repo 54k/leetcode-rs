@@ -105,7 +105,7 @@ func rob(nums []int) int {
 }
 
 // https://leetcode.com/problems/delete-and-earn/description
-func deleteAndEarn(nums []int) int {
+func deleteAndEarnTopDown(nums []int) int {
 	max := func(a, b int) int {
 		if a < b {
 			return b
@@ -142,4 +142,55 @@ func deleteAndEarn(nums []int) int {
 	}
 
 	return dp(maxNum)
+}
+
+// https://leetcode.com/problems/delete-and-earn/description
+func deleteAndEarnBottomUp(nums []int) int {
+	max := func(a, b int) int {
+		if a < b {
+			return b
+		}
+		return a
+	}
+
+	maxNum := 0
+	points := map[int]int{}
+	for _, num := range nums {
+		points[num] += num
+		maxNum = max(maxNum, num)
+	}
+
+	maxPoints := make([]int, maxNum+1)
+	maxPoints[1] = points[1]
+
+	for i := 2; i <= maxNum; i++ {
+		maxPoints[i] = max(maxPoints[i-1], maxPoints[i-2]+points[i])
+	}
+
+	return maxPoints[maxNum]
+}
+
+func deleteAndEarnBottomUpOptimized(nums []int) int {
+	max := func(a, b int) int {
+		if a < b {
+			return b
+		}
+		return a
+	}
+
+	maxNum := 0
+	points := map[int]int{}
+	for _, num := range nums {
+		points[num] += num
+		maxNum = max(maxNum, num)
+	}
+
+	a, b := 0, points[1]
+
+	for i := 2; i <= maxNum; i++ {
+		c := max(a+points[i], b)
+		a, b = b, c
+	}
+
+	return b
 }
