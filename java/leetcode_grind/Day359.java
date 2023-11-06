@@ -72,4 +72,36 @@ public class Day359 {
             return 0;
         }
     }
+
+    // https://leetcode.com/problems/partition-equal-subset-sum/description/
+    static class Solution2 {
+        public boolean canPartition(int[] nums) {
+            var sum = 0;
+            for (var num : nums) {
+                sum += num;
+            }
+            if (sum % 2 == 1) {
+                return false;
+            }
+
+            var dp = new boolean[nums.length + 1][sum / 2 + 1];
+            dp[0][0] = true;
+
+            for (int i = 1; i <= nums.length; i++) {
+                for (int j = 0; j <= sum / 2; j++) {
+                    dp[i][j] |= dp[i - 1][j];
+                    if (j >= nums[i - 1]) {
+                        dp[i][j] |= dp[i - 1][j - nums[i - 1]];
+                    }
+                }
+            }
+
+            for (int i = 1; i <= nums.length; i++) {
+                if (dp[i][sum / 2]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }
