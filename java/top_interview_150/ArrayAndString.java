@@ -961,4 +961,33 @@ public class ArrayAndString {
             return thousands[num / 1000] + hundreds[num % 1000 / 100] + tens[num % 100 / 10] + ones[num % 10];
         }
     }
+
+    // https://leetcode.com/problems/length-of-last-word/description
+    static class Solution19 {
+        public int lengthOfLastWord1(String s) {
+            var end = s.length();
+            for (int i = s.length() - 1; i >= 0; i--) {
+                if (s.charAt(i) != ' ' && end == s.length()) {
+                    end = i;
+                } else if (s.charAt(i) == ' ' && end != s.length()) {
+                    return end - i;
+                }
+            }
+            return end + 1;
+        }
+
+        public int lengthOfLastWord2(String s) {
+            var i = s.length() - 1;
+            var length = 0;
+            while (i >= 0) {
+                if (s.charAt(i) != ' ') {
+                    length++;
+                } else if (length > 0) {
+                    return length;
+                }
+                i--;
+            }
+            return length;
+        }
+    }
 }
