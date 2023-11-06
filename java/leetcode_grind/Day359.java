@@ -1,5 +1,6 @@
 package leetcode_grind;
 
+import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
 
@@ -75,7 +76,42 @@ public class Day359 {
 
     // https://leetcode.com/problems/partition-equal-subset-sum/description/
     static class Solution2 {
-        public boolean canPartition(int[] nums) {
+        public boolean canPartitionTopDown(int[] nums) {
+            var totalSum = 0;
+            for (var num : nums) {
+                totalSum += num;
+            }
+
+            if (totalSum % 2 != 0) {
+                return false;
+            }
+
+            var subsetSum = totalSum / 2;
+            var n = nums.length;
+            var memo = new Boolean[n + 1][subsetSum + 1];
+
+            var dfs = new Object() {
+                boolean apply(int n, int subsetSum) {
+                    if (subsetSum == 0) {
+                        return true;
+                    }
+                    if (n == 0 || subsetSum < 0) {
+                        return false;
+                    }
+                    if (memo[n][subsetSum] != null) {
+                        return memo[n][subsetSum];
+                    }
+
+                    var res = apply(n - 1, subsetSum - nums[n - 1]) || apply(n - 1, subsetSum);
+                    memo[n][subsetSum] = res;
+                    return res;
+                }
+            };
+
+            return dfs.apply(n - 1, subsetSum);
+        }
+
+        public boolean canPartitionBottomUp(int[] nums) {
             var sum = 0;
             for (var num : nums) {
                 sum += num;
@@ -96,12 +132,24 @@ public class Day359 {
                 }
             }
 
-            for (int i = 1; i <= nums.length; i++) {
-                if (dp[i][sum / 2]) {
-                    return true;
+            return dp[nums.length][sum / 2];
+        }
+
+        public boolean canPartitionBottomUpOptimized(int[] nums) {
+            var sum = Arrays.stream(nums).boxed().reduce(0, Integer::sum);
+            if (sum % 2 == 1) {
+                return false;
+            }
+            var dp = new boolean[sum / 2 + 1];
+            dp[0] = true;
+
+            for (var num : nums) {
+                for (int j = sum / 2; j >= num; j--) {
+                    dp[j] |= dp[j - num];
                 }
             }
-            return false;
+
+            return dp[sum / 2];
         }
     }
 }
