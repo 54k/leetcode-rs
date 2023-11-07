@@ -225,3 +225,30 @@ func countSubstringsDP4(s string) int {
 
 	return ans
 }
+
+func countSubstringsExpandAroundCenter(s string) int {
+	countAroundCenter := func(lo, hi int) int {
+		ans := 0
+
+		for lo >= 0 && hi < len(s) {
+			if s[lo] != s[hi] {
+				break
+			}
+
+			lo--
+			hi++
+
+			ans++
+		}
+
+		return ans
+	}
+
+	ans := 0
+	for i := 0; i < len(s); i++ {
+		ans += countAroundCenter(i, i)
+		ans += countAroundCenter(i, i+1)
+	}
+
+	return ans
+}
