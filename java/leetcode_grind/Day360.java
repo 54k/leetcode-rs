@@ -234,8 +234,6 @@ public class Day360 {
                 for (int start = 0; start <= end; start++) {
                     if (s.charAt(start) == s.charAt(end) && (end - start <= 2 || palindromeDp[start + 1][end - 1])) {
                         palindromeDp[start][end] = true;
-                    }
-                    if (palindromeDp[start][end]) {
                         minimumCut = start == 0 ? 0 : Math.min(minimumCut, cutsDp[start - 1] + 1);
                     }
                 }
@@ -243,6 +241,34 @@ public class Day360 {
             }
 
             return cutsDp[s.length() - 1];
+        }
+    }
+
+    // https://leetcode.com/problems/palindrome-partitioning-iv/description/
+    static class Solution5 {
+        public boolean checkPartitioningBruteForce(String s) {
+            var end = s.length();
+            var palindromeDp = new boolean[s.length()][s.length()];
+
+            var backtrack = new Object() {
+                boolean solve(int start, int cuts) {
+                    if (start >= end) {
+                        return cuts == 3;
+                    }
+
+                    for (int i = start; i < end; i++) {
+                        if (s.charAt(start) == s.charAt(i) && (i - start <= 2 || palindromeDp[start + 1][i - 1])) {
+                            palindromeDp[start][i] = true;
+                            if (solve(i + 1, cuts + 1)) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            };
+
+            return backtrack.solve(0, 0);
         }
     }
 }
