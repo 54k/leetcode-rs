@@ -242,6 +242,27 @@ public class Day360 {
 
             return cutsDp[s.length() - 1];
         }
+
+        public int minCutExpandAroundCenter(String s) {
+            var cutsDp = new int[s.length()];
+            for (int i = 1; i < s.length(); i++) {
+                cutsDp[i] = i;
+            }
+            var findMinCuts = new Object() {
+                void apply(int startIndex, int endIndex) {
+                    for (int start = startIndex, end = endIndex; start >= 0 && end < s.length()
+                            && s.charAt(start) == s.charAt(end); start--, end++) {
+                        var newCut = start == 0 ? 0 : cutsDp[start - 1] + 1;
+                        cutsDp[end] = Math.min(cutsDp[end], newCut);
+                    }
+                }
+            };
+            for (int mid = 0; mid < s.length(); mid++) {
+                findMinCuts.apply(mid, mid);
+                findMinCuts.apply(mid - 1, mid);
+            }
+            return cutsDp[s.length() - 1];
+        }
     }
 
     // https://leetcode.com/problems/palindrome-partitioning-iv/description/
