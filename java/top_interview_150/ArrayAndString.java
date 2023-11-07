@@ -990,4 +990,95 @@ public class ArrayAndString {
             return length;
         }
     }
+
+    // https://leetcode.com/problems/longest-common-prefix/description
+    static class Solution20 {
+        public String longestCommonPrefix1(String[] strs) {
+            if (strs.length == 0)
+                return "";
+            String prefix = strs[0];
+            for (int i = 1; i < strs.length; i++) {
+                while (strs[i].indexOf(prefix) != 0) {
+                    prefix = prefix.substring(0, prefix.length() - 1);
+                }
+            }
+            return prefix;
+        }
+
+        public String longestCommonPrefix2(String[] strs) {
+            if (strs.length == 0)
+                return "";
+            String prefix = strs[0];
+            for (int i = 1; i < strs.length; i++) {
+                while (strs[i].indexOf(prefix) != 0) {
+                    prefix = prefix.substring(0, prefix.length() - 1);
+                }
+            }
+            return prefix;
+        }
+
+        public String longestCommonPrefix3(String[] strs) {
+            if (strs == null || strs.length == 0)
+                return "";
+            var lcp = new Object() {
+                String apply(int l, int r) {
+                    if (l == r) {
+                        return strs[l];
+                    }
+                    int mid = (l + r) / 2;
+                    String lcpLeft = apply(l, mid);
+                    String lcpRight = apply(mid + 1, r);
+                    return commonPrefix(lcpLeft, lcpRight);
+                }
+
+                String commonPrefix(String left, String right) {
+                    int min = Math.min(left.length(), right.length());
+                    for (int i = 0; i < min; i++) {
+                        if (left.charAt(i) != right.charAt(i)) {
+                            return left.substring(0, i);
+                        }
+                    }
+                    return left.substring(0, min);
+                }
+            };
+            return lcp.apply(0, strs.length - 1);
+        }
+
+        public String longestCommonPrefix4(String[] strs) {
+            if (strs == null || strs.length == 0) {
+                return "";
+            }
+
+            var isCommonPrefix = new Object() {
+                boolean apply(int len) {
+                    var str1 = strs[0].substring(0, len);
+                    for (int i = 1; i < strs.length; i++) {
+                        if (!strs[i].startsWith(str1)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            };
+
+            var minLen = Integer.MAX_VALUE;
+            for (var str : strs) {
+                minLen = Math.min(minLen, str.length());
+            }
+
+            var low = 1;
+            var high = minLen;
+
+            while (low <= high) {
+                var mid = (low + high) / 2;
+                if (isCommonPrefix.apply(mid)) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+
+            return strs[0].substring(0, (low + high) / 2);
+        }
+    }
 }
