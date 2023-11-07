@@ -76,7 +76,7 @@ public class Day360 {
 
     // https://leetcode.com/problems/palindrome-partitioning-ii/description/
     static class Solution4 {
-        public int minCut(String s) {
+        public int minCutBrute(String s) {
             var isPalindrome = new Object() {
                 boolean apply(int start, int end) {
                     while (start < end) {
@@ -106,6 +106,143 @@ public class Day360 {
             };
 
             return findMinCut.apply(0, s.length() - 1, s.length() - 1);
+        }
+
+        public int minCutTopDown(String s) {
+            var memoCuts = new Integer[s.length()][s.length()];
+            var memoPalindrome = new Boolean[s.length()][s.length()];
+
+            var isPalindrome = new Object() {
+                boolean apply(int start, int end) {
+                    if (start >= end) {
+                        return true;
+                    }
+
+                    if (memoPalindrome[start][end] != null) {
+                        return memoPalindrome[start][end];
+                    }
+
+                    memoPalindrome[start][end] = s.charAt(start) == s.charAt(end) &&
+                            apply(start + 1, end - 1);
+                    return memoPalindrome[start][end];
+                }
+            };
+
+            var findMinCut = new Object() {
+                int apply(int start, int end, int minimumCut) {
+                    if (start == end || isPalindrome.apply(start, end)) {
+                        return 0;
+                    }
+
+                    if (memoCuts[start][end] != null) {
+                        return memoCuts[start][end];
+                    }
+
+                    for (int currentEndIndex = start; currentEndIndex <= end; currentEndIndex++) {
+                        if (isPalindrome.apply(start, currentEndIndex)) {
+                            minimumCut = Math.min(
+                                    minimumCut,
+                                    1 + apply(currentEndIndex + 1, end, minimumCut));
+                        }
+                    }
+
+                    memoCuts[start][end] = minimumCut;
+                    return minimumCut;
+                }
+            };
+
+            return findMinCut.apply(0, s.length() - 1, s.length() - 1);
+        }
+
+        public int minCutTopDownOptimized(String s) {
+            var memoCuts = new Integer[s.length()];
+            var memoPalindrome = new Boolean[s.length()][s.length()];
+
+            var isPalindrome = new Object() {
+                boolean apply(int start, int end) {
+                    if (start >= end) {
+                        return true;
+                    }
+
+                    if (memoPalindrome[start][end] != null) {
+                        return memoPalindrome[start][end];
+                    }
+
+                    memoPalindrome[start][end] = s.charAt(start) == s.charAt(end) &&
+                            apply(start + 1, end - 1);
+                    return memoPalindrome[start][end];
+                }
+            };
+
+            var findMinCut = new Object() {
+                int apply(int start, int end, int minimumCut) {
+                    if (start == end || isPalindrome.apply(start, end)) {
+                        return 0;
+                    }
+
+                    if (memoCuts[start] != null) {
+                        return memoCuts[start];
+                    }
+
+                    for (int currentEndIndex = start; currentEndIndex <= end; currentEndIndex++) {
+                        if (isPalindrome.apply(start, currentEndIndex)) {
+                            minimumCut = Math.min(
+                                    minimumCut,
+                                    1 + apply(currentEndIndex + 1, end, minimumCut));
+                        }
+                    }
+
+                    memoCuts[start] = minimumCut;
+                    return minimumCut;
+                }
+            };
+
+            return findMinCut.apply(0, s.length() - 1, s.length() - 1);
+        }
+
+        public int minCutBottomUp(String s) {
+            var cutsDp = new Integer[s.length()];
+
+            var palindromeDp = new boolean[s.length()][s.length()];
+            for (int end = 0; end < s.length(); end++) {
+                for (int start = 0; start <= end; start++) {
+                    if (s.charAt(start) == s.charAt(end) && (end - start <= 2 || palindromeDp[start + 1][end - 1])) {
+                        palindromeDp[start][end] = true;
+                    }
+                }
+            }
+
+            for (int end = 0; end < s.length(); end++) {
+                int minimumCut = end;
+                for (int start = 0; start <= end; start++) {
+                    if (palindromeDp[start][end]) {
+                        minimumCut = start == 0 ? 0 : Math.min(minimumCut, cutsDp[start - 1] + 1);
+                    }
+                }
+                cutsDp[end] = minimumCut;
+            }
+
+            return cutsDp[s.length() - 1];
+        }
+
+        public int minCutBottomUpOptimized(String s) {
+            var cutsDp = new Integer[s.length()];
+            var palindromeDp = new boolean[s.length()][s.length()];
+
+            for (int end = 0; end < s.length(); end++) {
+                int minimumCut = end;
+                for (int start = 0; start <= end; start++) {
+                    if (s.charAt(start) == s.charAt(end) && (end - start <= 2 || palindromeDp[start + 1][end - 1])) {
+                        palindromeDp[start][end] = true;
+                    }
+                    if (palindromeDp[start][end]) {
+                        minimumCut = start == 0 ? 0 : Math.min(minimumCut, cutsDp[start - 1] + 1);
+                    }
+                }
+                cutsDp[end] = minimumCut;
+            }
+
+            return cutsDp[s.length() - 1];
         }
     }
 }
