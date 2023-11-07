@@ -1,6 +1,8 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Day360 {
     // https://leetcode.com/problems/unique-paths/description
@@ -21,7 +23,7 @@ public class Day360 {
     }
 
     // https://leetcode.com/problems/minimum-path-sum/description
-    static class Solution {
+    static class Solution2 {
         public int minPathSum(int[][] grid) {
             var m = grid.length;
             var n = grid[0].length;
@@ -39,6 +41,71 @@ public class Day360 {
             }
 
             return grid[0][0];
+        }
+    }
+
+    // https://leetcode.com/problems/palindrome-partitioning/description/
+    static class Solution3 {
+        public List<List<String>> partition(String s) {
+            var result = new ArrayList<List<String>>();
+            var current = new ArrayList<String>();
+            var dp = new boolean[s.length()][s.length()];
+
+            var backtrack = new Object() {
+                void apply(int start) {
+                    if (start >= s.length()) {
+                        result.add(new ArrayList<>(current));
+                        return;
+                    }
+
+                    for (int end = start; end < s.length(); end++) {
+                        if (s.charAt(start) == s.charAt(end) && (end - start <= 2 || dp[start + 1][end - 1])) {
+                            dp[start][end] = true;
+                            current.add(s.substring(start, end + 1));
+                            apply(end + 1);
+                            current.remove(current.size() - 1);
+                        }
+                    }
+                }
+            };
+
+            backtrack.apply(0);
+            return result;
+        }
+    }
+
+    // https://leetcode.com/problems/palindrome-partitioning-ii/description/
+    static class Solution4 {
+        public int minCut(String s) {
+            var isPalindrome = new Object() {
+                boolean apply(int start, int end) {
+                    while (start < end) {
+                        if (s.charAt(start++) != s.charAt(end--)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            };
+
+            var findMinCut = new Object() {
+                int apply(int start, int end, int minimumCut) {
+                    if (start == end || isPalindrome.apply(start, end)) {
+                        return 0;
+                    }
+
+                    for (int currentEndIndex = start; currentEndIndex <= end; currentEndIndex++) {
+                        if (isPalindrome.apply(start, currentEndIndex)) {
+                            minimumCut = Math.min(
+                                    minimumCut,
+                                    1 + apply(currentEndIndex + 1, end, minimumCut));
+                        }
+                    }
+                    return minimumCut;
+                }
+            };
+
+            return findMinCut.apply(0, s.length() - 1, s.length() - 1);
         }
     }
 }
