@@ -246,20 +246,31 @@ public class Day360 {
 
     // https://leetcode.com/problems/palindrome-partitioning-iv/description/
     static class Solution5 {
-        public boolean checkPartitioningBruteForce(String s) {
+        public boolean checkPartitioning(String s) {
             var end = s.length();
             var palindromeDp = new boolean[s.length()][s.length()];
 
+            for (int i = 0; i < end; i++) {
+                for (int j = 0; j <= i; j++) {
+                    if (s.charAt(i) == s.charAt(j) && (i - j <= 2 || palindromeDp[j + 1][i - 1])) {
+                        palindromeDp[j][i] = true;
+                    }
+                }
+            }
+
             var backtrack = new Object() {
                 boolean solve(int start, int cuts) {
-                    if (start >= end) {
-                        return cuts == 3;
+                    if (start == end) {
+                        return false;
+                    }
+
+                    if (cuts == 1) {
+                        return palindromeDp[start][end - 1];
                     }
 
                     for (int i = start; i < end; i++) {
-                        if (s.charAt(start) == s.charAt(i) && (i - start <= 2 || palindromeDp[start + 1][i - 1])) {
-                            palindromeDp[start][i] = true;
-                            if (solve(i + 1, cuts + 1)) {
+                        if (palindromeDp[start][i]) {
+                            if (solve(i + 1, cuts - 1)) {
                                 return true;
                             }
                         }
@@ -268,7 +279,7 @@ public class Day360 {
                 }
             };
 
-            return backtrack.solve(0, 0);
+            return backtrack.solve(0, 3);
         }
     }
 }
