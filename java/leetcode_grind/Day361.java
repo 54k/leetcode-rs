@@ -188,4 +188,49 @@ public class Day361 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/maximum-score-from-performing-multiplication-operations/description/
+    static class Solution5 {
+        public int maximumScoreTopDown(int[] nums, int[] multipliers) {
+            var n = nums.length;
+            var m = multipliers.length;
+            var memo = new Integer[n][m];
+
+            var dp = new Object() {
+                int apply(int left, int ops) {
+                    if (ops == m) {
+                        return 0;
+                    }
+                    if (memo[left][ops] != null) {
+                        return memo[left][ops];
+                    }
+                    var right = n - 1 - (ops - left);
+                    var res = Math.max(
+                            nums[left] * multipliers[ops] + apply(left + 1, ops + 1),
+                            nums[right] * multipliers[ops] + apply(left, ops + 1));
+                    memo[left][ops] = res;
+                    return res;
+                }
+            };
+
+            return dp.apply(0, 0);
+        }
+
+        public int maximumScoreBottomUp(int[] nums, int[] multipliers) {
+            var n = nums.length;
+            var m = multipliers.length;
+
+            var dp = new int[m + 1][m + 1];
+            for (int ops = m - 1; ops >= 0; ops--) {
+                for (var left = ops; left >= 0; left--) {
+                    var right = n - 1 - (ops - left);
+                    var l = nums[left] * multipliers[ops] + dp[ops + 1][left + 1];
+                    var r = nums[right] * multipliers[ops] + dp[ops + 1][left];
+                    dp[ops][left] = Math.max(l, r);
+                }
+            }
+
+            return dp[0][0];
+        }
+    }
 }

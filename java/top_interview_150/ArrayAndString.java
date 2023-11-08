@@ -1,7 +1,9 @@
 package top_interview_150;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1079,6 +1081,98 @@ public class ArrayAndString {
             }
 
             return strs[0].substring(0, (low + high) / 2);
+        }
+    }
+
+    // https://leetcode.com/problems/reverse-words-in-a-string/description
+    static class Solution21 {
+        public String reverseWords1(String s) {
+            s = s.trim();
+            var list = Arrays.asList(s.split("\\s+"));
+            Collections.reverse(list);
+            return String.join(" ", list);
+        }
+
+        public String reverseWords2(String s) {
+            var trimSpaces = new Object() {
+                StringBuilder apply(String s) {
+                    int left = 0, right = s.length() - 1;
+                    while (left <= right && s.charAt(left) == ' ')
+                        ++left;
+                    while (left <= right && s.charAt(right) == ' ')
+                        --right;
+
+                    var sb = new StringBuilder();
+                    while (left <= right) {
+                        char c = s.charAt(left);
+                        if (c != ' ')
+                            sb.append(c);
+                        else if (sb.charAt(sb.length() - 1) != ' ')
+                            sb.append(c);
+                        ++left;
+                    }
+                    return sb;
+                }
+            };
+
+            var reverse = new Object() {
+                void apply(StringBuilder sb, int left, int right) {
+                    while (left < right) {
+                        var t = sb.charAt(left);
+                        sb.setCharAt(left, sb.charAt(right));
+                        sb.setCharAt(right, t);
+                        left++;
+                        right--;
+                    }
+                }
+            };
+
+            var reverseEachWord = new Object() {
+                void apply(StringBuilder sb) {
+                    int n = sb.length();
+                    int start = 0, end = 0;
+
+                    while (start < n) {
+                        while (end < n && sb.charAt(end) != ' ')
+                            ++end;
+                        reverse.apply(sb, start, end - 1);
+                        start = end + 1;
+                        end++;
+                    }
+                }
+            };
+
+            var sb = trimSpaces.apply(s);
+            reverse.apply(sb, 0, sb.length() - 1);
+            reverseEachWord.apply(sb);
+            return sb.toString();
+        }
+
+        public String reverseWords3(String s) {
+            int left = 0, right = s.length() - 1;
+            while (left <= right && s.charAt(left) == ' ')
+                ++left;
+            while (left <= right && s.charAt(right) == ' ')
+                --right;
+
+            var d = new ArrayDeque<String>();
+            StringBuilder word = new StringBuilder();
+
+            while (left <= right) {
+                char c = s.charAt(left);
+
+                if ((word.length() != 0) && (c == ' ')) {
+                    d.offerFirst(word.toString());
+                    word.setLength(0);
+                } else if (c != ' ') {
+                    word.append(c);
+                }
+                ++left;
+            }
+
+            d.offerFirst(word.toString());
+
+            return String.join(" ", d);
         }
     }
 }
