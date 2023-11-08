@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.Arrays;
+
 public class Day361 {
     // https://leetcode.com/problems/longest-palindromic-subsequence/description/
     static class Solution1 {
@@ -63,6 +65,78 @@ public class Day361 {
                 prevDp = dp.clone();
             }
             return dp[n - 1];
+        }
+    }
+
+    // https://leetcode.com/problems/longest-palindromic-subsequence-ii/description/
+    // https://leetcode.com/problems/longest-palindromic-subsequence-ii/solutions/981739/java-recursive-tle-memoization-3d-bottom-up-2d-bottom-up-o-n-space/
+    static class Solution2 {
+        public int longestPalindromeSubseqTopDown(String s) {
+            var memo = new int[s.length()][s.length()][27];
+            for (var r = 0; r < memo.length; r++) {
+                for (var c = 0; c < memo[r].length; c++) {
+                    Arrays.fill(memo[r][c], -1);
+                }
+            }
+
+            var dp = new Object() {
+                int apply(int i, int j, int prev) {
+                    if (i >= j) {
+                        return 0;
+                    }
+
+                    if (memo[i][j][prev] != -1) {
+                        return memo[i][j][prev];
+                    }
+
+                    if (s.charAt(i) - 'a' == prev) {
+                        return apply(i + 1, j, prev);
+                    }
+                    if (s.charAt(j) - 'a' == prev) {
+                        return apply(i, j - 1, prev);
+                    }
+
+                    if (s.charAt(i) == s.charAt(j)) {
+                        memo[i][j][prev] = apply(i + 1, j - 1, s.charAt(i) - 'a') + 2;
+                    } else {
+                        memo[i][j][prev] = Math.max(
+                                apply(i + 1, j, prev),
+                                apply(i, j - 1, prev));
+                    }
+
+                    return memo[i][j][prev];
+                }
+            };
+            return dp.apply(0, s.length() - 1, 26);
+        }
+
+        public int longestPalindromeSubseqBottomUp3d(String s) {
+            var dp = new int[s.length()][s.length()][27];
+
+            for (int i = s.length() - 1; i >= 0; i--) {
+                for (int j = i + 1; j < s.length(); j++) {
+                    for (int prev = 0; prev <= 26; prev++) {
+                        if (s.charAt(i) - 'a' == prev) {
+                            dp[i][j][prev] = dp[i + 1][j][prev];
+                            continue;
+                        }
+                        if (s.charAt(j) - 'a' == prev) {
+                            dp[i][j][prev] = dp[i][j - 1][prev];
+                            continue;
+                        }
+
+                        if (s.charAt(i) == s.charAt(j)) {
+                            dp[i][j][prev] = dp[i + 1][j - 1][s.charAt(i) - 'a'] + 2;
+                        } else {
+                            dp[i][j][prev] = Math.max(
+                                    dp[i + 1][j][prev],
+                                    dp[i][j - 1][prev]);
+                        }
+                    }
+                }
+            }
+
+            return dp[0][s.length() - 1][26];
         }
     }
 }
