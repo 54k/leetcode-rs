@@ -233,4 +233,50 @@ public class Day361 {
             return dp[0][0];
         }
     }
+
+    // https://leetcode.com/problems/maximal-square/description
+    static class Solution6 {
+        public int maximalSquare1(char[][] matrix) {
+            var rows = matrix.length;
+            var cols = rows > 0 ? matrix[0].length : 0;
+            var maxsqlen = 0;
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (matrix[i][j] == '0') {
+                        continue;
+                    }
+
+                    int sqlen = 1;
+                    boolean flag = true;
+
+                    while (sqlen + i < rows && sqlen + j < cols && flag) {
+                        for (int k = j; k <= j + sqlen; k++) {
+                            if (matrix[i + sqlen][k] == '0') {
+                                flag = false;
+                                break;
+                            }
+                        }
+
+                        for (int k = i; k <= i + sqlen; k++) {
+                            if (matrix[k][j + sqlen] == '0') {
+                                flag = false;
+                                break;
+                            }
+                        }
+
+                        if (flag) {
+                            sqlen++;
+                        }
+                    }
+
+                    if (maxsqlen < sqlen) {
+                        maxsqlen = sqlen;
+                    }
+                }
+            }
+
+            return maxsqlen * maxsqlen;
+        }
+    }
 }
