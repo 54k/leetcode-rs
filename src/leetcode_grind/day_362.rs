@@ -65,3 +65,17 @@ pub fn num_sub(s: String) -> i32 {
     }
     ans as i32
 }
+
+// https://leetcode.com/problems/pascals-triangle/description/
+pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
+    let mut rows = vec![vec![1]];
+    for i in 1..num_rows as usize {
+        let mut new_row = vec![1];
+        for j in 1..i {
+            new_row.push(rows[i - 1][j - 1] + rows[i - 1][j]);
+        }
+        new_row.push(1);
+        rows.push(new_row);
+    }
+    rows
+}
