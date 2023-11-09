@@ -1175,4 +1175,83 @@ public class ArrayAndString {
             return String.join(" ", d);
         }
     }
+
+    // https://leetcode.com/problems/zigzag-conversion/description
+    static class Solution22 {
+        public String convert1(String s, int numRows) {
+            if (numRows == 1) {
+                return s;
+            }
+            var n = s.length();
+            var numCols = (numRows - 1) * (int) Math.ceil(n / (numRows * 2.0 - 2.0));
+
+            var mat = new char[numRows][numCols];
+            for (var row : mat) {
+                Arrays.fill(row, ' ');
+            }
+
+            var currRow = 0;
+            var currCol = 0;
+            var currStringIndex = 0;
+
+            while (currStringIndex < n) {
+                while (currRow < numRows && currStringIndex < n) {
+                    mat[currRow][currCol] = s.charAt(currStringIndex);
+                    currRow++;
+                    currStringIndex++;
+                }
+
+                currRow -= 2;
+                currCol++;
+
+                while (currRow > 0 && currCol < numCols && currStringIndex < n) {
+                    mat[currRow][currCol] = s.charAt(currStringIndex);
+                    currCol++;
+                    currRow--;
+                    currStringIndex++;
+                }
+            }
+
+            var sb = new StringBuilder();
+            for (var row : mat) {
+                for (var ch : row) {
+                    if (ch != ' ') {
+                        sb.append(ch);
+                    }
+                }
+            }
+            return sb.toString();
+        }
+
+        public String convert2(String s, int numRows) {
+            if (numRows == 1) {
+                return s;
+            }
+
+            StringBuilder answer = new StringBuilder();
+            int n = s.length();
+            int charsInSection = 2 * (numRows - 1);
+
+            for (int currRow = 0; currRow < numRows; ++currRow) {
+                int index = currRow;
+
+                while (index < n) {
+                    answer.append(s.charAt(index));
+
+                    if (currRow != 0 && currRow != numRows - 1) {
+                        int charsInBetween = charsInSection - 2 * currRow;
+                        int secondIndex = index + charsInBetween;
+
+                        if (secondIndex < n) {
+                            answer.append(s.charAt(secondIndex));
+                        }
+                    }
+
+                    index += charsInSection;
+                }
+            }
+
+            return answer.toString();
+        }
+    }
 }
