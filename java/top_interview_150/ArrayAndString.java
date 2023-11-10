@@ -1254,4 +1254,25 @@ public class ArrayAndString {
             return answer.toString();
         }
     }
+
+    // https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description
+    static class Solution23 {
+        public int strStr(String haystack, String needle) {
+            var n = haystack.length();
+            var m = needle.length();
+
+            for (var ws = 0; ws <= n - m; ws++) {
+                for (var i = 0; i < m; i++) {
+                    if (haystack.charAt(ws + i) != needle.charAt(i)) {
+                        break;
+                    }
+
+                    if (i == m - 1) {
+                        return ws;
+                    }
+                }
+            }
+            return -1;
+        }
+    }
 }

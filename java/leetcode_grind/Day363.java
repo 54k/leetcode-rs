@@ -1,6 +1,6 @@
 package leetcode_grind;
 
-public class Day_363 {
+public class Day363 {
     // https://leetcode.com/problems/maximal-square/description
     static class Solution1 {
         public int maximalSquare1(char[][] matrix) {
@@ -40,6 +40,52 @@ public class Day_363 {
                 }
             }
             return maxsqlen * maxsqlen;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-palindromic-substring/description
+    static class Solution {
+        public String longestPalindrome1(String s) {
+            var left = 0;
+            var right = 0;
+
+            var dp = new boolean[s.length()][s.length()];
+            for (var i = s.length() - 1; i >= 0; i--) {
+                for (var j = i+1; j < s.length(); j++) {
+                    if (s.charAt(i) == s.charAt(j) && (j - i <= 2 || dp[i + 1][j - 1])) {
+                        dp[i][j] = true;
+                        if (j - i > right - left) {
+                            left = i;
+                            right = j;
+                        }
+                    }
+                }
+            }
+
+            return s.substring(left, right + 1);
+        }
+
+        public String longestPalindrome2(String s) {
+            var left = 0;
+            var right = 0;
+            for (var mid = 0; mid < s.length() - 1; mid++) {
+                for (var j = 0; j < 2; j++) {
+                    var l = mid;
+                    var r = mid + j;
+                    while (0 <= l && s.length() - 1 >= r && s.charAt(l) == s.charAt(r)) {
+                        l--;
+                        r++;
+                    }
+                    l++;
+                    r--;
+                    if (r - l > right - left) {
+                        left = l;
+                        right = r;
+                    }
+                }
+            }
+
+            return s.substring(left, right + 1);
         }
     }
 }
