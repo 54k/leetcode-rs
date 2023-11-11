@@ -25,9 +25,9 @@ pub fn max_sum_min_product(nums: Vec<i32>) -> i32 {
 }
 
 // https://leetcode.com/problems/find-positive-integer-solution-for-a-given-equation/
-struct CustomFunction;
+pub struct CustomFunction;
 impl CustomFunction {
-    pub fn f(x: i32, y: i32) -> i32 {
+    pub fn f(&self, x: i32, y: i32) -> i32 {
         0
     }
 }

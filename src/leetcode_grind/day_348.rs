@@ -54,7 +54,7 @@ impl Solution1 {
                     return copied_chars;
                 }
 
-                buf[copied_chars] = buf4[i];
+                buf[copied_chars as usize] = buf4[i];
                 copied_chars += 1;
             }
         }
