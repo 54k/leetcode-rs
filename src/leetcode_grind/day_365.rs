@@ -150,3 +150,12 @@ pub fn sum_of_digits_2(nums: Vec<i32>) -> i32 {
     }
     sum & 1 ^ 1
 }
+
+// https://leetcode.com/problems/divisible-and-non-divisible-sums-difference/description/
+pub fn difference_of_sums(n: i32, m: i32) -> i32 {
+    let mut sum = n * (n + 1) / 2;
+    for i in 1..=n {
+        sum -= if i % m == 0 { i * 2 } else { 0 };
+    }
+    sum
+}
