@@ -64,7 +64,7 @@ public class Day365 {
     }
 
     // https://leetcode.com/problems/multiply-strings/description/
-    static class Solution {
+    static class Solution3 {
         public StringBuilder sumResults(List<List<Integer>> results) {
             var answer = new ArrayList<Integer>(results.get(results.size() - 1));
             var newAnswer = new ArrayList<Integer>();
