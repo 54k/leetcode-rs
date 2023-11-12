@@ -123,3 +123,30 @@ pub fn num_buses_to_destination_2(routes: Vec<Vec<i32>>, source: i32, target: i3
 
     -1
 }
+
+// https://leetcode.com/problems/sum-of-digits-in-the-minimum-number/description/
+pub fn sum_of_digits_1(nums: Vec<i32>) -> i32 {
+    (format!("{}", nums.into_iter().min().unwrap())
+        .as_bytes()
+        .into_iter()
+        .map(|x| (x - b'0') as i32)
+        .sum::<i32>()
+        % 2
+        - 1)
+    .abs()
+}
+
+pub fn sum_of_digits_2(nums: Vec<i32>) -> i32 {
+    let mut min = i32::MAX;
+    for n in nums {
+        if n < min {
+            min = n;
+        }
+    }
+    let mut sum = 0;
+    while min > 0 {
+        sum += min % 10;
+        min /= 10;
+    }
+    sum & 1 ^ 1
+}
