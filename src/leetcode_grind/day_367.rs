@@ -36,3 +36,46 @@ pub fn count_palindromic_subsequence_1(s: String) -> i32 {
     // println!("{:?}", set);
     set.len() as i32
 }
+
+fn gen() -> Vec<String> {
+    let mut res = vec![];
+
+    fn go(pat: &Vec<char>, curr: &mut Vec<char>, res: &mut Vec<String>, used: &mut Vec<bool>) {
+        if curr.len() == pat.len() {
+            res.push(curr.clone().into_iter().collect());
+            return;
+        }
+
+        for i in 0..pat.len() {
+            if used[i] {
+                continue;
+            }
+            used[i] = true;
+            curr.push(pat[i]);
+            go(pat, curr, res, used);
+            curr.pop();
+            used[i] = false;
+        }
+    }
+
+    for pat in ["check", "data", "format"] {
+        let pat = pat.to_string().chars().collect::<Vec<_>>();
+        go(&pat, &mut vec![], &mut res, &mut vec![false; pat.len()]);
+    }
+
+    for i in 0..res.len() - 2 {
+        for j in i + 1..res.len() - 1 {
+            for k in 0..res.len() {
+                let s = format!("{}_{}_{} = check_data_format", res[i], res[j], res[k]);
+                println!("{s}");
+            }
+        }
+    }
+
+    res
+}
+
+#[test]
+fn test_gen() {
+    gen();
+}
