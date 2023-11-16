@@ -102,4 +102,59 @@ public class Day368 {
             return tree.sum(left, right);
         }
     }
+
+    // https://leetcode.com/problems/longest-palindromic-subsequence/
+    static class Solution2 {
+        public int longestPalindromeSubseq(String s) {
+            var dp = new int[s.length()][s.length()];
+            var ans = 1;
+
+            for (int i = s.length() - 1; i >= 0; i--) {
+                dp[i][i] = 1;
+                for (int j = i + 1; j < s.length(); j++) {
+                    if (s.charAt(i) == s.charAt(j)) {
+                        dp[i][j] = 2 + dp[i + 1][j - 1];
+                    } else {
+                        dp[i][j] = Math.max(dp[i + 1][j - 1], Math.max(dp[i + 1][j], dp[i][j - 1]));
+                    }
+                    ans = Math.max(dp[i][j], ans);
+                }
+            }
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/edit-distance/
+    static class Solution3 {
+        public int minDistance(String word1, String word2) {
+            var w1 = word1.length();
+            var w2 = word2.length();
+
+            if (w1 == 0 || w2 == 0) {
+                return Math.max(w1, w2);
+            }
+
+            var dp = new int[w1 + 1][w2 + 1];
+
+            for (int i = 1; i <= w1; i++) {
+                dp[i][0] = dp[i - 1][0] + 1;
+
+                for (int j = 1; j <= w2; j++) {
+                    if (i == 1) {
+                        dp[0][j] = dp[0][j - 1] + 1;
+                    }
+
+                    if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    } else {
+                        dp[i][j] = Math.min(dp[i][j - 1], Math.min(dp[i - 1][j], dp[i - 1][j - 1])) + 1;
+                    }
+                }
+            }
+
+            return dp[w1][w2];
+        }
+    }
+
+    
 }
