@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class Day370 {
     // https://leetcode.com/problems/range-sum-query-mutable/
@@ -203,6 +204,33 @@ public class Day370 {
             }
 
             return time;
+        }
+    }
+
+    // https://leetcode.com/problems/continuous-subarrays/description/
+    static class Solution4 {
+        public long continuousSubarrays(int[] nums) {
+            var map = new TreeMap<Integer, Integer>();
+            int i = 0;
+            int j = 0;
+            long ans = 0;
+
+            while (i < nums.length) {
+                map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+                i++;
+
+                while (Math.abs(map.firstEntry().getKey() - map.lastEntry().getKey()) > 2) {
+                    map.put(nums[j], map.getOrDefault(nums[j], 0) - 1);
+                    if (map.get(nums[j]) == 0) {
+                        map.remove(nums[j]);
+                    }
+                    j++;
+                }
+
+                ans += i - j;
+            }
+
+            return ans;
         }
     }
 }
