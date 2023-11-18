@@ -2,9 +2,12 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Day371 {
     // https://leetcode.com/problems/frequency-of-the-most-frequent-element/description
@@ -140,6 +143,70 @@ public class Day371 {
             }
 
             return r - l;
+        }
+    }
+
+    // https://leetcode.com/problems/most-common-word/description/
+    static class Solution2 {
+        public String mostCommonWord1(String paragraph, String[] banned) {
+            var normalized = paragraph.replaceAll("[^A-Za-z0-9]", " ").toLowerCase();
+            var words = normalized.split("\\s+");
+
+            Set<String> bannedSet = new HashSet<>();
+            for (var word : banned) {
+                bannedSet.add(word);
+            }
+
+            Map<String, Integer> count = new HashMap<>();
+            for (var word : words) {
+                if (!bannedSet.contains(word)) {
+                    count.put(word, count.getOrDefault(word, 0) + 1);
+                }
+            }
+
+            return Collections.max(count.entrySet(), Map.Entry.comparingByValue()).getKey();
+        }
+
+        public String mostCommonWord2(String paragraph, String[] banned) {
+            var set = new HashSet<String>();
+            for (var w : banned) {
+                set.add(w);
+            }
+
+            var ans = "";
+            int maxCount = 0;
+            var freq = new HashMap<String, Integer>();
+
+            var sb = new StringBuilder();
+            var chars = paragraph.toCharArray();
+
+            for (var p = 0; p < chars.length; p++) {
+                var ch = chars[p];
+
+                if (Character.isLetter(ch)) {
+                    sb.append(Character.toLowerCase(ch));
+                    if (p != chars.length - 1) {
+                        continue;
+                    }
+                }
+
+                if (sb.length() > 0) {
+                    var word = sb.toString();
+
+                    if (!set.contains(word)) {
+                        int newCount = freq.getOrDefault(word, 0) + 1;
+                        freq.put(word, newCount);
+                        if (newCount > maxCount) {
+                            ans = word;
+                            maxCount = newCount;
+                        }
+                    }
+
+                    sb = new StringBuilder();
+                }
+            }
+
+            return ans;
         }
     }
 }
