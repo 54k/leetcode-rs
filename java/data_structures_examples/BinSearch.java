@@ -50,4 +50,60 @@ public class BinSearch {
             return lo;
         }
     }
+
+    static class FirstBadVersion {
+        /*
+         * The isBadVersion API is defined in the parent class VersionControl.
+         * boolean isBadVersion(int version);
+         */
+        public class VersionControl {
+            boolean isBadVersion(int n) {
+                return false;
+            }
+        }
+
+        public class Solution extends VersionControl {
+            public int firstBadVersion1(int n) {
+                var lo = 1;
+                var hi = n;
+                while (lo < hi) {
+                    var mid = lo + (hi - lo) / 2;
+                    if (isBadVersion(mid)) {
+                        hi = mid;
+                    } else {
+                        lo = mid + 1;
+                    }
+                }
+                return lo;
+            }
+
+            public int firstBadVersion2(int n) {
+                var lo = 0;
+                var hi = n;
+                while (lo + 1 < hi) {
+                    var mid = lo + (hi - lo) / 2;
+                    if (isBadVersion(mid)) {
+                        hi = mid;
+                    } else {
+                        lo = mid;
+                    }
+                }
+                return hi;
+            }
+
+            public int firstBadVersion3(int n) {
+                var lo = 1;
+                var hi = n;
+                while (lo <= hi) {
+                    var mid = lo + (hi - lo) / 2;
+                    if (isBadVersion(mid)) {
+                        hi = mid - 1;
+                    } else {
+                        lo = mid + 1;
+                    }
+                }
+                return lo;
+            }
+        }
+    }
 }
