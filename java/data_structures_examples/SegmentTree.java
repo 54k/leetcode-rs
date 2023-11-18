@@ -1,6 +1,8 @@
 package data_structures_examples;
 
-public class SegTree {
+import java.util.HashMap;
+
+public class SegmentTree {
     // https://leetcode.com/problems/range-sum-query-mutable/description/
     static class NumArray {
         class SegTree1 {
@@ -100,6 +102,81 @@ public class SegTree {
         public int sumRange(int left, int right) {
             // return tree.sum(1, 0, tree.n-1, left, right);
             return tree.sum(left, right);
+        }
+    }
+
+    // https://leetcode.com/problems/range-frequency-queries/description/
+    class RangeFreqQuery { // TLE
+        static class SegTree {
+            int n;
+            HashMap<Integer, Integer>[] tree;
+
+            SegTree(int[] arr) {
+                n = arr.length;
+                tree = new HashMap[4 * n];
+                for (int i = 0; i < n; i++) {
+                    update(1, 0, n - 1, i, arr[i]);
+                }
+            }
+
+            void update(int v, int tl, int tr, int i, int val) {
+                if (tl == tr) {
+                    if (tree[v] == null) {
+                        tree[v] = new HashMap<>();
+                    }
+                    tree[v].put(val, tree[v].getOrDefault(val, 0) + 1);
+                    return;
+                }
+
+                int tm = (tl + tr) / 2;
+                if (i <= tm) {
+                    update(v * 2, tl, tm, i, val);
+                } else {
+                    update(v * 2 + 1, tm + 1, tr, i, val);
+                }
+
+                if (tree[v] == null) {
+                    tree[v] = new HashMap<>();
+                }
+                if (tree[v * 2] == null) {
+                    tree[v * 2] = new HashMap<>();
+                }
+                if (tree[v * 2 + 1] == null) {
+                    tree[v * 2 + 1] = new HashMap<>();
+                }
+
+                tree[v].clear();
+                for (var e : tree[v * 2].entrySet()) {
+                    tree[v].put(e.getKey(), e.getValue());
+                }
+                for (var e : tree[v * 2 + 1].entrySet()) {
+                    tree[v].put(e.getKey(), tree[v].getOrDefault(e.getKey(), 0) + e.getValue());
+                }
+            }
+
+            int query(int v, int tl, int tr, int l, int r, int val) {
+                if (r < tl || l > tr) {
+                    return 0;
+                }
+                if (l <= tl && tr <= r) {
+                    var vval = tree[v].get(val);
+                    return vval == null ? 0 : vval;
+                }
+                int tm = (tl + tr) / 2;
+                int fl = query(v * 2, tl, tm, l, r, val);
+                int fr = query(v * 2 + 1, tm + 1, tr, l, r, val);
+                return fl + fr;
+            }
+        }
+
+        SegTree tree;
+
+        public RangeFreqQuery(int[] arr) {
+            tree = new SegTree(arr);
+        }
+
+        public int query(int left, int right, int value) {
+            return tree.query(1, 0, tree.n - 1, left, right, value);
         }
     }
 }
