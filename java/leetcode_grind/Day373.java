@@ -148,4 +148,76 @@ public class Day373 {
             return (int) (a % mod * (b % mod) % mod);
         }
     }
+
+    // https://leetcode.com/problems/flood-fill/
+    static class Solution4 {
+        public int[][] floodFill(int[][] image, int sr, int sc, int color) {
+            var orig = image[sr][sc];
+            var dfs = new Object() {
+                void dfs(int x, int y) {
+                    if (image[x][y] == orig) {
+                        image[x][y] = color;
+
+                        if (x > 0) {
+                            dfs(x - 1, y);
+                        }
+                        if (y > 0) {
+                            dfs(x, y - 1);
+                        }
+                        if (x < image.length - 1) {
+                            dfs(x + 1, y);
+                        }
+                        if (y < image[0].length - 1) {
+                            dfs(x, y + 1);
+                        }
+                    }
+                }
+            };
+            if (orig != color) {
+                dfs.dfs(sr, sc);
+            }
+            return image;
+        }
+    }
+
+    // https://leetcode.com/problems/diameter-of-binary-tree/
+    static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    static class Solution5 {
+        public int diameterOfBinaryTree(TreeNode root) {
+            var dfs = new Object() {
+                int diameter;
+
+                int apply(TreeNode node) {
+                    if (node == null) {
+                        return 0;
+                    }
+                    var left = apply(node.left);
+                    var right = apply(node.right);
+                    diameter = Math.max(diameter, left + right);
+                    var max = Math.max(left, right);
+                    return 1 + max;
+                }
+            };
+            dfs.apply(root);
+            return dfs.diameter;
+        }
+    }
 }
