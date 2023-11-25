@@ -88,10 +88,75 @@ public class SegmentTree {
             }
         }
 
-        SegTree2 tree;
+        static class SegTree3 {
+            static class Node {
+                int val;
+                Node left, right;
+
+                Node(int v) {
+                    val = v;
+                }
+
+                Node(Node l, Node r) {
+                    left = l;
+                    right = r;
+                    val += left != null ? left.val : 0;
+                    val += right != null ? right.val : 0;
+                }
+            }
+
+            Node root;
+            int n;
+
+            SegTree3(int[] nums) {
+                n = nums.length;
+                root = build(0, n - 1, nums);
+            }
+
+            Node build(int tl, int tr, int[] nums) {
+                if (tl == tr) {
+                    return new Node(nums[tl]);
+                }
+                int tm = (tl + tr) / 2;
+                return new Node(build(tl, tm, nums), build(tm + 1, tr, nums));
+            }
+
+            void update(int i, int val) {
+                root = update(root, 0, n - 1, i, val);
+            }
+
+            Node update(Node v, int tl, int tr, int i, int val) {
+                if (tl == tr) {
+                    return new Node(val);
+                }
+                int tm = (tl + tr) / 2;
+                if (i <= tm) {
+                    return new Node(update(v.left, tl, tm, i, val), v.right);
+                } else {
+                    return new Node(v.left, update(v.right, tm + 1, tr, i, val));
+                }
+            }
+
+            int sum(int l, int r) {
+                return sum(root, 0, n - 1, l, r);
+            }
+
+            int sum(Node v, int tl, int tr, int l, int r) {
+                if (l > r) {
+                    return 0;
+                }
+                if (tl == l && tr == r) {
+                    return v.val;
+                }
+                int tm = (tl + tr) / 2;
+                return sum(v.left, tl, tm, l, Math.min(tm, r)) + sum(v.right, tm + 1, tr, Math.max(l, tm + 1), r);
+            }
+        }
+
+        SegTree3 tree;
 
         public NumArray(int[] nums) {
-            tree = new SegTree2(nums);
+            tree = new SegTree3(nums);
         }
 
         public void update(int index, int val) {

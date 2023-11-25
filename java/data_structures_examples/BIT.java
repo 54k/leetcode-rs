@@ -1,6 +1,7 @@
 package data_structures_examples;
 
 public class BIT {
+    // https://leetcode.com/problems/range-sum-query-mutable/description/
     class NumArray {
         static class Fenwick {
             int n;
@@ -33,12 +34,47 @@ public class BIT {
             }
         }
 
+        static class Fenwick2 {
+            int n;
+            int[] t;
+
+            Fenwick2(int[] nums) {
+                n = nums.length;
+                t = new int[n + 1];
+                for (int i = 0; i < n; i++) {
+                    update(i, nums[i]);
+                }
+            }
+
+            void update(int i, int delta) {
+                i++;
+                while (i <= n) {
+                    t[i] += delta;
+                    i += i & -i;
+                }
+            }
+
+            private int sum(int r) {
+                r++;
+                var s = 0;
+                while (r > 0) {
+                    s += t[r];
+                    r -= r & -r;
+                }
+                return s;
+            }
+
+            int sum(int l, int r) {
+                return sum(r + 1) - sum(l);
+            }
+        }
+
         int[] arr;
-        Fenwick fenwick;
+        Fenwick2 fenwick;
 
         public NumArray(int[] nums) {
             arr = nums;
-            fenwick = new Fenwick(nums);
+            fenwick = new Fenwick2(nums);
         }
 
         public void update(int index, int val) {
