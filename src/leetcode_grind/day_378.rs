@@ -49,3 +49,63 @@ pub fn get_sum_absolute_differences_2(nums: Vec<i32>) -> Vec<i32> {
 
     ans
 }
+
+// https://leetcode.com/problems/special-array-with-x-elements-greater-than-or-equal-x/description/
+pub fn special_array(nums: Vec<i32>) -> i32 {
+    fn upper_bound(nums: &Vec<i32>, target: i32) -> i32 {
+        let mut lo = 0i32;
+        let mut hi = nums.len() as i32;
+        while lo < hi {
+            let mid = (lo + hi) / 2;
+            if nums[mid as usize] < target {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        lo
+    }
+
+    let n = nums.len() as i32;
+    let mut nums = nums;
+    let mut buckets = vec![0; 1001];
+    for &num in &nums {
+        buckets[num as usize] += 1;
+    }
+
+    let mut j = 0;
+    for i in 0..buckets.len() {
+        while buckets[i] > 0 {
+            nums[j] = i as i32;
+            buckets[i] -= 1;
+            j += 1;
+        }
+    }
+
+    let mut lo = 1;
+    let mut hi = n;
+    while lo <= hi {
+        let target = (lo + hi) / 2;
+        let ub = upper_bound(&nums, target);
+        if n - ub == target {
+            return target;
+        } else if n - ub > target {
+            lo = target + 1;
+        } else {
+            hi = target - 1;
+        }
+    }
+    -1
+}
+
+#[test]
+fn test_special_array() {
+    let res = special_array(vec![2, 3]);
+    println!("{res}"); // 2
+
+    let res = special_array(vec![0, 4, 3, 0, 4]);
+    println!("{res}"); // 3
+
+    let res = special_array(vec![0, 0]);
+    println!("{res}"); // -1
+}
