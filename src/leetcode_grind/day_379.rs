@@ -46,3 +46,37 @@ pub fn largest_submatrix_2(matrix: Vec<Vec<i32>>) -> i32 {
 
     ans
 }
+
+pub fn largest_submatrix_3(matrix: Vec<Vec<i32>>) -> i32 {
+    let mut ans = 0;
+    let m = matrix.len();
+    let n = matrix[0].len();
+
+    let mut prev_heights: Vec<(i32, usize)> = vec![];
+
+    for row in 0..m {
+        let mut heights = vec![];
+        let mut seen = vec![false; n];
+
+        for (height, col) in &prev_heights {
+            if matrix[row][*col] == 1 {
+                heights.push((*height + 1, *col));
+                seen[*col] = true;
+            }
+        }
+
+        for col in 0..n {
+            if !seen[col] && matrix[row][col] == 1 {
+                heights.push((1, col));
+            }
+        }
+
+        for i in 0..heights.len() {
+            ans = ans.max(heights[i].0 * (i + 1) as i32);
+        }
+
+        prev_heights = heights;
+    }
+
+    ans
+}
