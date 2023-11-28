@@ -83,3 +83,60 @@ pub fn number_of_ways_3(corridor: String) -> i32 {
 
     zero
 }
+
+pub fn number_of_ways_4(corridor: String) -> i32 {
+    const MOD: i64 = 1_000_000_007;
+    let corridor = corridor.chars().collect::<Vec<_>>();
+    let mut count = 1i64;
+    let mut seats = 0;
+    let mut prev_pair_last = -1;
+    for index in 0..corridor.len() {
+        if corridor[index] == 'S' {
+            seats += 1;
+            if seats == 2 {
+                prev_pair_last = index as i64;
+                seats = 0;
+            } else if seats == 1 && prev_pair_last != -1 {
+                count *= index as i64 - prev_pair_last;
+                count %= MOD;
+            }
+        }
+    }
+
+    if (seats == 1 || prev_pair_last == -1) {
+        return 0;
+    }
+    count as i32
+}
+
+pub fn number_of_ways_5(corridor: String) -> i32 {
+    const MOD: i64 = 1_000_000_007;
+    let mut ans = 1i64;
+
+    let mut total = 0;
+    let mut first = -1;
+    let mut second = -1;
+
+    let corridor = corridor.chars().collect::<Vec<_>>();
+    for i in 0..corridor.len() {
+        if corridor[i] == 'S' {
+            total += 1;
+            if first == -1 {
+                first = i as i64;
+                if second != -1 {
+                    ans = (ans % MOD * (first - second) % MOD) % MOD;
+                }
+                second = -1;
+            } else if second == -1 {
+                second = i as i64;
+                first = -1;
+            }
+        }
+    }
+
+    if total == 0 || total % 2 == 1 {
+        return 0;
+    }
+
+    ans as i32
+}
