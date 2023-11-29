@@ -179,6 +179,6 @@ public class Day381 {
             }
 
             return (int) ans;
-        }2
+        }
     }
 }
