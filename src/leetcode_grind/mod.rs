@@ -300,6 +300,7 @@ pub mod day_38;
 pub mod day_380;
 pub mod day_381;
 pub mod day_383;
+pub mod day_384;
 pub mod day_39;
 pub mod day_4;
 pub mod day_40;
