@@ -10,7 +10,7 @@ import java.util.Set;
 public class Day387 {
     // https://leetcode.com/problems/word-ladder-ii/description/
     // TLE
-    static class Solution {
+    static class Solution1 {
 
         Map<String, List<String>> adjList = new HashMap<String, List<String>>();
         List<String> currPath = new ArrayList<String>();
