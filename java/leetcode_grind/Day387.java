@@ -207,7 +207,7 @@ public class Day387 {
     }
 
     // https://leetcode.com/problems/buddy-strings/description/
-    static class Solution {
+    static class Solution3 {
         public boolean buddyStrings(String s, String goal) {
             if (s.length() != goal.length()) {
                 return false;
