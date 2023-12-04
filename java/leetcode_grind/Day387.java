@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 public class Day387 {
@@ -139,6 +140,60 @@ public class Day387 {
             currPath.add(beginWord);
             backtrack(beginWord, endWord);
             return shortestPaths;
+        }
+    }
+
+    // https://leetcode.com/problems/word-ladder/description/
+    static class Solution2 {
+        private static class Pair<F, S> {
+            F key;
+            S value;
+
+            Pair(F k, S v) {
+                key = k;
+                value = v;
+            }
+        }
+
+        public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+            int L = beginWord.length();
+            Map<String, List<String>> allComboDict = new HashMap<>();
+
+            wordList.forEach(word -> {
+                for (int i = 0; i < L; i++) {
+                    String newWord = word.substring(0, i) + '*' + word.substring(i + 1, L);
+                    List<String> transformations = allComboDict.getOrDefault(newWord, new ArrayList<>());
+                    transformations.add(word);
+                    allComboDict.put(newWord, transformations);
+                }
+            });
+
+            Queue<Pair<String, Integer>> Q = new LinkedList<>();
+            Q.add(new Pair(beginWord, 1));
+
+            Set<String> visited = new HashSet<>();
+            visited.add(beginWord);
+
+            while (!Q.isEmpty()) {
+                Pair<String, Integer> node = Q.remove();
+                String word = node.getKey();
+                int level = node.getValue();
+                for (int i = 0; i < L; i++) {
+                    String newWord = word.substring(0, i) + '*' + word.substring(i + 1, L);
+
+                    for (String adjacentWord : allComboDict.getOrDefault(newWord, new ArrayList<>())) {
+                        if (adjacentWord.equals(endWord)) {
+                            return level + 1;
+                        }
+                        if (!visited.contains(adjacentWord)) {
+                            visited.add(adjacentWord);
+                            Q.add(new Pair(adjacentWord, level + 1));
+                        }
+                    }
+                }
+            }
+
+            return 0;
         }
     }
 }
