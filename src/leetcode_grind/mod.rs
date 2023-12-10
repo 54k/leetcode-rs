@@ -309,6 +309,7 @@ pub mod day_389;
 pub mod day_39;
 pub mod day_390;
 pub mod day_392;
+pub mod day_393;
 pub mod day_4;
 pub mod day_40;
 pub mod day_41;
