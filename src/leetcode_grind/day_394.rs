@@ -70,3 +70,28 @@ pub fn find_special_integer_3(arr: Vec<i32>) -> i32 {
 
     -1
 }
+
+// https://leetcode.com/problems/range-addition/description/
+pub fn get_modified_array(length: i32, updates: Vec<Vec<i32>>) -> Vec<i32> {
+    let mut arr = vec![0; length as usize];
+    for upd in updates {
+        let (l, r, v) = (upd[0] as usize, upd[1] as usize, upd[2]);
+        arr[l] += v;
+        if r < arr.len() - 1 {
+            arr[r + 1] -= v;
+        }
+    }
+    for i in 1..arr.len() {
+        arr[i] += arr[i - 1];
+    }
+    arr
+}
+
+// https://leetcode.com/problems/range-addition-ii/description/
+pub fn max_count(mut m: i32, mut n: i32, ops: Vec<Vec<i32>>) -> i32 {
+    for op in ops {
+        m = m.min(op[0]);
+        n = n.min(op[1]);
+    }
+    m * n
+}
