@@ -24,7 +24,7 @@ class SparseTable {
                 rmq2[0][i] = nums[i];
             }
 
-            for (int k = 0; k <= lg[n]; k++) {
+            for (int k = 0; k < lg[n]; k++) {
                 for (int i = 0; i + (1 << k) < n; i++) {
                     rmq1[k + 1][i] = Math.min(rmq1[k][i], rmq1[k][i + (1 << k)]);
                     rmq2[k + 1][i] = Math.max(rmq2[k][i], rmq2[k][i + (1 << k)]);
