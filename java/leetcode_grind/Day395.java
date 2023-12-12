@@ -131,4 +131,36 @@ public class Day395 {
         }
     }
 
+    // https://leetcode.com/problems/minimum-interval-to-include-each-query/description/
+    static class Solution2 {
+        public int[] minInterval(int[][] intervals, int[] queries) {
+            Arrays.sort(intervals, Arrays::compare);
+            int[] queriesSorted = Arrays.copyOf(queries, queries.length);
+            Arrays.sort(queriesSorted);
+
+            var dic = new HashMap<Integer, Integer>();
+
+            var pq = new PriorityQueue<int[]>((a, b) -> a[0] - b[0]);
+
+            int i = 0;
+            for (int j = 0; j < queries.length; j++) {
+                while (i < intervals.length && intervals[i][0] <= queriesSorted[j]) {
+                    pq.add(new int[] { intervals[i][1] - intervals[i][0] + 1, intervals[i][1] });
+                    i++;
+                }
+
+                while (!pq.isEmpty() && pq.peek()[1] < queriesSorted[j]) {
+                    pq.remove();
+                }
+                dic.put(queriesSorted[j], pq.isEmpty() ? -1 : pq.peek()[0]);
+            }
+
+            int[] ans = new int[queries.length];
+            for (int j = 0; j < queries.length; j++) {
+                ans[j] = dic.get(queries[j]);
+            }
+
+            return ans;
+        }
+    }
 }
