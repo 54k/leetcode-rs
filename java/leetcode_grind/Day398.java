@@ -39,4 +39,64 @@ public class Day398 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/bulls-and-cows/
+    class Solution3 {
+        public String getHint1(String secret, String guess) {
+            HashMap<Character, Integer> h = new HashMap<>();
+            for (char s : secret.toCharArray()) {
+                h.put(s, h.getOrDefault(s, 0) + 1);
+            }
+
+            int bulls = 0, cows = 0;
+            int n = guess.length();
+
+            for (int idx = 0; idx < n; ++idx) {
+                char ch = guess.charAt(idx);
+                if (h.containsKey(ch)) {
+                    if (ch == secret.charAt(idx)) {
+                        bulls++;
+
+                        if (h.get(ch) <= 0) {
+                            cows--;
+                        }
+                    } else {
+                        if (h.get(ch) > 0) {
+                            cows++;
+                        }
+                    }
+                    h.put(ch, h.get(ch) - 1);
+                }
+            }
+
+            return String.format("%sA%sB", bulls, cows);
+        }
+
+        public String getHint2(String secret, String guess) {
+            int bulls = 0, cows = 0;
+            HashMap<Character, Integer> h = new HashMap<>();
+            int n = guess.length();
+
+            for (int idx = 0; idx < n; idx++) {
+                char s = secret.charAt(idx);
+                char g = guess.charAt(idx);
+
+                if (s == g) {
+                    bulls++;
+                } else {
+                    if (h.getOrDefault(s, 0) < 0) {
+                        cows++;
+                    }
+                    if (h.getOrDefault(g, 0) > 0) {
+                        cows++;
+                    }
+
+                    h.put(s, h.getOrDefault(s, 0) + 1);
+                    h.put(g, h.getOrDefault(g, 0) - 1);
+                }
+            }
+
+            return String.format("%sA%sB", bulls, cows);
+        }
+    }
 }
