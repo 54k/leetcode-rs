@@ -24,4 +24,19 @@ public class Day398 {
             return "";
         }
     }
+
+    // https://leetcode.com/problems/total-appeal-of-a-string/description/
+    static class Solution2 {
+        public long appealSum(String s) {
+            var total = 0;
+            var prev = new int[26];
+            long ans = 0;
+            for (var i = 0; i < s.length(); i++) {
+                total += i + 1 - prev[s.charAt(i) - 'a'];
+                prev[s.charAt(i) - 'a'] = i + 1;
+                ans += total;
+            }
+            return ans;
+        }
+    }
 }
