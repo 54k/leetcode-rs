@@ -319,6 +319,7 @@ pub mod day_40;
 pub mod day_400;
 pub mod day_401;
 pub mod day_403;
+pub mod day_404;
 pub mod day_41;
 pub mod day_42;
 pub mod day_43;
