@@ -321,6 +321,7 @@ pub mod day_401;
 pub mod day_403;
 pub mod day_404;
 pub mod day_405;
+pub mod day_406;
 pub mod day_41;
 pub mod day_42;
 pub mod day_43;
