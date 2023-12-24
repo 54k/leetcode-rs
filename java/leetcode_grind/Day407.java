@@ -3,6 +3,7 @@ package leetcode_grind;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 public class Day407 {
 
@@ -138,4 +139,45 @@ public class Day407 {
             return answer;
         }
     }
+
+    // https://leetcode.com/problems/cycle-length-queries-in-a-tree/description/
+    static class Solution3 {
+        public int[] cycleLengthQueries(int n, int[][] queries) {
+            Function<Integer, Integer> lg = (x) -> {
+                var log = (int) (Math.log(x) / Math.log(2));
+                // System.out.printf("log %s->%s\n", x, log);
+                return log;
+            };
+
+            var lca = new Object() {
+                int apply(int v, int u) {
+                    if (lg.apply(v) > lg.apply(u)) {
+                        return apply(u, v);
+                    }
+
+                    while (lg.apply(v) < lg.apply(u)) {
+                        u /= 2;
+                    }
+
+                    while (v != u) {
+                        v /= 2;
+                        u /= 2;
+                    }
+
+                    return v;
+                }
+            };
+
+            int[] ans = new int[queries.length];
+            int i = 0;
+            for (var query : queries) {
+                int v = query[0];
+                int u = query[1];
+                int l = lca.apply(v, u);
+                // System.out.printf("lca %s->%s %s\n", u, v, l);
+                ans[i++] = lg.apply(v) + lg.apply(u) - (l > 1 ? 2 * lg.apply(l) : 0) + 1;
+            }
+            return ans;
+        }
+    }s
 }
