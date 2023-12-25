@@ -1,3 +1,12 @@
+use std::{cell::RefCell, rc::Rc};
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
 // https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/description/
 pub fn subtree_with_all_deepest(
     root: Option<Rc<RefCell<TreeNode>>>,
