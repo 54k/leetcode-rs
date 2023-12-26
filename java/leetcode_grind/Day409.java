@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Day409 {
@@ -284,6 +285,28 @@ public class Day409 {
             }
 
             return answer;
+        }
+    }
+
+    // https://leetcode.com/problems/intersection-of-two-arrays-ii/description/
+    static class Solution9 {
+        public int[] intersect(int[] nums1, int[] nums2) {
+            var freq = new int[1001];
+            for (var n : nums1) {
+                freq[n]++;
+            }
+
+            List<Integer> ans = new ArrayList<>();
+            for (var n : nums2) {
+                if (freq[n]-- > 0) {
+                    ans.add(n);
+                }
+            }
+            var arr = new int[ans.size()];
+            for (int i = 0; i < ans.size(); i++) {
+                arr[i] = ans.get(i);
+            }
+            return arr;
         }
     }
 }
