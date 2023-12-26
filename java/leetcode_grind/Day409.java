@@ -1,6 +1,8 @@
 package leetcode_grind;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Day409 {
     // https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/description/
@@ -95,6 +97,22 @@ public class Day409 {
             }
 
             return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/description
+    static class Solution {
+        public int longestSubsequence(int[] arr, int difference) {
+            Map<Integer, Integer> dp = new HashMap<>();
+            int answer = 1;
+
+            for (int a : arr) {
+                int beforeA = dp.getOrDefault(a - difference, 0);
+                dp.put(a, beforeA + 1);
+                answer = Math.max(answer, dp.get(a));
+            }
+
+            return answer;
         }
     }
 }
