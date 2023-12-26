@@ -1,5 +1,6 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +134,41 @@ public class Day409 {
             }
 
             return maxLength;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-increasing-subsequence/description/
+    static class Solution5 {
+        public int lengthOfLIS(int[] nums) {
+            var sub = new ArrayList<Integer>();
+            var search = new Object() {
+                int apply(int t) {
+                    var lo = -1;
+                    var hi = sub.size();
+
+                    while (lo + 1 < hi) {
+                        int mid = (lo + hi) / 2;
+                        if (sub.get(mid) < t) {
+                            lo = mid;
+                        } else {
+                            hi = mid;
+                        }
+                    }
+
+                    return hi;
+                }
+            };
+
+            for (var n : nums) {
+                if (sub.size() == 0 || sub.get(sub.size() - 1) < n) {
+                    sub.add(n);
+                } else {
+                    var i = search.apply(n);
+                    sub.set(i, n);
+                }
+            }
+
+            return sub.size();
         }
     }
 }
