@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Day409 {
     // https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/description/
@@ -307,6 +309,31 @@ public class Day409 {
                 arr[i] = ans.get(i);
             }
             return arr;
+        }
+    }
+
+    // https://leetcode.com/problems/find-the-difference-of-two-arrays/
+    static class Solution10 {
+        List<Integer> getElemsOnlyInFirstList(int[] nums1, int[] nums2) {
+            Set<Integer> onlyInNums1 = new HashSet<>();
+            Set<Integer> existsInNums2 = new HashSet<>();
+            for (int num : nums2) {
+                existsInNums2.add(num);
+            }
+
+            for (int num : nums1) {
+                if (!existsInNums2.contains(num)) {
+                    onlyInNums1.add(num);
+                }
+            }
+
+            return new ArrayList<>(onlyInNums1);
+        }
+
+        public List<List<Integer>> findDifference(int[] nums1, int[] nums2) {
+            return Arrays.asList(
+                    getElemsOnlyInFirstList(nums1, nums2),
+                    getElemsOnlyInFirstList(nums2, nums1));
         }
     }
 }
