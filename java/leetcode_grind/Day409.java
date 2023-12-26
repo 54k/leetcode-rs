@@ -1,8 +1,10 @@
 package leetcode_grind;
 
+import java.util.Arrays;
+
 public class Day409 {
     // https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/description/
-    static class Solution {
+    static class Solution1 {
         final int MOD = 1_000_000_007;
 
         int waysToTarget(Integer[][] memo, int diceIndex, int n, int currSum, int target, int k) {
@@ -44,6 +46,55 @@ public class Day409 {
             }
 
             return dp[0][0];
+        }
+    }
+
+    // https://leetcode.com/problems/maximum-length-of-pair-chain/description
+    static class Solution2 {
+        public int findLongestChain1(int[][] pairs) {
+            var rec = new Object() {
+                int longestChain(int i, int[][] pairs, int n, int[] memo) {
+                    if (memo[i] != 0) {
+                        return memo[i];
+                    }
+                    memo[i] = 1;
+                    for (int j = i + 1; j < n; j++) {
+                        if (pairs[i][1] < pairs[j][0]) {
+                            memo[i] = Math.max(memo[i], 1 + longestChain(j, pairs, n, memo));
+                        }
+                    }
+                    return memo[i];
+                }
+            };
+
+            int n = pairs.length;
+            Arrays.sort(pairs, (a, b) -> a[0] - b[0]);
+            int[] memo = new int[n];
+
+            int ans = 0;
+            for (int i = 0; i < n; i++) {
+                ans = Math.max(ans, rec.longestChain(i, pairs, n, memo));
+            }
+            return ans;
+        }
+
+        public int findLongestChain2(int[][] pairs) {
+            int n = pairs.length;
+            Arrays.sort(pairs, (a, b) -> a[0] - b[0]);
+            int[] dp = new int[n];
+            Arrays.fill(dp, 1);
+
+            int ans = 1;
+            for (int i = n - 1; i >= 0; i--) {
+                for (int j = i + 1; j < n; j++) {
+                    if (pairs[i][1] < pairs[j][0]) {
+                        dp[i] = Math.max(dp[i], 1 + dp[j]);
+                    }
+                }
+                ans = Math.max(ans, dp[i]);
+            }
+
+            return ans;
         }
     }
 }
