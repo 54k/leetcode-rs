@@ -1,6 +1,6 @@
 // https://leetcode.com/problems/minimum-time-to-make-rope-colorful/description
 pub fn min_cost(colors: String, needed_time: Vec<i32>) -> i32 {
-    let mut colors = colors.chars().collect::<Vec<_>>();
+    let colors = colors.chars().collect::<Vec<_>>();
     let mut total_time = 0;
     let mut curr_max_time = 0;
 
