@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.Arrays;
+
 public class Day410 {
     // https://leetcode.com/problems/minimum-time-to-make-rope-colorful/description
     static class Solution1 {
@@ -53,6 +55,57 @@ public class Day410 {
             }
 
             return t1;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-common-subsequence/description
+    static class Solution3 {
+        public int longestCommonSubsequenceBottomUp(String text1, String text2) {
+            int[][] dpGrid = new int[text1.length() + 1][text2.length() + 1];
+
+            for (int col = text2.length() - 1; col >= 0; col--) {
+                for (int row = text1.length() - 1; row >= 0; row--) {
+                    if (text1.charAt(row) == text2.charAt(col)) {
+                        dpGrid[row][col] = 1 + dpGrid[row + 1][col + 1];
+                    } else {
+                        dpGrid[row][col] = Math.max(dpGrid[row + 1][col], dpGrid[row][col + 1]);
+                    }
+                }
+            }
+
+            return dpGrid[0][0];
+        }
+
+        public int longestCommonSubsequenceTopDown(String text1, String text2) {
+            var memo = new int[text1.length() + 1][text2.length() + 1];
+            for (int i = 0; i < text1.length(); i++) {
+                Arrays.fill(memo[i], -1);
+            }
+
+            var rec = new Object() {
+                int apply(int i, int j) {
+                    if (i == text1.length()) {
+                        return 0;
+                    }
+                    if (j == text2.length()) {
+                        return 0;
+                    }
+
+                    if (memo[i][j] != -1) {
+                        return memo[i][j];
+                    }
+
+                    int ans = 0;
+                    if (text1.charAt(i) == text2.charAt(j)) {
+                        ans = 1 + apply(i + 1, j + 1);
+                    }
+
+                    ans = Math.max(ans, Math.max(apply(i + 1, j), apply(i, j + 1)));
+                    return memo[i][j] = ans;
+                }
+            };
+
+            return rec.apply(0, 0);
         }
     }
 }
