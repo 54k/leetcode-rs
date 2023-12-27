@@ -108,4 +108,78 @@ public class Day410 {
             return rec.apply(0, 0);
         }
     }
+
+    // https://leetcode.com/problems/edit-distance/description
+    static class Solution4 {
+        public int minDistanceBottomUp(String word1, String word2) {
+            var m = word1.length();
+            var n = word2.length();
+            var dp = new int[m + 1][n + 1];
+
+            if (Math.min(m, n) == 0) {
+                return Math.max(m, n);
+            }
+
+            for (int i = 1; i <= m; i++) {
+                dp[i][0] = i;
+                for (int j = 1; j <= n; j++) {
+                    if (i == 1) {
+                        dp[0][j] = j;
+                    }
+
+                    var ch1 = word1.charAt(i - 1);
+                    var ch2 = word2.charAt(j - 1);
+
+                    if (ch1 == ch2) {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    } else {
+                        var replace = dp[i - 1][j - 1];
+                        var insert = dp[i][j - 1];
+                        var delete = dp[i - 1][j];
+
+                        dp[i][j] = 1 + Math.min(insert, Math.min(replace, delete));
+                    }
+                }
+            }
+
+            return dp[m][n];
+        }
+
+        public int minDistanceTopDown(String word1, String word2) {
+            var m = word1.length();
+            var n = word2.length();
+
+            Integer[][] memo = new Integer[m + 1][n + 1];
+
+            var rec = new Object() {
+                int apply(int i, int j) {
+                    if (i == m || j == n) {
+                        return Math.max(m - i, n - j);
+                    }
+
+                    if (memo[i][j] != null) {
+                        return memo[i][j];
+                    }
+
+                    var ch1 = word1.charAt(i);
+                    var ch2 = word2.charAt(j);
+
+                    var ans = 0;
+                    if (ch1 == ch2) {
+                        ans = apply(i + 1, j + 1);
+                    } else {
+                        var replace = apply(i + 1, j + 1);
+                        var delete = apply(i + 1, j);
+                        var insert = apply(i, j + 1);
+
+                        ans = 1 + Math.min(replace, Math.min(delete, insert));
+                    }
+
+                    return memo[i][j] = ans;
+                }
+            };
+
+            return rec.apply(0, 0);
+        }
+    }
 }
