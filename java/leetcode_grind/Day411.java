@@ -42,4 +42,34 @@ public class Day411 {
             return res;
         }
     }
+
+    // https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/description
+    static class Solution2 {
+        public int minInsertions(String s) {
+            var lcs = new Object() {
+                int apply(String s1, String s2) {
+                    var m = s1.length();
+                    var n = s2.length();
+                    var dp = new int[m + 1][n + 1];
+                    for (int i = 1; i <= m; i++) {
+                        for (int j = 1; j <= n; j++) {
+                            if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+                                dp[i][j] = dp[i - 1][j - 1] + 1;
+                            } else {
+                                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                            }
+                        }
+                    }
+                    return dp[m][n];
+                }
+            };
+            var arr = s.toCharArray();
+            for (int i = 0; i < arr.length / 2; i++) {
+                var tmp = arr[i];
+                arr[i] = arr[arr.length - i - 1];
+                arr[arr.length - i - 1] = tmp;
+            }
+            return s.length() - lcs.apply(s, new String(arr));
+        }
+    }
 }
