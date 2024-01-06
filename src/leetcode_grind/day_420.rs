@@ -15,3 +15,28 @@ pub fn generate_possible_next_moves(current_state: String) -> Vec<String> {
     states
 }
 
+// https://leetcode.com/problems/reverse-vowels-of-a-string/description/
+pub fn reverse_vowels(s: String) -> String {
+    use std::collections::HashSet;
+    let mut vowels = HashSet::from(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']);
+
+    let mut s = s.chars().collect::<Vec<_>>();
+
+    let mut i = 0i32;
+    let mut j = s.len() as i32 - 1;
+
+    while i < j {
+        while i < j && !vowels.contains(&s[i as usize]) {
+            i += 1;
+        }
+        while i < j && !vowels.contains(&s[j as usize]) {
+            j -= 1;
+        }
+
+        s.swap(i as usize, j as usize);
+        i += 1;
+        j -= 1;
+    }
+
+    s.into_iter().collect()
+}
