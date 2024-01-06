@@ -3,6 +3,7 @@ package leetcode_grind;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 public class Day420 {
@@ -65,6 +66,62 @@ public class Day420 {
                 }
             }
             return nextIndex;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-consecutive-sequence/description/
+    static class Solution2 {
+        public int longestConsecutive(int[] nums) {
+            var set = new HashSet<Integer>();
+            for (var n : nums) {
+                set.add(n);
+            }
+
+            var longestStreak = 0;
+
+            for (int num : set) {
+                if (!set.contains(num - 1)) {
+                    int currentNum = num;
+                    int currentStreak = 1;
+
+                    while (set.contains(currentNum + 1)) {
+                        currentNum++;
+                        currentStreak++;
+                    }
+
+                    longestStreak = Math.max(longestStreak, currentStreak);
+                }
+            }
+
+            return longestStreak;
+        }
+    }
+
+    // https://leetcode.com/problems/flip-game-ii/description/
+    static class Solution3 {
+        public boolean canWin(String currentState) {
+            var states = currentState.toCharArray();
+            var rec = new Object() {
+                boolean apply() {
+                    for (int i = 1; i < states.length; i++) {
+                        if (states[i] == '+' && states[i] == states[i - 1]) {
+                            states[i - 1] = '-';
+                            states[i] = '-';
+
+                            var wins = !apply();
+
+                            states[i - 1] = '+';
+                            states[i] = '+';
+
+                            if (wins) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            };
+            return rec.apply();
         }
     }
 }
