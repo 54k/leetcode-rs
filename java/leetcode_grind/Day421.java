@@ -329,4 +329,34 @@ public class Day421 {
             return res;
         }
     }
+
+    // https://leetcode.com/problems/maximum-profit-from-trading-stocks/description/
+    static class Solution7 {
+        public int maximumProfit(int[] present, int[] future, int budget) {
+            int n = present.length;
+            int[][] dp = new int[n + 1][budget + 1];
+            // for (int i = 0; i <= n; i++) {
+            // Arrays.fill(dp[i], Integer.MIN_VALUE);
+            // }
+
+            // dp[0][0] = 0;
+            for (int i = 1; i <= n; i++) {
+                for (int j = 0; j <= budget; j++) {
+                    dp[i][j] = dp[i - 1][j];
+                    if (j >= present[i - 1]) {
+                        int diff = j - present[i - 1];
+                        dp[i][j] = Math.max(dp[i][j], dp[i - 1][diff] + future[i - 1]);
+                    }
+                }
+            }
+
+            int ans = 0;
+            for (int i = 1; i <= n; i++) {
+                for (int b = 0; b <= budget; b++) {
+                    ans = Math.max(ans, dp[i][b] - b);
+                }
+            }
+            return ans;
+        }
+    }
 }
