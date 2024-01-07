@@ -2,7 +2,10 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 public class Day421 {
     // https://leetcode.com/problems/arithmetic-slices-ii-subsequence/description
@@ -42,8 +45,36 @@ public class Day421 {
         }
     }
 
-    // https://leetcode.com/problems/maximum-profit-in-job-scheduling/description/
+    // https://leetcode.com/problems/arithmetic-slices-ii-subsequence/description
     static class Solution2 {
+        public int numberOfArithmeticSlices(int[] nums) {
+            int n = nums.length;
+            long ans = 0;
+            Map<Integer, Integer>[] cnt = new Map[n];
+
+            for (int i = 0; i < n; i++) {
+                cnt[i] = new HashMap<>();
+
+                for (int j = 0; j < i; j++) {
+                    long delta = (long) nums[i] - (long) nums[j];
+
+                    if (delta < Integer.MIN_VALUE || delta > Integer.MAX_VALUE) {
+                        continue;
+                    }
+
+                    int diff = (int) delta;
+                    int sum = cnt[j].getOrDefault(diff, 0);
+                    int origin = cnt[i].getOrDefault(diff, 0);
+                    cnt[i].put(diff, origin + sum + 1);
+                    ans += sum;
+                }
+            }
+            return (int) ans;
+        }
+    }
+
+    // https://leetcode.com/problems/maximum-profit-in-job-scheduling/description/
+    static class Solution3 {
         int memo[] = new int[50001];
 
         int findNextJob(int[] startTime, int lastEndingTime) {
@@ -104,6 +135,58 @@ public class Day421 {
             }
 
             return findMaxProfit(jobs, startTime);
+        }
+    }
+
+    static class Solution4 {
+        static class The_Comparator implements Comparator<ArrayList<Integer>> {
+            public int compare(ArrayList<Integer> list1, ArrayList<Integer> list2) {
+                return list1.get(0) - list2.get(0);
+            }
+        }
+
+        int findMaxProfit(List<List<Integer>> jobs) {
+            int n = jobs.size(), maxProfit = 0;
+
+            PriorityQueue<ArrayList<Integer>> pq = new PriorityQueue<>(new The_Comparator());
+
+            for (int i = 0; i < n; i++) {
+                int start = jobs.get(i).get(0);
+                int end = jobs.get(i).get(1);
+                int profit = jobs.get(i).get(2);
+
+                while (!pq.isEmpty() && start >= pq.peek().get(0)) {
+                    maxProfit = Math.max(maxProfit, pq.peek().get(1));
+                    pq.remove();
+                }
+
+                ArrayList<Integer> combinedJob = new ArrayList<>();
+                combinedJob.add(end);
+                combinedJob.add(profit + maxProfit);
+
+                pq.add(combinedJob);
+            }
+
+            while (!pq.isEmpty()) {
+                maxProfit = Math.max(maxProfit, pq.peek().get(1));
+                pq.remove();
+            }
+
+            return maxProfit;
+        }
+
+        public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
+            List<List<Integer>> jobs = new ArrayList<>();
+            for (int i = 0; i < startTime.length; i++) {
+                List<Integer> cur = new ArrayList<>();
+                cur.add(startTime[i]);
+                cur.add(endTime[i]);
+                cur.add(profit[i]);
+                jobs.add(cur);
+            }
+            jobs.sort(Comparator.comparingInt(a -> a.get(0)));
+
+            return findMaxProfit(jobs);
         }
     }
 }
