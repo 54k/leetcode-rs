@@ -34,3 +34,16 @@ pub fn max_distance(colors: Vec<i32>) -> i32 {
 
     diff
 }
+
+// https://leetcode.com/problems/three-consecutive-odds/description/
+pub fn three_consecutive_odds(arr: Vec<i32>) -> bool {
+    if arr.len() <= 2 {
+        return false;
+    }
+    for i in 0..arr.len() - 2 {
+        if arr[i] % 2 == 1 && arr[i + 1] % 2 == 1 && arr[i + 2] % 2 == 1 {
+            return true;
+        }
+    }
+    false
+}
