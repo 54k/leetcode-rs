@@ -210,4 +210,123 @@ public class Day421 {
             return slots == 0;
         }
     }
+
+    // https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/description
+    static class Solution6 {
+        public int maxProfitDPApproach(int k, int[] prices) {
+            int n = prices.length;
+
+            if (n <= 0 || k <= 0) {
+                return 0;
+            }
+
+            if (k / 2 > n) {
+                int res = 0;
+                for (int i = 1; i < n; i++) {
+                    res += Math.max(0, prices[i] - prices[i - 1]);
+                }
+                return res;
+            }
+
+            int[][][] dp = new int[n][k + 1][2];
+            int INF = -1000000000;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j <= k; j++) {
+                    dp[i][j][0] = INF;
+                    dp[i][j][1] = INF;
+                }
+            }
+
+            dp[0][0][0] = 0;
+            dp[0][1][1] = -prices[0];
+
+            for (int i = 1; i < n; i++) {
+                for (int j = 0; j <= k; j++) {
+                    dp[i][j][0] = Math.max(dp[i - 1][j][0], dp[i - 1][j][1] + prices[i]);
+
+                    if (j > 0) {
+                        dp[i][j][1] = Math.max(dp[i - 1][j][1], dp[i - 1][j - 1][0] - prices[i]);
+                    }
+                }
+            }
+
+            int res = 0;
+            for (int j = 0; j <= k; j++) {
+                res = Math.max(res, dp[n - 1][j][0]);
+            }
+
+            return res;
+        }
+
+        public int maxProfitMergeApproach(int k, int[] prices) {
+            int n = prices.length;
+
+            if (n <= 0 || k <= 0) {
+                return 0;
+            }
+
+            ArrayList<int[]> transactions = new ArrayList<>();
+            int start = 0;
+            int end = 0;
+
+            for (int i = 1; i < n; i++) {
+                if (prices[i] >= prices[i - 1]) {
+                    end = i;
+                } else {
+                    if (end > start) {
+                        int[] t = { start, end };
+                        transactions.add(t);
+                    }
+                    start = i;
+                }
+            }
+
+            if (end > start) {
+                int[] t = { start, end };
+                transactions.add(t);
+            }
+
+            while (transactions.size() > k) {
+                int delete_index = 0;
+                int min_delete_loss = Integer.MAX_VALUE;
+
+                for (int i = 0; i < transactions.size(); i++) {
+                    int[] t = transactions.get(i);
+                    int profit_loss = prices[t[1]] - prices[t[0]];
+                    if (profit_loss < min_delete_loss) {
+                        min_delete_loss = profit_loss;
+                        delete_index = i;
+                    }
+                }
+
+                int merge_index = 0;
+                int min_merge_loss = Integer.MAX_VALUE;
+
+                for (int i = 1; i < transactions.size(); i++) {
+                    int[] t1 = transactions.get(i - 1);
+                    int[] t2 = transactions.get(i);
+                    int profit_loss = prices[t1[1]] - prices[t2[0]];
+                    if (profit_loss < min_merge_loss) {
+                        min_merge_loss = profit_loss;
+                        merge_index = i;
+                    }
+                }
+
+                if (min_delete_loss <= min_merge_loss) {
+                    transactions.remove(delete_index);
+                } else {
+                    int[] t1 = transactions.get(merge_index - 1);
+                    int[] t2 = transactions.get(merge_index);
+                    t1[1] = t2[1];
+                    transactions.remove(merge_index);
+                }
+            }
+
+            int res = 0;
+            for (int[] t : transactions) {
+                res += prices[t[1]] - prices[t[0]];
+            }
+            return res;
+        }
+    }
 }
