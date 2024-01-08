@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class Day422 {
@@ -71,6 +73,71 @@ public class Day422 {
             }
 
             return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+        }
+    }
+
+    // https://leetcode.com/problems/find-leaves-of-binary-tree/
+    static class Solution3 {
+        public List<List<Integer>> findLeaves(TreeNode root) {
+            var leaves = new ArrayList<List<Integer>>();
+            var dfs = new Object() {
+                int apply(TreeNode root) {
+                    if (root == null) {
+                        return -1;
+                    }
+
+                    int l = apply(root.left);
+                    int r = apply(root.right);
+                    int d = 1 + Math.max(l, r);
+
+                    if (d == leaves.size()) {
+                        leaves.add(new ArrayList<>());
+                    }
+
+                    leaves.get(d).add(root.val);
+                    return d;
+                }
+            };
+
+            dfs.apply(root);
+            return leaves;
+        }
+    }
+
+    // https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/
+    public static class Reader4 {
+        int read4(char[] buf) {
+            return 0;
+        }
+
+    }
+
+    public static class Solution4 extends Reader4 {
+        int bufPtr = 0;
+        int bufCnt = 0;
+        char[] buf4 = new char[4];
+
+        /**
+         * @param buf Destination buffer
+         * @param n   Number of characters to read
+         * @return The number of actual characters read
+         */
+        public int read(char[] buf, int n) {
+            int ptr = 0;
+            while (ptr < n) {
+                if (bufPtr == 0) {
+                    bufCnt = read4(buf4);
+                }
+                if (bufCnt == 0)
+                    break;
+
+                while (ptr < n && bufPtr < bufCnt) {
+                    buf[ptr++] = buf4[bufPtr++];
+                }
+                if (bufPtr >= bufCnt)
+                    bufPtr = 0;
+            }
+            return ptr;
         }
     }
 }
