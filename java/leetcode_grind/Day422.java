@@ -140,4 +140,19 @@ public class Day422 {
             return ptr;
         }
     }
+
+    // https://leetcode.com/problems/move-zeroes/description/
+    static class Solution5 {
+        public void moveZeroes(int[] nums) {
+            var left = 0;
+            for (var right = 0; right < nums.length; right++) {
+                if (nums[right] != 0) {
+                    var tmp = nums[right];
+                    nums[right] = nums[left];
+                    nums[left] = tmp;
+                    left++;
+                }
+            }
+        }
+    }
 }
