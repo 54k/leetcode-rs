@@ -166,4 +166,27 @@ public class Day423 {
             return new int[] { inr, dcr };
         }
     }
+
+    // https://leetcode.com/problems/count-nodes-equal-to-sum-of-descendants/description/
+    static class Solution5 {
+        public int equalToDescendants(TreeNode root) {
+            int[] ans = new int[1];
+            var dfs = new Object() {
+                int apply(TreeNode node) {
+                    if (node == null) {
+                        return 0;
+                    }
+
+                    int sum = apply(node.left) + apply(node.right);
+                    if (node.val == sum) {
+                        ans[0]++;
+                    }
+
+                    return sum + node.val;
+                }
+            };
+            dfs.apply(root);
+            return ans[0];
+        }
+    }
 }
