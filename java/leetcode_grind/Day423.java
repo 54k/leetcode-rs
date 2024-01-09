@@ -79,4 +79,91 @@ public class Day423 {
         }
     }
 
+    // https://leetcode.com/problems/binary-tree-longest-consecutive-sequence/description/
+    static class Solution3 {
+        public int longestConsecutiveTopDown(TreeNode root) {
+            var dfs = new Object() {
+                int apply(TreeNode n, TreeNode p, int length) {
+                    if (n == null)
+                        return length;
+
+                    length = (p != null && n.val == p.val + 1) ? length + 1 : 1;
+
+                    return Math.max(
+                            length,
+                            Math.max(
+                                    apply(n.left, n, length),
+                                    apply(n.right, n, length)));
+                }
+            };
+
+            return dfs.apply(root, null, 0);
+        }
+
+        int ans = 0;
+
+        public int longestConsecutiveBottomUp(TreeNode root) {
+            var dfs = new Object() {
+                int apply(TreeNode r) {
+                    if (r == null) {
+                        return 0;
+                    }
+
+                    int left = apply(r.left) + 1;
+                    int right = apply(r.right) + 1;
+
+                    if (r.left != null && r.left.val != r.val + 1) {
+                        left = 1;
+                    }
+                    if (r.right != null && r.right.val != r.val + 1) {
+                        right = 1;
+                    }
+                    int length = Math.max(left, right);
+                    ans = Math.max(length, ans);
+                    return length;
+                }
+            };
+
+            dfs.apply(root);
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/binary-tree-longest-consecutive-sequence-ii/description/
+    static class Solution4 {
+        int maxval = 0;
+
+        public int longestConsecutive(TreeNode root) {
+            longestPath(root);
+            return maxval;
+        }
+
+        int[] longestPath(TreeNode root) {
+            if (root == null) {
+                return new int[] { 0, 0 };
+            }
+
+            int inr = 1, dcr = 1;
+            if (root.left != null) {
+                int[] left = longestPath(root.left);
+                if (root.val == root.left.val + 1) {
+                    dcr = left[1] + 1;
+                } else if (root.val + 1 == root.left.val) {
+                    inr = left[0] + 1;
+                }
+            }
+
+            if (root.right != null) {
+                int[] right = longestPath(root.right);
+                if (root.val == root.right.val + 1) {
+                    dcr = Math.max(dcr, right[1] + 1);
+                } else if (root.val + 1 == root.right.val) {
+                    inr = Math.max(inr, right[0] + 1);
+                }
+            }
+
+            maxval = Math.max(maxval, dcr + inr - 1);
+            return new int[] { inr, dcr };
+        }
+    }
 }
