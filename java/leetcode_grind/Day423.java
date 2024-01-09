@@ -3,6 +3,7 @@ package leetcode_grind;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 public class Day423 {
@@ -281,6 +282,31 @@ public class Day423 {
                     ans += freq.get(sum - k);
                 }
                 freq.put(sum, freq.getOrDefault(sum, 0) + 1);
+            }
+            return ans;
+        }
+    }
+
+    // https://www.geeksforgeeks.org/problems/longest-subarray-with-sum-divisible-by-k1259/1
+    class Solution9 {
+        int longSubarrWthSumDivByK(int a[], int n, int k) {
+            int ans = 0;
+            Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+            m.put(0, 0);
+            int sum = 0;
+
+            for (int i = 0; i < n; i++) {
+                sum += a[i];
+                if (sum % k == 0) {
+                    ans = i + 1;
+                } else {
+                    int r = (sum % k + k) % k;
+                    if (m.containsKey(r)) {
+                        ans = Math.max(ans, i - m.get(r));
+                    } else {
+                        m.put(r, i);
+                    }
+                }
             }
             return ans;
         }
