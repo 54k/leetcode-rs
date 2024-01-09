@@ -226,4 +226,63 @@ public class Day423 {
             return arr;
         }
     }
+
+    // https://leetcode.com/problems/leftmost-column-with-at-least-a-one/description/
+    interface BinaryMatrix {
+        public int get(int row, int col);
+
+        public List<Integer> dimensions();
+    };
+
+    static class Solution7 {
+        public int leftMostColumnWithOne(BinaryMatrix binaryMatrix) {
+            var dims = binaryMatrix.dimensions();
+            int rows = dims.get(0);
+            int cols = dims.get(1);
+
+            var bs = new Object() {
+                int apply(int row) {
+                    int lo = -1;
+                    int hi = cols;
+
+                    while (lo + 1 < hi) {
+                        int mid = (lo + hi) / 2;
+
+                        if (binaryMatrix.get(row, mid) == 1) {
+                            hi = mid;
+                        } else {
+                            lo = mid;
+                        }
+                    }
+
+                    return hi;
+                }
+            };
+
+            int ans = cols;
+            for (int row = 0; row < rows; row++) {
+                ans = Math.min(ans, bs.apply(row));
+            }
+
+            return ans == cols ? -1 : ans;
+        }
+    }
+
+    // https://leetcode.com/problems/subarray-sum-equals-k/description/
+    static class Solution8 {
+        public int subarraySum(int[] nums, int k) {
+            var freq = new HashMap<Integer, Integer>();
+            freq.put(0, 1);
+            var sum = 0;
+            var ans = 0;
+            for (int i = 0; i < nums.length; i++) {
+                sum += nums[i];
+                if (freq.containsKey(sum - k)) {
+                    ans += freq.get(sum - k);
+                }
+                freq.put(sum, freq.getOrDefault(sum, 0) + 1);
+            }
+            return ans;
+        }
+    }
 }
