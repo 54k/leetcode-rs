@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -187,6 +188,42 @@ public class Day423 {
             };
             dfs.apply(root);
             return ans[0];
+        }
+    }
+
+    // https://leetcode.com/problems/most-frequent-subtree-sum/description/
+    static class Solution6 {
+        int maxFreq = 0;
+
+        public int[] findFrequentTreeSum(TreeNode root) {
+            var freq = new HashMap<Integer, Integer>();
+            var dfs = new Object() {
+                int apply(TreeNode node) {
+                    if (node == null) {
+                        return 0;
+                    }
+
+                    int sum = apply(node.left) + apply(node.right) + node.val;
+                    freq.put(sum, freq.getOrDefault(sum, 0) + 1);
+                    maxFreq = Math.max(maxFreq, freq.get(sum));
+                    return sum;
+                }
+            };
+
+            dfs.apply(root);
+            var ans = new ArrayList<Integer>();
+            for (var e : freq.entrySet()) {
+                if (e.getValue() == maxFreq) {
+                    ans.add(e.getKey());
+                }
+            }
+
+            int[] arr = new int[ans.size()];
+            for (int i = 0; i < ans.size(); i++) {
+                arr[i] = ans.get(i);
+            }
+
+            return arr;
         }
     }
 }
