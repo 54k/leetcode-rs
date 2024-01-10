@@ -43,7 +43,7 @@ func amountOfTime(root *TreeNode, start int) int {
 			for _, u := range adj[v] {
 				if !vis[u] {
 					vis[u] = true
-					next = append(next, adj[v]...)
+					next = append(next, u)
 				}
 			}
 		}
