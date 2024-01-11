@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.Queue;
+
 public class Day425 {
     public class TreeNode {
         int val;
@@ -48,6 +50,28 @@ public class Day425 {
             result = 0;
             helper(root, root.val, root.val);
             return result;
+        }
+    }
+
+    class GfG {
+        // Function to reverse first k elements of a queue.
+        public Queue<Integer> modifyQueue(Queue<Integer> q, int k) {
+            // add code here.
+            int[] aux = new int[k];
+            for (int i = 0; i < aux.length; i++) {
+                aux[i] = q.poll();
+            }
+            int z = q.size();
+
+            while (--k >= 0) {
+                q.add(aux[k]);
+            }
+
+            while (z-- > 0) {
+                int e = q.remove();
+                q.add(e);
+            }
+            return q;
         }
     }
 }
