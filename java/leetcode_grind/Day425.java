@@ -55,7 +55,7 @@ public class Day425 {
         }
     }
 
-    
+    // https://www.geeksforgeeks.org/problems/reverse-first-k-elements-of-queue/1
     class GfG {
         // Function to reverse first k elements of a queue.
         public Queue<Integer> modifyQueue(Queue<Integer> q, int k) {
