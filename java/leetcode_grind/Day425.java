@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 public class Day425 {
@@ -53,6 +55,7 @@ public class Day425 {
         }
     }
 
+    
     class GfG {
         // Function to reverse first k elements of a queue.
         public Queue<Integer> modifyQueue(Queue<Integer> q, int k) {
@@ -72,6 +75,45 @@ public class Day425 {
                 q.add(e);
             }
             return q;
+        }
+    }
+
+    // https://leetcode.com/problems/spiral-matrix/description/
+    static class Solution2 {
+        public List<Integer> spiralOrder(int[][] matrix) {
+            int up = 0, down = matrix.length - 1;
+            int left = 0, right = matrix[0].length - 1;
+
+            List<Integer> result = new ArrayList<>();
+
+            while (result.size() < matrix.length * matrix[0].length) {
+                for (int col = left; col <= right; col++) {
+                    result.add(matrix[up][col]);
+                }
+
+                for (int row = up + 1; row <= down; row++) {
+                    result.add(matrix[row][right]);
+                }
+
+                if (up != down) {
+                    for (int col = right - 1; col >= left; col--) {
+                        result.add(matrix[down][col]);
+                    }
+                }
+
+                if (left != right) {
+                    for (int row = down - 1; row > up; row--) {
+                        result.add(matrix[row][left]);
+                    }
+                }
+
+                left++;
+                right--;
+                up++;
+                down--;
+            }
+
+            return result;
         }
     }
 }
