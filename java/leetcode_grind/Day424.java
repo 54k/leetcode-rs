@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.Stack;
+
 public class Day424 {
     // https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/description
     public static class TreeNode {
@@ -50,6 +52,31 @@ public class Day424 {
             }
 
             return depth;
+        }
+    }
+
+    // https://leetcode.com/problems/remove-k-digits/description/
+    static class Solution2 {
+        public String removeKdigits(String num, int k) {
+            var stack = new Stack<Character>();
+            for (int i = 0; i < num.length(); i++) {
+                while (!stack.isEmpty() && k > 0 && stack.peek() > num.charAt(i)) {
+                    stack.pop();
+                    k--;
+                }
+                stack.push(num.charAt(i));
+            }
+            while (k-- > 0) {
+                stack.pop();
+            }
+            var sb = new StringBuilder();
+            for (var n : stack) {
+                if (sb.isEmpty() && n == '0') {
+                    continue;
+                }
+                sb.append(n);
+            }
+            return sb.isEmpty() ? "0" : sb.toString();
         }
     }
 }

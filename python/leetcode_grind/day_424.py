@@ -34,3 +34,26 @@ class Solution:
 
         dfs(target, k)
         return answer
+
+#User function Template for python3
+
+class Solution:
+
+    def removeKdigits(self, S, K):
+        # code here
+        st = []
+        for ch in S:
+            while len(st) > 0 and K > 0 and st[-1] > ch:
+                st.pop()
+                K -= 1
+
+            if not len(st) and ch == '0':
+                continue
+            st.append(ch)
+        
+        while len(st) and K > 0:
+            st.pop()
+            K -= 1
+        
+        return "0" if len(st) == 0 else "".join(st)
+        
