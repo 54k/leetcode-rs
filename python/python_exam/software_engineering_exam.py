@@ -89,7 +89,7 @@ class Student(Person):
         self._course = course
 
     def get_details(self) -> None:
-        print(f"Имя: {self._name}, ID: {self._id}, course: {self._course}")
+        print(f"Студент: {self._name}, ID: {self._id}, Курс: {self._course}")
 
 
 class Instructor(Person):
@@ -98,7 +98,7 @@ class Instructor(Person):
         self._department = department
 
     def get_details(self) -> None:
-        print(f"Имя: {self._name}, ID: {self._id}, departnment: {self._department}")
+        print(f"Преподаватель: {self._name}, ID: {self._id}, Кафедра: {self._department}")
 
 
 # task 9
