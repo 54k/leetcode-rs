@@ -37,3 +37,25 @@ pub fn min_steps_ii(s: String, t: String) -> i32 {
     }
     count.into_iter().filter(|&x| x > 0).sum()
 }
+
+// https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram-ii/description/
+pub fn min_steps_iii(s: String, t: String) -> i32 {
+    let (s, t) = (s.chars().collect::<Vec<_>>(), t.chars().collect::<Vec<_>>());
+
+    let mut freq = vec![0; 26];
+
+    for i in 0..s.len() {
+        freq[s[i] as usize - 'a' as usize] += 1;
+    }
+
+    for i in 0..t.len() {
+        freq[t[i] as usize - 'a' as usize] -= 1;
+    }
+
+    // println!("{:?}", freq);
+    let mut ans = 0;
+    for f in freq {
+        ans += (f as i32).abs();
+    }
+    ans
+}
