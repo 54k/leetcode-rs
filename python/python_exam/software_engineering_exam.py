@@ -18,10 +18,14 @@ def sum_even_numbers(arr: list[int]):
 # task 4
 def fibonacci(n: int) -> list[int]:
     assert n > 0
+    if n == 1:
+        return [0]
+
     ret = [0] * n
     ret[1] = 1
-    if n <= 2:
-        return ret[:i]
+    if n == 2:
+        return ret
+
     i = 2
     while i < n:
         ret[i] = ret[i - 1] + ret[i - 2]
@@ -132,6 +136,9 @@ if __name__ == "__main__":
     # 3
     print(sum_even_numbers([1, 2, 3, 4]))
     # 4
+    print(fibonacci(1))
+    print(fibonacci(2))
+    print(fibonacci(3))
     print(fibonacci(10))
     # 5
     print(double_values({1: "1", 2: "2", 3: "3", "4": "4"}))
