@@ -7,9 +7,7 @@ def fibonacci(n: int) -> list[int]:
 
     ret = [0] * n
     ret[1] = 1
-    if n == 2:
-        return ret
-
+    
     i = 2
     while i < n:
         ret[i] = ret[i - 1] + ret[i - 2]
