@@ -22,4 +22,47 @@ public class Day445 {
             return min;
         }
     }
+
+    // https://leetcode.com/problems/binary-tree-maximum-path-sum/description/
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    static class Solution2 {
+        int maxSum;
+
+        public int maxPathSum(TreeNode root) {
+            maxSum = Integer.MIN_VALUE;
+            gainFromSubTree(root);
+            return maxSum;
+        }
+
+        int gainFromSubTree(TreeNode root) {
+            if (root == null) {
+                return 0;
+            }
+
+            int gainFromLeft = Math.max(gainFromSubTree(root.left), 0);
+            int gainFromRight = Math.max(gainFromSubTree(root.right), 0);
+
+            maxSum = Math.max(maxSum, gainFromLeft + gainFromRight + root.val);
+
+            return Math.max(gainFromLeft + root.val, gainFromRight + root.val);
+        }
+    }
 }
