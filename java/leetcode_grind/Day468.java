@@ -59,27 +59,22 @@ public class Day468 {
             ppl.add(firstPerson);
             Arrays.sort(meetings, (a, b) -> a[2] - b[2]);
 
-            var prev = -1;
-
             for (int i = 0; i < meetings.length; i++) {
                 var meets = new HashMap<Integer, List<Integer>>();
-                var m = meetings[i];
-                if (prev != m[2]) {
-                    prev = m[2];
-                    meets.computeIfAbsent(m[0], x -> new ArrayList<>()).add(m[1]);
-                    meets.computeIfAbsent(m[1], x -> new ArrayList<>()).add(m[0]);
-                    while (i < meetings.length - 1 && meetings[i + 1][2] == prev) {
-                        i++;
-                        meets.computeIfAbsent(meetings[i][0], x -> new ArrayList<>()).add(meetings[i][1]);
-                        meets.computeIfAbsent(meetings[i][1], x -> new ArrayList<>()).add(meetings[i][0]);
-                    }
+
+                meets.computeIfAbsent(meetings[i][0], x -> new ArrayList<>()).add(meetings[i][1]);
+                meets.computeIfAbsent(meetings[i][1], x -> new ArrayList<>()).add(meetings[i][0]);
+                while (i < meetings.length - 1 && meetings[i + 1][2] == meetings[i][2]) {
+                    i++;
+                    meets.computeIfAbsent(meetings[i][0], x -> new ArrayList<>()).add(meetings[i][1]);
+                    meets.computeIfAbsent(meetings[i][1], x -> new ArrayList<>()).add(meetings[i][0]);
                 }
 
                 var stack = new Stack<>();
                 for (var p : meets.keySet()) {
                     if (ppl.contains(p))
                         stack.push(p);
-                }
+                
 
                 while (!stack.isEmpty()) {
                     var pop = stack.pop();
