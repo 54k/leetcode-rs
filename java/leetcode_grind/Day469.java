@@ -49,7 +49,7 @@ public class Day469 {
             }
 
             HashSet<Integer> vis = new HashSet<>();
-            Stack<Integer> stack = new Stak<>();
+            Stack<Integer> stack = new Stack<>();
             stack.push(nums[0]);
             vis.add(nums[0]);
             while (!stack.isEmpty()) {
