@@ -77,7 +77,7 @@ public class Day470 {
     }
 
     // https://leetcode.com/problems/distance-to-a-cycle-in-undirected-graph/description/
-    class Solution {
+    static class Solution1 {
         public int[] distanceToCycle(int n, int[][] edges) {
             var adj = new HashMap<Integer, List<Integer>>();
             for (var e : edges) {
@@ -149,6 +149,31 @@ public class Day470 {
             }
 
             return dist;
+        }
+    }
+
+    // https://leetcode.com/problems/paths-in-maze-that-lead-to-same-room/description/
+    static class Solution2 {
+        public int numberOfPaths(int n, int[][] corridors) {
+            var adj = new HashMap<Integer, Set<Integer>>();
+            for (var e : corridors) {
+                if (e[0] < e[1])
+                    adj.computeIfAbsent(e[0], x -> new HashSet<>()).add(e[1]);
+                else
+                    adj.computeIfAbsent(e[1], x -> new HashSet<>()).add(e[0]);
+            }
+
+            var res = 0;
+            for (var e : corridors) {
+                var s1 = adj.getOrDefault(e[0], new HashSet<>());
+                var s2 = adj.getOrDefault(e[1], new HashSet<>());
+                for (var x : s1) {
+                    if (s2.contains(x)) {
+                        res++;
+                    }
+                }
+            }
+            return res;
         }
     }
 }
