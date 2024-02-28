@@ -46,4 +46,33 @@ public class Day472 {
             return answer;
         }
     }
+
+    static class Solution2 {
+        public List<List<Integer>> getSkyline(int[][] buildings) {
+            SortedSet<Integer> edgeSet = new TreeSet<>();
+            for (var b : buildings) {
+                edgeSet.add(b[0]);
+                edgeSet.add(b[1]);
+            }
+
+            List<Integer> edges = new ArrayList<>(edgeSet);
+            List<List<Integer>> result = new ArrayList<>();
+
+            for (var edge : edges) {
+                int maxHeight = 0;
+
+                for (var b : buildings) {
+                    if (b[0] <= edge && b[1] > edge) {
+                        maxHeight = Math.max(maxHeight, b[2]);
+                    }
+                }
+
+                if (result.isEmpty() || result.get(result.size() - 1).get(1) != maxHeight) {
+                    result.add(Arrays.asList(edge, maxHeight));
+                }
+            }
+
+            return result;
+        }
+    }
 }
