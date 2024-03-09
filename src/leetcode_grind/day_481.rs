@@ -4,6 +4,11 @@ pub struct ListNode {
     pub val: i32,
     pub next: Option<Box<ListNode>>,
 }
+impl ListNode {
+    fn new(val: i32) -> Self {
+        Self { val, next: None }
+    }
+}
 
 pub fn frequencies_of_elements(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
     use std::collections::HashMap;
