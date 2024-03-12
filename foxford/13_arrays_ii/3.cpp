@@ -8,12 +8,14 @@ int main()
     cin >> n >> k;
     vector<int> v(n);
     iota(v.begin(), v.end(), 1);
-    int last = 1;
-    while (n > 1)
+
+    int pos = 0;
+
+    while (v.size() > 1)
     {
-        last = (last + k) % n;
-        n--;
+        pos = (pos + k - 1) % v.size();
+        v.erase(v.begin() + pos);
     }
-    cout << v[last - 1] << "\n";
+    cout << v[0] << endl;
     return 0;
 }
