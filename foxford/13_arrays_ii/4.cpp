@@ -24,16 +24,18 @@ int main()
     long long ans = 4294967295;
     for (auto &x : nd)
     {
-        vector<long long>::iterator it;
-        if ((it = upper_bound(md.begin(), md.end(), x)) != md.begin())
-        {
-            auto val = *(--it);
-            // cout << x << " " << val << endl;
-            ans = min(ans, abs(x - val));
-        }
+        vector<long long>::iterator it = upper_bound(md.begin(), md.end(), x);
+
         if (it != md.end())
         {
             auto val = *(it);
+            // cout << x << " " << val << endl;
+            ans = min(ans, abs(x - val));
+        }
+
+        if (it != md.begin())
+        {
+            auto val = *(--it);
             // cout << x << " " << val << endl;
             ans = min(ans, abs(x - val));
         }
