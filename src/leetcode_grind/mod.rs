@@ -381,6 +381,7 @@ pub mod day_482;
 pub mod day_486;
 pub mod day_487;
 pub mod day_49;
+pub mod day_496;
 pub mod day_5;
 pub mod day_50;
 pub mod day_51;
