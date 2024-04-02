@@ -21,5 +21,29 @@ int main()
         cin >> i;
     }
 
+    sort(a.begin(), a.end());
+    sort(b.begin(), b.end());
+
+    int i = 0, j = 0;
+    while (i < a.size() && j < b.size())
+    {
+        if (a[i] == b[j])
+        {
+            int v = a[i];
+            while (a[i] == v)
+            {
+                i++;
+            }
+            while (b[j] == v)
+            {
+                j++;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+    cout << (i == a.size() and j == b.size() ? "YES" : "NO") << endl;
     return 0;
 }
