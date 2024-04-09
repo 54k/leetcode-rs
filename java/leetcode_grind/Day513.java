@@ -1,9 +1,54 @@
 package leetcode_grind;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 public class Day513 {
+
+    // https://leetcode.com/problems/longest-string-chain/description
+    static class Solution2 {
+        public int longestStrChain(String[] words) {
+            Map<String, Integer> memo = new HashMap<>();
+            Set<String> wordsPresent = new HashSet<>();
+            Collections.addAll(wordsPresent, words);
+            int ans = 0;
+
+            var dfs = new Object() {
+                int apply(String currentWord) {
+                    if (memo.containsKey(currentWord)) {
+                        return memo.get(currentWord);
+                    }
+
+                    int maxLength = 1;
+                    StringBuilder sb = new StringBuilder(currentWord);
+
+                    for (int i = 0; i < currentWord.length(); i++) {
+                        sb.deleteCharAt(i);
+                        String newWord = sb.toString();
+
+                        if (wordsPresent.contains(newWord)) {
+                            int currentLength = 1 + apply(newWord);
+                            maxLength = Math.max(maxLength, currentLength);
+                        }
+                        sb.insert(i, currentWord.charAt(i));
+                    }
+
+                    memo.put(currentWord, maxLength);
+                    return maxLength;
+                }
+            };
+
+            for (String word : words) {
+                ans = Math.max(ans, dfs.apply(word));
+            }
+            return ans;
+        }
+    }
 
     // https://leetcode.com/problems/time-needed-to-buy-tickets/
     static class Solution1 {
@@ -33,5 +78,19 @@ public class Day513 {
 
             return time;
         }
-    }
 
+        public int timeRequiredToBuy2(int[] tickets, int k) {
+            int time = 0;
+
+            for (int i = 0; i < tickets.length; i++) {
+                if (i <= k) {
+                    time += Math.min(tickets[k], tickets[i]);
+                } else {
+                    time += Math.min(tickets[k] - 1, tickets[i]);
+                }
+            }
+
+            return time;
+        }
+    }
+}
