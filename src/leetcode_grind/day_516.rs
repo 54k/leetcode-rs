@@ -1,5 +1,5 @@
 // https://leetcode.com/problems/trapping-rain-water/description/
-pub fn trap(height: Vec<i32>) -> i32 {
+pub fn trap_i(height: Vec<i32>) -> i32 {
     let mut ans = 0;
     let mut left_max = 0;
     let mut right_max = 0;
@@ -24,5 +24,24 @@ pub fn trap(height: Vec<i32>) -> i32 {
         }
     }
 
+    ans
+}
+
+pub fn trap_ii(height: Vec<i32>) -> i32 {
+    let n = height.len();
+    let mut st = vec![];
+    let mut ans = 0;
+    for i in 0..n {
+        while !st.is_empty() && height[i] > height[*st.last().unwrap()] {
+            let top = st.pop().unwrap();
+            if st.is_empty() {
+                break;
+            }
+            let distance = i - *st.last().unwrap() - 1;
+            let bounded_height = height[i].min(height[*st.last().unwrap()]) - height[top];
+            ans += distance as i32 * bounded_height;
+        }
+        st.push(i);
+    }
     ans
 }
