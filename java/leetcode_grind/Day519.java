@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 public class Day519 {
     public class TreeNode {
@@ -126,6 +127,49 @@ public class Day519 {
                 annotation.put(root, ans);
                 return ans;
             }
+        }
+    }
+
+    // https://leetcode.com/problems/find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/description/
+    static class Solution3 {
+        public int[] kthSmallestPair(int[] nums1, int[] nums2, int k) {
+            var res = new ArrayList<Integer>();
+            var heap = new PriorityQueue<int[]>((a, b) -> a[0] - b[0]);
+
+            int i = 0;
+            while (i < nums1.length && i < k) {
+                heap.offer(new int[] { nums1[i] + nums2[0], nums1[i], nums2[0], 0 });
+                i += 1;
+            }
+
+            while (k > 0 && heap.size() > 0) {
+                var curr = heap.remove();
+                res.add(curr[0]);
+                if (curr[3] == nums2.length - 1) {
+                    continue;
+                }
+
+                heap.offer(new int[] {
+                        curr[1] + nums2[curr[3] + 1], curr[1], nums2[curr[3] + 1], curr[3] + 1
+                });
+                k -= 1;
+            }
+
+            int[] ans = new int[res.size()];
+            i = 0;
+            for (; i < res.size(); i++) {
+                ans[i] = res.get(i);
+            }
+            return ans;
+        }
+
+        public int kthSmallest(int[][] mat, int k) {
+            int m = mat.length;
+            int[] res = mat[0];
+            for (int i = 1; i < m; i++) {
+                res = kthSmallestPair(res, mat[i], k);
+            }
+            return res[k - 1];
         }
     }
 }
