@@ -6,12 +6,37 @@ struct segtree
     vector<long long> tree;
     int size;
 
-    void build(int n)
+    void init(int n)
     {
         size = 1;
         while (size < n)
             size *= 2;
         tree.assign(2 * size - 1, 0);
+    }
+
+    void build(vector<int> &a)
+    {
+        init(a.size());
+        build(a, 0, 0, size);
+    }
+
+    void build(vector<int> &a, int x, int lx, int rx)
+    {
+        if (rx - lx == 1)
+        {
+            if (lx < a.size())
+            {
+                tree[x] = a[lx];
+            }
+            return;
+        }
+        else
+        {
+            int m = (lx + rx) / 2;
+            build(a, x * 2 + 1, lx, m);
+            build(a, x * 2 + 2, m, rx);
+            tree[x] = tree[x * 2 + 1] + tree[x * 2 + 2];
+        }
     }
 
     void set(int i, int v)
@@ -71,15 +96,15 @@ int main()
     ios::sync_with_stdio(false);
     int n, m;
     cin >> n >> m;
-    segtree st;
-    st.build(n);
 
+    vector<int> a(n);
     for (int i = 0; i < n; i++)
     {
-        int x;
-        cin >> x;
-        st.set(i, x);
+        cin >> a[i];
     }
+
+    segtree st;
+    st.build(a);
 
     for (int i = 0; i < m; i++)
     {
