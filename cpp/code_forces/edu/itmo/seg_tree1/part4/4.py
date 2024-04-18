@@ -2,7 +2,6 @@ class SegmentTree:
     def __init__(self, arr):
         self.n = len(arr)
         self.tree = [0] * (4 * self.n)
-        self.lazy = [0] * (4 * self.n)
         self.build(arr, 1, 0, self.n - 1)
 
     def build(self, arr, v, tl, tr):
@@ -61,3 +60,4 @@ for _ in range(q):
     elif query[0] == 2:
         idx, val = query[1], query[2]
         seg_tree.update(1, 0, n - 1, idx - 1, val)
+
