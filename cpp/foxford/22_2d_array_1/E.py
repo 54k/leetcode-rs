@@ -12,4 +12,3 @@ for i in range(n*m):
         cnt+=1
 
 print(cnt)
-
