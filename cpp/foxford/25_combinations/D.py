@@ -9,8 +9,8 @@ n = int(input())
 mx = 0
 ans = [0, n]
 
-for i in range(1, n):
-    g = gcd(i, n - i) 
+for i in range(2, n // 2 + 1):
+    g = gcd(i, n) 
     if g > mx:
         mx = g
         ans = f'{i} {n-i}'
