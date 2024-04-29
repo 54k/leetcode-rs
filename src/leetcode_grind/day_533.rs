@@ -6,3 +6,14 @@ pub fn min_operations(nums: Vec<i32>, k: i32) -> i32 {
     }
     (k ^ xor).count_ones() as i32
 }
+
+// https://leetcode.com/problems/bitwise-or-of-all-subsequence-sums/submissions/
+pub fn subsequence_sum_or(nums: Vec<i32>) -> i64 {
+    let mut res = 0;        
+    let mut prefix = 0;
+    for num in nums {
+        prefix += num as i64;
+        res |= num as i64 | prefix;
+    }
+    res
+}
