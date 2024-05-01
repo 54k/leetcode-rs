@@ -26,4 +26,32 @@ public class Day535 {
             return word;
         }
     }
+
+    // https://leetcode.com/problems/valid-palindrome-ii/description/
+    static class Solution2 {
+        public boolean validPalindrome(String s) {
+            var check = new Object() {
+                boolean apply(int i, int j) {
+                    while (i < j) {
+                        if (s.charAt(i) != s.charAt(j)) {
+                            return false;
+                        }
+                        i++;
+                        j--;
+                    }
+                    return true;
+                }
+            };
+
+            int i = 0, j = s.length() - 1;
+            while (i < j) {
+                if (s.charAt(i) != s.charAt(j)) {
+                    return check.apply(i + 1, j) || check.apply(i, j - 1);
+                }
+                i++;
+                j--;
+            }
+            return true;
+        }
+    }
 }
