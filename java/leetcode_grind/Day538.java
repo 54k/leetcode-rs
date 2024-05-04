@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 public class Day538 {
     static class Solution1 {
@@ -36,6 +37,28 @@ public class Day538 {
                 }
             }
             return dp[n];
+        }
+    }
+
+    // https://leetcode.com/problems/longest-valid-parentheses/description
+    static class Solution3 {
+        public int longestValidParentheses(String s) {
+            int maxans = 0;
+            Stack<Integer> stack = new Stack<>();
+            stack.push(-1);
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == '(') {
+                    stack.push(i);
+                } else {
+                    stack.pop();
+                    if (stack.isEmpty()) {
+                        stack.push(i);
+                    } else {
+                        maxans = Math.max(maxans, i - stack.peek());
+                    }
+                }
+            }
+            return maxans;
         }
     }
 }
