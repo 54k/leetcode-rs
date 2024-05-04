@@ -22,4 +22,20 @@ public class Day538 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/4-keys-keyboard/description
+    static class Solution2 {
+        public int maxA(int n) {
+            int[] dp = new int[n + 1];
+            for (int i = 0; i <= n; i++) {
+                dp[i] = i;
+            }
+            for (int i = 0; i < n - 2; i++) {
+                for (int j = i + 3; j < Math.min(i + 6, n) + 1; j++) {
+                    dp[j] = Math.max(dp[j], (j - i - 1) * dp[i]);
+                }
+            }
+            return dp[n];
+        }
+    }
 }
