@@ -19,7 +19,7 @@ public class Day541 {
         }
     }
 
-    class Solution {
+    static class Solution1 {
         ListNode reverseList(ListNode node) {
             ListNode previous = null, current = node, nextNode;
             while (current != null) {
