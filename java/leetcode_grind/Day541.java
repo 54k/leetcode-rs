@@ -55,4 +55,60 @@ public class Day541 {
         }
     }
 
+    static class Solution2 {
+        public ListNode doubleIt(ListNode head) {
+            var twiceOfVal = new Object() {
+                int apply(ListNode node) {
+                    if (node == null)
+                        return 0;
+                    int doubledValue = node.val * 2 + apply(node.next);
+                    node.val = doubledValue % 10;
+                    return doubledValue / 10;
+                }
+            };
+
+            int carry = twiceOfVal.apply(head);
+            if (carry != 0) {
+                head = new ListNode(carry, head);
+            }
+            return head;
+        }
+    }
+
+    static class Solution3 {
+        public ListNode doubleIt(ListNode head) {
+            ListNode curr = head;
+            ListNode prev = null;
+            while (curr != null) {
+                int twiceOfVal = curr.val * 2;
+                if (twiceOfVal < 10) {
+                    curr.val = twiceOfVal;
+                } else if (prev != null) {
+                    curr.val = twiceOfVal % 10;
+                    prev.val = prev.val + 1;
+                } else {
+                    head = new ListNode(1, curr);
+                    curr.val = twiceOfVal % 10;
+                }
+                prev = curr;
+                curr = curr.next;
+            }
+            return head;
+        }
+    }
+
+    static class Solution4 {
+        public ListNode doubleIt(ListNode head) {
+            if (head.val > 4) {
+                head = new ListNode(0, head);
+            }
+            for (ListNode node = head; node != null; node = node.next) {
+                node.val = (node.val * 2) % 10;
+                if (node.next != null && node.next.val > 4) {
+                    node.val++;
+                }
+            }
+            return head;
+        }
+    }
 }
