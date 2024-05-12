@@ -1,5 +1,5 @@
 # https://leetcode.com/problems/find-products-of-elements-of-big-array/description/
-class Solution:
+class Solution1:
     def findProductsOfElements(self, queries: List[List[int]]) -> List[int]:
         def count(x):
             if x == 0:
@@ -31,3 +31,19 @@ class Solution:
             return res
             
         return [pow(2, query(j) - query(i - 1), mod)  for i, j, mod in queries]
+
+# https://leetcode.com/problems/minimum-substring-partition-of-equal-character-frequency/description/
+class Solution2:
+    def is_balanced(self, char_freq):
+        return len(set(char_freq.values())) == 1
+
+    def minimumSubstringsInPartition(self, s: str) -> int:
+        N = len(s)
+        DP = [N] * N
+        for END in range(N):
+            char_freq = Counter()
+            for START in range(END, -1, -1):
+                char_freq[s[START]] += 1
+                if self.is_balanced(char_freq):
+                    DP[END] = min(DP[END], 1 + DP[START-1] if START > 0 else 1)
+        return DP[N-1]
