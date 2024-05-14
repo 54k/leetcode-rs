@@ -1,5 +1,5 @@
 # https://leetcode.com/problems/path-with-maximum-gold/description
-class Solution:
+class Solution1:
     def getMaximumGold(self, grid: List[List[int]]) -> int:
         DIRECTIONS = [0, 1, 0, -1, 0]
         rows = len(grid)
@@ -38,3 +38,14 @@ class Solution:
                     if max_gold == total_gold:
                         return total_gold
         return max_gold
+
+# https://leetcode.com/problems/maximum-difference-score-in-a-grid/description/
+class Solution2:
+    def maxScore(self, A: List[List[int]]) -> int:
+        res, m, n = -inf, len(A), len(A[0])
+        for i in range(m):
+            for j in range(n):
+                pre = min(A[i-1][j] if i else inf, A[i][j-1] if j else inf)
+                res = max(res, A[i][j] - pre)
+                A[i][j] = min(A[i][j], pre)
+        return res
