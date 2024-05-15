@@ -85,7 +85,7 @@ class AVLTree {
     }
 }
 
-public class Main {
+class Main {
     public static void main(String[] args) {
         AVLTree tree = new AVLTree();
         tree.insert(1);
