@@ -59,4 +59,87 @@ public class Day568 {
             return longestCommonSubseq;
         }
     }
+
+    static class Solution3 {
+        public List<Integer> longestCommonSubsequence(int[][] arrays) {
+            List<Integer> longestCommonSubseq = new ArrayList<>();
+            for (int num : arrays[0]) {
+                longestCommonSubseq.add(num);
+            }
+
+            for (int i = 1; i < arrays.length; i++) {
+                if (longestCommonSubseq.isEmpty()) {
+                    return longestCommonSubseq;
+                }
+                longestCommonSubseq = longestSeq(longestCommonSubseq, arrays[i]);
+            }
+            return longestCommonSubseq;
+        }
+
+        List<Integer> longestSeq(List<Integer> nums1, int[] nums2) {
+            List<Integer> longestCommonSeq = new ArrayList<>();
+            int first = 0;
+            int second = 0;
+            while (first < nums1.size() && second < nums2.length) {
+                if (nums1.get(first) < nums2[second]) {
+                    first++;
+                } else if (nums1.get(first) > nums2[second]) {
+                    second++;
+                } else {
+                    longestCommonSeq.add(nums1.get(first));
+                    first++;
+                    second++;
+                }
+            }
+            return longestCommonSeq;
+        }
+    }
+
+    static class Solution3 {
+        public List<Integer> longestCommonSubsequence(int[][] arrays) {
+            int[] shortestArray = arrays[0];
+            for (int[] array : arrays) {
+                if (array.length < shortestArray.length) {
+                    shortestArray = array;
+                }
+            }
+
+            List<Integer> longestCommonSubseq = new ArrayList<>();
+            for (int num : shortestArray) {
+                longestCommonSubseq.add(num);
+            }
+
+            for (int[] array : arrays) {
+                if (longestCommonSubseq.isEmpty()) {
+                    return longestCommonSubseq;
+                }
+
+                List<Integer> uncommon = new ArrayList<>();
+                for (Integer num : longestCommonSubseq) {
+                    if (!binarySearch(num, array))
+                        uncommon.add(num);
+                }
+                for (Integer num : uncommon) {
+                    longestCommonSubseq.remove(num);
+                }
+            }
+            return longestCommonSubseq;
+        }
+
+        boolean binarySearch(int target, int[] nums) {
+            int left = 0;
+            int right = nums.length - 1;
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+                if (nums[mid] > target) {
+                    right = mid - 1;
+                } else if (nums[mid] < target) {
+                    left = mid + 1;
+                } else {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }
