@@ -2,7 +2,9 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Day568 {
     // https://leetcode.com/problems/find-common-characters/description
@@ -37,6 +39,24 @@ public class Day568 {
                 }
             }
             return result;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-common-subsequence-between-sorted-arrays/description
+    static class Solution2 {
+        public List<Integer> longestCommonSubsequence(int[][] arrays) {
+            Map<Integer, Integer> frequencies = new HashMap<>();
+            List<Integer> longestCommonSubseq = new ArrayList<>();
+
+            for (int[] array : arrays) {
+                for (int num : array) {
+                    frequencies.put(num, frequencies.getOrDefault(num, 0) + 1);
+                    if (frequencies.get(num) == arrays.length) {
+                        longestCommonSubseq.add(num);
+                    }
+                }
+            }
+            return longestCommonSubseq;
         }
     }
 }
