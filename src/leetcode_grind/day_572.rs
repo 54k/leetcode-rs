@@ -13,7 +13,7 @@ pub fn min_subarray(nums: Vec<i32>, p: i32) -> i32 {
         cur = (cur + nums[i]) % p;
         last.insert(cur, i as i32);
         let mut want = (cur - need + p) % p;
-        res = res.min(i as i32 - *last.get(&want).unwrap_or(&-(nums.len() as i32))); 
+        res = res.min(i as i32 - *last.get(&want).unwrap_or(&-(nums.len() as i32)));
     }
     if res < nums.len() as i32 {
         res
@@ -31,6 +31,26 @@ pub fn count_bad_pairs(nums: Vec<i32>) -> i64 {
         let mut e = counter.entry(nums[i] - i as i32).or_insert(0);
         ans -= *e;
         *e += 1;
+    }
+    ans
+}
+
+// https://leetcode.com/problems/find-subarray-with-bitwise-or-closest-to-k/solutions/5281508/bitmask-time-complexity-analysis-find-subarray-with-bitwise-or-closest-to-k/
+pub fn minimum_difference(nums: Vec<i32>, k: i32) -> i32 {
+    let n = nums.len();
+    let mut ans = i32::MAX;
+    use std::collections::HashSet;
+    let mut previous = HashSet::new();
+    for i in 0..n {
+        let mut current = HashSet::new();
+        current.insert(nums[i]);
+        for &x in &previous {
+            current.insert(x | nums[i]);
+        }
+        for &x in &current {
+            ans = ans.min((k - x).abs());
+        }
+        previous = current;
     }
     ans
 }
