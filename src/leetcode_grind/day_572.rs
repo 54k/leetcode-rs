@@ -13,7 +13,7 @@ pub fn min_subarray(nums: Vec<i32>, p: i32) -> i32 {
         cur = (cur + nums[i]) % p;
         last.insert(cur, i as i32);
         let mut want = (cur - need + p) % p;
-        res = res.min(i as i32 - *last.get(&want).unwrap_or(&-(nums.len() as i32)));
+        res = res.min(i as i32 - *last.get(&want).unwrap_or(&-(nums.len() as i32))); 
     }
     if res < nums.len() as i32 {
         res
