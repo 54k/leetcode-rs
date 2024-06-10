@@ -1,7 +1,9 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Day573 {
@@ -142,6 +144,57 @@ public class Day573 {
         public int heightChecker(int[] heights) {
             int[] sortedHeights = heights.clone();
             countingSort(sortedHeights);
+
+            int count = 0;
+            for (int i = 0; i < sortedHeights.length; i++) {
+                if (heights[i] != sortedHeights[i]) {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+    }
+
+    // https://leetcode.com/problems/height-checker/description
+    static class Solution4 {
+        void bucketSort(int[] arr, int placeValue) {
+            List<List<Integer>> buckets = new ArrayList<>(10);
+            for (int i = 0; i < 10; i++) {
+                buckets.add(new ArrayList<>());
+            }
+            for (int val : arr) {
+                int digit = Math.abs(val) / placeValue;
+                digit = digit % 10;
+                buckets.get(digit).add(val);
+            }
+
+            int index = 0;
+            for (int digit = 0; digit < 10; ++digit) {
+                for (int val : buckets.get(digit)) {
+                    arr[index] = val;
+                    index++;
+                }
+            }
+        }
+
+        void radixSort(int[] arr) {
+            int maxElement = Arrays.stream(arr).map(Math::abs).max().getAsInt();
+            int maxDigits = 0;
+            while (maxElement > 0) {
+                maxDigits += 1;
+                maxElement /= 10;
+            }
+
+            int placeValue = 1;
+            for (int digit = 0; digit < maxDigits; ++digit) {
+                bucketSort(arr, placeValue);
+                placeValue *= 10;
+            }
+        }
+
+        public int heightChecker(int[] heights) {
+            int[] sortedHeights = heights.clone();
+            radixSort(sortedHeights);
 
             int count = 0;
             for (int i = 0; i < sortedHeights.length; i++) {
