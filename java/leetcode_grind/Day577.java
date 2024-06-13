@@ -2,7 +2,7 @@ package leetcode_grind;
 
 import java.util.PriorityQueue;
 
-public class Day576 {
+public class Day577 {
     // https://leetcode.com/problems/maximum-product-after-k-increments/description/
     static class Solution1 {
         public int maximumProduct(int[] nums, int k) {
