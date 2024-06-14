@@ -22,4 +22,17 @@ public class Day577 {
             return (int) ans;
         }
     }
+
+    // https://leetcode.com/problems/substrings-that-begin-and-end-with-the-same-letter/description/
+    static class Solution2 {
+        public long numberOfSubstrings(String s) {
+            long answer = 0;
+            long[] prefixCount = new long[26];
+            for (int i = 0; i < s.length(); i++) {
+                prefixCount[s.charAt(i) - 'a']++;
+                answer += prefixCount[s.charAt(i) - 'a'];
+            }
+            return answer;
+        }
+    }
 }
