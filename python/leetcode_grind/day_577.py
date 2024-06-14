@@ -21,3 +21,14 @@ class Solution1:
                 nums[j] = nums[k]
                 nums[k] = t
                 k -= 1
+
+# https://leetcode.com/problems/substrings-that-begin-and-end-with-the-same-letter/description/
+class Solution2:
+    def numberOfSubstrings(self, s: str) -> int:
+        cnt = [0] * 26
+        for ch in s:
+            cnt[ord(ch) - ord('a')] += 1
+        ans = 0
+        for c in cnt:
+            ans += c * (c + 1) // 2
+        return ans
