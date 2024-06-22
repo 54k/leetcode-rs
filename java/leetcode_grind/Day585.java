@@ -46,4 +46,27 @@ public class Day585 {
             return subarrays;
         }
     }
+
+    // https://leetcode.com/problems/count-number-of-nice-subarrays/description
+    static class Solution3 {
+        public int numberOfSubarrays(int[] nums, int k) {
+            int subrrays = 0, initialGap = 0, qsize = 0, start = 0;
+            for (int end = 0; end < nums.length; end++) {
+                if (nums[end] % 2 == 1) {
+                    qsize++;
+                }
+                if (qsize == k) {
+                    initialGap = 0;
+
+                    while (qsize == k) {
+                        qsize -= nums[start] % 2;
+                        initialGap++;
+                        start++;
+                    }
+                }
+                subrrays += initialGap;
+            }
+            return subrrays;
+        }
+    }
 }
