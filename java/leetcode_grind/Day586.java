@@ -1,8 +1,14 @@
 package leetcode_grind;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class Day586 {
@@ -76,6 +82,59 @@ public class Day586 {
                 maxLength = Math.max(maxLength, right - left + 1);
             }
             return maxLength;
+        }
+    }
+
+    // https://leetcode.com/problems/repeated-dna-sequences/description/
+    static class Solution4 {
+        public List<String> findRepeatedDnaSequences(String s) {
+            var L = 10;
+            HashSet<String> seen = new HashSet<>();
+            HashSet<String> output = new HashSet<>();
+            for (int i = 0; i < s.length() - L + 1; i++) {
+                String tmp = s.substring(i, i + L);
+                if (!seen.add(tmp))
+                    output.add(tmp);
+                seen.add(tmp);
+            }
+            return new ArrayList<>(output);
+        }
+    }
+
+    // https://leetcode.com/problems/repeated-dna-sequences/description/
+    static class Solution5 {
+        public List<String> findRepeatedDnaSequences(String s) {
+            int L = 10, n = s.length();
+            if (n <= L)
+                return new ArrayList<>();
+            int a = 4, aL = (int) Math.pow(a, L);
+            Map<Character, Integer> toInt = new HashMap() {
+                {
+                    put('A', 0);
+                    put('C', 1);
+                    put('G', 2);
+                    put('T', 3);
+                }
+            };
+
+            int[] nums = new int[n];
+            for (int i = 0; i < n; i++)
+                nums[i] = toInt.get(s.charAt(i));
+            int h = 0;
+            Set<Integer> seen = new HashSet<>();
+            Set<String> output = new HashSet<>();
+            for (int start = 0; start < n - L + 1; ++start) {
+                if (start != 0)
+                    h = h * a - nums[start - 1] * aL + nums[start + L - 1];
+                else
+                    for (int i = 0; i < L; ++i)
+                        h = h * a + nums[i];
+
+                if (seen.contains(h))
+                    output.add(s.substring(start, start + L));
+                seen.add(h);
+            }
+            return new ArrayList<String>(output);
         }
     }
 }
