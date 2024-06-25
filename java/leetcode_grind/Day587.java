@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 
 public class Day587 {
     // https://leetcode.com/problems/minimum-number-of-k-consecutive-bit-flips/description/
-    static class Solution {
+    static class Solution1 {
         public int minKBitFlips(int[] nums, int k) {
             var deq = new ArrayDeque<Integer>();
             var flips = 0;
@@ -55,6 +55,40 @@ public class Day587 {
             sum += t;
             bstToGst(root.left);
             return root;
+        }
+    }
+
+    static class Solution3 {
+        public TreeNode bstToGst(TreeNode root) {
+            int sum = 0;
+            TreeNode node = root;
+            while (node != null) {
+                if (node.right == null) {
+                    sum += node.val;
+                    node.val = sum;
+                    node = node.left;
+                } else {
+                    TreeNode succ = getSuccessor(node);
+                    if (succ.left == null) {
+                        succ.left = node;
+                        node = node.right;
+                    } else {
+                        succ.left = null;
+                        sum += node.val;
+                        node.val = sum;
+                        node = node.left;
+                    }
+                }
+            }
+            return root;
+        }
+
+        TreeNode getSuccessor(TreeNode node) {
+            TreeNode succ = node.right;
+            while (succ.left != null && succ.left != node) {
+                succ = succ.left;
+            }
+            return succ;
         }
     }
 }
