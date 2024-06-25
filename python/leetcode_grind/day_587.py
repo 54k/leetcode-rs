@@ -55,3 +55,25 @@ class NestedIterator:
 # Your NestedIterator object will be instantiated and called as such:
 # i, v = NestedIterator(nestedList), []
 # while i.hasNext(): v.append(i.next())
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution2:
+    def bstToGst(self, root: TreeNode) -> TreeNode:
+        node_sum = 0
+        st = []
+        node = root
+
+        while st or node is not None:
+            while node is not None:
+                st.append(node)
+                node = node.right
+            node = st.pop()
+            node_sum += node.val
+            node.val = node_sum
+            node = node.left
+        return root
