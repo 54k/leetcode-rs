@@ -31,13 +31,15 @@ while Qstart < len(Q):
     Qstart += 1 
 
     moves = []
-    for m1 in Moves:
-        for m2 in Moves:
-            v1 = add(u1, m1) 
-            v2 = add(u2, m2) 
-            if v1 != v2 and v1 != u2 and v2 != u1 and correct(v1) and correct(v2):
-                moves.append((v1, u2))
-                moves.append((u1, v2))
+    for m in Moves:
+        v = add(u1, m) 
+        if v != u2 and correct(v):
+            moves.append((v, u2))
+
+    for m in Moves:
+        v = add(u2, m) 
+        if v != u1 and correct(v):
+            moves.append((u1, v))
 
     for move in moves: 
         if D[move] == -1: 
@@ -60,22 +62,3 @@ while curr is not None:
     curr = nxt
 
 print("\n".join(Ans[::-1]))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
