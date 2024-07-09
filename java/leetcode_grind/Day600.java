@@ -1,5 +1,6 @@
 package leetcode_grind;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,38 @@ public class Day600 {
                 current = current.next;
             }
             return dummy.next;
+        }
+    }
+
+    // https://leetcode.com/problems/is-graph-bipartite/description/
+    static class Solution2 {
+        public boolean isBipartite(int[][] graph) {
+            var n = graph.length;
+            var color = new int[n];
+            Arrays.fill(color, -1);
+
+            var dfs = new Object() {
+                boolean apply(int v, int c) {
+                    color[v] = c;
+                    for (var u : graph[v]) {
+                        if (color[u] == -1) {
+                            if (!apply(u, 1 - c)) {
+                                return false;
+                            }
+                        } else if (color[u] == color[v]) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            };
+
+            for (int i = 0; i < n; i++) {
+                if (color[i] == -1 && !dfs.apply(i, 0)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
