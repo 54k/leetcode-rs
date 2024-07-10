@@ -2,6 +2,7 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 public class Day602 {
@@ -91,6 +92,83 @@ public class Day602 {
                 }
             }
 
+            return mstCost;
+        }
+    }
+
+    static class Solution3 {
+        public int minCostConnectPoints(int[][] points) {
+            int n = points.length;
+            PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+            boolean[] inMST = new boolean[n];
+            heap.add(new int[] { 0, 0 });
+            int mstCost = 0;
+            int edgesUsed = 0;
+
+            while (edgesUsed < n) {
+                int[] topElement = heap.poll();
+                int weight = topElement[0];
+                int currNode = topElement[1];
+
+                if (inMST[currNode]) {
+                    continue;
+                }
+
+                inMST[currNode] = true;
+                mstCost += weight;
+                edgesUsed++;
+
+                for (int nextNode = 0; nextNode < n; ++nextNode) {
+                    if (!inMST[nextNode]) {
+                        int nextWeight = Math.abs(points[currNode][0] - points[nextNode][0]) +
+                                Math.abs(points[currNode][1] - points[nextNode][1]);
+                        heap.add(new int[] { nextWeight, nextNode });
+                    }
+                }
+            }
+
+            return mstCost;
+        }
+    }
+
+    static class Solution4 {
+        public int minCostConnectPoints(int[][] points) {
+            int n = points.length;
+            int mstCost = 0;
+            int edgesUsed = 0;
+
+            boolean[] inMST = new boolean[n];
+            int[] minDist = new int[n];
+            minDist[0] = 0;
+
+            for (int i = 1; i < n; i++) {
+                minDist[i] = Integer.MAX_VALUE;
+            }
+
+            while (edgesUsed < n) {
+                int currMinEdge = Integer.MAX_VALUE;
+                int currNode = -1;
+
+                for (int node = 0; node < n; ++node) {
+                    if (!inMST[node] && currMinEdge > minDist[node]) {
+                        currMinEdge = minDist[node];
+                        currNode = node;
+                    }
+                }
+
+                mstCost += currMinEdge;
+                edgesUsed++;
+                inMST[currNode] = true;
+
+                for (int nextNode = 0; nextNode < n; ++nextNode) {
+                    int weight = Math.abs(points[currNode][0] - points[nextNode][0]) +
+                            Math.abs(points[currNode][1] - points[nextNode][1]);
+
+                    if (!inMST[nextNode] && minDist[nextNode] > weight) {
+                        minDist[nextNode] = weight;
+                    }
+                }
+            }
             return mstCost;
         }
     }
