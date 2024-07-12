@@ -3,6 +3,7 @@
         "./Cargo.toml"
     ],
     "files.associations": {
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "cmath": "cpp"
     }
 }
