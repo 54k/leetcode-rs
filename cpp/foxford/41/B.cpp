@@ -26,7 +26,7 @@ struct SegmentTree
         int mid = (l + r) / 2;
         build(v * 2 + 1, l, mid, arr);
         build(v * 2 + 2, mid, r, arr);
-        pair<int, int> p = make_pair(max(tree[v * 2 + 1].first, tree[v * 2 + 2].first), tree[v * 2 + 1].first >= tree[v * 2 + 2].first ? tree[v * 2 + 1].second : tree[v * 2 + 2].second);
+        pair<int, int> p = make_pair(max(tree[v * 2 + 1].first, tree[v * 2 + 2].first), tree[v * 2 + 1].first >= tree[v * 2 + 1].first ? tree[v * 2 + 1].second : tree[v * 2 + 2].second);
         tree[v] = p;
     }
 
