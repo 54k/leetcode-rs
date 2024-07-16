@@ -49,3 +49,17 @@ pub fn find_distance(root: Option<Rc<RefCell<TreeNode>>>, p: i32, q: i32) -> i32
     }
     distance(root, p, q, 0)
 }
+
+// https://leetcode.com/problems/car-fleet/description/
+pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
+    let mut cars = position.iter().zip(speed).collect::<Vec<_>>();
+    cars.sort_by(|a, b| b.cmp(a));
+    let mut stack = vec![];
+    for (pos, spe) in cars {
+        let rea = (target - pos) as f64 / spe as f64;
+        if stack.len() < 1 || stack[stack.len() - 1] < rea {
+            stack.push(rea);
+        }
+    }
+    stack.len() as i32
+}
