@@ -102,4 +102,53 @@ public class Day606 {
             return root;
         }
     }
+
+    static class Solution3 {
+        public TreeNode createBinaryTree(int[][] descriptions) {
+            Map<Integer, List<int[]>> parentToChildren = new HashMap<>();
+            Set<Integer> allNodes = new HashSet<>();
+            Set<Integer> children = new HashSet<>();
+
+            for (int[] desc : descriptions) {
+                int parent = desc[0];
+                int child = desc[1];
+                int isLeft = desc[2];
+
+                if (!parentToChildren.containsKey(parent)) {
+                    parentToChildren.put(parent, new ArrayList<>());
+                }
+                parentToChildren.get(parent).add(new int[] { child, isLeft });
+                allNodes.add(parent);
+                allNodes.add(child);
+                children.add(child);
+            }
+
+            int rootVal = 0;
+            for (int node : allNodes) {
+                if (!children.contains(node)) {
+                    rootVal = node;
+                    break;
+                }
+            }
+
+            return dfs(parentToChildren, rootVal);
+        }
+
+        TreeNode dfs(Map<Integer, List<int[]>> parentToChildren, int val) {
+            TreeNode node = new TreeNode(val);
+            if (parentToChildren.containsKey(val)) {
+                for (int[] childInfo : parentToChildren.get(val)) {
+                    int child = childInfo[0];
+                    int isLeft = childInfo[1];
+
+                    if (isLeft == 1) {
+                        node.left = dfs(parentToChildren, child);
+                    } else {
+                        node.right = dfs(parentToChildren, child);
+                    }
+                }
+            }
+            return node;
+        }
+    }
 }
