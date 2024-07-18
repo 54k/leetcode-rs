@@ -1,17 +1,19 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
+
 int n, m;
 int a[100001];
 int s[100001][20];
-int log[100001];
+int lg[100001];
+
 void init()
 {
-    log[0] = -1;
+
+    lg[0] = -1;
     for (int i = 1; i <= n; ++i)
     {
         s[i][0] = a[i];
-        log[i] = log[i / 2] + 1;
+        lg[i] = lg[i / 2] + 1;
     }
     for (int j = 1; (1 << j) <= n; ++j)
     {
@@ -19,13 +21,15 @@ void init()
             s[i][j] = min(s[i][j - 1], s[i + (1 << (j - 1))][j - 1]);
     }
 }
+
 int query(int u, int v)
 {
     if (u > v)
         swap(u, v);
-    int k = log[v - u + 1];
+    int k = lg[v - u + 1];
     return min(s[u][k], s[v - (1 << k) + 1][k]);
 }
+
 int main()
 {
     cin >> n >> m;
