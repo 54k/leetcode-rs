@@ -115,6 +115,16 @@ Node *findKth(Node *t, int k)
     }
 }
 
+Node *erase(Node *t, int x)
+{
+    // < x, >= x
+    auto [l, r] = split(t, x);
+    // == x, > x
+    auto [r1, r2] = split(r, x + 1);
+    delete r1; // not a very proper delete, but you don't need it in olympiad programming
+    return merge(l, r2);
+}
+
 int main()
 {
     Node *t = nullptr;
@@ -126,5 +136,7 @@ int main()
     cout << endl;
 
     cout << findKth(t, 4)->key << endl;
+    erase(t, 4);
+    print(t);
     return 0;
 }
