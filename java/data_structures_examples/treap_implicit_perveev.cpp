@@ -46,24 +46,22 @@ void update(Node *t)
     t->min = min(min(getMin(t->l), getMin(t->r)), t->value);
 }
 
+void apply(Node *t, int add)
+{
+    if (t == nullptr)
+        return;
+    t->add += add;
+    t->min += add;
+    t->value += add;
+}
+
 void push(Node *t)
 {
     if (t->add == 0)
         return;
 
-    if (t->l != nullptr)
-    {
-        t->l->add += t->add;
-        t->l->min += t->add;
-        t->l->value += t->add;
-    }
-
-    if (t->r != nullptr)
-    {
-        t->r->add += t->add;
-        t->r->min += t->add;
-        t->r->value += t->add;
-    }
+    apply(t->l, t->add);
+    apply(t->r, t->add);
 
     t->add = 0;
 }
@@ -190,9 +188,7 @@ void add(Node *t, int l, int r, int d)
     // [l, r) [r, n)
     auto [right1, right2] = split(right, r - l);
 
-    right1->add += d;
-    right1->min += d;
-    right1->value += d;
+    apply(right1, d);
 
     t = merge(left, merge(right1, right2));
 }
