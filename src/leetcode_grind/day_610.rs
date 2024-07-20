@@ -1,3 +1,4 @@
+// https://leetcode.com/problems/find-valid-matrix-given-row-and-column-sums/?envType=daily-question&envId=2024-07-20
 pub fn lucky_numbers(matrix: Vec<Vec<i32>>) -> Vec<i32> {
     let n = matrix.len();
     let m = matrix[0].len();
