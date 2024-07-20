@@ -13,6 +13,7 @@ struct Node
     int priority;
     int sz;
     int min, add;
+    bool rev;
 
     Node(int _value)
     {
@@ -20,6 +21,7 @@ struct Node
         priority = rnd();
         sz = 1;
         add = 0;
+        rev = false;
         l = r = nullptr;
     }
 };
@@ -55,15 +57,26 @@ void apply(Node *t, int add)
     t->value += add;
 }
 
+void applyRev(Node *t)
+{
+    if (t == nullptr)
+        return;
+    std::swap(t->l, t->r);
+    t->rev ^= true;
+}
+
 void push(Node *t)
 {
-    if (t->add == 0)
-        return;
-
     apply(t->l, t->add);
     apply(t->r, t->add);
-
     t->add = 0;
+
+    if (t->rev)
+    {
+        applyRev(t->l);
+        applyRev(t->r);
+        t->rev = false;
+    }
 }
 
 // слева х элементов, справа n - x элементов
@@ -193,6 +206,16 @@ void add(Node *t, int l, int r, int d)
     t = merge(left, merge(right1, right2));
 }
 
+void reverse(Node *&t, int l, int r)
+{
+    auto [left, right] = split(t, l);
+    auto [right1, right2] = split(right, r - l);
+
+    applyRev(right1);
+
+    t = merge(left, merge(right1, right2));
+}
+
 int main()
 {
     Node *t = nullptr;
@@ -214,6 +237,11 @@ int main()
     add(t, 2, 5, -2);
     ans = getMin(t, 2, 5);
     cout << ans << endl;
+
+    reverse(t, 2, 5);
+
+    print(t);
+    cout << endl;
 
     return 0;
 }
