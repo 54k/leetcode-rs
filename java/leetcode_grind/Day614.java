@@ -101,4 +101,60 @@ public class Day614 {
             return minCost == Integer.MAX_VALUE ? -1 : minCost;
         }
     }
+
+    static class Solution3 {
+        public int minimumCost(int n, int[][] highways, int discounts) {
+            List<List<int[]>> graph = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                graph.add(new ArrayList<>());
+            }
+
+            for (int[] highway : highways) {
+                int u = highway[0], v = highway[1], toll = highway[2];
+                graph.get(u).add(new int[] { v, toll });
+                graph.get(v).add(new int[] { u, toll });
+            }
+
+            PriorityQueue<int[]> pq = new PriorityQueue<>(
+                    Comparator.comparingInt(a -> a[0]));
+            pq.offer(new int[] { 0, 0, 0 });
+
+            int[][] dist = new int[n][discounts + 1];
+            for (int[] row : dist) {
+                Arrays.fill(row, Integer.MAX_VALUE);
+            }
+            dist[0][0] = 0;
+
+            while (!pq.isEmpty()) {
+                int[] current = pq.poll();
+                int currentCost = current[0], city = current[1], discountUsed = current[2];
+
+                if (currentCost > dist[city][discountUsed])
+                    continue;
+
+                for (int[] neighbor : graph.get(city)) {
+                    int nextCity = neighbor[0], toll = neighbor[1];
+
+                    if (currentCost + toll < dist[nextCity][discountUsed]) {
+                        dist[nextCity][discountUsed] = currentCost + toll;
+                        pq.offer(new int[] { dist[nextCity][discountUsed], nextCity, discountUsed });
+                    }
+
+                    if (discountUsed < discounts) {
+                        int newCostWithDiscount = currentCost + toll / 2;
+                        if (newCostWithDiscount < dist[nextCity][discountUsed + 1]) {
+                            dist[nextCity][discountUsed + 1] = newCostWithDiscount;
+                            pq.offer(new int[] { newCostWithDiscount, nextCity, discountUsed + 1 });
+                        }
+                    }
+                }
+            }
+
+            int minCost = Integer.MAX_VALUE;
+            for (int d = 0; d <= discounts; ++d) {
+                minCost = Math.min(minCost, dist[n - 1][d]);
+            }
+            return minCost == Integer.MAX_VALUE ? -1 : minCost;
+        }
+    }
 }
