@@ -3,7 +3,9 @@ package leetcode_grind;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Day615 {
     // https://leetcode.com/problems/sort-the-jumbled-numbers/description/?envType=daily-question&envId=2024-07-24
@@ -66,6 +68,40 @@ public class Day615 {
                 answer[i] = nums[storePairs.get(i)[1]];
             }
             return answer;
+        }
+    }
+
+    // https://leetcode.com/problems/unique-email-addresses/description/
+    class Solution3 {
+        public int numUniqueEmails(String[] emails) {
+            Set<String> uniqueEmails = new HashSet<>();
+            for (String email : emails) {
+                StringBuilder cleanMail = new StringBuilder();
+
+                for (int i = 0; i < email.length(); i++) {
+                    char currChar = email.charAt(i);
+
+                    if (currChar == '+' || currChar == '@')
+                        break;
+                    if (currChar != '.')
+                        cleanMail.append(currChar);
+                }
+
+                StringBuilder domainName = new StringBuilder();
+
+                for (int i = email.length() - 1; i >= 0; --i) {
+                    char currChar = email.charAt(i);
+                    domainName.append(currChar);
+                    if (currChar == '@')
+                        break;
+                }
+
+                domainName = domainName.reverse();
+                cleanMail.append(domainName);
+                uniqueEmails.add(cleanMail.toString());
+            }
+
+            return uniqueEmails.size();
         }
     }
 }
