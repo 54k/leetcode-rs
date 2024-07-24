@@ -43,7 +43,7 @@ pair<node *, node *> split(node *root, int val)
 {
     if (!root)
         return make_pair((node *)0, (node *)0);
-    if (root->x < val)
+    if (root->x > val)
     {
         pair<node *, node *> res = split(root->right, val);
         root->right = res.first;
@@ -83,13 +83,13 @@ int exists(node *root, int val)
 {
     if (!root)
         return 0;
-    else if (root->x < val)
+    else if (root->x > val)
     {
         int l = get_sz(root->left) + 1;
         int r = exists(root->right, val);
         return r ? l + r : 0;
     }
-    else if (root->x > val)
+    else if (root->x < val)
         return exists(root->left, val);
     else
         return get_sz(root->left) + 1;
@@ -109,32 +109,65 @@ node *remove(node *root, int val)
     if (!exists(root, val))
         return root;
     pair<node *, node *> subtree1 = split(root, val);
-    pair<node *, node *> subtree2 = split(subtree1.second, val + 1);
+    pair<node *, node *> subtree2 = split(subtree1.second, val - 1);
     return merge(subtree1.first, subtree2.second);
+}
+
+node *find_kth(node *root, int k)
+{
+    if (!root)
+        return root;
+
+    if (k < get_sz(root->left))
+    {
+        return find_kth(root->left, k);
+    }
+    else if (k == get_sz(root->left))
+    {
+        return root;
+    }
+    else
+    {
+        return find_kth(root->right, k - get_sz(root->left) - 1);
+    }
+}
+
+void print_tree(node *root)
+{
+    if (!root)
+        return;
+    print_tree(root->left);
+    printf("%d->", root->x);
+    print_tree(root->right);
 }
 
 int main()
 {
-    char action[10];
+    int action;
     int d;
     node *root = 0;
     int n;
     scanf("%d", &n);
     for (int i = 0; i < n; ++i)
     {
-        scanf("%s%d", action, &d);
-        int res;
-        switch (action[0])
+        scanf("%d%d", &action, &d);
+        node *kth;
+        int ord;
+        switch (action)
         {
-        case 'i':
+        case 1:
             root = insert(root, d);
-            continue;
-        case 'd':
-            root = remove(root, d);
-            continue;
-        case 'e':
-            printf("%d\n", exists(root, d));
-            continue;
+            // print_tree(root);
+            // printf("\n");
+            ord = exists(root, d);
+            printf("%d\n", ord);
+            break;
+        case 2:
+            kth = find_kth(root, d);
+            root = remove(root, kth->x);
+            // print_tree(root);
+            // printf("\n");
+            break;
         }
     }
 }

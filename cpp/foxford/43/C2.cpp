@@ -1,6 +1,5 @@
-#include <cstdio>
 #include <cstdlib>
-#include <utility>
+#include <iostream>
 using namespace std;
 const int INF = 2000000000;
 struct node
@@ -15,57 +14,57 @@ struct node
         x = val;
         y = rand();
         size = 1;
-        left = 0;
-        right = 0;
+        left = nullptr;
+        right = nullptr;
     }
     ~node()
     {
-        if (left)
+        if (left != nullptr)
             delete[] left;
-        if (right)
+        if (right != nullptr)
             delete[] right;
     }
 };
 void update_size(node *root)
 {
-    if (!root)
+    if (root == nullptr)
         return;
     root->size = 1;
-    if (root->left)
+    if (root->left != nullptr)
         root->size += root->left->size;
-    if (root->right)
+    if (root->right != nullptr)
         root->size += root->right->size;
 }
 int get_size(node *root)
 {
-    return (!root) ? 0 : root->size;
+    return (root == nullptr) ? 0 : root->size;
 }
 pair<node *, node *> split(node *root, int val)
 {
-    if (!root)
-        return make_pair((node *)0, (node *)0);
-    if (root->x < val)
+    if (root == nullptr)
+        return {nullptr, nullptr};
+    if (root->x > val)
     {
-        pair<node *, node *> res = split(root->right, val);
+        auto res = split(root->right, val);
         root->right = res.first;
         update_size(root);
-        return make_pair(root, res.second);
+        return {root, res.second};
     }
     else
     {
-        pair<node *, node *> res = split(root->left, val);
+        auto res = split(root->left, val);
         root->left = res.second;
         update_size(root);
-        return make_pair(res.first, root);
+        return {res.first, root};
     }
 }
 node *merge(node *root1, node *root2)
 {
-    if (!root1)
+    if (root1 == nullptr)
         return root2;
-    else if (!root2)
+    else if (root2 == nullptr)
         return root1;
-    if (root1->y < root2->y)
+    if (root1->y > root2->y)
     {
         root1->right = merge(root1->right, root2);
         update_size(root1);
@@ -80,56 +79,61 @@ node *merge(node *root1, node *root2)
 }
 int exists(node *root, int val)
 {
-    if (!root)
+    if (root == nullptr)
         return -INF;
-    else if (root->x < val)
-        return 1 + get_size(root->left) + exists(root->right, val);
     else if (root->x > val)
+        return get_size(root->left) + 1 + exists(root->right, val);
+    else if (root->x < val)
         return exists(root->left, val);
     else
-        return 1 + get_size(root->left);
+        return get_size(root->left) + 1;
 }
 node *insert(node *root, int val)
 {
     if (exists(root, val) > 0)
         return root;
-    pair<node *, node *> subtree = split(root, val);
+    auto subtree = split(root, val);
     node *newnode = new node(val);
     return merge(merge(subtree.first, newnode), subtree.second);
 }
 node *remove(node *root, int val)
 {
-    if (!exists(root, val) > 0)
+    if (!exists(root, val))
         return root;
-    pair<node *, node *> subtree1 = split(root, val);
-    pair<node *, node *> subtree2 = split(subtree1.second, val + 1);
+    auto subtree1 = split(root, val);
+    auto subtree2 = split(subtree1.second, val - 1);
     return merge(subtree1.first, subtree2.second);
+}
+int kth(node *root, int k)
+{
+    if (root == nullptr || k > root->size)
+        return INF;
+    int s = get_size(root->left);
+    if (k <= s)
+        return kth(root->left, k);
+    else if (k == s + 1)
+        return root->x;
+    else
+        return kth(root->right, k - s - 1);
 }
 int main()
 {
-    char action[10];
-    int d;
-    node *root = 0;
     int n;
-    scanf("%d", &n);
+    cin >> n;
+    node *root = nullptr;
     for (int i = 0; i < n; ++i)
     {
-        scanf("%s%d", action, &d);
-        int res;
-        switch (action[0])
+        int action;
+        int x;
+        cin >> action >> x;
+        if (action == 1)
         {
-        case 'i':
-            root = insert(root, d);
-            continue;
-        case 'd':
-            root = remove(root, d);
-            continue;
-        case 'e':
-            int res = exists(root, d);
-            if (res < 0)
-                res = 0;
-            printf("%d\n", res);
-            continue;
+            root = insert(root, x);
+            cout << exists(root, x) << endl;
+        }
+        else
+        {
+            root = remove(root, kth(root, x));
         }
     }
 }
