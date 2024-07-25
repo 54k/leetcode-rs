@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class Day616 {
@@ -150,6 +152,73 @@ public class Day616 {
                 }
             }
 
+            return nums;
+        }
+    }
+
+    static class Solution5 {
+        void bucketSort(int[] arr, int placeValue) {
+            ArrayList<List<Integer>> buckets = new ArrayList<>(10);
+            for (int digit = 0; digit < 10; ++digit) {
+                buckets.add(digit, new ArrayList<Integer>());
+            }
+
+            for (int val : arr) {
+                int digit = Math.abs(val) / placeValue;
+                digit = digit % 10;
+                buckets.get(digit).add(val);
+            }
+
+            int index = 0;
+            for (int digit = 0; digit < 10; ++digit) {
+                for (int val : buckets.get(digit)) {
+                    arr[index] = val;
+                    index++;
+                }
+            }
+        }
+
+        void radixSort(int[] arr) {
+            int maxElement = arr[0];
+            for (int val : arr) {
+                maxElement = Math.max(Math.abs(val), maxElement);
+            }
+            int maxDigits = 0;
+            while (maxElement > 0) {
+                maxDigits += 1;
+                maxElement /= 10;
+            }
+
+            int placeValue = 1;
+            for (int digit = 0; digit < maxDigits; ++digit) {
+                bucketSort(arr, placeValue);
+                placeValue *= 10;
+            }
+
+            ArrayList<Integer> negatives = new ArrayList<>();
+            ArrayList<Integer> positives = new ArrayList<>();
+            for (int val : arr) {
+                if (val < 0) {
+                    negatives.add(val);
+                } else {
+                    positives.add(val);
+                }
+            }
+
+            Collections.reverse(negatives);
+            int index = 0;
+            for (int val : negatives) {
+                arr[index] = val;
+                index++;
+            }
+            for (int val : positives) {
+                arr[index] = val;
+                index++;
+            }
+        }
+
+        public int[] sortArray(int[] nums) {
+            radixSort(nums);
             return nums;
         }
     }
