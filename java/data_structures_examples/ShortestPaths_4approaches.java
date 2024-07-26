@@ -1,4 +1,4 @@
-package leetcode_grind;
+package data_structures_examples;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class Day617 {
+public class ShortestPaths_4approaches {
     // https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/description/?envType=daily-question&envId=2024-07-26
     static class Solution1 {
         public int findTheCity(int n, int[][] edges, int distanceThreshold) {
