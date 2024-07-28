@@ -119,3 +119,41 @@ pub fn next_permutation(nums: &mut Vec<i32>) {
 
     nums[pivot..n].reverse();
 }
+
+// https://leetcode.com/problems/multiply-strings/description/
+pub fn multiply(num1: String, num2: String) -> String {
+    if num1 == "0" || num2 == "0" {
+        return "0".to_string();
+    }
+    let mut first_number = num1.chars().collect::<Vec<_>>();
+    let mut second_number = num2.chars().collect::<Vec<_>>();
+
+    first_number.reverse();
+    second_number.reverse();
+
+    let n = first_number.len() + second_number.len();
+    let mut answer = vec!['0'; n];
+
+    for place2 in 0..second_number.len() {
+        let digit2 = second_number[place2] as i32 - '0' as i32;
+        for place1 in 0..first_number.len() {
+            let digit1 = first_number[place1] as i32 - '0' as i32;
+            let current_pos = place1 + place2;
+
+            let mut carry = answer[current_pos] as i32 - '0' as i32;
+            let multiplication = digit1 * digit2 + carry;
+
+            answer[current_pos] = ((multiplication % 10) as u8 + b'0') as char;
+            let value = answer[current_pos + 1] as u32 - '0' as u32
+                + (multiplication / 10) as u32
+                + '0' as u32;
+            answer[current_pos + 1] = char::from_u32(value).unwrap();
+        }
+    }
+
+    if answer[answer.len() - 1] == '0' {
+        answer.pop();
+    }
+    answer.reverse();
+    answer.into_iter().collect()
+}
