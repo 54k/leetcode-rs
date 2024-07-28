@@ -209,3 +209,37 @@ pub fn can_jump(nums: Vec<i32>) -> bool {
     }
     leftmost == 0
 }
+
+// https://leetcode.com/problems/plus-one/description/
+pub fn plus_one(digits: Vec<i32>) -> Vec<i32> {
+    let mut ans = vec![];
+    let mut carry = 1;
+    for i in (0..digits.len()).rev() {
+        let d = digits[i];
+        let sum = d + carry;
+        ans.push(sum % 10);
+        carry = sum / 10;
+    }
+    if carry > 0 {
+        ans.push(carry);
+    }
+    ans.into_iter().rev().collect()
+}
+
+pub fn plus_one_ii(digits: Vec<i32>) -> Vec<i32> {
+    let mut digits = digits;
+    let n = digits.len();
+
+    for idx in (0..n).rev() {
+        if digits[idx] == 9 {
+            digits[idx] = 0;
+        } else {
+            digits[idx] += 1;
+            return digits;
+        }
+    }
+
+    digits = vec![0; n + 1];
+    digits[0] = 1;
+    digits
+}
