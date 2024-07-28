@@ -453,4 +453,42 @@ public class Day619 {
             return ans[0] == -1 ? "" : s.substring(ans[1], ans[2] + 1);
         }
     }
+
+    /**
+     * The read4 API is defined in the parent class Reader4.
+     * int read4(char[] buf4);
+     */
+
+    public class Solution {/* extends Reader4 { */
+        int bufPtr = 0;
+        int bufCnt = 0;
+        char[] buf4 = new char[4];
+
+        int read4(char[] buf4) {
+            return 0;
+        }
+
+        /**
+         * @param buf Destination buffer
+         * @param n   Number of characters to read
+         * @return The number of actual characters read
+         */
+        public int read(char[] buf, int n) {
+            int ptr = 0;
+            while (ptr < n) {
+                if (bufPtr == 0) {
+                    bufCnt = read4(buf4);
+                }
+                if (bufCnt == 0) {
+                    break;
+                }
+                while (ptr < n && bufPtr < bufCnt) {
+                    buf[ptr++] = buf4[bufPtr++];
+                }
+                if (bufPtr >= bufCnt)
+                    bufPtr = 0;
+            }
+            return ptr;
+        }
+    }
 }
