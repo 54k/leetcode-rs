@@ -243,3 +243,71 @@ pub fn plus_one_ii(digits: Vec<i32>) -> Vec<i32> {
     digits[0] = 1;
     digits
 }
+
+// https://leetcode.com/problems/minimum-window-substring/description/
+pub fn min_window(s: String, t: String) -> String {
+    use std::collections::HashMap;
+
+    let s = s.chars().collect::<Vec<_>>();
+    let t = t.chars().collect::<Vec<_>>();
+
+    if s.len() == 0 || t.len() == 0 {
+        return "".to_string();
+    }
+
+    let mut dict_t = HashMap::new();
+
+    for i in 0..t.len() {
+        *dict_t.entry(t[i]).or_insert(0) += 1;
+    }
+
+    let required = dict_t.len();
+    let mut filtered_s = vec![];
+    for i in 0..s.len() {
+        if dict_t.contains_key(&s[i]) {
+            filtered_s.push((i, s[i]));
+        }
+    }
+
+    let mut l = 0;
+    let mut r = 0;
+    let mut formed = 0;
+    let mut window_counts = HashMap::new();
+
+    let mut ans = (usize::MAX, 0, 0);
+
+    while r < filtered_s.len() {
+        let mut c = filtered_s[r].1;
+        *window_counts.entry(c).or_insert(0) += 1;
+
+        if dict_t.contains_key(&c) && window_counts.get(&c) == dict_t.get(&c) {
+            formed += 1;
+        }
+
+        while l <= r && formed == required {
+            c = filtered_s[l].1;
+
+            let end = filtered_s[r].0;
+            let start = filtered_s[l].0;
+
+            if end - start + 1 < ans.0 {
+                ans.0 = end - start + 1;
+                ans.1 = start;
+                ans.2 = end;
+            }
+
+            *window_counts.get_mut(&c).unwrap() -= 1;
+            if dict_t.contains_key(&c) && window_counts[&c] < dict_t[&c] {
+                formed -= 1;
+            }
+            l += 1;
+        }
+
+        r += 1;
+    }
+    if ans.0 == usize::MAX {
+        "".to_string()
+    } else {
+        s[ans.1..=ans.2].iter().copied().collect()
+    }
+}
