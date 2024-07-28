@@ -198,3 +198,14 @@ pub fn rotate_ii(matrix: &mut Vec<Vec<i32>>) {
     transponse(matrix);
     reflect(matrix);
 }
+
+// https://leetcode.com/problems/jump-game/description/
+pub fn can_jump(nums: Vec<i32>) -> bool {
+    let mut leftmost = nums.len() - 1;
+    for i in (0..nums.len() - 1).rev() {
+        if nums[i] as usize + i >= leftmost {
+            leftmost = i;
+        }
+    }
+    leftmost == 0
+}
