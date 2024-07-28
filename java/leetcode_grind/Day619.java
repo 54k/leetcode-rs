@@ -1,12 +1,16 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 public class Day619 {
     // https://leetcode.com/problems/second-minimum-time-to-reach-destination/description/?envType=daily-question&envId=2024-07-28
@@ -454,12 +458,13 @@ public class Day619 {
         }
     }
 
+    // https://leetcode.com/problems/read-n-characters-given-read4/description/
     /**
      * The read4 API is defined in the parent class Reader4.
      * int read4(char[] buf4);
      */
 
-    public class Solution {/* extends Reader4 { */
+    public class Solution11 {/* extends Reader4 { */
         int bufPtr = 0;
         int bufCnt = 0;
         char[] buf4 = new char[4];
@@ -489,6 +494,125 @@ public class Day619 {
                     bufPtr = 0;
             }
             return ptr;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/description/
+    static class Solution12 {
+        public int lengthOfLongestSubstringTwoDistinct(String s) {
+            int n = s.length();
+            if (n < 3)
+                return n;
+
+            int left = 0;
+            int right = 0;
+            HashMap<Character, Integer> hashmap = new HashMap<Character, Integer>();
+            int max_len = 2;
+            while (right < n) {
+                hashmap.put(s.charAt(right), right++);
+
+                if (hashmap.size() == 3) {
+                    int del_idx = Collections.min(hashmap.values());
+                    hashmap.remove(s.charAt(del_idx));
+                    left = del_idx + 1;
+                }
+
+                max_len = Math.max(max_len, right - left);
+            }
+            return max_len;
+        }
+    }
+
+    // https://leetcode.com/problems/missing-ranges/description/
+    static class Solution13 {
+        public List<List<Integer>> findMissingRanges(int[] nums, int lower, int upper) {
+            int n = nums.length;
+            List<List<Integer>> missingRanges = new ArrayList<>();
+            if (n == 0) {
+                missingRanges.add(Arrays.asList(lower, upper));
+                return missingRanges;
+            }
+
+            if (lower < nums[0]) {
+                missingRanges.add(Arrays.asList(lower, nums[0] - 1));
+            }
+
+            for (int i = 0; i < n - 1; i++) {
+                if (nums[i + 1] - nums[i] <= 1) {
+                    continue;
+                }
+                missingRanges.add(Arrays.asList(nums[i] + 1, nums[i + 1] - 1));
+            }
+
+            if (upper > nums[n - 1]) {
+                missingRanges.add(Arrays.asList(nums[n - 1] + 1, upper));
+            }
+
+            return missingRanges;
+        }
+    }
+
+    // https://leetcode.com/problems/next-closest-time/description/
+    static class Solution14 {
+        public String nextClosestTime(String time) {
+            int cur = 60 * Integer.parseInt(time.substring(0, 2));
+            cur += Integer.parseInt(time.substring(3));
+            Set<Integer> allowed = new HashSet<>();
+            for (char c : time.toCharArray()) {
+                if (c != ':') {
+                    allowed.add(c - '0');
+                }
+            }
+
+            while (true) {
+                cur = (cur + 1) % (24 * 60);
+                int[] digits = new int[] { cur / 60 / 10, cur / 60 % 10, cur % 60 / 10, cur % 60 % 10 };
+
+                search: {
+                    for (int d : digits) {
+                        if (!allowed.contains(d)) {
+                            break search;
+                        }
+                    }
+                    return String.format("%02d:%02d", cur / 60, cur % 60);
+                }
+            }
+        }
+    }
+
+    static class Solution15 {
+        public String nextClosestTime(String time) {
+            int start = 60 * Integer.parseInt(time.substring(0, 2));
+            start += Integer.parseInt(time.substring(3));
+            int ans = start;
+            int elapsed = 24 * 60;
+            Set<Integer> allowed = new HashSet<>();
+            for (char c : time.toCharArray()) {
+                if (c != ':') {
+                    allowed.add(c - '0');
+                }
+            }
+
+            for (int h1 : allowed) {
+                for (int h2 : allowed) {
+                    if (h1 * 10 + h2 < 24) {
+                        for (int m1 : allowed) {
+                            for (int m2 : allowed) {
+                                if (m1 * 10 + m2 < 60) {
+                                    int cur = 60 * (h1 * 10 + h2) + (m1 * 10 + m2);
+                                    int candElapsed = Math.floorMod(cur - start, 24 * 60);
+                                    if (0 < candElapsed && candElapsed < elapsed) {
+                                        ans = cur;
+                                        elapsed = candElapsed;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return String.format("%02d:%02d", ans / 60, ans % 60);
         }
     }
 }
