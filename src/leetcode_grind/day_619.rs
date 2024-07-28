@@ -157,3 +157,44 @@ pub fn multiply(num1: String, num2: String) -> String {
     answer.reverse();
     answer.into_iter().collect()
 }
+
+// https://leetcode.com/problems/rotate-image/description/
+pub fn rotate_i(matrix: &mut Vec<Vec<i32>>) {
+    let n = matrix.len();
+    for i in 0..(n + 1) / 2 {
+        for j in 0..n / 2 {
+            let tmp = matrix[n - 1 - j][i];
+            matrix[n - 1 - j][i] = matrix[n - 1 - i][n - 1 - j];
+            matrix[n - 1 - i][n - 1 - j] = matrix[j][n - 1 - i];
+            matrix[j][n - 1 - i] = matrix[i][j];
+            matrix[i][j] = tmp;
+        }
+    }
+}
+
+pub fn rotate_ii(matrix: &mut Vec<Vec<i32>>) {
+    fn transponse(matrix: &mut Vec<Vec<i32>>) {
+        let n = matrix.len();
+        for i in 0..n {
+            for j in i + 1..n {
+                let tmp = matrix[j][i];
+                matrix[j][i] = matrix[i][j];
+                matrix[i][j] = tmp;
+            }
+        }
+    }
+
+    fn reflect(matrix: &mut Vec<Vec<i32>>) {
+        let n = matrix.len();
+        for i in 0..n {
+            for j in 0..n / 2 {
+                let tmp = matrix[i][j];
+                matrix[i][j] = matrix[i][n - j - 1];
+                matrix[i][n - j - 1] = tmp;
+            }
+        }
+    }
+
+    transponse(matrix);
+    reflect(matrix);
+}
