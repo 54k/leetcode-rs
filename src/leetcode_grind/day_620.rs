@@ -101,3 +101,21 @@ pub fn num_teams_iv(rating: Vec<i32>) -> i32 {
 
     teams
 }
+
+// https://leetcode.com/problems/toss-strange-coins/description/?envType=weekly-question&envId=2024-07-29
+pub fn probability_of_heads(prob: Vec<f64>, target: i32) -> f64 {
+    let n = prob.len();
+    let mut dp = vec![vec![0.0; target as usize + 1]; n + 1];
+    dp[0][0] = 1.0;
+
+    for i in 1..=n {
+        dp[i][0] = dp[i - 1][0] * (1.0 - prob[i - 1]);
+        let mut j = 1;
+        while j <= target as usize && j <= i {
+            dp[i][j] = dp[i - 1][j - 1] * prob[i - 1] + dp[i - 1][j] * (1.0 - prob[i - 1]);
+            j += 1;
+        }
+    }
+
+    dp[n][target as usize]
+}
