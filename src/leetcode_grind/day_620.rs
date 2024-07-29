@@ -133,3 +133,49 @@ pub fn probability_of_heads_ii(prob: Vec<f64>, target: i32) -> f64 {
     }
     dp[target]
 }
+
+// https://leetcode.com/problems/expressive-words/description/
+pub fn expressive_words(s: String, words: Vec<String>) -> i32 {
+    fn check(s: &Vec<char>, w: &Vec<char>) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+
+        while i < s.len() && j < w.len() {
+            if s[i] != w[j] {
+                return false;
+            }
+
+            let mut len1 = 1;
+            let mut len2 = 1;
+
+            while i < s.len() - 1 && s[i] == s[i + 1] {
+                len1 += 1;
+                i += 1;
+            }
+
+            while j < w.len() - 1 && w[j] == w[j + 1] {
+                len2 += 1;
+                j += 1;
+            }
+
+            if len1 < 3 && len1 != len2 || len1 >= 3 && len1 < len2 {
+                return false;
+            }
+
+            i += 1;
+            j += 1;
+        }
+
+        i == s.len() && j == w.len()
+    }
+
+    let s = s.chars().collect::<Vec<_>>();
+
+    let mut ans = 0;
+    for w in words {
+        if check(&s, &w.chars().collect()) {
+            ans += 1;
+        }
+    }
+    ans
+}
