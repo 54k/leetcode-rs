@@ -196,4 +196,132 @@ public class Day620 {
             return j - i;
         }
     }
+
+    static class Solution6 {
+        public String findReplaceString(String s, int[] indices, String[] sources, String[] targets) {
+            var ind = new Integer[indices.length];
+            for (int i = 0; i < indices.length; i++) {
+                ind[i] = i;
+            }
+
+            Arrays.sort(ind, (a, b) -> {
+                return indices[(int) a] - indices[(int) b];
+            });
+
+            var ans = new StringBuilder();
+            var i = 0;
+            var c = 0;
+            while (i < s.length() && c < indices.length) {
+                var j = ind[c];
+                if (i == indices[j]) {
+                    if (s.substring(indices[j]).startsWith(sources[j])) {
+                        ans.append(targets[j]);
+                        i += sources[j].length();
+                    }
+                    c++;
+                } else {
+                    ans.append(s.charAt(i));
+                    i += 1;
+                }
+            }
+
+            while (i < s.length()) {
+                ans.append(s.charAt(i++));
+            }
+
+            return ans.toString();
+        }
+    }
+
+    // https://leetcode.com/problems/maximize-distance-to-closest-person/description/
+    static class Solution7 {
+        public int maxDistToClosest(int[] seats) {
+            int N = seats.length;
+            int[] left = new int[N];
+            int[] right = new int[N];
+            Arrays.fill(left, N);
+            Arrays.fill(right, N);
+
+            for (int i = 0; i < N; i++) {
+                if (seats[i] == 1) {
+                    left[i] = 0;
+                } else if (i > 0) {
+                    left[i] = left[i - 1] + 1;
+                }
+            }
+
+            for (int i = N - 1; i >= 0; i--) {
+                if (seats[i] == 1) {
+                    right[i] = 0;
+                } else if (i < N - 1) {
+                    right[i] = right[i + 1] + 1;
+                }
+            }
+
+            int ans = 0;
+            for (int i = 0; i < N; i++) {
+                if (seats[i] == 0) {
+                    ans = Math.max(ans, Math.min(left[i], right[i]));
+                }
+            }
+            return ans;
+        }
+    }
+
+    static class Solution8 {
+        public int maxDistToClosest(int[] seats) {
+            int N = seats.length;
+            int prev = -1, future = 0;
+            int ans = 0;
+
+            for (int i = 0; i < N; i++) {
+                if (seats[i] == 1) {
+                    prev = i;
+                } else {
+                    while (future < N && seats[future] == 0 || future < i) {
+                        future++;
+                    }
+
+                    int left = prev == -1 ? N : i - prev;
+                    int right = future == N ? N : future - i;
+                    ans = Math.max(ans, Math.min(left, right));
+                }
+            }
+
+            return ans;
+        }
+    }
+
+    static class Solution9 {
+        public int maxDistToClosest(int[] seats) {
+            int N = seats.length;
+            int K = 0;
+            int ans = 0;
+
+            for (int i = 0; i < N; i++) {
+                if (seats[i] == 1) {
+                    K = 0;
+                } else {
+                    K++;
+                    ans = Math.max(ans, (K + 1) / 2);
+                }
+            }
+
+            for (int i = 0; i < N; i++) {
+                if (seats[i] == 1) {
+                    ans = Math.max(ans, i);
+                    break;
+                }
+            }
+
+            for (int i = N - 1; i >= 0; --i) {
+                if (seats[i] == 1) {
+                    ans = Math.max(ans, N - 1 - i);
+                    break;
+                }
+            }
+
+            return ans;
+        }
+    }
 }
