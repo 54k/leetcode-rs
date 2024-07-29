@@ -145,4 +145,55 @@ public class Day620 {
             return dp[target];
         }
     }
+
+    // https://leetcode.com/problems/expressive-words/description/
+    static class Solution5 {
+        public int expressiveWords(String s, String[] words) {
+            if (s == null || words == null) {
+                return 0;
+            }
+            int count = 0;
+            for (String word : words) {
+                if (stretchy(s, word)) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        boolean stretchy(String s, String word) {
+            if (word == null) {
+                return false;
+            }
+
+            int i = 0;
+            int j = 0;
+
+            while (i < s.length() && j < word.length()) {
+                if (s.charAt(i) != word.charAt(j)) {
+                    return false;
+                }
+
+                int len1 = getRepeatedLength(s, i);
+                int len2 = getRepeatedLength(word, j);
+
+                if (len1 < 3 && len1 != len2 || len1 >= 3 && len1 < len2) {
+                    return false;
+                }
+
+                i += len1;
+                j += len2;
+            }
+
+            return i == s.length() && j == word.length();
+        }
+
+        int getRepeatedLength(String str, int i) {
+            int j = i;
+            while (j < str.length() && str.charAt(j) == str.charAt(i)) {
+                j++;
+            }
+            return j - i;
+        }
+    }
 }
