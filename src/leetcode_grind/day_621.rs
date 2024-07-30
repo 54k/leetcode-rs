@@ -95,3 +95,20 @@ pub fn minimum_deletions_iii(s: String) -> i32 {
 
     delete_count
 }
+
+pub fn minimum_deletions_iv(s: String) -> i32 {
+    let n = s.len();
+    let s = s.chars().collect::<Vec<_>>();
+    let mut b_count = 0;
+    let mut min_deletions = 0;
+
+    for i in 0..n {
+        if s[i] == 'b' {
+            b_count += 1;
+        } else {
+            min_deletions = b_count.min(min_deletions + 1);
+        }
+    }
+
+    min_deletions
+}
