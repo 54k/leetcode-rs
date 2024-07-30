@@ -1,6 +1,8 @@
 package leetcode_grind;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 public class Day621 {
@@ -92,6 +94,93 @@ public class Day621 {
             }
 
             return stack.isEmpty();
+        }
+    }
+
+    public static class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode() {
+        }
+
+        ListNode(int val) {
+            this.val = val;
+        }
+
+        ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
+    }
+
+    // https://leetcode.com/problems/merge-k-sorted-lists/description/
+    static class Solution5 {
+        public ListNode mergeKLists(ListNode[] lists) {
+            ListNode head = new ListNode(0);
+            ListNode point = head;
+            PriorityQueue<ListNode> queue = new PriorityQueue<>(
+                    new Comparator<ListNode>() {
+                        @Override
+                        public int compare(ListNode o1, ListNode o2) {
+                            if (o1.val > o2.val) {
+                                return 1;
+                            } else if (o1.val == o2.val) {
+                                return 0;
+                            } else {
+                                return -1;
+                            }
+                        }
+                    });
+            for (ListNode node : lists) {
+                if (node != null) {
+                    queue.add(node);
+                }
+            }
+            while (!queue.isEmpty()) {
+                point.next = queue.poll();
+                point = point.next;
+                if (point.next != null) {
+                    queue.add(point.next);
+                }
+            }
+            return head.next;
+        }
+    }
+
+    static class Solution6 {
+        public ListNode mergeKLists(ListNode[] lists) {
+            int amount = lists.length;
+            int interval = 1;
+            while (interval < amount) {
+                for (int i = 0; i < amount - interval; i += interval * 2) {
+                    lists[i] = merge2lists(lists[i], lists[i + interval]);
+                }
+                interval *= 2;
+            }
+            return amount > 0 ? lists[0] : null;
+        }
+
+        ListNode merge2lists(ListNode l1, ListNode l2) {
+            ListNode head = new ListNode(0);
+            ListNode point = head;
+            while (l1 != null && l2 != null) {
+                if (l1.val <= l2.val) {
+                    point.next = l1;
+                    l1 = l1.next;
+                } else {
+                    point.next = l2;
+                    l2 = l1;
+                    l1 = point.next.next;
+                }
+                point = point.next;
+            }
+            if (l1 == null) {
+                point.next = l2;
+            } else {
+                point.next = l1;
+            }
+            return head.next;
         }
     }
 }
