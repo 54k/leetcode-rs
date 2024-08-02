@@ -1,5 +1,8 @@
 package leetcode_grind;
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 public class Day623 {
     // https://leetcode.com/problems/number-of-senior-citizens/description/?envType=daily-question&envId=2024-08-01
     static class Solution1 {
@@ -35,6 +38,26 @@ public class Day623 {
                     right_max = Math.max(right_max, height[j]);
                 }
                 ans += Math.min(left_max, right_max) - height[i];
+            }
+            return ans;
+        }
+    }
+
+    static class Solution3 {
+        public int trap(int[] height) {
+            int ans = 0, current = 0;
+            Deque<Integer> st = new LinkedList<Integer>();
+            while (current < height.length) {
+                while (!st.isEmpty() && height[current] > height[st.peek()]) {
+                    int top = st.peek();
+                    st.pop();
+                    if (st.isEmpty())
+                        break;
+                    int distance = current - st.peek() - 1;
+                    int bounded_height = Math.min(height[current], height[st.peek()]) - height[top];
+                    ans += distance * bounded_height;
+                }
+                st.push(current++);
             }
             return ans;
         }
