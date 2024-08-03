@@ -15,7 +15,7 @@ pub fn can_be_equal(target: Vec<i32>, arr: Vec<i32>) -> bool {
 }
 
 // https://leetcode.com/problems/longest-repeating-substring/description/?envType=weekly-question&envId=2024-08-01
-pub fn longest_repeating_substring(s: String) -> i32 {
+pub fn longest_repeating_substring_i(s: String) -> i32 {
     let length = s.len();
     let mut suffixes = vec![vec![]; length];
 
@@ -36,4 +36,22 @@ pub fn longest_repeating_substring(s: String) -> i32 {
         max_length = max_length.max(j);
     }
     max_length as i32
+}
+
+pub fn longest_repeating_substring_ii(s: String) -> i32 {
+    let s = s.chars().collect::<Vec<_>>();
+    let length = s.len();
+    let mut dp = vec![vec![0; length + 1]; length + 1];
+    let mut max_len = 0;
+
+    for i in 1..=length {
+        for j in i + 1..=length {
+            if s[i - 1] == s[j - 1] {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+                max_len = max_len.max(dp[i][j] as usize);
+            }
+        }
+    }
+
+    max_len as i32
 }
