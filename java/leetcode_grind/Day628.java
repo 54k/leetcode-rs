@@ -1,12 +1,14 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Random;
 import java.util.Set;
 
 public class Day628 {
@@ -161,6 +163,55 @@ public class Day628 {
             }
 
             return totalPushes;
+        }
+    }
+
+    // https://leetcode.com/problems/kth-largest-element-in-an-array/description/
+    static class Solution5 {
+        public int findKthLargest(int[] nums, int k) {
+            PriorityQueue<Integer> heap = new PriorityQueue<>();
+            for (int num : nums) {
+                heap.add(num);
+                if (heap.size() > k) {
+                    heap.poll();
+                }
+            }
+            return heap.poll();
+        }
+    }
+
+    // https://leetcode.com/problems/kth-largest-element-in-an-array/description/
+    static class Solution6 {
+        public int findKthLargest(int[] nums, int k) {
+            var qs = new Object() {
+                Random rnd = new Random();
+
+                Integer apply(List<Integer> arr, int k) {
+                    var idx = rnd.nextInt(arr.size());
+
+                    var left = new ArrayList<Integer>();
+                    var mid = new ArrayList<Integer>();
+                    var right = new ArrayList<Integer>();
+
+                    for (var x : arr) {
+                        if (x < arr.get(idx)) {
+                            right.add(x);
+                        } else if (x == arr.get(idx)) {
+                            mid.add(x);
+                        } else {
+                            left.add(x);
+                        }
+                    }
+
+                    if (k <= left.size()) {
+                        return apply(left, k);
+                    } else if (k > left.size() + mid.size()) {
+                        return apply(right, k - left.size() - mid.size());
+                    }
+                    return arr.get(idx);
+                }
+            };
+            return qs.apply(Arrays.stream(nums).boxed().toList(), k);
         }
     }
 }
