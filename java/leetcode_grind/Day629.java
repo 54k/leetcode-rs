@@ -1,7 +1,9 @@
 package leetcode_grind;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class Day629 {
     // https://leetcode.com/problems/integer-to-english-words/description/?envType=daily-question&envId=2024-08-07
@@ -132,6 +134,127 @@ public class Day629 {
             }
 
             return "";
+        }
+    }
+
+    // https://leetcode.com/problems/meeting-rooms-ii/description/
+    static class Solution4 {
+        public int minMeetingRooms(int[][] intervals) {
+            if (intervals.length == 0) {
+                return 0;
+            }
+            PriorityQueue<Integer> allocator = new PriorityQueue<Integer>(
+                    intervals.length,
+                    new Comparator<Integer>() {
+                        public int compare(Integer a, Integer b) {
+                            return a - b;
+                        }
+                    });
+            Arrays.sort(
+                    intervals,
+                    new Comparator<int[]>() {
+                        public int compare(final int[] a, final int[] b) {
+                            return a[0] - b[0];
+                        }
+                    });
+            allocator.add(intervals[0][1]);
+            for (int i = 1; i < intervals.length; i++) {
+                if (intervals[i][0] >= allocator.peek()) {
+                    allocator.poll();
+                }
+                allocator.add(intervals[i][1]);
+            }
+            return allocator.size();
+        }
+    }
+
+    static class Solution5 {
+        public int minMeetingRooms(int[][] intervals) {
+            if (intervals.length == 0) {
+                return 0;
+            }
+            Integer[] start = new Integer[intervals.length];
+            Integer[] end = new Integer[intervals.length];
+
+            for (int i = 0; i < intervals.length; i++) {
+                start[i] = intervals[i][0];
+                end[i] = intervals[i][1];
+            }
+
+            Arrays.sort(
+                    end,
+                    new Comparator<Integer>() {
+                        public int compare(Integer a, Integer b) {
+                            return a - b;
+                        }
+                    });
+
+            Arrays.sort(
+                    start,
+                    new Comparator<Integer>() {
+                        public int compare(Integer a, Integer b) {
+                            return a - b;
+                        }
+                    });
+
+            int startPointer = 0, endPointer = 0;
+            int usedRooms = 0;
+            while (startPointer < intervals.length) {
+                if (start[startPointer] >= end[endPointer]) {
+                    usedRooms -= 1;
+                    endPointer += 1;
+                }
+
+                usedRooms += 1;
+                startPointer += 1;
+            }
+            return usedRooms;
+        }
+    }
+
+    // https://leetcode.com/problems/backspace-string-compare/description/
+    static class Solution6 {
+        public boolean backspaceCompare(String S, String T) {
+            int i = S.length() - 1, j = T.length() - 1;
+            int skipS = 0, skipT = 0;
+
+            while (i >= 0 || j >= 0) {
+                while (i >= 0) {
+                    if (S.charAt(i) == '#') {
+                        skipS++;
+                        i--;
+                    } else if (skipS > 0) {
+                        skipS--;
+                        i--;
+                    } else {
+                        break;
+                    }
+                }
+
+                while (j >= 0) {
+                    if (T.charAt(j) == '#') {
+                        skipT++;
+                        j--;
+                    } else if (skipT > 0) {
+                        skipT--;
+                        j--;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (i >= 0 && j >= 0 && S.charAt(i) != T.charAt(j)) {
+                    return false;
+                }
+
+                if ((i >= 0) != (j >= 0)) {
+                    return false;
+                }
+
+                i--;
+                j--;
+            }
+            return true;
         }
     }
 }
