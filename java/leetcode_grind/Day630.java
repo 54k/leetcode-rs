@@ -274,4 +274,56 @@ public class Day630 {
             return bitAtPosition == 1;
         }
     }
+
+    // https://leetcode.com/problems/range-sum-query-mutable/description/
+    class NumArray {
+        private int[] b;
+        private int len;
+        private int[] nums;
+
+        public NumArray(int[] nums) {
+            this.nums = nums;
+            double l = Math.sqrt(nums.length);
+            len = (int) Math.ceil(nums.length / l);
+            b = new int[len];
+            for (int i = 0; i < nums.length; i++) {
+                b[i / len] += nums[i];
+            }
+        }
+
+        public void update(int index, int val) {
+            int b_l = index / len;
+            b[b_l] = b[b_l] - nums[index] + val;
+            nums[index] = val;
+        }
+
+        public int sumRange(int left, int right) {
+            int sum = 0;
+            int startBlock = left / len;
+            int endBlock = right / len;
+            if (startBlock == endBlock) {
+                for (int i = left; i <= right; i++) {
+                    sum += nums[i];
+                }
+            } else {
+                for (int i = left; i < (startBlock + 1) * len; i++) {
+                    sum += nums[i];
+                }
+                for (int i = startBlock + 1; i < endBlock; i++) {
+                    sum += b[i];
+                }
+                for (int i = endBlock * len; i <= right; i++) {
+                    sum += nums[i];
+                }
+            }
+            return sum;
+        }
+    }
+
+    /**
+     * Your NumArray object will be instantiated and called as such:
+     * NumArray obj = new NumArray(nums);
+     * obj.update(index,val);
+     * int param_2 = obj.sumRange(left,right);
+     */
 }
