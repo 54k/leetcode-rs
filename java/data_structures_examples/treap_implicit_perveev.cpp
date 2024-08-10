@@ -111,7 +111,7 @@ Node *merge(Node *l, Node *r)
     if (r == nullptr)
         return l;
 
-    if (l->priority > r->priority)
+    if (l->priority < r->priority)
     {
         push(l);
         l->r = merge(l->r, r);
