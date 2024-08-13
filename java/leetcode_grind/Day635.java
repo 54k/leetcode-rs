@@ -124,4 +124,61 @@ public class Day635 {
             return point[0] * point[0] + point[1] * point[1];
         }
     }
+
+    static class Solution5 {
+        public int[][] kClosest(int[][] points, int k) {
+            double[] distances = new double[points.length];
+            double low = 0, high = 0;
+            List<Integer> remaining = new ArrayList<>();
+            for (int i = 0; i < points.length; i++) {
+                distances[i] = euclideanDistance(points[i]);
+                high = Math.max(high, distances[i]);
+                remaining.add(i);
+            }
+
+            List<Integer> closest = new ArrayList<>();
+            while (k > 0) {
+                double mid = low + (high - low) / 2;
+                List<List<Integer>> result = splitDistances(remaining, distances, mid);
+                List<Integer> closer = result.get(0), farther = result.get(1);
+                if (closer.size() > k) {
+                    remaining = closer;
+                    high = mid;
+                } else {
+                    k -= closer.size();
+                    closest.addAll(closer);
+                    remaining = farther;
+                    low = mid;
+                }
+            }
+
+            k = closest.size();
+            int[][] answer = new int[k][2];
+            for (int i = 0; i < k; i++) {
+                answer[i] = points[closest.get(i)];
+            }
+            return answer;
+        }
+
+        List<List<Integer>> splitDistances(List<Integer> remaining, double[] distances, double mid) {
+            List<List<Integer>> result = new ArrayList<>();
+            List<Integer> closer = new ArrayList<>();
+            List<Integer> farther = new ArrayList<>();
+            result.add(closer);
+            result.add(farther);
+
+            for (int point : remaining) {
+                if (distances[point] <= mid) {
+                    closer.add(point);
+                } else {
+                    farther.add(point);
+                }
+            }
+            return result;
+        }
+
+        double euclideanDistance(int[] point) {
+            return point[0] * point[0] + point[1] * point[1];
+        }
+    }
 }
