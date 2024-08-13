@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class Day635 {
     // https://leetcode.com/problems/combination-sum-ii/description/?envType=daily-question&envId=2024-08-13
@@ -91,6 +92,32 @@ public class Day635 {
         public int[][] kClosest(int[][] points, int k) {
             Arrays.sort(points, (a, b) -> squaredDistance(a) - squaredDistance(b));
             return Arrays.copyOf(points, k);
+        }
+
+        int squaredDistance(int[] point) {
+            return point[0] * point[0] + point[1] * point[1];
+        }
+    }
+
+    static class Solution4 {
+        public int[][] kClosest(int[][] points, int k) {
+            Queue<int[]> maxPQ = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+            for (int i = 0; i < points.length; i++) {
+                int[] entry = { squaredDistance(points[i]), i };
+                if (maxPQ.size() < k) {
+                    maxPQ.add(entry);
+                } else if (entry[0] < maxPQ.peek()[0]) {
+                    maxPQ.poll();
+                    maxPQ.add(entry);
+                }
+            }
+
+            int[][] answer = new int[k][2];
+            for (int i = 0; i < k; i++) {
+                int entryIndex = maxPQ.poll()[1];
+                answer[i] = points[entryIndex];
+            }
+            return answer;
         }
 
         int squaredDistance(int[] point) {
