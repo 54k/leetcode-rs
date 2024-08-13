@@ -2,8 +2,11 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class Day635 {
     // https://leetcode.com/problems/combination-sum-ii/description/?envType=daily-question&envId=2024-08-13
@@ -34,6 +37,64 @@ public class Day635 {
                     tempList.remove(tempList.size() - 1);
                 }
             }
+        }
+    }
+
+    static class Pair<F, S> {
+        F first;
+        S second;
+
+        Pair(F f, S s) {
+            first = f;
+            second = s;
+        }
+
+        F getKey() {
+            return first;
+        }
+
+        S getValue() {
+            return second;
+        }
+    }
+
+    // https://leetcode.com/problems/minimum-cost-to-hire-k-workers/description/
+    static class Solution2 {
+        public double mincostToHireWorkers(int[] quality, int[] wage, int k) {
+            int n = quality.length;
+            double totalCost = Double.MAX_VALUE;
+            double currentTotalQuality = 0;
+            List<Pair<Double, Integer>> wageToQualityRatio = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                wageToQualityRatio.add(new Pair<>((double) wage[i] / quality[i], quality[i]));
+            }
+            Collections.sort(wageToQualityRatio, Comparator.comparingDouble(Pair::getKey));
+
+            PriorityQueue<Integer> workers = new PriorityQueue<>(Collections.reverseOrder());
+            for (int i = 0; i < n; i++) {
+                workers.add(wageToQualityRatio.get(i).getValue());
+                currentTotalQuality += wageToQualityRatio.get(i).getValue();
+                if (workers.size() > k) {
+                    currentTotalQuality -= workers.poll();
+                }
+
+                if (workers.size() == k) {
+                    totalCost = Math.min(totalCost, currentTotalQuality * wageToQualityRatio.get(i).getKey());
+                }
+            }
+            return totalCost;
+        }
+    }
+
+    // https://leetcode.com/problems/k-closest-points-to-origin/description/
+    static class Solution3 {
+        public int[][] kClosest(int[][] points, int k) {
+            Arrays.sort(points, (a, b) -> squaredDistance(a) - squaredDistance(b));
+            return Arrays.copyOf(points, k);
+        }
+
+        int squaredDistance(int[] point) {
+            return point[0] * point[0] + point[1] * point[1];
         }
     }
 }
