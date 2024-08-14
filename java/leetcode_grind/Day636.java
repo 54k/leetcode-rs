@@ -1,6 +1,9 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 public class Day636 {
     // https://leetcode.com/problems/find-k-th-smallest-pair-distance/description/?envType=daily-question&envId=2024-08-14
@@ -138,6 +141,118 @@ public class Day636 {
                 }
             }
             return lo;
+        }
+    }
+
+    // https://leetcode.com/problems/reorder-data-in-log-files/description/
+    static class Solution5 {
+        public String[] reorderLogFiles(String[] logs) {
+            Comparator<String> myComp = new Comparator<String>() {
+                @Override
+                public int compare(String log1, String log2) {
+                    String[] split1 = log1.split(" ", 2);
+                    String[] split2 = log2.split(" ", 2);
+                    boolean isDigit1 = Character.isDigit(split1[1].charAt(0));
+                    boolean isDigit2 = Character.isDigit(split2[1].charAt(0));
+
+                    if (!isDigit1 && !isDigit2) {
+                        int cmp = split1[1].compareTo(split2[1]);
+                        if (cmp != 0) {
+                            return cmp;
+                        }
+                        return split1[0].compareTo(split2[0]);
+                    }
+
+                    if (!isDigit1 && isDigit2) {
+                        return -1;
+                    } else if (isDigit1 && !isDigit2) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            };
+
+            Arrays.sort(logs, myComp);
+            return logs;
+        }
+    }
+
+    // https://leetcode.com/problems/coin-path/description/
+    static class Solution6 {
+        public List<Integer> cheapestJump(int[] A, int B) {
+            int[] next = new int[A.length];
+            Arrays.fill(next, -1);
+            jump(A, B, 0, next);
+            List<Integer> res = new ArrayList<>();
+            int i;
+            for (i = 0; i < A.length && next[i] > 0; i = next[i]) {
+                res.add(i + 1);
+            }
+            if (i == A.length - 1 && A[i] >= 0) {
+                res.add(A.length);
+            } else {
+                return new ArrayList<Integer>();
+            }
+            return res;
+        }
+
+        long jump(int[] A, int B, int i, int[] next) {
+            if (i == A.length - 1 && A[i] >= 0) {
+                return A[i];
+            }
+            long min_cost = Integer.MAX_VALUE;
+            for (int j = i + 1; j <= i + B && j < A.length; j++) {
+                if (A[j] >= 0) {
+                    long cost = A[i] + jump(A, B, j, next);
+                    if (cost < min_cost) {
+                        min_cost = cost;
+                        next[i] = j;
+                    }
+                }
+            }
+            return min_cost;
+        }
+    }
+
+    static class Solution7 {
+        public List<Integer> cheapestJump(int[] A, int B) {
+            int[] next = new int[A.length];
+            Arrays.fill(next, -1);
+            long[] memo = new long[A.length];
+            jump(A, B, 0, next, memo);
+            List<Integer> res = new ArrayList<>();
+            int i;
+            for (i = 0; i < A.length && next[i] > 0; i = next[i]) {
+                res.add(i + 1);
+            }
+            if (i == A.length - 1 && A[i] >= 0) {
+                res.add(A.length);
+            } else {
+                return new ArrayList<Integer>();
+            }
+            return res;
+        }
+
+        long jump(int[] A, int B, int i, int[] next, long[] memo) {
+            if (memo[i] > 0) {
+                return memo[i];
+            }
+            if (i == A.length - 1 && A[i] >= 0) {
+                return A[i];
+            }
+            long min_cost = Integer.MAX_VALUE;
+            for (int j = i + 1; j <= i + B && j < A.length; j++) {
+                if (A[j] >= 0) {
+                    long cost = A[i] + jump(A, B, j, next, memo);
+                    if (cost < min_cost) {
+                        min_cost = cost;
+                        next[i] = j;
+                    }
+                }
+            }
+            memo[i] = min_cost;
+            return min_cost;
         }
     }
 }
