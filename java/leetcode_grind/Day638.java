@@ -1,6 +1,8 @@
 package leetcode_grind;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 public class Day638 {
@@ -38,6 +40,36 @@ public class Day638 {
                 if (set.size() > k) {
                     set.remove(nums[i - k]);
                 }
+            }
+            return false;
+        }
+    }
+
+    // https://leetcode.com/problems/contains-duplicate-iii/description/
+    static class Solution3 {
+        long getID(int x, long w) {
+            return Math.floorDiv(x, w);
+        }
+
+        public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+            if (t < 0)
+                return false;
+            Map<Long, Long> buckets = new HashMap<>();
+            long w = (long) t + 1;
+
+            for (int i = 0; i < nums.length; i++) {
+                long bucket = getID(nums[i], w);
+
+                if (buckets.containsKey(bucket))
+                    return true;
+                if (buckets.containsKey(bucket - 1) && Math.abs(nums[i] - buckets.get(bucket - 1)) < w)
+                    return true;
+                if (buckets.containsKey(bucket + 1) && Math.abs(nums[i] - buckets.get(bucket + 1)) < w)
+                    return true;
+
+                buckets.put(bucket, (long) nums[i]);
+                if (i >= k)
+                    buckets.remove(getID(nums[i - k], w));
             }
             return false;
         }
