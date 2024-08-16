@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public class Day638 {
     // https://leetcode.com/problems/maximum-distance-in-arrays/description/?envType=daily-question&envId=2024-08-16
@@ -19,6 +20,26 @@ public class Day638 {
                 max_val = Math.max(max_val, arrays.get(i).get(n - 1));
             }
             return res;
+        }
+    }
+
+    // https://leetcode.com/problems/contains-duplicate-iii/description/
+    static class Solution2 {
+        public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+            TreeSet<Integer> set = new TreeSet<>();
+            for (int i = 0; i < nums.length; i++) {
+                Integer s = set.ceiling(nums[i]);
+                if (s != null && s <= nums[i] + t)
+                    return true;
+                Integer g = set.floor(nums[i]);
+                if (g != null && nums[i] <= g + t)
+                    return true;
+                set.add(nums[i]);
+                if (set.size() > k) {
+                    set.remove(nums[i - k]);
+                }
+            }
+            return false;
         }
     }
 }
