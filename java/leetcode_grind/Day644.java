@@ -9,4 +9,10 @@ public class Day644 {
             return num ^ bitmask;
         }
     }
+
+    static class Solution2 {
+        public int findComplement(int num) {
+            return (Integer.highestOneBit(num) << 1) - num - 1;
+        }
+    }
 }
