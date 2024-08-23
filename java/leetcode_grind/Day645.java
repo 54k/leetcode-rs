@@ -1,5 +1,8 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Day645 {
     // https://leetcode.com/problems/fraction-addition-and-subtraction/description/?envType=daily-question&envId=2024-08-23
     static class Solution1 {
@@ -51,6 +54,36 @@ public class Day645 {
             if (a == 0)
                 return b;
             return findGCD(b % a, a);
+        }
+    }
+
+    // https://leetcode.com/problems/generalized-abbreviation/description/?envType=weekly-question&envId=2024-08-22
+    static class Solution3 {
+        void storeAbbreviations(List<String> abbreviations, String word, StringBuilder currWord, int index,
+                int abbreviatedCount) {
+            if (index == word.length()) {
+                if (abbreviatedCount > 0) {
+                    currWord.append(abbreviatedCount);
+                }
+                abbreviations.add(currWord.toString());
+                return;
+            }
+
+            int currWordLength = currWord.length();
+            if (abbreviatedCount > 0) {
+                currWord.append(abbreviatedCount);
+            }
+
+            currWord.append(word.charAt(index));
+            storeAbbreviations(abbreviations, word, currWord, index + 1, 0);
+            currWord.setLength(currWordLength);
+            storeAbbreviations(abbreviations, word, currWord, index + 1, abbreviatedCount + 1);
+        }
+
+        public List<String> generateAbbreviations(String word) {
+            List<String> abbreviations = new ArrayList<>();
+            storeAbbreviations(abbreviations, word, new StringBuilder(), 0, 0);
+            return abbreviations;
         }
     }
 }
