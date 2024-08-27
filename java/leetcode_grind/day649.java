@@ -85,6 +85,48 @@ public class day649 {
     // }
     // }
 
+// static class Solution13 {
+//     public double maxProbability(int n, int[][] edges, double[] succProb, int start_node, int end_node) {
+//         Map<Integer, List<Pair<Integer, Double>>> graph = new HashMap<>();        
+//         for (int i = 0; i < edges.length; i++) {
+// int u = edges[i][0], v = edges[i][1];
+// double pathProb = succProb[i];
+// graph.computeIfAbsent(u, k -> new ArrayList<>()).add(new Pair<>(v,
+// pathProb));
+// graph.computeIfAbsent(v, k -> new ArrayList<>()).add(new Pair<>(u,
+// pathProb));
+// }
+
+// double[] maxProb = new double[n];
+// maxProb[start_node] = 1d;
+
+// PriorityQueue<Pair<Double, Integer>> pq = new PriorityQueue<>((a, b) ->
+// -Double.compare(a.getKey(), b.getKey()));
+// pq.add(new Pair<>(1.0, start_node));
+
+// while (!pq.isEmpty()) {
+// Pair<Double, Integer> cur = pq.poll();
+// double curProb = cur.getKey();
+// int curNode = cur.getValue();
+// if (curNode == end_node) {
+// return curProb;
+// }
+
+// for (Pair<Integer, Double> nxt : graph.getOrDefault(curNode, new
+// ArrayList<>())) {
+// int nxtNode = nxt.getKey();
+// double pathProb = nxt.getValue();
+
+// if (curProb * pathProb > maxProb[nxtNode]) {
+// maxProb[nxtNode] = curProb * pathProb;
+// pq.add(new Pair<>(maxProb[nxtNode], nxtNode));
+// }
+// }
+// }
+// return 0d;
+// }
+// }
+
     // https://leetcode.com/problems/cousins-in-binary-tree/description/
     static class Solution2 {
         int recordedDepth = -1;
