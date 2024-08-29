@@ -3,7 +3,7 @@ package leetcode_grind;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class day649 {
+public class Day649 {
 
     public static class TreeNode {
         int val;
