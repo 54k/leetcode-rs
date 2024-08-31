@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,4 +67,55 @@ public class Day653 {
         }
     }
 
+    // https://leetcode.com/problems/find-the-key-of-the-numbers/description/
+    static class Solution2 {
+        public int generateKey(int num1, int num2, int num3) {
+            int res = 0;
+            for (int i = 3; i >= 0; i--) {
+                int p = (int) Math.pow(10, i);
+                int k = Math.min(num1 / p % 10, Math.min(
+                        num2 / p % 10, num3 / p % 10));
+                res += k * p;
+            }
+            return res;
+        }
+    }
+
+    // https://leetcode.com/problems/hash-divided-string/description/
+    static class Solution3 {
+        public String stringHash(String s, int k) {
+            StringBuilder result = new StringBuilder();
+            int blocks = s.length() / k;
+            for (int b = 0; b < blocks; b++) {
+                String ss = s.substring(b * k, b * k + k);
+                // System.out.println(ss);
+                int h = 0;
+                for (int j = 0; j < ss.length(); j++) {
+                    h += (int) ss.charAt(j) - 'a';
+                }
+                result.append((char) (h % 26 + 'a'));
+            }
+            return result.toString();
+        }
+    }
+
+    // https://leetcode.com/problems/minimum-amount-of-damage-dealt-to-bob/description/
+    static class Solution4 {
+        public long minDamage(int power, int[] D, int[] H) {
+            Integer[] A = new Integer[D.length];
+            Arrays.setAll(A, i -> i);
+            Arrays.sort(A, (i, j) -> {
+                int v1 = (H[i] + power - 1) / power * D[j];
+                int v2 = (H[j] + power - 1) / power * D[i];
+                return v1 - v2;
+            });
+
+            long res = 0, t = 0;
+            for (int i : A) {
+                t += (H[i] + power - 1) / power;
+                res += D[i] * t;
+            }
+            return res;
+        }
+    }
 }
