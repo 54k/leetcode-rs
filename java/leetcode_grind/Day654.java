@@ -1,7 +1,6 @@
 package leetcode_grind;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Day654 {
     // https://leetcode.com/problems/combinations/description/
@@ -74,6 +73,80 @@ public class Day654 {
             };
             rec.apply(0);
             return res;
+        }
+    }
+
+    // https://leetcode.com/problems/add-two-polynomials-represented-as-linked-lists/description/?envType=weekly-question&envId=2024-09-01
+    static class PolyNode {
+        int coefficient, power;
+        PolyNode next = null;
+
+        PolyNode() {
+        }
+
+        PolyNode(int x, int y) {
+            this.coefficient = x;
+            this.power = y;
+        }
+
+        PolyNode(int x, int y, PolyNode next) {
+            this.coefficient = x;
+            this.power = y;
+            this.next = next;
+        }
+    }
+
+    static class Solution4 {
+        public PolyNode addPoly(PolyNode poly1, PolyNode poly2) {
+            if (poly1 == null)
+                return poly2;
+            if (poly2 == null)
+                return poly1;
+
+            if (poly1.power == poly2.power) {
+                if (poly1.coefficient + poly2.coefficient == 0) {
+                    return addPoly(poly1.next, poly2.next);
+                }
+                return new PolyNode(poly1.coefficient + poly2.coefficient, poly1.power,
+                        addPoly(poly1.next, poly2.next));
+            } else if (poly1.power > poly2.power) {
+                poly1.next = addPoly(poly1.next, poly2);
+                return poly1;
+            } else {
+                poly2.next = addPoly(poly1, poly2.next);
+                return poly2;
+            }
+        }
+    }
+
+    static class Solution5 {
+        public PolyNode addPoly(PolyNode poly1, PolyNode poly2) {
+            PolyNode sum = new PolyNode();
+            PolyNode current = sum;
+            Map<Integer, Integer> map = new TreeMap<>(Collections.reverseOrder());
+            processNode(map, poly1);
+            processNode(map, poly2);
+            for (int key : map.keySet()) {
+                current.next = new PolyNode(map.get(key), key);
+                current = current.next;
+            }
+            return sum.next;
+        }
+
+        void processNode(Map<Integer, Integer> map, PolyNode node) {
+            while (node != null) {
+                if (map.containsKey(node.power)) {
+                    int newCoefficient = node.coefficient + map.get(node.power);
+                    if (newCoefficient == 0) {
+                        map.remove(node.power);
+                    } else {
+                        map.put(node.power, newCoefficient);
+                    }
+                } else {
+                    map.put(node.power, node.coefficient);
+                }
+                node = node.next;
+            }
         }
     }
 }
