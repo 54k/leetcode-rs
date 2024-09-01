@@ -149,4 +149,41 @@ public class Day654 {
             }
         }
     }
+
+    static class Solution6 {
+        public PolyNode addPoly(PolyNode poly1, PolyNode poly2) {
+            var p1 = poly1;
+            var p2 = poly2;
+            var sum = new PolyNode();
+            var current = sum;
+
+            while (p1 != null && p2 != null) {
+                if (p1.power == p2.power) {
+                    if (p1.coefficient + p2.coefficient != 0) {
+                        current.next = new PolyNode(
+                                p1.coefficient + p2.coefficient,
+                                p1.power);
+                        current = current.next;
+                    }
+                    p1 = p1.next;
+                    p2 = p2.next;
+                } else if (p1.power > p2.power) {
+                    current.next = p1;
+                    p1 = p1.next;
+                    current = current.next;
+                } else {
+                    current.next = p2;
+                    p2 = p2.next;
+                    current = current.next;
+                }
+            }
+
+            if (p1 == null) {
+                current.next = p2;
+            } else {
+                current.next = p1;
+            }
+            return sum.next;
+        }
+    }
 }
