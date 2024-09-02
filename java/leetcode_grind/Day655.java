@@ -49,4 +49,54 @@ public class Day655 {
             return low;
         }
     }
+
+    // https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/
+    static class Solution3 {
+        public int strStr(String haystack, String needle) {
+            int m = needle.length();
+            int n = haystack.length();
+            if (n < m)
+                return -1;
+
+            int[] longest_border = new int[m];
+            int prev = 0;
+            int i = 1;
+
+            while (i < m) {
+                if (needle.charAt(i) == needle.charAt(prev)) {
+                    prev += 1;
+                    longest_border[i] = prev;
+                    i += 1;
+                } else {
+                    if (prev == 0) {
+                        longest_border[i] = 0;
+                        i += 1;
+                    } else {
+                        prev = longest_border[prev - 1];
+                    }
+                }
+            }
+
+            int haystackPointer = 0;
+            int needlePointer = 0;
+
+            while (haystackPointer < n) {
+                if (haystack.charAt(haystackPointer) == needle.charAt(needlePointer)) {
+                    needlePointer += 1;
+                    haystackPointer += 1;
+                    if (needlePointer == m) {
+                        return haystackPointer - m;
+                    }
+                } else {
+                    if (needlePointer == 0) {
+                        haystackPointer += 1;
+                    } else {
+                        needlePointer = longest_border[needlePointer - 1];
+                    }
+                }
+            }
+
+            return -1;
+        }
+    }
 }
