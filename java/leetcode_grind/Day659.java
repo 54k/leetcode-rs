@@ -200,4 +200,36 @@ public class Day659 {
             return false;
         }
     }
+
+    // https://leetcode.com/problems/dice-roll-simulation/description/
+    static class Solution7 {
+        int[][][] dp = new int[5001][7][16];
+        int mod = (int) 1e9 + 7;
+
+        public int dieSimulator(int n, int[] rollMax) {
+            return helper(n, rollMax, 0, 0);
+        }
+
+        int helper(int n, int[] a, int prev, int cons) {
+            if (n == 0) {
+                return 1;
+            }
+
+            int answer = 0;
+            if (dp[n][prev][cons] != 0) {
+                return dp[n][prev][cons];
+            }
+
+            for (int i = 0; i < 6; i++) {
+                if ((i + 1) == prev) {
+                    if (a[i] > cons) {
+                        answer = (answer + helper(n - 1, a, prev, cons + 1)) % mod;
+                    }
+                } else {
+                    answer = (answer + helper(n - 1, a, i + 1, 1)) % mod;
+                }
+            }
+            return dp[n][prev][cons] = answer;
+        }
+    }
 }
