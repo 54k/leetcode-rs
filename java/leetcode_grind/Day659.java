@@ -43,8 +43,32 @@ public class Day659 {
         }
     }
 
-    // https://leetcode.com/problems/subarrays-with-k-different-integers/description/
     static class Solution2 {
+        public ListNode modifiedList(int[] nums, ListNode head) {
+            Set<Integer> valuesToRemove = new HashSet<>();
+            for (int num : nums) {
+                valuesToRemove.add(num);
+            }
+            while (head != null && valuesToRemove.contains(head.val)) {
+                head = head.next;
+            }
+            if (head == null) {
+                return null;
+            }
+            ListNode current = head;
+            while (current.next != null) {
+                if (valuesToRemove.contains(current.next.val)) {
+                    current.next = current.next.next;
+                } else {
+                    current = current.next;
+                }
+            }
+            return head;
+        }
+    }
+
+    // https://leetcode.com/problems/subarrays-with-k-different-integers/description/
+    static class Solution3 {
         public int subarraysWithKDistinct(int[] nums, int k) {
             return slidingWindowAtMost(nums, k) - slidingWindowAtMost(nums, k - 1);
         }
@@ -70,7 +94,7 @@ public class Day659 {
         }
     }
 
-    static class Solution3 {
+    static class Solution4 {
         public int subarraysWithKDistinct(int[] nums, int k) {
             int[] distinctCount = new int[nums.length + 1];
 
@@ -103,7 +127,7 @@ public class Day659 {
     }
 
     // https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/description/
-    static class Solution4 {
+    static class Solution5 {
         public int lengthOfLongestSubstringKDistinct(String s, int k) {
             Map<Character, Integer> count = new HashMap<>();
 
@@ -128,7 +152,7 @@ public class Day659 {
         }
     }
 
-    static class Solution5 {
+    static class Solution6 {
         public int lengthOfLongestSubstringKDistinct(String s, int k) {
             int n = s.length();
             int maxSize = 0;
@@ -150,7 +174,7 @@ public class Day659 {
         }
     }
 
-    static class Solution6 {
+    static class Solution7 {
         public int lengthOfLongestSubstringKDistinct(String s, int k) {
             int n = s.length();
             if (k >= n) {
@@ -202,7 +226,7 @@ public class Day659 {
     }
 
     // https://leetcode.com/problems/dice-roll-simulation/description/
-    static class Solution7 {
+    static class Solution8 {
         int[][][] dp = new int[5001][7][16];
         int mod = (int) 1e9 + 7;
 
@@ -230,6 +254,24 @@ public class Day659 {
                 }
             }
             return dp[n][prev][cons] = answer;
+        }
+    }
+
+    static class Solution9 {
+        public int dieSimulator(int n, int[] rollMax) {
+            long p = 1_000_000_007;
+            long[][] dp = new long[n + 1][6];
+            long[] sum = new long[n + 1];
+            sum[0] = 1;
+            for (int i = 1; i <= n; ++i) {
+                for (int j = 0; j < 6; ++j) {
+                    for (int k = 1; k <= rollMax[j] && i - k >= 0; ++k) {
+                        dp[i][j] = (dp[i][j] + sum[i - k] - dp[i - k][j] + p) % p;
+                    }
+                    sum[i] = (sum[i] + dp[i][j]) % p;
+                }
+            }
+            return (int) sum[n];
         }
     }
 }
