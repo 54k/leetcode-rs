@@ -173,4 +173,30 @@ public class Day662 {
             }
         }
     }
+
+    // https://leetcode.com/problems/number-of-digit-one/description/?envType=problem-list-v2&envId=dynamic-programming
+    public class Solution4 {
+        public int countDigitOne(int n) {
+            int count = 0;
+            long factor = 1; // Используем long для предотвращения переполнения при умножении.
+
+            while (factor <= n) {
+                long lower = n - (n / factor) * factor; // Младшие разряды
+                long curr = (n / factor) % 10; // Текущий разряд
+                long higher = n / (factor * 10); // Старшие разряды
+
+                if (curr == 0) {
+                    count += higher * factor;
+                } else if (curr == 1) {
+                    count += higher * factor + lower + 1;
+                } else {
+                    count += (higher + 1) * factor;
+                }
+
+                factor *= 10;
+            }
+
+            return count;
+        }
+    }
 }
