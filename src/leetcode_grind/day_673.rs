@@ -46,3 +46,24 @@ pub fn delete_string(s: String) -> i32 {
     }
     dp[0]
 }
+
+// https://leetcode.com/problems/shortest-distance-to-a-character/description/
+pub fn shortest_to_char(s: String, c: char) -> Vec<i32> {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut ans = vec![0; s.len()];
+    let mut prev = i32::MIN / 2;
+    for i in 0..s.len() {
+        if s[i] == c {
+            prev = i as i32;
+        }
+        ans[i] = i as i32 - prev;
+    }
+    prev = i32::MAX / 2;
+    for i in (0..s.len()).rev() {
+        if s[i] == c {
+            prev = i as i32;
+        }
+        ans[i] = ans[i].min(prev - i as i32);
+    }
+    ans
+}
