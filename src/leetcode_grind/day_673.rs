@@ -25,3 +25,24 @@ pub fn shortest_palindrome(s: String) -> String {
     let suffix = s[palindrome_length..].chars().rev().collect::<String>();
     suffix + &s
 }
+
+// https://leetcode.com/problems/maximum-deletions-on-a-string/description/
+// https://leetcode.com/problems/maximum-deletions-on-a-string/solutions/2648900/java-c-python-dp-solution/
+pub fn delete_string(s: String) -> i32 {
+    let n = s.len();
+    let s = s.chars().collect::<Vec<_>>();
+    let mut lcs = vec![vec![0; n + 1]; n + 1];
+    let mut dp = vec![0; n];
+    for i in (0..n).rev() {
+        dp[i] = 1;
+        for j in i + 1..n {
+            if s[i] == s[j] {
+                lcs[i][j] = lcs[i + 1][j + 1] + 1;
+            }
+            if lcs[i][j] >= j - i {
+                dp[i] = dp[i].max(dp[j] + 1);
+            }
+        }
+    }
+    dp[0]
+}
