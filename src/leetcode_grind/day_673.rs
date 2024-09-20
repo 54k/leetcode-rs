@@ -67,3 +67,18 @@ pub fn shortest_to_char(s: String, c: char) -> Vec<i32> {
     }
     ans
 }
+
+// https://leetcode.com/problems/check-distances-between-same-letters/description/
+pub fn check_distances(s: String, distance: Vec<i32>) -> bool {
+    let s = s.chars().collect::<Vec<_>>();
+    let mut d = vec![-1; 26];
+    for i in 0..s.len() {
+        let dx = s[i] as usize - 'a' as usize;
+        if d[dx] == -1 {
+            d[dx] = i as i32;
+        } else if i - d[dx] as usize - 1 != distance[dx] as usize {
+            return false;
+        }
+    }
+    true
+}

@@ -190,4 +190,23 @@ public class Day673 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/check-distances-between-same-letters/description/
+    static class Solution10 {
+        public boolean checkDistances(String s, int[] distance) {
+            int[] d = new int[26];
+            Arrays.fill(d, -1);
+
+            for (int i = 0; i < s.length(); i++) {
+                int idx = s.charAt(i) - 'a';
+                if (d[idx] == -1) {
+                    d[idx] = i;
+                } else if (i - d[idx] - 1 != distance[idx]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
 }
