@@ -29,6 +29,7 @@ public class Day677 {
         }
     }
 
+    static class Solution2 {
         static class TrieNode {
             TrieNode[] children = new TrieNode[10];
         }
@@ -77,6 +78,91 @@ public class Day677 {
                 longestPrefix = Math.max(longestPrefix, len);
             }
             return longestPrefix;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-common-suffix-queries/description/
+    static class Solution3 {
+        static class Pair {
+            Integer key;
+            String value;
+
+            Pair(Integer k, String v) {
+                key = k;
+                value = v;
+            }
+
+            Integer getKey() {
+                return key;
+            }
+
+            String getValue() {
+                return value;
+            }
+
+            public String toString() {
+                return String.format("[%s, %s]", key, value);
+            }
+        }
+
+        static class TrieNode {
+            TrieNode[] children = new TrieNode[26];
+            int idx = -1;
+        }
+
+        TrieNode root;
+
+        void insert(Integer idx, String s) {
+            var cur = root;
+            for (char c : s.toCharArray()) {
+                if (cur.children[c - 'a'] == null) {
+                    cur.children[c - 'a'] = new TrieNode();
+                    cur.children[c - 'a'].idx = idx;
+                }
+                cur = cur.children[c - 'a'];
+            }
+        }
+
+        int longestPrefix(String s) {
+            var ans = -1;
+            var cur = root;
+            for (char c : s.toCharArray()) {
+                if (cur.children[c - 'a'] != null) {
+                    ans = cur.children[c - 'a'].idx;
+                    cur = cur.children[c - 'a'];
+                } else {
+                    break;
+                }
+            }
+            return ans;
+        }
+
+        public int[] stringIndices(String[] wordsContainer, String[] wordsQuery) {
+            var ans = new int[wordsQuery.length];
+            root = new TrieNode();
+            Pair[] vc = new Pair[wordsContainer.length];
+            for (int i = 0; i < wordsContainer.length; i++) {
+                var w = new StringBuilder(wordsContainer[i]).reverse().toString();
+                vc[i] = new Pair(i, w);
+            }
+            Arrays.sort(vc, (a, b) -> {
+                if (a.getValue().length() == b.getValue().length()) {
+                    return a.getKey().compareTo(b.getKey());
+                }
+                return Integer.compare(a.getValue().length(), b.getValue().length());
+            });
+            // System.out.println(Arrays.toString(vc));
+            for (var p : vc) {
+                insert(p.getKey(), p.getValue());
+            }
+            for (int i = 0; i < wordsQuery.length; i++) {
+                var w = new StringBuilder(wordsQuery[i]).reverse().toString();
+                ans[i] = longestPrefix(w);
+                if (ans[i] == -1) {
+                    ans[i] = vc[0].getKey();
+                }
+            }
+            return ans;
         }
     }
 }
