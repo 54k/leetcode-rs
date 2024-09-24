@@ -19,3 +19,33 @@ pub fn longest_common_prefix(arr1: Vec<i32>, arr2: Vec<i32>) -> i32 {
     }
     longest_prefix
 }
+
+// https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/description/
+pub fn find_longest_word(s: String, dictionary: Vec<String>) -> String {
+    fn is_subsequence(x: &Vec<char>, y: &Vec<char>) -> bool {
+        let mut j = 0;
+        let mut i = 0;
+        while i < y.len() && j < x.len() {
+            if y[i] == x[j] {
+                j += 1;
+            }
+            i += 1;
+        }
+        j == x.len()
+    }
+
+    let mut ans = vec![];
+    let s = s.chars().collect::<Vec<_>>();
+    let d = dictionary
+        .iter()
+        .map(|w| w.chars().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+    for w in d {
+        if is_subsequence(&w, &s) {
+            if w.len() > ans.len() || (w.len() == ans.len() && w < ans) {
+                ans = w;
+            }
+        }
+    }
+    ans.iter().collect()
+}
