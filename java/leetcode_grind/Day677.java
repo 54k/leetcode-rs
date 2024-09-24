@@ -165,4 +165,48 @@ public class Day677 {
             return ans;
         }
     }
+
+    static class Solution4 {
+        static class TrieNode {
+            TrieNode[] next = new TrieNode[26];
+            int idx = -1;
+            int val = -1;
+        }
+
+        public int[] stringIndices(String[] wordsContainer, String[] wordsQuery) {
+            TrieNode trie = new TrieNode();
+            for (int i = 0; i < wordsContainer.length; i++) {
+                String word = new StringBuilder(wordsContainer[i]).reverse().toString();
+                TrieNode node = trie;
+                if (node.val == -1 || word.length() < node.val) {
+                    node.idx = i;
+                    node.val = word.length();
+                }
+                for (var ch : word.toCharArray()) {
+                    if (node.next[ch - 'a'] == null) {
+                        node.next[ch - 'a'] = new TrieNode();
+                    }
+                    node = node.next[ch - 'a'];
+                    if (node.val == -1 || word.length() < node.val) {
+                        node.idx = i;
+                        node.val = word.length();
+                    }
+                }
+            }
+
+            int n = wordsQuery.length;
+            int[] ans = new int[n];
+            for (int i = 0; i < n; i++) {
+                String word = new StringBuilder(wordsQuery[i]).reverse().toString();
+                TrieNode node = trie;
+                for (char ch : word.toCharArray()) {
+                    if (node.next[ch - 'a'] == null)
+                        break;
+                    node = node.next[ch - 'a'];
+                }
+                ans[i] = node.idx;
+            }
+            return ans;
+        }
+    }
 }
