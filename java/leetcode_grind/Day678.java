@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.*;
+
 public class Day678 {
     // https://leetcode.com/problems/sum-of-prefix-scores-of-strings/description/?envType=daily-question&envId=2024-09-25
     static class Solution1 {
