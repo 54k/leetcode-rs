@@ -40,10 +40,34 @@ public class Day680 {
         }
     }
 
-    /**
-     * Your MyCalendarTwo object will be instantiated and called as such:
-     * MyCalendarTwo obj = new MyCalendarTwo();
-     * boolean param_1 = obj.book(start,end);
-     */
+    static class MyCalendarTwo2 {
+        TreeMap<Integer, Integer> bookingCount;
+        int maxOverlappedBooking;
 
+        public MyCalendarTwo2() {
+            bookingCount = new TreeMap<>();
+            maxOverlappedBooking = 2;
+        }
+
+        public boolean book(int start, int end) {
+            bookingCount.put(start, bookingCount.getOrDefault(start, 0) + 1);
+            bookingCount.put(end, bookingCount.getOrDefault(end, 0) - 1);
+
+            int overlappedBooking = 0;
+
+            for (Map.Entry<Integer, Integer> entry : bookingCount.entrySet()) {
+                overlappedBooking += entry.getValue();
+
+                if (overlappedBooking > maxOverlappedBooking) {
+                    bookingCount.put(start, bookingCount.get(start) - 1);
+                    bookingCount.put(end, bookingCount.get(end) + 1);
+                    if (bookingCount.get(start) == 0) {
+                        bookingCount.remove(start);
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }
