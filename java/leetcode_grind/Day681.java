@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -370,6 +371,102 @@ public class Day681 {
             for (int k = left; k < right; k++) {
                 indices[k] = temp.get(k - left);
             }
+        }
+    }
+
+    // https://leetcode.com/problems/count-pairs-in-two-arrays/description/
+    static class Solution5 {
+        public long countPairs(int[] nums1, int[] nums2) {
+            int N = nums1.length;
+            long[] difference = new long[N];
+            for (int i = 0; i < N; i++) {
+                difference[i] = nums1[i] - nums2[i];
+            }
+            Arrays.sort(difference);
+
+            long result = 0;
+            for (int i = 0; i < N; i++) {
+                if (difference[i] > 0) {
+                    result += N - i - 1;
+                } else {
+                    int left = i + 1;
+                    int right = N - 1;
+                    while (left <= right) {
+                        int mid = left + (right - left) / 2;
+                        if (difference[i] + difference[mid] > 0) {
+                            right = mid - 1;
+                        } else {
+                            left = mid + 1;
+                        }
+                    }
+                    result += N - left;
+                }
+            }
+            return result;
+        }
+    }
+
+    // https://leetcode.com/problems/find-the-lexicographically-smallest-valid-sequence/description/
+    static class Solution6 {
+        public int[] validSequence(String word1, String word2) {
+            int length1 = word1.length();
+            int length2 = word2.length();
+            int[] indices = new int[length1];
+            int j = length2 - 1;
+
+            for (int i = length1 - 1; i >= 0; i--) {
+                if (j >= 0 && word1.charAt(i) == word2.charAt(j)) {
+                    indices[i] = (i == length1 - 1) ? 1 : indices[i + 1] + 1;
+                    j--;
+                } else {
+                    indices[i] = (i == length1 - 1) ? 0 : indices[i + 1];
+                }
+            }
+
+            j = 0;
+            List<Integer> result = new ArrayList<>();
+            int finalIndex = -1;
+
+            for (int i = 0; i < length1; i++) {
+                if (word1.charAt(i) == word2.charAt(j)) {
+                    result.add(i);
+                    j++;
+                    if (j == length2) {
+                        break;
+                    }
+                } else {
+                    if ((i == length1 - 1 ? 0 : indices[i + 1]) >= length2 - j - 1) {
+                        result.add(i);
+                        j++;
+                        finalIndex = i + 1;
+                        break;
+                    }
+                }
+            }
+
+            if (result.size() == length2) {
+                return convertToArray(result);
+            }
+
+            if (finalIndex == -1) {
+                return new int[0];
+            }
+
+            for (int i = finalIndex; i < length1; i++) {
+                if (word1.charAt(i) == word2.charAt(j)) {
+                    result.add(i);
+                    j++;
+                }
+                if (j == length2) {
+                    break;
+                }
+            }
+
+            return result.size() == length2 ? convertToArray(result) : new int[0];
+        }
+
+        int[] convertToArray(List<Integer> list) {
+            return list.stream().mapToInt(Integer::intValue).toArray();
         }
     }
 }
