@@ -32,4 +32,35 @@ public class Day683 {
         }
     }
 
+    static class CustomStack2 {
+
+        List<Integer> stack;
+        int maxSize;
+
+        public CustomStack2(int maxSize) {
+            stack = new LinkedList<>();
+            this.maxSize = maxSize;
+        }
+
+        public void push(int x) {
+            if (stack.size() < maxSize) {
+                stack.addLast(x);
+            }
+        }
+
+        public int pop() {
+            if (stack.isEmpty())
+                return -1;
+            return stack.removeLast();
+        }
+
+        public void increment(int k, int val) {
+            ListIterator<Integer> iterator = stack.listIterator();
+            while (iterator.hasNext() && k > 0) {
+                int current = iterator.next();
+                iterator.set(current + val);
+                k--;
+            }
+        }
+    }
 }
