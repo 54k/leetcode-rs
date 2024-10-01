@@ -63,4 +63,43 @@ public class Day684 {
             return true;
         }
     }
+
+    // https://leetcode.com/problems/largest-unique-number/description/?envType=weekly-question&envId=2024-10-01
+    static class Solution3 {
+        public int largestUniqueNumber(int[] nums) {
+            int n = nums.length;
+            if (n == 1) {
+                return nums[0];
+            }
+            Arrays.sort(nums);
+            int currentIndex = n - 1;
+            while (currentIndex >= 0) {
+                if (currentIndex == 0 || nums[currentIndex] != nums[currentIndex - 1]) {
+                    return nums[currentIndex];
+                }
+                while (currentIndex > 0 && nums[currentIndex] == nums[currentIndex - 1]) {
+                    currentIndex--;
+                }
+                currentIndex--;
+            }
+            return -1;
+        }
+    }
+
+    static class Solution4 {
+        public int largestUniqueNumber(int[] nums) {
+            TreeMap<Integer, Integer> frequencyMap = new TreeMap<>();
+            for (int num : nums) {
+                frequencyMap.put(num, frequencyMap.getOrDefault(num, 0) + 1);
+            }
+            int largestUnique = -1;
+            for (Integer num : frequencyMap.descendingKeySet()) {
+                if (frequencyMap.get(num) == 1) {
+                    largestUnique = num;
+                    break;
+                }
+            }
+            return largestUnique;
+        }
+    }
 }
