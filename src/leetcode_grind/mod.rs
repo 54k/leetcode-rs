@@ -514,6 +514,7 @@ pub mod day_93;
 pub mod day_94;
 pub mod day_95;
 pub mod day_96;
+pub mod day_690;
 pub mod day_673;
 pub mod day_97;
 pub mod day_98;
