@@ -79,4 +79,59 @@ public class Day688 {
             }
         }
     }
+
+    // https://leetcode.com/problems/permutations/description/
+    static class Solution3 {
+        public List<List<Integer>> permute(int[] nums) {
+            List<List<Integer>> ans = new ArrayList<>();
+            backtrack(new ArrayList<>(), ans, nums);
+            return ans;
+        }
+
+        void backtrack(
+                List<Integer> curr,
+                List<List<Integer>> ans,
+                int[] nums) {
+            if (curr.size() == nums.length) {
+                ans.add(new ArrayList<>(curr));
+                return;
+            }
+
+            for (int num : nums) {
+                if (!curr.contains(num)) {
+                    curr.add(num);
+                    backtrack(curr, ans, nums);
+                    curr.remove(curr.size() - 1);
+                }
+            }
+        }
+    }
+
+    // https://leetcode.com/problems/permutations/description/
+    static class Solution4 {
+        public List<List<Integer>> permute(int[] nums) {
+            var ans = new ArrayList<List<Integer>>();
+            var perm = new Object() {
+                void apply(int start) {
+                    if (start == nums.length) {
+                        ans.add(Arrays.stream(nums).boxed().toList());
+                        return;
+                    }
+                    for (int i = start; i < nums.length; i++) {
+                        swap(start, i);
+                        apply(start + 1);
+                        swap(start, i);
+                    }
+                }
+
+                void swap(int i, int j) {
+                    int t = nums[i];
+                    nums[i] = nums[j];
+                    nums[j] = t;
+                }
+            };
+            perm.apply(0);
+            return ans;
+        }
+    }
 }
