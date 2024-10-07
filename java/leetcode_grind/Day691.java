@@ -17,5 +17,42 @@ public class Day691 {
         }
     }
 
-    
+    static class Solution2 {
+        public int minLength(String s) {
+            Stack<Character> stack = new Stack<>();
+            for (int i = 0; i < s.length(); i++) {
+                char currentChar = s.charAt(i);
+                if (stack.isEmpty()) {
+                    stack.push(currentChar);
+                    continue;
+                }
+                if (currentChar == 'B' && stack.peek() == 'A') {
+                    stack.pop();
+                } else if (currentChar == 'D' && stack.peek() == 'C') {
+                    stack.pop();
+                } else {
+                    stack.push(currentChar);
+                }
+            }
+            return stack.size();
+        }
+    }
+
+    static class Solution3 {
+        public int minLength(String s) {
+            int writePtr = 0;
+            char[] charArray = s.toCharArray();
+            for (int readPtr = 0; readPtr < s.length(); readPtr++) {
+                charArray[writePtr] = charArray[readPtr];
+
+                if (writePtr > 0 && (charArray[writePtr - 1] == 'A' || charArray[writePtr - 1] == 'C')
+                        && charArray[writePtr] == charArray[writePtr - 1] + 1) {
+                    writePtr--;
+                } else {
+                    writePtr++;
+                }
+            }
+            return writePtr;
+        }
+    }
 }
