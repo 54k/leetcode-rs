@@ -55,4 +55,28 @@ public class Day691 {
             return writePtr;
         }
     }
+
+    // https://leetcode.com/problems/find-duplicate-file-in-system/description/
+    static class Solution4 {
+        public List<List<String>> findDuplicate(String[] paths) {
+            var hash = new HashMap<String, List<String>>();
+            for (var path : paths) {
+                var split = path.split(" ");
+                var dir = split[0];
+                for (int i = 1; i < split.length; i++) {
+                    var file = split[i];
+                    var name = file.substring(0, file.indexOf("("));
+                    var content = file.substring(file.indexOf("(") + 1, file.indexOf(")"));
+                    hash.computeIfAbsent(content, ($) -> new ArrayList<>()).add(dir + "/" + name);
+                }
+            }
+            var res = new ArrayList<List<String>>();
+            for (var k : hash.keySet()) {
+                if (hash.get(k).size() > 1) {
+                    res.add(hash.get(k));
+                }
+            }
+            return res;
+        }
+    }
 }
