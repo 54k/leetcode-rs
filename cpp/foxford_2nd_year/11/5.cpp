@@ -38,10 +38,6 @@ int main()
             ans = max(ans, d[i]);
         }
     }
-    // for (auto & x : d) {
-    //     cout << x << " ";
-    // }
-    // cout << "\n";
     cout << ans << endl;
     return 0;
 }
