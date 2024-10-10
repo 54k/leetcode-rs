@@ -105,4 +105,37 @@ public class Day694 {
             return dp[b][w];
         }
     }
+
+    static class Solution5 {
+        public int minBuildTime(int[] blocks, int split) {
+            int N = blocks.length;
+            Arrays.sort(blocks);
+            for (int i = 0; i < N / 2; i++) {
+                int tmp = blocks[i];
+                blocks[i] = blocks[N - i - 1];
+                blocks[N - i - 1] = tmp;
+            }
+
+            int[][] dp = new int[N + 1][N + 1];
+            for (int b = 0; b < N; b++) {
+                dp[b][0] = Integer.MAX_VALUE;
+            }
+            for (int w = 0; w <= N; w++) {
+                dp[N][w] = 0;
+            }
+
+            for (int b = N - 1; b >= 0; b--) {
+                for (int w = N; w >= 1; w--) {
+                    if (w >= N - b) {
+                        dp[b][w] = blocks[b];
+                        continue;
+                    }
+                    int workHere = Math.max(blocks[b], dp[b + 1][w - 1]);
+                    int splitHere = split + dp[b][Math.min(2 * w, N - b)];
+                    dp[b][w] = Math.min(workHere, splitHere);
+                }
+            }
+            return dp[0][1];
+        }
+    }
 }
