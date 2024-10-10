@@ -61,3 +61,24 @@ pub fn max_width_ramp_iii(nums: Vec<i32>) -> i32 {
     }
     max_width as i32
 }
+
+// https://leetcode.com/problems/minimum-time-to-build-blocks/description/
+pub fn min_build_time(mut blocks: Vec<i32>, split: i32) -> i32 {
+    let n = blocks.len();
+    blocks.sort_by(|a, b| b.cmp(a));
+    let mut dp = vec![0; n + 1];
+    dp[0] = i32::MAX;
+    for b in (0..n).rev() {
+        for w in (1..n + 1).rev() {
+            if w >= n - b {
+                dp[w] = blocks[b];
+                continue;
+            }
+
+            let work_here = blocks[b].max(dp[w - 1]);
+            let split_here = split + dp[(2 * w).min(n - b)];
+            dp[w] = work_here.min(split_here);
+        }
+    }
+    dp[1]
+}
