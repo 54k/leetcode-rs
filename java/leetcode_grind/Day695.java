@@ -159,7 +159,6 @@ public class Day695 {
             for (int i = 0; i < times.length; i++) {
                 events.add(new int[] { times[i][0], i });
                 events.add(new int[] { times[i][1], ~i });
-                ;
             }
             Collections.sort(events, (a, b) -> a[0] - b[0]);
             PriorityQueue<Integer> availableChairs = new PriorityQueue<>();
