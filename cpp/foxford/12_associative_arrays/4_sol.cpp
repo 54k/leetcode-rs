@@ -13,8 +13,6 @@ int main()
     int n;
     cin >> n;
     vector<int> ans(n, -1);
-
-    vector<int> asn(n, -1);
     for (int i = 0; i < n; i++)
     {
         int cost;
