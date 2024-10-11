@@ -220,4 +220,53 @@ public class Day695 {
             return 0;
         }
     }
+
+    // https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/description/
+    static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    static class Solution8 {
+        public int maxLevelSum(TreeNode root) {
+            var q = new LinkedList<TreeNode>();
+            var ans = Long.MIN_VALUE;
+            var ansl = -1;
+            var lvl = 0;
+            q.add(root);
+            while (!q.isEmpty()) {
+                lvl++;
+                var sum = 0;
+                var n = q.size();
+                while (n-- > 0) {
+                    var r = q.removeFirst();
+                    sum += r.val;
+                    if (r.left != null)
+                        q.addLast(r.left);
+                    if (r.right != null)
+                        q.addLast(r.right);
+                }
+                // System.out.println(sum);
+                if (sum > ans) {
+                    ansl = lvl;
+                    ans = sum;
+                }
+            }
+            return ansl;
+        }
+    }
 }
