@@ -522,6 +522,7 @@ pub mod day_673;
 pub mod day_97;
 pub mod day_98;
 pub mod day_99;
+pub mod day_695;
 pub mod design_twitter_day16;
 pub mod insert_delete_get_random_day17;
 pub mod todo;
