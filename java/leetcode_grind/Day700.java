@@ -1,6 +1,6 @@
 package leetcode_grind;
 
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Day700 {
     // https://leetcode.com/problems/longest-happy-string/description/?envType=daily-question&envId=2024-10-16
