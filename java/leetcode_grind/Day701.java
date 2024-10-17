@@ -52,4 +52,54 @@ public class Day701 {
         }
     }
 
+    static class Solution3 {
+        public int maximumSwap(int num) {
+            String numStr = Integer.toString(num);
+            int n = numStr.length();
+            int[] lastSeen = new int[10];
+
+            for (int i = 0; i < n; i++) {
+                lastSeen[numStr.charAt(i) - '0'] = i;
+            }
+
+            for (int i = 0; i < n; i++) {
+                for (int d = 9; d > numStr.charAt(i) - '0'; --d) {
+                    if (lastSeen[d] > i) {
+                        char[] arr = numStr.toCharArray();
+                        char temp = arr[i];
+                        arr[i] = arr[lastSeen[d]];
+                        arr[lastSeen[d]] = temp;
+                        numStr = new String(arr);
+                        return Integer.parseInt(numStr);
+                    }
+                }
+            }
+            return num;
+        }
+    }
+
+    static class Solution4 {
+        public int maximumSwap(int num) {
+            char[] numStr = Integer.toString(num).toCharArray();
+            int n = numStr.length;
+            int maxDigitIndex = -1, swapIdx1 = -1, swapIdx2 = -1;
+
+            for (int i = n - 1; i >= 0; i--) {
+                if (maxDigitIndex == -1 || numStr[i] > numStr[maxDigitIndex]) {
+                    maxDigitIndex = i;
+                } else if (numStr[i] < numStr[maxDigitIndex]) {
+                    swapIdx1 = i;
+                    swapIdx2 = maxDigitIndex;
+                }
+            }
+
+            if (swapIdx1 != -1 && swapIdx2 != -1) {
+                char temp = numStr[swapIdx1];
+                numStr[swapIdx1] = numStr[swapIdx2];
+                numStr[swapIdx2] = temp;
+            }
+
+            return Integer.parseInt(new String(numStr));
+        }
+    }
 }
