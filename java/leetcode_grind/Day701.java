@@ -200,4 +200,220 @@ public class Day701 {
             return answer;
         }
     }
+
+    // https://leetcode.com/problems/reorganize-string/description/
+    static class Solution7 {
+        public String reorganizeString(String s) {
+            var pq = new PriorityQueue<int[]>((a, b) -> b[0] - a[0]);
+            var cnt = new int[26];
+            for (char c : s.toCharArray()) {
+                cnt[c - 'a']++;
+            }
+            for (var i = 0; i < 26; i++) {
+                if (cnt[i] > 0) {
+                    pq.add(new int[] { cnt[i], i });
+                }
+            }
+
+            var sb = new StringBuilder();
+            while (!pq.isEmpty()) {
+                var ok = false;
+                var lst = new ArrayList<int[]>();
+                do {
+                    if (pq.isEmpty()) {
+                        return "";
+                    }
+                    var top = pq.remove();
+                    if (sb.length() > 0 && (top[1] + 'a') == sb.charAt(sb.length() - 1)) {
+                        lst.add(top);
+                    } else {
+                        ok = true;
+                        sb.append((char) (top[1] + 'a'));
+                        top[0]--;
+                        if (top[0] > 0) {
+                            pq.add(top);
+                        }
+                        for (var c : lst) {
+                            pq.add(c);
+                        }
+                    }
+                } while (!ok);
+            }
+            return sb.toString();
+        }
+    }
+
+    static class Solution8 {
+        public String reorganizeString(String s) {
+            var charCounts = new int[26];
+            for (char c : s.toCharArray()) {
+                charCounts[c - 'a']++;
+            }
+
+            var pq = new PriorityQueue<int[]>((a, b) -> Integer.compare(b[1], a[1]));
+            for (int i = 0; i < 26; i++) {
+                if (charCounts[i] > 0) {
+                    pq.offer(new int[] { i + 'a', charCounts[i] });
+                }
+            }
+
+            var sb = new StringBuilder();
+            while (!pq.isEmpty()) {
+                var first = pq.poll();
+                if (sb.length() == 0 || first[0] != sb.charAt(sb.length() - 1)) {
+                    sb.append((char) first[0]);
+                    if (--first[1] > 0) {
+                        pq.offer(first);
+                    }
+                } else {
+                    if (pq.isEmpty()) {
+                        return "";
+                    }
+                    var second = pq.poll();
+                    sb.append((char) second[0]);
+                    if (--second[1] > 0) {
+                        pq.offer(second);
+                    }
+                    pq.offer(first);
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    static class Solution9 {
+        public String reorganizeString(String s) {
+            var charCounts = new int[26];
+            for (char c : s.toCharArray()) {
+                charCounts[c - 'a']++;
+            }
+
+            int maxCount = 0, letter = 0;
+            for (int i = 0; i < charCounts.length; i++) {
+                if (charCounts[i] > maxCount) {
+                    maxCount = charCounts[i];
+                    letter = i;
+                }
+            }
+
+            if (maxCount > (s.length() + 1) / 2) {
+                return "";
+            }
+            var ans = new char[s.length()];
+            int index = 0;
+
+            while (charCounts[letter] != 0) {
+                ans[index] = (char) (letter + 'a');
+                index += 2;
+                charCounts[letter]--;
+            }
+
+            for (int i = 0; i < charCounts.length; i++) {
+                while (charCounts[i] > 0) {
+                    if (index >= s.length()) {
+                        index = 1;
+                    }
+                    ans[index] = (char) (i + 'a');
+                    index += 2;
+                    charCounts[i]--;
+                }
+            }
+            return String.valueOf(ans);
+        }
+    }
+
+    // https://leetcode.com/problems/rearrange-string-k-distance-apart/description/
+    static class Solution10 {
+        public String rearrangeString(String s, int k) {
+            Map<Character, Integer> freq = new HashMap<>();
+            for (char c : s.toCharArray()) {
+                freq.put(c, freq.getOrDefault(c, 0) + 1);
+            }
+
+            var free = new PriorityQueue<int[]>((a, b) -> Integer.compare(b[0], a[0]));
+            for (char c : freq.keySet()) {
+                free.offer(new int[] { freq.get(c), c });
+            }
+
+            var ans = new StringBuilder();
+            var busy = new LinkedList<int[]>();
+
+            while (ans.length() != s.length()) {
+                int index = ans.length();
+                if (!busy.isEmpty() && (index - busy.peek()[0]) >= k) {
+                    var q = busy.remove();
+                    free.offer(new int[] { freq.get((char) q[1]), q[1] });
+                }
+
+                if (free.isEmpty()) {
+                    return "";
+                }
+
+                var currChar = (char) free.peek()[1];
+                free.remove();
+                ans.append(currChar);
+
+                freq.put(currChar, freq.get(currChar) - 1);
+                if (freq.get(currChar) > 0) {
+                    busy.add(new int[] { index, currChar });
+                }
+            }
+            return ans.toString();
+        }
+    }
+
+    static class Solution11 {
+        public String rearrangeString(String s, int k) {
+            Map<Character, Integer> freqs = new HashMap<>();
+            int maxFreq = 0;
+            for (char c : s.toCharArray()) {
+                freqs.put(c, freqs.getOrDefault(c, 0) + 1);
+                maxFreq = Math.max(maxFreq, freqs.get(c));
+            }
+
+            Set<Character> mostChars = new HashSet<>();
+            Set<Character> secondChars = new HashSet<>();
+
+            for (char c : freqs.keySet()) {
+                if (freqs.get(c) == maxFreq) {
+                    mostChars.add(c);
+                } else if (freqs.get(c) == maxFreq - 1) {
+                    secondChars.add(c);
+                }
+            }
+
+            StringBuilder[] segments = new StringBuilder[maxFreq];
+            for (int i = 0; i < maxFreq; i++) {
+                segments[i] = new StringBuilder();
+                for (char c : mostChars) {
+                    segments[i].append(c);
+                }
+                if (i < maxFreq - 1) {
+                    for (char c : secondChars) {
+                        segments[i].append(c);
+                    }
+                }
+            }
+
+            int segmentId = 0;
+            for (char c : freqs.keySet()) {
+                if (mostChars.contains(c) || secondChars.contains(c)) {
+                    continue;
+                }
+
+                for (int freq = freqs.get(c); freq > 0; freq--) {
+                    segments[segmentId].append(c);
+                    segmentId = (segmentId + 1) % (maxFreq - 1);
+                }
+            }
+
+            for (int i = 0; i < maxFreq - 1; i++) {
+                if (segments[i].length() < k) {
+                    return "";
+                }
+            }
+
+            return String.join("", segments);
+        }
+    }
 }
