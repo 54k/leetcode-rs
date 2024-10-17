@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.*;
+
 public class Day701 {
     // https://leetcode.com/problems/maximum-swap/description/?envType=daily-question&envId=2024-10-17
     static class Solution1 {
@@ -100,6 +102,71 @@ public class Day701 {
             }
 
             return Integer.parseInt(new String(numStr));
+        }
+    }
+
+    // https://leetcode.com/problems/largest-component-size-by-common-factor/description/
+    static class Solution5 {
+        static class DistjoinSetUnion {
+            int[] parent;
+            int[] size;
+
+            DistjoinSetUnion(int size) {
+                parent = new int[size + 1];
+                this.size = new int[size + 1];
+                for (int i = 0; i < size + 1; i++) {
+                    parent[i] = i;
+                    this.size[i] = 1;
+                }
+            }
+
+            int find(int x) {
+                if (parent[x] != x) {
+                    parent[x] = find(parent[x]);
+                }
+                return parent[x];
+            }
+
+            int union(int x, int y) {
+                int px = find(x);
+                int py = find(y);
+                if (px == py) {
+                    return px;
+                }
+
+                if (size[px] > size[py]) {
+                    int temp = px;
+                    px = py;
+                    py = temp;
+                }
+
+                parent[px] = py;
+                size[py] += size[px];
+                return py;
+            }
+        }
+
+        public int largestComponentSize(int[] A) {
+            int maxValue = Arrays.stream(A).reduce(A[0], (x, y) -> x > y ? x : y);
+            DistjoinSetUnion dsu = new DistjoinSetUnion(maxValue);
+            for (int num : A) {
+                for (int factor = 2; factor < (int) (Math.sqrt(num)) + 1; ++factor) {
+                    if (num % factor == 0) {
+                        dsu.union(num, factor);
+                        dsu.union(num, num / factor);
+                    }
+                }
+            }
+
+            int maxGroupSize = 0;
+            Map<Integer, Integer> groupCount = new HashMap<>();
+            for (int num : A) {
+                Integer groupId = dsu.find(num);
+                Integer count = groupCount.getOrDefault(groupId, 0);
+                groupCount.put(groupId, count + 1);
+                maxGroupSize = Math.max(maxGroupSize, count + 1);
+            }
+            return maxGroupSize;
         }
     }
 }
