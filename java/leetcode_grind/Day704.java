@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.*;
+
 public class Day704 {
     // https://leetcode.com/problems/parsing-a-boolean-expression/description/?envType=daily-question&envId=2024-10-20
     static class Solution1 {
@@ -25,6 +27,60 @@ public class Day704 {
             if (op == '|')
                 return values.contains("t") ? 't' : 'f';
             return 'f';
+        }
+    }
+
+    static class Solution2 {
+        int index = 0;
+
+        boolean parseBoolExpr(String expression) {
+            return evaluate(expression);
+        }
+
+        public boolean evaluate(String expr) {
+            char currChar = expr.charAt(index++);
+
+            if (currChar == 't')
+                return true;
+            if (currChar == 'f')
+                return false;
+
+            if (currChar == '!') {
+                index++;
+                boolean result = !evaluate(expr);
+                index++;
+                return result;
+            }
+
+            List<Boolean> values = new ArrayList<>();
+            index++;
+
+            while (expr.charAt(index) != ')') {
+                if (expr.charAt(index) != ',') {
+                    values.add(evaluate(expr));
+                } else {
+                    index++;
+                }
+            }
+            index++;
+
+            if (currChar == '&') {
+                for (Boolean v : values) {
+                    if (!v)
+                        return false;
+                }
+                return true;
+            }
+
+            if (currChar == '|') {
+                for (Boolean v : values) {
+                    if (v)
+                        return true;
+                }
+                return false;
+            }
+
+            return false; // should never be reached
         }
     }
 }
