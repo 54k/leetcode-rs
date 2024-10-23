@@ -138,4 +138,40 @@ public class Day706 {
         }
     }
 
+    // https://leetcode.com/problems/shortest-cycle-in-a-graph/description/
+    static class Solution4 {
+        public int findShortestCycle(int n, int[][] edges) {
+            var adj = new HashMap<Integer, List<Integer>>();
+            for (var e : edges) {
+                adj.computeIfAbsent(e[0], $ -> new ArrayList<>()).add(e[1]);
+                adj.computeIfAbsent(e[1], $ -> new ArrayList<>()).add(e[0]);
+            }
+            var minCycle = n + 1;
+
+            for (int i = 0; i < n; i++) {
+                var dist = new int[n];
+                Arrays.fill(dist, -1);
+                dist[i] = 0;
+
+                var q = new LinkedList<Integer>();
+                q.add(i);
+                while (q.size() > 0) {
+                    var u = q.remove();
+                    for (var v : adj.getOrDefault(u, new ArrayList<>())) {
+                        if (dist[v] == -1) {
+                            dist[v] = dist[u] + 1;
+                            q.add(v);
+                        } else if (dist[v] >= dist[u]) {
+                            minCycle = Math.min(minCycle, dist[v] + dist[u] + 1);
+                        }
+                    }
+                }
+            }
+
+            if (minCycle <= n) {
+                return minCycle;
+            }
+            return -1;
+        }
+    }
 }
