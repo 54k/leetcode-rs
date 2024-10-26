@@ -198,3 +198,79 @@ pub fn tree_queries_iii(root: Option<Rc<RefCell<TreeNode>>>, queries: Vec<i32>) 
     }
     results
 }
+
+pub fn tree_queries_iv(root: Option<Rc<RefCell<TreeNode>>>, queries: Vec<i32>) -> Vec<i32> {
+    use std::collections::HashMap;
+    type Node = Option<Rc<RefCell<TreeNode>>>;
+    let mut node_depths = HashMap::new();
+    let mut subtree_heights = HashMap::new();
+
+    let mut first_largest_height = HashMap::new();
+    let mut second_largest_height = HashMap::new();
+
+    fn dfs(
+        node: Node,
+        level: i32,
+        node_depths: &mut HashMap<i32, i32>,
+        subtree_heights: &mut HashMap<i32, i32>,
+        first_largest_height: &mut HashMap<i32, i32>,
+        second_largest_height: &mut HashMap<i32, i32>,
+    ) -> i32 {
+        if let Some(n) = node {
+            node_depths.insert(n.borrow().val, level);
+            let left_height = dfs(
+                n.borrow().left.clone(),
+                level + 1,
+                node_depths,
+                subtree_heights,
+                first_largest_height,
+                second_largest_height,
+            );
+            let right_height = dfs(
+                n.borrow().right.clone(),
+                level + 1,
+                node_depths,
+                subtree_heights,
+                first_largest_height,
+                second_largest_height,
+            );
+
+            let current_height = 1 + left_height.max(right_height);
+            subtree_heights.insert(n.borrow().val, current_height);
+
+            let mut curr_first_largest = first_largest_height.entry(level).or_insert(0);
+            if current_height > *curr_first_largest {
+                second_largest_height.insert(level, *curr_first_largest);
+                first_largest_height.insert(level, current_height);
+            } else if current_height > *second_largest_height.get(&level).unwrap_or(&0) {
+                second_largest_height.insert(level, current_height);
+            }
+            return current_height;
+        }
+        return 0;
+    }
+
+    dfs(
+        root.clone(),
+        0,
+        &mut node_depths,
+        &mut subtree_heights,
+        &mut first_largest_height,
+        &mut second_largest_height,
+    );
+
+    let mut results = vec![0; queries.len()];
+
+    for i in 0..queries.len() {
+        let query_node = queries[i];
+        let node_level = node_depths[&query_node];
+
+        if subtree_heights[&query_node] == first_largest_height[&node_level] {
+            results[i] = node_level + second_largest_height[&node_level] - 1;
+        } else {
+            results[i] = node_level + first_largest_height[&node_level] - 1;
+        }
+    }
+
+    results
+}
