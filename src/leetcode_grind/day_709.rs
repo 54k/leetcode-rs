@@ -112,3 +112,89 @@ pub fn tree_queries_ii(root: Option<Rc<RefCell<TreeNode>>>, queries: Vec<i32>) -
     }
     qresult
 }
+
+pub fn tree_queries_iii(root: Option<Rc<RefCell<TreeNode>>>, queries: Vec<i32>) -> Vec<i32> {
+    use std::collections::HashMap;
+    type Node = Option<Rc<RefCell<TreeNode>>>;
+
+    fn dfs(
+        root: Node,
+        height: i32,
+        euler_tour: &mut Vec<i32>,
+        node_heights: &mut HashMap<i32, i32>,
+        first_occurence: &mut HashMap<i32, usize>,
+        last_occurence: &mut HashMap<i32, usize>,
+    ) {
+        if let Some(r) = root {
+            node_heights.insert(r.borrow().val, height);
+            first_occurence.insert(r.borrow().val, euler_tour.len());
+            euler_tour.push(r.borrow().val);
+
+            dfs(
+                r.borrow().left.clone(),
+                height + 1,
+                euler_tour,
+                node_heights,
+                first_occurence,
+                last_occurence,
+            );
+            dfs(
+                r.borrow().right.clone(),
+                height + 1,
+                euler_tour,
+                node_heights,
+                first_occurence,
+                last_occurence,
+            );
+
+            last_occurence.insert(r.borrow().val, euler_tour.len());
+            euler_tour.push(r.borrow().val);
+        }
+    }
+
+    let mut euler_tour = vec![];
+    let mut node_heights = HashMap::new();
+    let mut first_occurence = HashMap::new();
+    let mut last_occurence = HashMap::new();
+
+    dfs(
+        root.clone(),
+        0,
+        &mut euler_tour,
+        &mut node_heights,
+        &mut first_occurence,
+        &mut last_occurence,
+    );
+
+    let tour_size = euler_tour.len();
+    let mut max_depth_left = vec![0; tour_size];
+    let mut max_depth_right = vec![0; tour_size];
+
+    let r = root.clone().unwrap();
+    max_depth_left[0] = node_heights[&r.borrow().val];
+    max_depth_right[tour_size - 1] = node_heights[&r.borrow().val];
+
+    for i in 1..tour_size {
+        max_depth_left[i] = max_depth_left[i - 1].max(node_heights[&euler_tour[i]]);
+    }
+    for i in (0..tour_size - 1).rev() {
+        max_depth_right[i] = max_depth_right[i + 1].max(node_heights[&euler_tour[i]]);
+    }
+
+    let mut results = vec![0; queries.len()];
+    for i in 0..queries.len() {
+        let query_node = queries[i];
+        let left_max = if first_occurence[&query_node] > 0 {
+            max_depth_left[first_occurence[&query_node] - 1]
+        } else {
+            0
+        };
+        let right_max = if last_occurence[&query_node] < tour_size {
+            max_depth_right[last_occurence[&query_node] + 1]
+        } else {
+            0
+        };
+        results[i] = left_max.max(right_max);
+    }
+    results
+}
