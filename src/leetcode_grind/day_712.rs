@@ -59,3 +59,21 @@ pub fn max_moves_ii(grid: Vec<Vec<i32>>) -> i32 {
 
     max_moves
 }
+
+// https://leetcode.com/problems/paint-house-ii/description/?envType=weekly-question&envId=2024-10-29
+pub fn min_cost_ii(costs: Vec<Vec<i32>>) -> i32 {
+    let (n, m) = (costs.len(), costs[0].len());
+    let mut dp = vec![vec![1000_000_000; m]; n + 1];
+    dp[0] = vec![0; m];
+    for i in 1..=n {
+        for j in 0..m {
+            for k in 0..m {
+                if j == k {
+                    continue;
+                }
+                dp[i][j] = dp[i][j].min(costs[i - 1][j] + dp[i - 1][k])
+            }
+        }
+    }
+    dp[n].iter().copied().min().unwrap()
+}
