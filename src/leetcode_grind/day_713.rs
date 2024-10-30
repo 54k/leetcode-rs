@@ -1,5 +1,5 @@
 // https://leetcode.com/problems/paint-house-ii/description/
-pub fn min_cost_ii_(costs: Vec<Vec<i32>>) -> i32 {
+pub fn min_cost_ii_i(costs: Vec<Vec<i32>>) -> i32 {
     if costs.len() == 0 {
         return 0;
     }
