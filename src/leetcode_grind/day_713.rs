@@ -1,5 +1,5 @@
 // https://leetcode.com/problems/paint-house-ii/description/
-pub fn min_cost_ii(costs: Vec<Vec<i32>>) -> i32 {
+pub fn min_cost_ii_(costs: Vec<Vec<i32>>) -> i32 {
     if costs.len() == 0 {
         return 0;
     }
@@ -25,6 +25,43 @@ pub fn min_cost_ii(costs: Vec<Vec<i32>>) -> i32 {
 
     let mut min = i32::MAX;
     for c in prev_row {
+        min = min.min(c);
+    }
+    min
+}
+
+pub fn min_cost_ii_ii(mut costs: Vec<Vec<i32>>) -> i32 {
+    if costs.len() == 0 {
+        return 0;
+    }
+    let k = costs[0].len();
+    let n = costs.len();
+
+    for house in 1..n {
+        let mut min_color = usize::MAX;
+        let mut second_min_color = usize::MAX;
+
+        for color in 0..k {
+            let cost = costs[house - 1][color];
+            if min_color == usize::MAX || cost < costs[house - 1][min_color] {
+                second_min_color = min_color;
+                min_color = color;
+            } else if second_min_color == usize::MAX || cost < costs[house - 1][second_min_color] {
+                second_min_color = color;
+            }
+        }
+
+        for color in 0..k {
+            if color == min_color {
+                costs[house][color] += costs[house - 1][second_min_color];
+            } else {
+                costs[house][color] += costs[house - 1][min_color];
+            }
+        }
+    }
+
+    let mut min = i32::MAX;
+    for &c in &costs[n - 1] {
         min = min.min(c);
     }
     min
