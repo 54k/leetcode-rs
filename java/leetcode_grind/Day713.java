@@ -95,4 +95,52 @@ public class Day713 {
             return minRemovals;
         }
     }
+
+    // https://leetcode.com/problems/paint-house-ii/description/
+    static class Solution3 {
+        int n;
+        int k;
+        int[][] costs;
+        Map<String, Integer> memo;
+
+        public int minCostII(int[][] costs) {
+            if (costs.length == 0)
+                return 0;
+            k = costs[0].length;
+            n = costs.length;
+            this.costs = costs;
+            this.memo = new HashMap<>();
+            int minCost = Integer.MAX_VALUE;
+            for (int color = 0; color < k; color++) {
+                minCost = Math.min(minCost, memoSolve(0, color));
+            }
+            return minCost;
+        }
+
+        int memoSolve(int houseNumber, int color) {
+            if (houseNumber == n - 1) {
+                return costs[houseNumber][color];
+            }
+
+            if (memo.containsKey(getKey(houseNumber, color))) {
+                return memo.get(getKey(houseNumber, color));
+            }
+
+            int minRemainingCost = Integer.MAX_VALUE;
+            for (int nextColor = 0; nextColor < k; nextColor++) {
+                if (color == nextColor) {
+                    continue;
+                }
+                int currentRemainingCost = memoSolve(houseNumber + 1, nextColor);
+                minRemainingCost = Math.min(currentRemainingCost, minRemainingCost);
+            }
+            int totalCost = costs[houseNumber][color] + minRemainingCost;
+            memo.put(getKey(houseNumber, color), totalCost);
+            return totalCost;
+        }
+
+        String getKey(int n, int color) {
+            return String.valueOf(n) + " " + String.valueOf(color);
+        }
+    }
 }
