@@ -77,3 +77,40 @@ pub fn min_cost_ii(costs: Vec<Vec<i32>>) -> i32 {
     }
     dp[n].iter().copied().min().unwrap()
 }
+
+// https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/description/
+pub fn smallest_range(nums: Vec<Vec<i32>>) -> Vec<i32> {
+    let k = nums.len();
+    let mut indices = vec![0; k];
+    let mut range = vec![0, i32::MAX];
+
+    while true {
+        let mut curr_min = i32::MAX;
+        let mut curr_max = i32::MIN;
+        let mut min_list_idx = 0;
+
+        for i in 0..k {
+            let mut curr_element = nums[i][indices[i]];
+
+            if curr_element < curr_min {
+                curr_min = curr_element;
+                min_list_idx = i;
+            }
+
+            if curr_element > curr_max {
+                curr_max = curr_element;
+            }
+        }
+
+        if curr_max - curr_min < range[1] - range[0] {
+            range[0] = curr_min;
+            range[1] = curr_max;
+        }
+
+        indices[min_list_idx] += 1;
+        if indices[min_list_idx] == nums[min_list_idx].len() {
+            break;
+        }
+    }
+    range
+}
