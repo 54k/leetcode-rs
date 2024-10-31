@@ -9,18 +9,18 @@ public class Day714 {
             Collections.sort(robot);
             Arrays.sort(factory, Comparator.comparingInt(a -> a[0]));
 
-            List<Integer> factoryPoisitions = new ArrayList<>();
+            List<Integer> factoryPositions = new ArrayList<>();
             for (int[] f : factory) {
                 for (int i = 0; i < f[1]; i++) {
-                    factoryPoisitions.add(f[0]);
+                    factoryPositions.add(f[0]);
                 }
             }
             int robotCount = robot.size();
-            int factoryCount = factoryPoisitions.size();
+            int factoryCount = factoryPositions.size();
             long[][] memo = new long[robotCount][factoryCount];
             for (long[] row : memo)
                 Arrays.fill(row, -1);
-            return calculateMinDistance(0, 0, robot, factoryPoisitions, memo);
+            return calculateMinDistance(0, 0, robot, factoryPositions, memo);
         }
 
         long calculateMinDistance(
