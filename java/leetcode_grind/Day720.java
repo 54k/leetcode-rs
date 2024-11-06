@@ -28,4 +28,65 @@ public class Day720 {
             return true;
         }
     }
+
+    static class Solution2 {
+        public boolean canSortArray(int[] nums) {
+            int numOfSetBits = Integer.bitCount(nums[0]);
+            int maxOfSegment = nums[0];
+            int minOfSegment = nums[0];
+
+            int maxOfPrevSegment = Integer.MIN_VALUE;
+
+            for (int i = 1; i < nums.length; i++) {
+                if (Integer.bitCount(nums[i]) == numOfSetBits) {
+                    maxOfSegment = Math.max(maxOfSegment, nums[i]);
+                    minOfSegment = Math.min(minOfSegment, nums[i]);
+                } else {
+                    if (minOfSegment < maxOfPrevSegment) {
+                        return false;
+                    }
+
+                    maxOfPrevSegment = maxOfSegment;
+                    maxOfSegment = nums[i];
+                    minOfSegment = nums[i];
+                    numOfSetBits = Integer.bitCount(nums[i]);
+                }
+            }
+            return (minOfSegment < maxOfPrevSegment) ? false : true;
+        }
+    }
+
+    static class Solution3 {
+        public boolean canSortArray(int[] nums) {
+            int n = nums.length;
+            int[] values = Arrays.copyOf(nums, n);
+            for (int i = 0; i < n - 1; i++) {
+                if (values[i] <= values[i + 1]) {
+                    continue;
+                } else {
+                    if (Integer.bitCount(values[i]) == Integer.bitCount(values[i + 1])) {
+                        int temp = values[i];
+                        values[i] = values[i + 1];
+                        values[i + 1] = temp;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            for (int i = n - 1; i >= 1; i--) {
+                if (values[i] >= values[i - 1]) {
+                    continue;
+                } else {
+                    if (Integer.bitCount(values[i]) == Integer.bitCount(values[i - 1])) {
+                        int temp = values[i];
+                        values[i] = values[i - 1];
+                        values[i - 1] = temp;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
 }
