@@ -1,6 +1,6 @@
 package leetcode_grind;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class Day720 {
     // https://leetcode.com/problems/find-if-array-can-be-sorted/description/?envType=daily-question&envId=2024-11-06
@@ -87,6 +87,51 @@ public class Day720 {
                 }
             }
             return true;
+        }
+    }
+
+    // https://leetcode.com/problems/prison-cells-after-n-days/description/
+    static class Solution4 {
+        int cellsToBitmap(int[] cells) {
+            int stateBitmap = 0;
+            for (int cell : cells) {
+                stateBitmap <<= 1;
+                stateBitmap = (stateBitmap | cell);
+            }
+            return stateBitmap;
+        }
+
+        int[] nextDay(int[] cells) {
+            int[] newCells = new int[cells.length];
+            newCells[0] = 0;
+            for (int i = 1; i < cells.length - 1; i++) {
+                newCells[i] = (cells[i - 1] == cells[i + 1]) ? 1 : 0;
+            }
+            newCells[cells.length - 1] = 0;
+            return newCells;
+        }
+
+        public int[] prisonAfterNDays(int[] cells, int N) {
+            Map<Integer, Integer> seen = new HashMap<>();
+            boolean isFastForwarded = false;
+
+            while (N > 0) {
+                if (!isFastForwarded) {
+                    int stateBitmap = this.cellsToBitmap(cells);
+                    if (seen.containsKey(stateBitmap)) {
+                        N %= seen.get(stateBitmap) - N;
+                        isFastForwarded = true;
+                    } else {
+                        seen.put(stateBitmap, N);
+                    }
+                }
+
+                if (N > 0) {
+                    N -= 1;
+                    cells = this.nextDay(cells);
+                }
+            }
+            return cells;
         }
     }
 }
