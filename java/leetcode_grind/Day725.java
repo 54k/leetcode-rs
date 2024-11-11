@@ -138,4 +138,64 @@ public class Day725 {
             }
         }
     }
+
+    // https://leetcode.com/problems/maximum-product-of-word-lengths/description/
+    static class Solution4 {
+        int bitNumber(char ch) {
+            return (int) ch - (int) 'a';
+        }
+
+        boolean noCommonLetters(String s1, String s2) {
+            int bitmask1 = 0, bitmask2 = 0;
+            for (char ch : s1.toCharArray()) {
+                bitmask1 |= 1 << bitNumber(ch);
+            }
+            for (char ch : s2.toCharArray()) {
+                bitmask2 |= 1 << bitNumber(ch);
+            }
+            return (bitmask1 & bitmask2) == 0;
+        }
+
+        public int maxProduct(String[] words) {
+            int n = words.length;
+            int maxProd = 0;
+            for (int i = 0; i < n; i++) {
+                for (int j = i + 1; j < n; j++) {
+                    if (noCommonLetters(words[i], words[j])) {
+                        maxProd = Math.max(maxProd, words[i].length() * words[j].length());
+                    }
+                }
+            }
+            return maxProd;
+        }
+    }
+
+    static class Solution5 {
+        int bitNumber(char ch) {
+            return (int) ch - (int) 'a';
+        }
+
+        public int maxProduct(String[] words) {
+            Map<Integer, Integer> hashmap = new HashMap<>();
+            int bitmask = 0;
+            for (String word : words) {
+                bitmask = 0;
+                for (char ch : word.toCharArray()) {
+                    bitmask |= 1 << bitNumber(ch);
+                }
+
+                hashmap.put(bitmask, Math.max(hashmap.getOrDefault(bitmask, 0), word.length()));
+            }
+
+            int maxProd = 0;
+            for (int x : hashmap.keySet()) {
+                for (int y : hashmap.keySet()) {
+                    if ((x & y) == 0) {
+                        maxProd = Math.max(maxProd, hashmap.get(x) * hashmap.get(y));
+                    }
+                }
+            }
+            return maxProd;
+        }
+    }
 }
