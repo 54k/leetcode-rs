@@ -2,6 +2,8 @@ package leetcode_grind;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Day730 {
     // https://leetcode.com/problems/find-the-power-of-k-size-subarrays-i/description/?envType=daily-question&envId=2024-11-16
@@ -61,6 +63,43 @@ public class Day730 {
         }
     }
 
-    
+    // https://leetcode.com/problems/number-of-unique-flavors-after-sharing-k-candies/description/?envType=weekly-question&envId=2024-11-15
+    static class Solution3 {
+        public int shareCandies(int[] candies, int k) {
+            int uniqueFlav = 0;
+            Map<Integer, Integer> flavFreq = new HashMap<>();
+            for (int c : candies) {
+                flavFreq.put(c, flavFreq.getOrDefault(c, 0) + 1);
+                if (flavFreq.get(c) == 1) {
+                    uniqueFlav++;
+                }
+            }
 
+            int usedInWindow = 0;
+            for (int i = 0; i < k; i++) {
+                flavFreq.put(candies[i], flavFreq.get(candies[i]) - 1);
+                if (flavFreq.get(candies[i]) == 0) {
+                    usedInWindow++;
+                }
+            }
+
+            int maxFlav = uniqueFlav - usedInWindow;
+
+            for (int i = k; i < candies.length; i++) {
+                flavFreq.put(candies[i - k], flavFreq.get(candies[i - k]) + 1);
+                if (flavFreq.get(candies[i - k]) == 1) {
+                    usedInWindow--;
+                }
+
+                flavFreq.put(candies[i], flavFreq.get(candies[i]) - 1);
+                if (flavFreq.get(candies[i]) == 0) {
+                    usedInWindow++;
+                }
+
+                maxFlav = Math.max(maxFlav, uniqueFlav - usedInWindow);
+            }
+
+            return maxFlav;
+        }
+    }
 }
