@@ -1,0 +1,1 @@
+print(len(set([x.lower() for x in input() if x.isalpha()])))
