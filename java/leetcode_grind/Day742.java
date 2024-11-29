@@ -2,8 +2,10 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class Day742 {
     // https://leetcode.com/problems/minimum-time-to-visit-a-cell-in-a-grid/description/?envType=daily-question&envId=2024-11-29
@@ -128,6 +130,73 @@ public class Day742 {
                 }
             }
 
+            return distances;
+        }
+    }
+
+    static class Solution3 {
+        public int[] distanceToCycle(int n, int[][] edges) {
+            boolean[] isInCycle = new boolean[n];
+            Arrays.fill(isInCycle, true);
+            boolean[] visited = new boolean[n];
+            int[] degree = new int[n];
+            int[] distances = new int[n];
+            List<List<Integer>> adjacencyList = new ArrayList<>();
+
+            for (int i = 0; i < n; i++) {
+                adjacencyList.add(new ArrayList<>());
+            }
+
+            for (int[] edge : edges) {
+                adjacencyList.get(edge[0]).add(edge[1]);
+                adjacencyList.get(edge[1]).add(edge[0]);
+                degree[edge[0]]++;
+                degree[edge[1]]++;
+            }
+
+            Queue<Integer> nodeQueue = new LinkedList<>();
+
+            for (int i = 0; i < n; i++) {
+                if (degree[i] == 1) {
+                    nodeQueue.add(i);
+                }
+            }
+
+            while (!nodeQueue.isEmpty()) {
+                int currentNode = nodeQueue.poll();
+                isInCycle[currentNode] = false;
+
+                for (int neighbor : adjacencyList.get(currentNode)) {
+                    degree[neighbor]--;
+                    if (degree[neighbor] == 1) {
+                        nodeQueue.add(neighbor);
+                    }
+                }
+            }
+
+            for (int currentNode = 0; currentNode < n; currentNode++) {
+                if (isInCycle[currentNode]) {
+                    nodeQueue.add(currentNode);
+                    visited[currentNode] = true;
+                }
+            }
+
+            int currentDistance = 0;
+            while (!nodeQueue.isEmpty()) {
+                int queueSize = nodeQueue.size();
+                for (int i = 0; i < queueSize; i++) {
+                    int currentNode = nodeQueue.poll();
+                    distances[currentNode] = currentDistance;
+
+                    for (int neighbor : adjacencyList.get(currentNode)) {
+                        if (visited[neighbor])
+                            continue;
+                        nodeQueue.add(neighbor);
+                        visited[neighbor] = true;
+                    }
+                }
+                currentDistance++;
+            }
             return distances;
         }
     }
