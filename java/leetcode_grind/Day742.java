@@ -1,5 +1,8 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class Day742 {
@@ -53,4 +56,79 @@ public class Day742 {
         }
     }
 
+    // https://leetcode.com/problems/distance-to-a-cycle-in-undirected-graph/description/?envType=weekly-question&envId=2024-11-29
+    static class Solution2 {
+        boolean detectCycleNodes(
+                int currentNode,
+                List<List<Integer>> adjacencyList,
+                boolean[] isInCycle,
+                boolean[] visited,
+                int[] parent) {
+            visited[currentNode] = true;
+            for (int neighbor : adjacencyList.get(currentNode)) {
+                if (!visited[neighbor]) {
+                    parent[neighbor] = currentNode;
+                    if (detectCycleNodes(neighbor, adjacencyList, isInCycle, visited, parent)) {
+                        return true;
+                    }
+                } else if (parent[currentNode] != neighbor) {
+                    isInCycle[neighbor] = true;
+                    int tempNode = currentNode;
+                    while (tempNode != neighbor) {
+                        isInCycle[tempNode] = true;
+                        tempNode = parent[tempNode];
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void calculateDistances(
+                int currentNode,
+                int currentDistance,
+                List<List<Integer>> adjacencyList,
+                int[] distances,
+                boolean[] visited,
+                boolean[] isInCycle) {
+            distances[currentNode] = currentDistance;
+            visited[currentNode] = true;
+            for (int neighbor : adjacencyList.get(currentNode)) {
+                if (visited[neighbor])
+                    continue;
+                int newDistance = isInCycle[neighbor] ? 0 : currentDistance + 1;
+                calculateDistances(neighbor, newDistance, adjacencyList, distances, visited, isInCycle);
+            }
+        }
+
+        public int[] distanceToCycle(int n, int[][] edges) {
+            boolean[] isInCycle = new boolean[n];
+            boolean[] visited = new boolean[n];
+            int[] parent = new int[n];
+            int[] distances = new int[n];
+            List<List<Integer>> adjacencyList = new ArrayList<>();
+
+            for (int i = 0; i < n; i++) {
+                adjacencyList.add(new ArrayList<>());
+            }
+
+            for (int[] edge : edges) {
+                adjacencyList.get(edge[0]).add(edge[1]);
+                adjacencyList.get(edge[1]).add(edge[0]);
+            }
+
+            detectCycleNodes(0, adjacencyList, isInCycle, visited, parent);
+
+            Arrays.fill(visited, false);
+
+            for (int i = 0; i < n; i++) {
+                if (isInCycle[i]) {
+                    calculateDistances(i, 0, adjacencyList, distances, visited, isInCycle);
+                    break;
+                }
+            }
+
+            return distances;
+        }
+    }
 }
