@@ -2,7 +2,7 @@ package leetcode_grind;
 
 import java.util.HashMap;
 
-public class Day762 {
+public class Day752 {
     // https://leetcode.com/problems/find-longest-special-substring-that-occurs-thrice-i/description/
     static class Solution1 {
         public int maximumLength(String s) {

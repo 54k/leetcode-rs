@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
-public class Day764 {
+public class Day754 {
     // https://leetcode.com/problems/take-gifts-from-the-richest-pile/description/?envType=daily-question&envId=2024-12-12//
     static class Solution1 {
         public long pickGifts(int[] gifts, int k) {

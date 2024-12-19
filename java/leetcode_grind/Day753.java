@@ -2,7 +2,7 @@ package leetcode_grind;
 
 import java.util.*;
 
-public class Day763 {
+public class Day753 {
     // https://leetcode.com/problems/maximum-beauty-of-an-array-after-applying-operation/description/?envType=daily-question&envId=2024-12-11
     static class Solution1 {
         public int maximumBeauty(int[] nums, int k) {

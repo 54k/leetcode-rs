@@ -1,52 +1,32 @@
 package leetcode_grind;
 
+import java.util.PriorityQueue;
+
 public class Day758 {
-    // https://leetcode.com/problems/move-pieces-to-obtain-a-string/description/?envType=daily-question&envId=2024-12-05
+    // https://leetcode.com/problems/final-array-state-after-k-multiplication-operations-i/description/?envType=daily-question&envId=2024-12-16
     static class Solution1 {
-        public boolean canChange(String start, String target) {
-            String pat1 = "", pat2 = "";
+        public int[] getFinalState(int[] nums, int k, int multiplier) {
+            var heap = new PriorityQueue<int[]>(
+                    (a, b) -> {
+                        int valueComparison = Integer.compare(a[0], b[0]);
+                        if (valueComparison == 0) {
+                            return Integer.compare(a[1], b[1]);
+                        }
+                        return valueComparison;
+                    });
 
-            int n = start.length();
-            for (int i = 0; i < n; i++) {
-                var c1 = start.charAt(i);
-                if (c1 != '_') {
-                    pat1 += c1;
-                }
-
-                var c2 = target.charAt(i);
-                if (c2 != '_') {
-                    pat2 += c2;
-                }
+            for (int i = 0; i < nums.length; i++) {
+                heap.offer(new int[] { nums[i], i });
             }
 
-            if (!pat1.equals(pat2)) {
-                return false;
+            while (k-- > 0) {
+                int[] smallest = heap.poll();
+                int index = smallest[1];
+                nums[index] *= multiplier;
+                heap.offer(new int[] { nums[index], index });
             }
 
-            int i = 0, j = 0;
-            while (i < n && j < n) {
-                var c1 = start.charAt(i);
-                while (i < n - 1 && c1 == '_') {
-                    c1 = start.charAt(++i);
-                }
-                var c2 = target.charAt(j);
-                while (j < n - 1 && c2 == '_') {
-                    c2 = target.charAt(++j);
-                }
-
-                if (c1 != c2) {
-                    return false;
-                }
-                if (c1 == 'L' && i < j) {
-                    return false;
-                } else if (c1 == 'R' && i > j) {
-                    return false;
-                }
-                i++;
-                j++;
-            }
-            return true;
+            return nums;
         }
     }
-
 }

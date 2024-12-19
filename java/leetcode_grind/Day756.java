@@ -1,66 +1,128 @@
 package leetcode_grind;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.PriorityQueue;
+import java.util.TreeMap;
 
 public class Day756 {
-    // https://leetcode.com/problems/adding-spaces-to-a-string/description/
+    // https://leetcode.com/problems/continuous-subarrays/
     static class Solution1 {
-        public String addSpaces(String s, int[] spaces) {
-            var sb = new StringBuilder();
-            for (int i = 0, j = 0; i < s.length(); i++) {
-                if (j < spaces.length && i == spaces[j]) {
-                    sb.append(" ");
-                    j++;
+        public long continuousSubarrays(int[] nums) {
+            Deque<Integer> maxQ = new ArrayDeque<>();
+            Deque<Integer> minQ = new ArrayDeque<>();
+            int left = 0;
+            long count = 0;
+
+            for (int right = 0; right < nums.length; right++) {
+                while (!maxQ.isEmpty() && nums[maxQ.peekLast()] < nums[right]) {
+                    maxQ.pollLast();
                 }
-                sb.append(s.charAt(i));
+                maxQ.offerLast(right);
+
+                while (!minQ.isEmpty() && nums[minQ.peekLast()] > nums[right]) {
+                    minQ.pollLast();
+                }
+                minQ.offerLast(right);
+
+                while (!maxQ.isEmpty() && !minQ.isEmpty() && nums[maxQ.peekFirst()] - nums[minQ.peekFirst()] > 2) {
+                    if (maxQ.peekFirst() < minQ.peekFirst()) {
+                        left = maxQ.peekFirst() + 1;
+                        maxQ.pollFirst();
+                    } else {
+                        left = minQ.peekFirst() + 1;
+                        minQ.pollFirst();
+                    }
+                }
+
+                count += right - left + 1;
             }
-            return sb.toString();
+            return count;
         }
     }
 
-    // https://leetcode.com/problems/find-the-celebrity/
+    static class Solution2 {
+        public long continuousSubarrays(int[] nums) {
+            int left = 0, right = 0;
+            long count = 0;
 
-    // /*
-    // * The knows API is defined in the parent class Relation.
-    // * boolean knows(int a, int b);
-    // */
+            PriorityQueue<Integer> minHeap = new PriorityQueue<>(
+                    (a, b) -> nums[a] - nums[b]);
+            PriorityQueue<Integer> maxHeap = new PriorityQueue<>(
+                    (a, b) -> nums[b] - nums[a]);
 
-    // public class Solution extends Relation {
-    // int numberOfPeople;
-    // Map<Pair<Integer, Integer>, Boolean> cache = new HashMap<>();
+            while (right < nums.length) {
+                minHeap.add(right);
+                maxHeap.add(right);
 
-    // @Override
-    // public boolean knows(int a, int b) {
-    // if (!cache.containsKey(new Pair(a, b))) {
-    // cache.put(new Pair(a, b), super.knows(a, b));
-    // }
-    // return cache.get(new Pair(a, b));
-    // }
+                while (left < right && nums[maxHeap.peek()] - nums[minHeap.peek()] > 2) {
+                    left++;
 
-    // public int findCelebrity(int n) {
-    // numberOfPeople = n;
-    // int celebrityCandidate = 0;
-    // for (int i = 0; i < n; i++) {
-    // if (knows(celebrityCandidate, i)) {
-    // celebrityCandidate = i;
-    // }
-    // }
-    // if (isCelebrity(celebrityCandidate)) {
-    // return celebrityCandidate;
-    // }
-    // return -1;
-    // }
+                    while (!maxHeap.isEmpty() && maxHeap.peek() < left) {
+                        maxHeap.poll();
+                    }
+                    while (!minHeap.isEmpty() && minHeap.peek() < left) {
+                        minHeap.poll();
+                    }
+                }
 
-    // boolean isCelebrity(int i) {
-    // for (int j = 0; j < numberOfPeople; j++) {
-    // if (i == j)
-    // continue;
-    // if (knows(i, j) || !knows(j, i)) {
-    // return false;
-    // }
-    // }
-    // return true;
-    // }
-    // }
+                count += right - left + 1;
+                right++;
+            }
 
+            return count;
+        }
+    }
+
+    static class Solution3 {
+        public long continuousSubarrays(int[] nums) {
+            TreeMap<Integer, Integer> freq = new TreeMap<>();
+            int left = 0, right = 0;
+            int n = nums.length;
+            long count = 0;
+
+            while (right < n) {
+                freq.put(nums[right], freq.getOrDefault(nums[right], 0) + 1);
+
+                while (freq.lastEntry().getKey() - freq.firstEntry().getKey() > 2) {
+                    freq.put(nums[left], freq.get(nums[left]) - 1);
+                    if (freq.get(nums[left]) == 0) {
+                        freq.remove(nums[left]);
+                    }
+                    left++;
+                }
+
+                count += right - left + 1;
+                right++;
+            }
+
+            return count;
+        }
+    }
+
+    // https://leetcode.com/problems/pizza-with-3n-slices/
+    static class Solution4 {
+        public int maxSizeSlices(int[] slices) {
+            int m = slices.length, n = m / 3;
+            int[] slices1 = Arrays.copyOfRange(slices, 0, m - 1);
+            int[] slices2 = Arrays.copyOfRange(slices, 1, m);
+            return Math.max(maxSum(slices1, n), maxSum(slices2, n));
+        }
+
+        int maxSum(int[] arr, int n) {
+            int m = arr.length;
+            int[][] dp = new int[m + 1][n + 1];
+            for (int i = 1; i <= m; i++) {
+                for (int j = 1; j <= n; j++) {
+                    if (i == 1) {
+                        dp[i][j] = arr[0];
+                    } else {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 2][j - 1] + arr[i - 1]);
+                    }
+                }
+            }
+            return dp[m][n];
+        }
+    }
 }
