@@ -1,5 +1,11 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class Day761 {
@@ -75,6 +81,75 @@ public class Day761 {
                 }
             }
             return chunks;
+        }
+    }
+
+    // https://leetcode.com/problems/max-chunks-to-make-sorted-ii/description/
+    static class Solution5 {
+        public int maxChunksToSorted(int[] arr) {
+            Map<Integer, Integer> count = new HashMap<>();
+            int ans = 0, nonzero = 0;
+
+            int[] expect = arr.clone();
+            Arrays.sort(expect);
+
+            for (int i = 0; i < arr.length; i++) {
+                int x = arr[i], y = expect[i];
+
+                count.put(x, count.getOrDefault(x, 0) + 1);
+                if (count.get(x) == 0)
+                    nonzero--;
+                if (count.get(x) == 1)
+                    nonzero++;
+
+                count.put(y, count.getOrDefault(y, 0) - 1);
+                if (count.get(y) == -1)
+                    nonzero++;
+                if (count.get(y) == 0)
+                    nonzero--;
+
+                if (nonzero == 0)
+                    ans++;
+            }
+            return ans;
+        }
+    }
+
+    static class Solution6 {
+        public int maxChunksToSorted(int[] arr) {
+            Map<Integer, Integer> count = new HashMap<>();
+            List<Pair> counted = new ArrayList<>();
+            for (int x : arr) {
+                count.put(x, count.getOrDefault(x, 0) + 1);
+                counted.add(new Pair(x, count.get(x)));
+            }
+
+            List<Pair> expect = new ArrayList<>(counted);
+            Collections.sort(expect, (a, b) -> a.compare(b));
+
+            Pair cur = counted.get(0);
+            int ans = 0;
+            for (int i = 0; i < arr.length; i++) {
+                Pair X = counted.get(i), Y = expect.get(i);
+                if (X.compare(cur) > 0)
+                    cur = X;
+                if (cur.compare(Y) == 0)
+                    ans++;
+            }
+            return ans;
+        }
+
+        static class Pair {
+            int val, count;
+
+            Pair(int v, int c) {
+                val = v;
+                count = c;
+            }
+
+            int compare(Pair that) {
+                return this.val != that.val ? this.val - that.val : this.count - that.count;
+            }
         }
     }
 }
