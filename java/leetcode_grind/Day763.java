@@ -101,4 +101,115 @@ public class Day763 {
             return componentCount;
         }
     }
+
+    static class Solution3 {
+        public int maxKDivisibleComponents(int n, int[][] edges, int[] values, int k) {
+            if (n < 2)
+                return 1;
+            int componentCount = 0;
+            List<List<Integer>> graph = new ArrayList<>();
+            int[] inDegree = new int[n];
+
+            for (int i = 0; i < n; i++) {
+                graph.add(new ArrayList<>());
+            }
+            for (int[] edge : edges) {
+                int node1 = edge[0], node2 = edge[1];
+                graph.get(node1).add(node2);
+                graph.get(node2).add(node1);
+                inDegree[node1]++;
+                inDegree[node2]++;
+            }
+
+            long[] longValues = new long[n];
+            for (int i = 0; i < n; i++) {
+                longValues[i] = values[i];
+            }
+
+            Queue<Integer> queue = new LinkedList<>();
+            for (int node = 0; node < n; node++) {
+                if (inDegree[node] == 1) {
+                    queue.offer(node);
+                }
+            }
+
+            while (!queue.isEmpty()) {
+                int currentNode = queue.poll();
+                inDegree[currentNode]--;
+
+                long addValue = 0;
+
+                if (longValues[currentNode] % k == 0) {
+                    componentCount++;
+                } else {
+                    addValue = longValues[currentNode];
+                }
+
+                for (int neighborNode : graph.get(currentNode)) {
+                    if (inDegree[neighborNode] == 0) {
+                        continue;
+                    }
+                    inDegree[neighborNode]--;
+                    longValues[neighborNode] += addValue;
+                    if (inDegree[neighborNode] == 1) {
+                        queue.offer(neighborNode);
+                    }
+                }
+            }
+
+            return componentCount;
+        }
+    }
+
+    // https://leetcode.com/problems/web-crawler/description/
+    // /**
+    // * // This is the HtmlParser's API interface.
+    // * // You should not implement it, or speculate about its implementation
+    // * interface HtmlParser {
+    // * public List<String> getUrls(String url) {}
+    // * }
+    // */
+
+    // static class Solution4 {
+    // Set<String> vis = new HashSet<>();
+
+    // public List<String> crawl(String startUrl, HtmlParser htmlParser) {
+    // var res = new ArrayList<String>();
+    // if (!vis.add(startUrl)) {
+    // return res;
+    // }
+    // res.add(startUrl);
+    // for (var url : htmlParser.getUrls(startUrl)) {
+    // if
+    // (url.split("//")[1].split("/")[0].equals(startUrl.split("//")[1].split("/")[0]))
+    // {
+    // res.addAll(crawl(url, htmlParser));
+    // }
+    // }
+    // return res;
+    // }
+    // }
+
+    // static class Solution5 {
+    // String getHostanme(String url) {
+    // return url.split("/")[2];
+    // }
+
+    // public List<String> crawl(String startUrl, HtmlParser htmlParser) {
+    // String startHostname = getHostanme(startUrl);
+    // Queue<String> q = new LinkedList<String>(Arrays.asList(startUrl));
+    // HashSet<String> visited = new HashSet<String>(Arrays.asList(startUrl));
+    // while (!q.isEmpty()) {
+    // String url = q.remove();
+    // for (String nextUrl : htmlParser.getUrls(url)) {
+    // if (getHostanme(nextUrl).equals(startHostname) && !visited.contains(nextUrl))
+    // {
+    // q.add(nextUrl);
+    // visited.add(nextUrl);
+    // }
+    // }
+    // }
+    // return new ArrayList<>(visited);
+    // }
+    // }
 }
