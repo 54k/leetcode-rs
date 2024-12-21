@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 
 public class Day763 {
     // https://leetcode.com/problems/maximum-number-of-k-divisible-components/description/?envType=daily-question&envId=2024-12-21
@@ -295,6 +296,60 @@ public class Day763 {
             }
 
             return new Pair<TreeNode, Integer>(node, index < s.length() && s.charAt(index) == ')' ? index + 1 : index);
+        }
+    }
+
+    static class Solution7 {
+        public TreeNode str2tree(String s) {
+            if (s.isEmpty()) {
+                return null;
+            }
+
+            TreeNode root = new TreeNode();
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            stack.add(root);
+
+            for (int index = 0; index < s.length();) {
+                TreeNode node = stack.pop();
+
+                // NOT STARTED
+                if (Character.isDigit(s.charAt(index)) || s.charAt(index) == '-') {
+                    Pair<Integer, Integer> numberData = getNumber(s, index);
+
+                    int value = numberData.getKey();
+                    index = numberData.getValue();
+
+                    node.val = value;
+
+                    if (index < s.length() && s.charAt(index) == '(') {
+                        stack.add(node);
+                        node.left = new TreeNode();
+                        stack.add(node.left);
+                    }
+                } else if (s.charAt(index) == '(' && node.left != null) { // LEFT DONE
+                    stack.add(node);
+                    node.right = new TreeNode();
+                    stack.add(node.right);
+                }
+
+                ++index;
+            }
+            return stack.empty() ? root : stack.pop();
+        }
+
+        Pair<Integer, Integer> getNumber(String s, int index) {
+            boolean isNegative = false;
+            if (s.charAt(index) == '-') {
+                isNegative = true;
+                index++;
+            }
+
+            int number = 0;
+            while (index < s.length() && Character.isDigit(s.charAt(index))) {
+                number = number * 10 + (s.charAt(index) - '0');
+                index++;
+            }
+            return new Pair<Integer, Integer>(isNegative ? -number : number, index);
         }
     }
 }
