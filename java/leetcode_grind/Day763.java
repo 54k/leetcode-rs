@@ -212,4 +212,89 @@ public class Day763 {
     // return new ArrayList<>(visited);
     // }
     // }
+
+    static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    static class Pair<F, S> {
+        F key;
+        S value;
+
+        Pair(F key, S value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public F getKey() {
+            return key;
+        }
+
+        public S getValue() {
+            return value;
+        }
+    }
+
+    static class Solution6 {
+        public TreeNode str2tree(String s) {
+            return str2treeInternal(s, 0).getKey();
+        }
+
+        Pair<Integer, Integer> getNumber(String s, int index) {
+            boolean isNegative = false;
+            if (s.charAt(index) == '-') {
+                isNegative = true;
+                index++;
+            }
+
+            int number = 0;
+            while (index < s.length() && Character.isDigit(s.charAt(index))) {
+                number = number * 10 + (s.charAt(index) - '0');
+                index++;
+            }
+            return new Pair<Integer, Integer>(isNegative ? -number : number, index);
+        }
+
+        Pair<TreeNode, Integer> str2treeInternal(String s, int index) {
+            if (index == s.length()) {
+                return new Pair<TreeNode, Integer>(null, index);
+            }
+
+            Pair<Integer, Integer> numberData = getNumber(s, index);
+            int value = numberData.getKey();
+            index = numberData.getValue();
+
+            TreeNode node = new TreeNode(value);
+            Pair<TreeNode, Integer> data;
+
+            if (index < s.length() && s.charAt(index) == '(') {
+                data = this.str2treeInternal(s, index + 1);
+                node.left = data.getKey();
+                index = data.getValue();
+            }
+
+            if (node.left != null && index < s.length() && s.charAt(index) == '(') {
+                data = str2treeInternal(s, index + 1);
+                node.right = data.getKey();
+                index = data.getValue();
+            }
+
+            return new Pair<TreeNode, Integer>(node, index < s.length() && s.charAt(index) == ')' ? index + 1 : index);
+        }
+    }
 }
