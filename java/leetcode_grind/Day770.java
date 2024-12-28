@@ -76,4 +76,40 @@ public class Day770 {
         }
     }
 
+    static class Solution2 {
+        public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+            int n = nums.length;
+            int[] prefixSum = new int[n + 1];
+            for (int i = 1; i <= n; i++) {
+                prefixSum[i] = prefixSum[i - 1] + nums[i - 1];
+            }
+
+            int[][] bestSum = new int[4][n + 1];
+            int[][] bestIndex = new int[4][n + 1];
+
+            for (int subarrayCount = 1; subarrayCount <= 3; subarrayCount++) {
+                for (int endIndex = k * subarrayCount; endIndex <= n; endIndex++) {
+                    int currentSum = prefixSum[endIndex] - prefixSum[endIndex - k]
+                            + bestSum[subarrayCount - 1][endIndex - k];
+                    if (currentSum > bestSum[subarrayCount][endIndex - 1]) {
+                        bestSum[subarrayCount][endIndex] = currentSum;
+                        bestIndex[subarrayCount][endIndex] = endIndex - k;
+                    } else {
+                        bestSum[subarrayCount][endIndex] = bestSum[subarrayCount][endIndex - 1];
+                        bestIndex[subarrayCount][endIndex] = bestIndex[subarrayCount][endIndex - 1];
+                    }
+                }
+            }
+
+            int[] result = new int[3];
+            int currentEnd = n;
+            for (int subarrayIndex = 3; subarrayIndex >= 1; subarrayIndex--) {
+                result[subarrayIndex - 1] = bestIndex[subarrayIndex][currentEnd];
+                currentEnd = result[subarrayIndex - 1];
+            }
+            return result;
+
+        }
+    }
+
 }
