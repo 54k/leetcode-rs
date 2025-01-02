@@ -1,7 +1,9 @@
 package leetcode_grind;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class Day775 {
     // https://leetcode.com/problems/perform-string-shifts/description/?envType=weekly-question&envId=2025-01-01
@@ -64,4 +66,31 @@ public class Day775 {
             return s;
         }
     }
+
+    // https://leetcode.com/problems/encode-and-decode-tinyurl/description/
+    static public class Codec {
+        long id = 0l;
+        Map<String, String> urlToId = new HashMap<>();
+        Map<String, String> idToUrl = new HashMap<>();
+
+        // Encodes a URL to a shortened URL.
+        public String encode(String longUrl) {
+            if (urlToId.containsKey(longUrl)) {
+                return urlToId.get(longUrl);
+            }
+            var sid = String.format("%s", id++);
+            urlToId.put(longUrl, sid);
+            idToUrl.put(sid, longUrl);
+            return sid;
+        }
+
+        // Decodes a shortened URL to its original URL.
+        public String decode(String shortUrl) {
+            return idToUrl.get(shortUrl);
+        }
+    }
+
+    // Your Codec object will be instantiated and called as such:
+    // Codec codec = new Codec();
+    // codec.decode(codec.encode(url));
 }
