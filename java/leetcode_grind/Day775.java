@@ -68,18 +68,13 @@ public class Day775 {
     }
 
     // https://leetcode.com/problems/encode-and-decode-tinyurl/description/
-    static public class Codec {
+    public static class Codec {
         long id = 0l;
-        Map<String, String> urlToId = new HashMap<>();
         Map<String, String> idToUrl = new HashMap<>();
 
         // Encodes a URL to a shortened URL.
         public String encode(String longUrl) {
-            if (urlToId.containsKey(longUrl)) {
-                return urlToId.get(longUrl);
-            }
             var sid = String.format("%s", id++);
-            urlToId.put(longUrl, sid);
             idToUrl.put(sid, longUrl);
             return sid;
         }
