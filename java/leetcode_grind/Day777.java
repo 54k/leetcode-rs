@@ -98,4 +98,30 @@ public class Day777 {
             return false;
         }
     }
+
+    static class Solution4 {
+        public int waysToSplit(int[] nums) {
+            int n = nums.length;
+            int res = 0, mod = (int) Math.pow(10, 9) + 7;
+            int[] prefixSum = new int[n];
+            prefixSum[0] = nums[0];
+            for (int i = 1; i < n; i++) {
+                prefixSum[i] = prefixSum[i - 1] + nums[i];
+            }
+
+            for (int i = 0, j = 0, k = 0; i < n - 2; i++) {
+                while (j <= i || (j < n - 1 && prefixSum[j] - prefixSum[i] < prefixSum[i])) {
+                    j++;
+                }
+
+                while (k < j || (k < n - 1 && prefixSum[k] - prefixSum[i] <= prefixSum[n - 1] - prefixSum[k])) {
+                    k++;
+                }
+
+                k--;
+                res = (res + k - j + 1) % mod;
+            }
+            return res;
+        }
+    }
 }
