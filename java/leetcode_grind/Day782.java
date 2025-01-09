@@ -130,4 +130,75 @@ public class Day782 {
             return validSubstrings.size();
         }
     }
+
+    static class Solution5 {
+        public int equalDigitFrequency(String s) {
+            int n = s.length();
+            int prime = 31;
+            long mod = 1000000000L;
+            Set<Long> validSubstringHashes = new HashSet<>();
+
+            for (int start = 0; start < n; start++) {
+                int[] digitFrequency = new int[10];
+                int uniqueDigitCount = 0;
+                long substringHash = 0;
+                int maxDigitFrequency = 0;
+
+                for (int end = start; end < n; end++) {
+                    int currentDigit = s.charAt(end) - '0';
+
+                    if (digitFrequency[currentDigit] == 0) {
+                        uniqueDigitCount++;
+                    }
+
+                    digitFrequency[currentDigit]++;
+                    maxDigitFrequency = Math.max(maxDigitFrequency, digitFrequency[currentDigit]);
+
+                    substringHash = (prime * substringHash + currentDigit + 1) % mod;
+
+                    if (maxDigitFrequency * uniqueDigitCount == end - start + 1) {
+                        validSubstringHashes.add(substringHash);
+                    }
+                }
+            }
+            return validSubstringHashes.size();
+        }
+    }
+
+    static class Solution6 {
+        static class TrieNode {
+            TrieNode[] children = new TrieNode[10];
+            boolean isVisited;
+        }
+
+        public int equalDigitFrequency(String s) {
+            TrieNode root = new TrieNode();
+            int totalValidSubstrings = 0;
+
+            for (int start = 0; start < s.length(); start++) {
+                TrieNode currentNode = root;
+                int[] digitFrequency = new int[10];
+                int uniqueDigitsCount = 0;
+                int maxDigitFrequency = 0;
+
+                for (int end = start; end < s.length(); end++) {
+                    int currentDigit = s.charAt(end) - '0';
+                    if (digitFrequency[currentDigit]++ == 0) {
+                        uniqueDigitsCount++;
+                    }
+                    maxDigitFrequency = Math.max(maxDigitFrequency, digitFrequency[currentDigit]);
+                    if (currentNode.children[currentDigit] == null) {
+                        currentNode.children[currentDigit] = new TrieNode();
+                    }
+                    currentNode = currentNode.children[currentDigit];
+
+                    if (uniqueDigitsCount * maxDigitFrequency == end - start + 1 && !currentNode.isVisited) {
+                        totalValidSubstrings++;
+                        currentNode.isVisited = true;
+                    }
+                }
+            }
+            return totalValidSubstrings;
+        }
+    }
 }
