@@ -30,6 +30,7 @@ pub mod day_714;
 pub mod day_764;
 pub mod day_782;
 pub mod day_769;
+pub mod day_784;
 pub mod day_740;
 pub mod day_761;
 pub mod day_732;
