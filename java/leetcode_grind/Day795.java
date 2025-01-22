@@ -131,4 +131,111 @@ public class Day795 {
         }
     }
 
+    // https://leetcode.com/problems/sum-of-remoteness-of-all-cells/description/?envType=weekly-question&envId=2025-01-22
+    static class Solution3 {
+
+        int[][] dir = { { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } };
+
+        public long sumRemoteness(int[][] grid) {
+            int n = grid.length;
+            long totalSum = 0;
+            for (int row = 0; row < n; row++) {
+                for (int col = 0; col < n; col++) {
+                    if (grid[row][col] != -1) {
+                        totalSum += grid[row][col];
+                    }
+                }
+            }
+
+            long result = 0;
+
+            for (int row = 0; row < n; row++) {
+                for (int col = 0; col < n; col++) {
+                    if (grid[row][col] > 0) {
+                        long[] arr = new long[2];
+                        dfs(grid, row, col, arr);
+                        result += (totalSum - arr[0]) * arr[1];
+                    }
+                }
+            }
+            return result;
+        }
+
+        void dfs(int[][] grid, int row, int col, long[] arr) {
+            arr[0] += grid[row][col];
+            arr[1]++;
+            grid[row][col] = -1;
+
+            for (int[] d : dir) {
+                int newRow = row + d[0];
+                int newCol = col + d[1];
+                if (isValid(grid, newRow, newCol)) {
+                    dfs(grid, newRow, newCol, arr);
+                }
+            }
+        }
+
+        boolean isValid(int[][] grid, int row, int col) {
+            int n = grid.length;
+            return row >= 0 && col >= 0 && row < n && col < n && grid[row][col] > 0;
+        }
+    }
+
+    static class Solution4 {
+
+        int[][] dir = { { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } };
+
+        public long sumRemoteness(int[][] grid) {
+            int n = grid.length;
+            long totalSum = 0;
+            for (int row = 0; row < n; row++) {
+                for (int col = 0; col < n; col++) {
+                    if (grid[row][col] != -1) {
+                        totalSum += grid[row][col];
+                    }
+                }
+            }
+
+            long result = 0;
+
+            for (int row = 0; row < n; row++) {
+                for (int col = 0; col < n; col++) {
+                    if (grid[row][col] > 0) {
+                        result += bfs(grid, row, col, totalSum);
+                    }
+                }
+            }
+            return result;
+        }
+
+        long bfs(int[][] grid, int row, int col, long totalSum) {
+            long compSum = grid[row][col];
+            long compSize = 1;
+            grid[row][col] = -1;
+
+            Queue<int[]> queue = new LinkedList<>();
+            queue.add(new int[] { row, col });
+
+            while (!queue.isEmpty()) {
+                int[] curr = queue.poll();
+
+                for (int[] d : dir) {
+                    int newRow = d[0] + curr[0];
+                    int newCol = d[1] + curr[1];
+                    if (isValid(grid, newRow, newCol)) {
+                        queue.add(new int[] { newRow, newCol });
+                        compSum += grid[newRow][newCol];
+                        compSize++;
+                        grid[newRow][newCol] = -1;
+                    }
+                }
+            }
+            return (totalSum - compSum) * compSize;
+        }
+
+        boolean isValid(int[][] grid, int row, int col) {
+            int n = grid.length;
+            return row >= 0 && col >= 0 && row < n && col < n && grid[row][col] > 0;
+        }
+    }
 }
