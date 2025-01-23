@@ -117,4 +117,39 @@ public class Day796 {
             return validSubStrings.size();
         }
     }
+
+    static class Solution4 {
+        public int equalDigitFrequency(String s) {
+            int n = s.length();
+            int prime = 31;
+            long mod = 1000_000_000L;
+            Set<Long> validSubstringHashes = new HashSet<>();
+
+            for (int start = 0; start < n; start++) {
+                int[] digitFrequency = new int[10];
+
+                int uniqueDigitsCount = 0;
+                long substringHash = 0;
+                int maxDigitFrequency = 0;
+
+                for (int end = start; end < n; end++) {
+                    int currentDigit = s.charAt(end) - '0';
+
+                    if (digitFrequency[currentDigit] == 0) {
+                        uniqueDigitsCount++;
+                    }
+
+                    digitFrequency[currentDigit]++;
+                    maxDigitFrequency = Math.max(maxDigitFrequency, digitFrequency[currentDigit]);
+
+                    substringHash = (prime * substringHash + currentDigit + 1) % mod;
+
+                    if (maxDigitFrequency * uniqueDigitsCount == end - start + 1) {
+                        validSubstringHashes.add(substringHash);
+                    }
+                }
+            }
+            return validSubstringHashes.size();
+        }
+    }
 }
