@@ -29,3 +29,40 @@ pub fn count_servers(grid: Vec<Vec<i32>>) -> i32 {
     }
     communicable_servers_count
 }
+
+// https://leetcode.com/problems/minimum-number-of-flips-to-make-binary-grid-palindromic-i/description/
+pub fn min_flips(grid: Vec<Vec<i32>>) -> i32 {
+    let m = grid.len();
+    let n = grid[0].len();
+
+    let mut k = 0;
+    for i in 0..m {
+        let mut c = 0;
+        let mut l = 0 as i32;
+        let mut r = n as i32 - 1;
+
+        while l < r {
+            if grid[i][l as usize] != grid[i][r as usize] {
+                c += 1;
+            }
+            l += 1;
+            r -= 1;
+        }
+        k += c;
+    }
+
+    let mut c = 0;
+    for i in 0..n {
+        let mut l = 0i32;
+        let mut r = m as i32 - 1;
+        while l < r {
+            if grid[l as usize][i] != grid[r as usize][i] {
+                c += 1;
+            }
+            l += 1;
+            r -= 1;
+        }
+    }
+
+    k.min(c)
+}

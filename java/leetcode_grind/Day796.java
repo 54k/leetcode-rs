@@ -153,6 +153,45 @@ public class Day796 {
         }
     }
 
+    static class Solution5 {
+        static class TrieNode {
+            TrieNode[] children = new TrieNode[10];
+            boolean isVisited;
+        }
+
+        public int equalDigitFrequency(String s) {
+            TrieNode root = new TrieNode();
+            int totalValidSubstrings = 0;
+
+            for (int start = 0; start < s.length(); start++) {
+                TrieNode currentNode = root;
+                int[] digitFrequency = new int[10];
+                int uniqueDigitsCount = 0;
+                int maxDigitFrequency = 0;
+
+                for (int end = start; end < s.length(); end++) {
+                    int currentDigit = s.charAt(end) - '0';
+
+                    if (digitFrequency[currentDigit]++ == 0) {
+                        uniqueDigitsCount++;
+                    }
+                    maxDigitFrequency = Math.max(maxDigitFrequency, digitFrequency[currentDigit]);
+
+                    if (currentNode.children[currentDigit] == null) {
+                        currentNode.children[currentDigit] = new TrieNode();
+                    }
+                    currentNode = currentNode.children[currentDigit];
+
+                    if (uniqueDigitsCount * maxDigitFrequency == end - start + 1 && !currentNode.isVisited) {
+                        totalValidSubstrings++;
+                        currentNode.isVisited = true;
+                    }
+                }
+            }
+            return totalValidSubstrings;
+        }
+    }
+
     // https://leetcode.com/problems/number-of-equal-count-substrings/description/
     static class Solution6 {
         public int equalCountSubstrings(String s, int count) {
