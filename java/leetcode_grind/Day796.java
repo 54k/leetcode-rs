@@ -1,5 +1,8 @@
 package leetcode_grind;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Day796 {
     // https://leetcode.com/problems/count-servers-that-communicate/description/?envType=daily-question&envId=2025-01-23
     static class Solution1 {
@@ -73,6 +76,45 @@ public class Day796 {
             }
 
             return communicableServersCount;
+        }
+    }
+
+    // https://leetcode.com/problems/unique-substrings-with-equal-digit-frequency/description/
+    static class Solution3 {
+        public int equalDigitFrequency(String s) {
+            int n = s.length();
+            Set<String> validSubStrings = new HashSet<>();
+
+            for (int start = 0; start < n; start++) {
+                int[] digitFrequency = new int[10];
+
+                for (int end = start; end < n; end++) {
+                    digitFrequency[s.charAt(end) - '0']++;
+
+                    int commonFrequency = 0;
+                    boolean isValid = true;
+
+                    for (int i = 0; i < digitFrequency.length; i++) {
+                        if (digitFrequency[i] == 0)
+                            continue;
+
+                        if (commonFrequency == 0) {
+                            commonFrequency = digitFrequency[i];
+                        }
+                        if (commonFrequency != digitFrequency[i]) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    if (isValid) {
+                        String substring = s.substring(start, end + 1);
+                        validSubStrings.add(substring);
+                    }
+                }
+            }
+
+            return validSubStrings.size();
         }
     }
 }
