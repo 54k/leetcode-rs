@@ -1,5 +1,6 @@
 package leetcode_grind;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -206,6 +207,32 @@ public class Day796 {
                         --uniq;
                     if (uniq == k)
                         ++ans;
+                }
+            }
+            return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/number-of-good-ways-to-split-a-string/description/
+    static class Solution7 {
+        public int numSplits(String s) {
+            var ans = 0;
+            var n = s.length();
+            var left = new HashMap<Character, Integer>();
+            var right = new HashMap<Character, Integer>();
+            for (int i = 0; i < n; i++) {
+                var ch = s.charAt(i);
+                right.put(ch, right.getOrDefault(ch, 0) + 1);
+            }
+            for (int i = 0; i < n; i++) {
+                var ch = s.charAt(i);
+                left.put(ch, left.getOrDefault(ch, 0) + 1);
+                right.put(ch, right.getOrDefault(ch, 0) - 1);
+                if (right.get(ch) == 0) {
+                    right.remove(ch);
+                }
+                if (left.size() == right.size()) {
+                    ans++;
                 }
             }
             return ans;
