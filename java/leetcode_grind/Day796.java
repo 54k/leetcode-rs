@@ -152,4 +152,24 @@ public class Day796 {
             return validSubstringHashes.size();
         }
     }
+
+    // https://leetcode.com/problems/number-of-equal-count-substrings/description/
+    static class Solution6 {
+        public int equalCountSubstrings(String s, int count) {
+            int ans = 0;
+            for (int k = 1; k <= 26; k++) {
+                int[] freq = new int[26];
+                int uniq = 0;
+                for (int i = 0; i < s.length(); i++) {
+                    if (++freq[s.charAt(i) - 'a'] == count)
+                        ++uniq;
+                    if (i >= k * count && freq[s.charAt(i - k * count) - 'a']-- == count)
+                        --uniq;
+                    if (uniq == k)
+                        ++ans;
+                }
+            }
+            return ans;
+        }
+    }
 }
