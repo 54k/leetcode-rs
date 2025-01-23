@@ -1,7 +1,9 @@
 package leetcode_grind;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Day796 {
@@ -277,6 +279,82 @@ public class Day796 {
                 res += 2;
             }
             return res + diff;
+        }
+    }
+
+    // https://leetcode.com/problems/sentence-similarity/description/
+    static class Solution9 {
+        public boolean areSentencesSimilar(String[] sentence1, String[] sentence2, List<List<String>> similarPairs) {
+            if (sentence1.length != sentence2.length) {
+                return false;
+            }
+
+            var sim = new HashMap<String, Set<String>>();
+            for (int i = 0; i < similarPairs.size(); i++) {
+                var p = similarPairs.get(i);
+
+                sim.putIfAbsent(p.get(0), new HashSet<>());
+                sim.putIfAbsent(p.get(1), new HashSet<>());
+
+                sim.get(p.get(0)).add(p.get(1));
+                sim.get(p.get(1)).add(p.get(0));
+            }
+
+            for (int i = 0; i < sentence1.length; i++) {
+                if (!sentence1[i].equals(sentence2[i])) {
+                    if (sim.containsKey(sentence1[i]) && sim.get(sentence1[i]).contains(sentence2[i])) {
+                        continue;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    continue;
+                }
+            }
+            return true;
+        }
+    }
+
+    // https://leetcode.com/problems/coin-change/description/
+    static class Solution10 {
+        public int coinChange(int[] coins, int amount) {
+            if (amount < 1)
+                return 0;
+            return coinChange(coins, amount, new int[amount]);
+        }
+
+        int coinChange(int[] coins, int rem, int[] count) {
+            if (rem < 0)
+                return -1;
+            if (rem == 0)
+                return 0;
+            if (count[rem - 1] != 0)
+                return count[rem - 1];
+            int min = Integer.MAX_VALUE;
+            for (int coin : coins) {
+                int res = coinChange(coins, rem - coin, count);
+                if (res >= 0 && res < min) {
+                    min = 1 + res;
+                }
+            }
+            return count[rem - 1] = (min == Integer.MAX_VALUE) ? -1 : min;
+        }
+    }
+
+    static class Solution11 {
+        public int coinChange(int[] coins, int amount) {
+            int max = amount + 1;
+            int[] dp = new int[amount + 1];
+            Arrays.fill(dp, max);
+            dp[0] = 0;
+            for (int i = 1; i <= amount; i++) {
+                for (int j = 0; j < coins.length; j++) {
+                    if (coins[j] <= i) {
+                        dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                    }
+                }
+            }
+            return dp[amount] > amount ? -1 : dp[amount];
         }
     }
 }
