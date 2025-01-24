@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -87,6 +88,113 @@ public class Day797 {
                 }
             }
             return safeNodes;
+        }
+    }
+
+    // https://leetcode.com/problems/coin-change-ii/description/
+    static class Solution3 {
+        int[][] memo;
+        int[] coins;
+
+        int numberOfWays(int i, int amount) {
+            if (amount == 0) {
+                return 1;
+            }
+            if (i == coins.length) {
+                return 0;
+            }
+            if (memo[i][amount] != -1) {
+                return memo[i][amount];
+            }
+            if (coins[i] > amount) {
+                return memo[i][amount] = numberOfWays(i + 1, amount);
+            }
+            memo[i][amount] = numberOfWays(i, amount - coins[i]) + numberOfWays(i + 1, amount);
+            return memo[i][amount];
+        }
+
+        public int change(int amount, int[] coins) {
+            this.coins = coins;
+            memo = new int[coins.length][amount + 1];
+            for (int[] row : memo) {
+                Arrays.fill(row, -1);
+            }
+            return numberOfWays(0, amount);
+        }
+    }
+
+    static class Solution4 {
+        public int change(int amount, int[] coins) {
+            int n = coins.length;
+            long[][] dp = new long[n + 1][amount + 1];
+
+            for (int i = 0; i <= n; i++) {
+                dp[i][0] = 1;
+            }
+
+            for (int i = 1; i <= amount; i++) {
+                dp[n][i] = 0;
+            }
+
+            for (int i = n - 1; i >= 0; i--) {
+                for (int j = 1; j <= amount; j++) {
+                    if (coins[i] > j) {
+                        dp[i][j] = dp[i + 1][j];
+                    } else {
+                        dp[i][j] = dp[i + 1][j] + dp[i][j - coins[i]];
+                    }
+                }
+            }
+
+            return dp[0][amount] <= Integer.MAX_VALUE ? (int) dp[0][amount] : -1;
+        }
+    }
+
+    static class Solution5 {
+        public int change(int amount, int[] coins) {
+            int n = coins.length;
+            long[] dp = new long[amount + 1];
+            dp[0] = 1;
+
+            for (int i = n - 1; i >= 0; i--) {
+                for (int j = coins[i]; j <= amount; j++) {
+                    dp[j] += dp[j - coins[i]];
+                }
+            }
+            return dp[amount] <= Integer.MAX_VALUE ? (int) dp[amount] : -1;
+        }
+    }
+
+    // https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/description/
+    static class Solution6 {
+        public int longestSubstring(String s, int k) {
+            if (s == null || s.isEmpty() || k > s.length()) {
+                return 0;
+            }
+            int[] countMap = new int[26];
+            int n = s.length();
+            int result = 0;
+            for (int start = 0; start < n; start++) {
+                Arrays.fill(countMap, 0);
+                for (int end = start; end < n; end++) {
+                    countMap[s.charAt(end) - 'a']++;
+                    if (isValid(s, start, end, k, countMap)) {
+                        result = Math.max(result, end - start + 1);
+                    }
+                }
+            }
+            return result;
+        }
+
+        boolean isValid(String s, int start, int end, int k, int[] countMap) {
+            int countLetters = 0, countAtLeastK = 0;
+            for (int freq : countMap) {
+                if (freq > 0)
+                    countLetters++;
+                if (freq >= k)
+                    countAtLeastK++;
+            }
+            return countAtLeastK == countLetters;
         }
     }
 }
