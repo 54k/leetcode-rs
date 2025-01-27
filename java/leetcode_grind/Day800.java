@@ -2,10 +2,12 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 public class Day800 {
     // https://leetcode.com/problems/course-schedule-iv/description/?envType=daily-question&envId=2025-01-27
@@ -73,6 +75,46 @@ public class Day800 {
             List<Boolean> answer = new ArrayList<>();
             for (int[] query : queries) {
                 answer.add(isPrerequisite[query[0]][query[1]]);
+            }
+            return answer;
+        }
+    }
+
+    static class Solution3 {
+        public List<Boolean> checkIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries) {
+            Map<Integer, List<Integer>> adjList = new HashMap<>();
+            int[] indegree = new int[numCourses];
+
+            for (int[] edge : prerequisites) {
+                adjList.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(edge[1]);
+                indegree[edge[1]]++;
+            }
+
+            Queue<Integer> q = new LinkedList<>();
+            for (int i = 0; i < numCourses; i++) {
+                if (indegree[i] == 0) {
+                    q.offer(i);
+                }
+            }
+
+            Map<Integer, Set<Integer>> nodePrerequisites = new HashMap<>();
+            while (!q.isEmpty()) {
+                int node = q.poll();
+                for (int adj : adjList.getOrDefault(node, new ArrayList<>())) {
+                    nodePrerequisites.computeIfAbsent(adj, k -> new HashSet<>()).add(node);
+                    for (int prereq : nodePrerequisites.getOrDefault(node, new HashSet<>())) {
+                        nodePrerequisites.get(adj).add(prereq);
+                    }
+                    indegree[adj]--;
+                    if (indegree[adj] == 0) {
+                        q.offer(adj);
+                    }
+                }
+            }
+
+            List<Boolean> answer = new ArrayList<>();
+            for (int[] query : queries) {
+                answer.add(nodePrerequisites.getOrDefault(query[1], new HashSet<>()).contains(query[0]));
             }
             return answer;
         }
