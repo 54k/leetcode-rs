@@ -66,4 +66,21 @@ public class Day812 {
             return -1;
         }
     }
+
+    // https://leetcode.com/problems/make-the-prefix-sum-non-negative/description/?envType=weekly-question&envId=2025-02-08
+    static class Solution3 {
+        public int makePrefSumNonNegative(int[] nums) {
+            var pq = new PriorityQueue<Integer>();
+            long prefix = 0;
+            for (int i = 0; i < nums.length; i++) {
+                pq.add(nums[i]);
+                prefix += nums[i];
+                if (prefix < 0) {
+                    int rem = pq.remove();
+                    prefix -= rem;
+                }
+            }
+            return nums.length - pq.size();
+        }
+    }
 }
