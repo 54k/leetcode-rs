@@ -1,5 +1,9 @@
 package leetcode_grind;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 public class Day815 {
@@ -106,6 +110,29 @@ public class Day815 {
                 }
             }
             return lps;
+        }
+    }
+
+    // https://leetcode.com/problems/count-beautiful-substrings-ii/description/
+    static class Solution {
+        public long beautifulSubstrings(String s, int k) {
+            int n = s.length(), v = 0, l;
+            for (l = 1; l * l % (k * 4) > 0; l++)
+                ;
+            Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));
+            HashMap<Integer, Integer>[] seen = new HashMap[l];
+            for (int i = 0; i < l; i++) {
+                seen[i] = new HashMap<>();
+            }
+            seen[l - 1].put(0, 1);
+            long res = 0;
+            for (int i = 0; i < n; i++) {
+                v += vowels.contains(s.charAt(i)) ? 1 : -1;
+                int c = seen[i % l].getOrDefault(v, 0);
+                res += c;
+                seen[i % l].put(v, c + 1);
+            }
+            return res;
         }
     }
 }
