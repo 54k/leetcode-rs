@@ -75,10 +75,164 @@ public class Day820 {
         }
     }
 
-    /**
-     * Your MRUQueue object will be instantiated and called as such:
-     * MRUQueue obj = new MRUQueue(n);
-     * int param_1 = obj.fetch(k);
-     */
+    static class MRUQueue2 {
+        static class ListNode {
+            int val;
+            ListNode next;
+
+            ListNode() {
+            }
+
+            ListNode(int val) {
+                this.val = val;
+            }
+
+            ListNode(int val, ListNode next) {
+                this.val = val;
+                this.next = next;
+            }
+        }
+
+        ListNode head;
+        ListNode tail;
+
+        public MRUQueue2(int n) {
+            this.head = new ListNode(0, null);
+            ListNode current = head;
+            for (int number = 1; number <= n; ++number) {
+                current.next = new ListNode(number, null);
+                current = current.next;
+            }
+            tail = current;
+        }
+
+        public int fetch(int k) {
+            ListNode current = head;
+            for (int index = 1; index < k; index++) {
+                current = current.next;
+            }
+            int value = current.next.val;
+
+            tail.next = current.next;
+            tail = tail.next;
+            current.next = tail.next;
+            tail.next = null;
+            return value;
+        }
+    }
+
+    static class MRUQueue3 {
+        int totalElements;
+        int BUCKET_SIZE;
+        List<List<Integer>> data = new ArrayList<>();
+        List<Integer> index = new ArrayList<>();
+
+        public MRUQueue3(int n) {
+            totalElements = n;
+            BUCKET_SIZE = (int) Math.sqrt(n);
+            for (int number = 1; number <= n; number++) {
+                int bucketIndex = (number - 1) / BUCKET_SIZE;
+                if (bucketIndex == data.size()) {
+                    data.add(new ArrayList<>());
+                    index.add(number);
+                }
+                data.get(data.size() - 1).add(number);
+            }
+        }
+
+        public int fetch(int k) {
+            int bucketIndex = upperBound(index, k) - 1;
+            int element = data.get(bucketIndex).get(k - index.get(bucketIndex));
+            data.get(bucketIndex).remove(k - index.get(bucketIndex));
+
+            for (int i = bucketIndex + 1; i < index.size(); i++) {
+                index.set(i, index.get(i) - 1);
+            }
+
+            if (data.get(data.size() - 1).size() >= BUCKET_SIZE) {
+                data.add(new ArrayList<>());
+                index.add(totalElements);
+            }
+            data.get(data.size() - 1).add(element);
+
+            if (data.get(bucketIndex).isEmpty()) {
+                data.remove(bucketIndex);
+                index.remove(bucketIndex);
+            }
+            return element;
+        }
+
+        int upperBound(List<Integer> nums, int target) {
+            int left = 0, right = nums.size();
+            while (left < right) {
+                int mid = (left + right) / 2;
+                if (nums.get(mid) > target) {
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            return left;
+        }
+    }
+
+    static class MRUQueue4 {
+        static class FenwickTree {
+            int[] tree;
+
+            FenwickTree(int size) {
+                this.tree = new int[size + 1];
+            }
+
+            int sum(int index) {
+                int result = 0;
+                while (index > 0) {
+                    result += tree[index];
+                    index = index & (index - 1);
+                }
+                return result;
+            }
+
+            void insert(int index, int value) {
+                index += 1;
+                while (index < tree.length) {
+                    tree[index] += value;
+                    index += index & -index;
+                }
+            }
+        }
+
+        int size;
+        FenwickTree tree;
+        int[] values;
+
+        public MRUQueue4(int n) {
+            size = n;
+            tree = new FenwickTree(n + 2000);
+            values = new int[n + 2000];
+            for (int i = 0; i < n; i++) {
+                tree.insert(i, 1);
+                values[i] = i + 1;
+            }
+        }
+
+        public int fetch(int k) {
+            int low = 0, high = size;
+            while (low < high) {
+                int mid = (low + high) >> 1;
+                if (tree.sum(mid) < k) {
+                    low = mid + 1;
+                } else {
+                    high = mid;
+                }
+            }
+
+            tree.insert(low - 1, -1);
+            tree.insert(size, 1);
+            values[size] = values[low - 1];
+            size++;
+            return values[low - 1];
+        }
+    }
 
 }
