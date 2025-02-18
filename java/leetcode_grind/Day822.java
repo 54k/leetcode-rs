@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.Stack;
+
 public class Day822 {
     // https://leetcode.com/problems/construct-smallest-number-from-di-string/description/?envType=daily-question&envId=2025-02-18
     static class Solution1 {
@@ -109,6 +111,22 @@ public class Day822 {
             }
             result.append(currentCount + 1);
             return currentCount + 1;
+        }
+    }
+
+    static class Solution4 {
+        public String smallestNumber(String pattern) {
+            StringBuilder result = new StringBuilder();
+            Stack<Integer> numStack = new Stack<>();
+            for (int index = 0; index <= pattern.length(); index++) {
+                numStack.push(index + 1);
+                if (index == pattern.length() || pattern.charAt(index) == 'I') {
+                    while (!numStack.isEmpty()) {
+                        result.append(numStack.pop());
+                    }
+                }
+            }
+            return result.toString();
         }
     }
 }
