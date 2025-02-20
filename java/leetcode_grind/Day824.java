@@ -1,33 +1,35 @@
 package leetcode_grind;
 
-import java.util.Stack;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Day824 {
     // https://leetcode.com/problems/find-unique-binary-string/description/?envType=daily-question&envId=2025-02-20
     static class Solution1 {
-        public String getHappyString(int n, int k) {
-            Stack<String> stringsStack = new Stack<>();
-            int indexInSortedList = 0;
-            stringsStack.push("");
+        int n;
+        Set<String> numSet = new HashSet<>();
 
-            while (stringsStack.size() > 0) {
-                String currentString = stringsStack.pop();
-                if (currentString.length() == n) {
-                    indexInSortedList++;
-                    if (indexInSortedList == k) {
-                        return currentString;
-                    }
-                    continue;
+        String generate(String curr) {
+            if (curr.length() == n) {
+                if (!numSet.contains(curr)) {
+                    return curr;
                 }
-
-                for (char currentChar = 'c'; currentChar >= 'a'; currentChar--) {
-                    if (currentString.length() == 0
-                            || currentString.charAt(currentString.length() - 1) != currentChar) {
-                        stringsStack.push(currentString + currentChar);
-                    }
-                }
+                return "";
             }
-            return "";
+            String addZero = generate(curr + "0");
+            if (addZero.length() > 0) {
+                return addZero;
+            }
+            return generate(curr + "1");
+        }
+
+        public String findDifferentBinaryString(String[] nums) {
+            n = nums.length;
+            for (String s : nums) {
+                numSet.add(s);
+            }
+            return generate("");
         }
     }
+
 }
