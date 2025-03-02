@@ -22,6 +22,7 @@ public class Day834 {
         }
     }
 
+    // https://leetcode.com/problems/merge-two-2d-arrays-by-summing-values/description/?envType=daily-question&envId=2025-03-02
     static class Solution2 {
         public int[][] mergeArrays(int[][] nums1, int[][] nums2) {
             int N1 = nums1.length, N2 = nums2.length;
