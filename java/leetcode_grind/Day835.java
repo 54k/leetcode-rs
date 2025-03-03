@@ -1,6 +1,9 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Day835 {
     // https://leetcode.com/problems/partition-array-according-to-given-pivot/description/?envType=daily-question&envId=2025-03-03
@@ -88,4 +91,59 @@ public class Day835 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/flatten-2d-vector/description/
+    static class Vector2D_1 {
+        List<Integer> nums = new ArrayList<>();
+        int position = 0;
+
+        public Vector2D_1(int[][] vec) {
+            for (int[] innerVector : vec) {
+                for (int num : innerVector) {
+                    nums.add(num);
+                }
+            }
+        }
+
+        public int next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+            int result = nums.get(position);
+            position++;
+            return result;
+        }
+
+        public boolean hasNext() {
+            return position < nums.size();
+        }
+    }
+
+    static class Vector2D_2 {
+        int[][] vector;
+        int inner = 0;
+        int outer = 0;
+
+        public Vector2D_2(int[][] vec) {
+            vector = vec;
+        }
+
+        void advanceToNext() {
+            while (outer < vector.length && inner == vector[outer].length) {
+                inner = 0;
+                outer++;
+            }
+        }
+
+        public int next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+            return vector[outer][inner++];
+        }
+
+        public boolean hasNext() {
+            advanceToNext();
+            return outer < vector.length;
+        }
+    }
+
 }
