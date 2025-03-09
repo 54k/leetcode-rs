@@ -198,4 +198,83 @@ public class Day841 {
             return left;
         }
     }
+
+    // https://leetcode.com/problems/triples-with-bitwise-and-equal-to-zero/description/
+    static class Solution7 {
+        public int countTriplets(int[] A) {
+            int[] count = new int[1 << 16];
+            for (int a : A) {
+                for (int b : A) {
+                    count[a & b]++;
+                }
+            }
+            int res = 0;
+            for (int a : A) {
+                for (int i = 0; i < count.length; i++) {
+                    if ((a & i) == 0) {
+                        res += count[i];
+                    }
+                }
+            }
+            return res;
+        }
+    }
+
+    static class Solution8 {
+        static class Trie {
+            int count = 0;
+            Trie[] child = new Trie[2];
+
+            void add(int num) {
+                Trie node = this;
+                for (int i = 15; i >= 0; i--) {
+                    int b = (num >> i) & 1;
+                    if (node.child[b] == null)
+                        node.child[b] = new Trie();
+                    node = node.child[b];
+                }
+                node.count++;
+            }
+
+            int find(Trie node, int num, int i) {
+                return node == null ? 0
+                        : (i == -1 ? node.count
+                                : (find(node.child[0], num, i - 1) +
+                                        (((num >> i) & 1) == 0 ? find(node.child[1], num, i - 1) : 0)));
+            }
+
+            int countZeroAND(int num) {
+                return find(this, num, 15);
+            }
+        }
+
+        public int countTriplets(int[] A) {
+            Trie trie = new Trie();
+            for (int a : A) {
+                for (int b : A)
+                    trie.add(a & b);
+            }
+            int res = 0;
+            for (int a : A)
+                res += trie.countZeroAND(a);
+            return res;
+        }
+    }
+
+    static class Solution9 {
+        public int countTriplets(int[] A) {
+            int[] dp = new int[1 << 16];
+            for (int a : A) {
+                dp[a]++;
+            }
+            for (int i = 0; i < 2; i++) {
+                int[] next = new int[dp.length];
+                for (int a : A)
+                    for (int j = 0; j < dp.length; j++)
+                        next[a & j] += dp[j];
+                dp = next;
+            }
+            return dp[0];
+        }
+    }
 }
