@@ -85,4 +85,44 @@ public class Day848 {
             return (int) (num % 10); // Возвращаем последнюю оставшуюся цифру
         }
     }
+
+    // https://leetcode.com/problems/split-array-largest-sum/description/
+    static class Solution5 {
+        Integer[][] memo = new Integer[1001][51];
+
+        int getMinimumLargestSplitSum(int[] prefixSum, int currIndex, int subarrayCount) {
+            int n = prefixSum.length - 1;
+            if (memo[currIndex][subarrayCount] != null) {
+                return memo[currIndex][subarrayCount];
+            }
+
+            if (subarrayCount == 1) {
+                return memo[currIndex][subarrayCount] = prefixSum[n] - prefixSum[currIndex];
+            }
+
+            int minimalLargestSplitSum = Integer.MAX_VALUE;
+            for (int i = currIndex; i <= n - subarrayCount; i++) {
+                int firstSplitSum = prefixSum[i + 1] - prefixSum[currIndex];
+                int largestSplitSum = Math.max(firstSplitSum,
+                        getMinimumLargestSplitSum(prefixSum, i + 1, subarrayCount - 1));
+
+                minimalLargestSplitSum = Math.min(minimalLargestSplitSum, largestSplitSum);
+                if (firstSplitSum >= minimalLargestSplitSum) {
+                    break;
+                }
+            }
+
+            return memo[currIndex][subarrayCount] = minimalLargestSplitSum;
+        }
+
+        public int splitArray(int[] nums, int k) {
+            int n = nums.length;
+            int[] prefixSum = new int[n + 1];
+            for (int i = 0; i < n; i++) {
+                prefixSum[i + 1] = prefixSum[i] + nums[i];
+            }
+
+            return getMinimumLargestSplitSum(prefixSum, 0, k);
+        }
+    }
 }
