@@ -1,5 +1,8 @@
 package leetcode_grind;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Day850 {
     // https://leetcode.com/problems/longest-nice-subarray/description/?envType=daily-question&envId=2025-03-18
     static class Solution1 {
@@ -57,6 +60,23 @@ public class Day850 {
             }
 
             return maxLength;
+        }
+    }
+
+    // https://leetcode.com/problems/subarray-sum-equals-k/description/
+    static class Solution3 {
+        public int subarraySum(int[] nums, int k) {
+            int count = 0, sum = 0;
+            Map<Integer, Integer> sumCounter = new HashMap<>();
+            sumCounter.put(0, 1);
+            for (int i = 0; i < nums.length; i++) {
+                sum += nums[i];
+                if (sumCounter.containsKey(sum - k)) {
+                    count += sumCounter.get(sum - k);
+                }
+                sumCounter.put(sum, sumCounter.getOrDefault(sum, 0) + 1);
+            }
+            return count;
         }
     }
 }
