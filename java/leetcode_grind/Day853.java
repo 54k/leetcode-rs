@@ -65,4 +65,106 @@ public class Day853 {
         }
     }
 
+    static class Solution2 {
+        public List<String> findAllRecipes(String[] recipes, List<List<String>> ingredients, String[] supplies) {
+            Set<String> available = new HashSet<>();
+            for (String supply : supplies) {
+                available.add(supply);
+            }
+
+            Queue<Integer> recipeQueue = new LinkedList<>();
+            for (int idx = 0; idx < recipes.length; ++idx) {
+                recipeQueue.offer(idx);
+            }
+
+            List<String> createdRecipes = new ArrayList<>();
+            int lastSize = -1;
+
+            while (available.size() > lastSize) {
+                lastSize = available.size();
+                int queueSize = recipeQueue.size();
+
+                while (queueSize-- > 0) {
+                    int recipeIdx = recipeQueue.poll();
+                    boolean canCreate = true;
+
+                    for (String ingredient : ingredients.get(recipeIdx)) {
+                        if (!available.contains(ingredient)) {
+                            canCreate = false;
+                            break;
+                        }
+                    }
+
+                    if (!canCreate) {
+                        recipeQueue.offer(recipeIdx);
+                    } else {
+                        available.add(recipes[recipeIdx]);
+                        createdRecipes.add(recipes[recipeIdx]);
+                    }
+                }
+            }
+
+            return createdRecipes;
+        }
+    }
+
+    static class Solution3 {
+        public List<String> findAllRecipes(String[] recipes, List<List<String>> ingredients, String[] supplies) {
+            List<String> possibleRecipes = new ArrayList<>();
+            Map<String, Boolean> canMake = new HashMap<>();
+            Map<String, Integer> recipeToIndex = new HashMap<>();
+
+            for (String supply : supplies) {
+                canMake.put(supply, true);
+            }
+
+            for (int idx = 0; idx < recipes.length; idx++) {
+                recipeToIndex.put(recipes[idx], idx);
+            }
+
+            for (String recipe : recipes) {
+                checkRecipe(
+                        recipe,
+                        ingredients,
+                        new HashSet<String>(),
+                        canMake,
+                        recipeToIndex);
+                if (canMake.get(recipe)) {
+                    possibleRecipes.add(recipe);
+                }
+            }
+            return possibleRecipes;
+        }
+
+        void checkRecipe(
+                String recipe,
+                List<List<String>> ingredients,
+                Set<String> visited,
+                Map<String, Boolean> canMake,
+                Map<String, Integer> recipeToIndex) {
+            if (canMake.containsKey(recipe) && canMake.get(recipe)) {
+                return;
+            }
+
+            if (!recipeToIndex.containsKey(recipe) || visited.contains(recipe)) {
+                canMake.put(recipe, false);
+                return;
+            }
+
+            visited.add(recipe);
+
+            List<String> neededIngredients = ingredients.get(recipeToIndex.get(recipe));
+
+            for (String ingredient : neededIngredients) {
+                checkRecipe(ingredient, ingredients, visited, canMake, recipeToIndex);
+                if (!canMake.get(ingredient)) {
+                    canMake.put(recipe, false);
+                    return;
+                }
+            }
+
+            canMake.put(recipe, true);
+        }
+    }
+
 }
