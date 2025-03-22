@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
@@ -201,6 +202,134 @@ public class Day854 {
                     size[root2] += size[root1];
                 }
             }
+        }
+    }
+
+    // https://leetcode.com/problems/find-the-closest-marked-node/description/?envType=weekly-question&envId=2025-03-22
+    static class Solution5 {
+        public int minimumDistance(int n, List<List<Integer>> edges, int s, int[] marked) {
+            Set<Integer> markSet = new HashSet<>();
+            for (int node : marked) {
+                markSet.add(node);
+            }
+
+            List<List<int[]>> adj = new ArrayList<>();
+            for (int i = 0; i < n; i++)
+                adj.add(new ArrayList<>());
+            for (List<Integer> edge : edges) {
+                adj.get(edge.get(0)).add(new int[] { edge.get(1), edge.get(2) });
+            }
+
+            int[] dist = new int[n];
+            Arrays.fill(dist, Integer.MAX_VALUE);
+            dist[s] = 0;
+
+            PriorityQueue<int[]> minHeap = new PriorityQueue<>(
+                    (a, b) -> a[0] - b[0]);
+            minHeap.offer(new int[] { 0, s });
+
+            while (!minHeap.isEmpty()) {
+                int[] current = minHeap.poll();
+                int node = current[1];
+                int distance = current[0];
+
+                if (markSet.contains(node)) {
+                    return dist[node];
+                }
+
+                for (int[] edge : adj.get(node)) {
+                    int nextNode = edge[0];
+                    int weight = edge[1];
+                    int newDist = distance + weight;
+
+                    if (newDist < dist[nextNode]) {
+                        dist[nextNode] = newDist;
+                        minHeap.offer(new int[] { newDist, nextNode });
+                    }
+                }
+            }
+
+            return -1;
+        }
+    }
+
+    static class Solution6 {
+        public int minimumDistance(int n, List<List<Integer>> edges, int s, int[] marked) {
+            int[] dist = new int[n];
+            Arrays.fill(dist, Integer.MAX_VALUE);
+            dist[s] = 0;
+
+            for (int iter = 0; iter < n - 1; iter++) {
+                for (List<Integer> edge : edges) {
+                    int from = edge.get(0);
+                    int to = edge.get(1);
+                    int weight = edge.get(2);
+
+                    if (dist[from] != Integer.MAX_VALUE && dist[from] + weight < dist[to]) {
+                        dist[to] = dist[from] + weight;
+                    }
+                }
+            }
+
+            int minDist = Integer.MAX_VALUE;
+            for (int node : marked) {
+                if (dist[node] < minDist) {
+                    minDist = dist[node];
+                }
+            }
+
+            return minDist == Integer.MAX_VALUE ? -1 : minDist;
+        }
+    }
+
+    static class Solution7 {
+        public int minimumDistance(int n, List<List<Integer>> edges, int s, int[] marked) {
+            List<List<int[]>> graph = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                graph.add(new ArrayList<>());
+            }
+
+            for (List<Integer> edge : edges) {
+                int from = edge.get(0);
+                int to = edge.get(1);
+                int weight = edge.get(2);
+                graph.get(from).add(new int[] { to, weight });
+            }
+
+            int[] dist = new int[n];
+            Arrays.fill(dist, Integer.MAX_VALUE);
+            dist[s] = 0;
+
+            Queue<Integer> queue = new LinkedList<>();
+            queue.offer(s);
+
+            boolean[] inQueue = new boolean[n];
+            inQueue[s] = true;
+
+            while (!queue.isEmpty()) {
+                int current = queue.poll();
+                inQueue[current] = false;
+
+                for (int[] next : graph.get(current)) {
+                    int nextNode = next[0];
+                    int weight = next[1];
+
+                    if (dist[nextNode] > dist[current] + weight) {
+                        dist[nextNode] = dist[current] + weight;
+
+                        if (!inQueue[nextNode]) {
+                            queue.offer(nextNode);
+                            inQueue[nextNode] = true;
+                        }
+                    }
+                }
+            }
+
+            int minDist = Integer.MAX_VALUE;
+            for (int node : marked) {
+                minDist = Math.min(minDist, dist[node]);
+            }
+            return minDist == Integer.MAX_VALUE ? -1 : minDist;
         }
     }
 }
