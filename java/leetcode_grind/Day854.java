@@ -332,4 +332,58 @@ public class Day854 {
             return minDist == Integer.MAX_VALUE ? -1 : minDist;
         }
     }
+
+    // https://leetcode.com/problems/burst-balloons/description/
+    static class Solution8 {
+        public int maxCoins(int[] nums) {
+            int n = nums.length + 2;
+            int[] newNums = new int[n];
+            System.arraycopy(nums, 0, newNums, 1, n - 2);
+            newNums[0] = 1;
+            newNums[n - 1] = 1;
+            int[][] memo = new int[n][n];
+            return dp(memo, newNums, 1, n - 2);
+        }
+
+        int dp(int[][] memo, int[] nums, int left, int right) {
+            if (right - left < 0) {
+                return 0;
+            }
+            if (memo[left][right] > 0) {
+                return memo[left][right];
+            }
+
+            int result = 0;
+            for (int i = left; i <= right; i++) {
+                int gain = nums[left - 1] * nums[i] * nums[right + 1];
+                int remaining = dp(memo, nums, left, i - 1) + dp(memo, nums, i + 1, right);
+                result = Math.max(result, remaining + gain);
+            }
+            memo[left][right] = result;
+            return result;
+        }
+    }
+
+    static class Solution9 {
+        public int maxCoins(int[] nums) {
+            int n = nums.length + 2;
+            int[] newNums = new int[n];
+            System.arraycopy(nums, 0, newNums, 1, n - 2);
+            newNums[0] = 1;
+            newNums[n - 1] = 1;
+            int[][] dp = new int[n][n];
+
+            for (int left = n - 2; left >= 1; left--) {
+                for (int right = left; right <= n - 2; right++) {
+                    for (int i = left; i <= right; i++) {
+                        int gain = newNums[left - 1] * newNums[i] * newNums[right + 1];
+                        int remaining = dp[left][i - 1] + dp[i + 1][right];
+                        dp[left][right] = Math.max(remaining + gain, dp[left][right]);
+                    }
+                }
+            }
+
+            return dp[1][n - 2];
+        }
+    }
 }
