@@ -1,6 +1,6 @@
-import java.util.Arrays;
+package leetcode_grind;
 
-packagge leetcode_grind;
+import java.util.Arrays;
 
 public class Day863 {
     // https://leetcode.com/problems/put-marbles-in-bags/description/?envType=daily-question&envId=2025-03-31
