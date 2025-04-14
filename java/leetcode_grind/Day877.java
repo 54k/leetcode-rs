@@ -1,6 +1,8 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -122,6 +124,85 @@ public class Day877 {
                 }
             }
             return new String(result);
+        }
+    }
+
+    // https://leetcode.com/problems/brace-expansion/description/
+    static class Solution5 {
+        public String[] expand(String s) {
+            return findAllWords(s, 0);
+        }
+
+        String[] findAllWords(String s, int startPos) {
+            if (startPos == s.length()) {
+                return new String[] { "" };
+            }
+
+            List<Character> firstOptions = new ArrayList<>();
+            int remStringStartPos = storeFirstOptions(s, startPos, firstOptions);
+            String[] wordsWithRemString = findAllWords(s, remStringStartPos);
+
+            List<String> expandedWords = new ArrayList<>();
+            for (Character c : firstOptions) {
+                for (String word : wordsWithRemString) {
+                    expandedWords.add(c + word);
+                }
+            }
+
+            return expandedWords.toArray(new String[0]);
+        }
+
+        int storeFirstOptions(String s, int startPos, List<Character> firstOptions) {
+            if (s.charAt(startPos) != '{') {
+                firstOptions.add(s.charAt(startPos));
+            } else {
+                while (s.charAt(startPos) != '}') {
+                    if (s.charAt(startPos) >= 'a' && s.charAt(startPos) <= 'z') {
+                        firstOptions.add(s.charAt(startPos));
+                    }
+                    startPos++;
+                }
+                Collections.sort(firstOptions);
+            }
+            return startPos + 1;
+        }
+    }
+
+    static class Solution6 {
+        public String[] expand(String s) {
+            List<String> expandedWords = Arrays.asList("");
+            int startPos = 0;
+            while (startPos < s.length()) {
+                List<String> firstOptions = new ArrayList<>();
+                int remStringStartPos = storeFirstOptions(s, startPos, firstOptions);
+
+                List<String> currWords = new ArrayList<>();
+                for (String word : expandedWords) {
+                    for (String c : firstOptions) {
+                        currWords.add(word + c);
+                    }
+                }
+
+                expandedWords = currWords;
+                startPos = remStringStartPos;
+            }
+
+            return expandedWords.toArray(new String[0]);
+        }
+
+        int storeFirstOptions(String s, int startPos, List<String> firstOptions) {
+            if (s.charAt(startPos) != '{') {
+                firstOptions.add(String.valueOf(s.charAt(startPos)));
+            } else {
+                while (s.charAt(startPos) != '}') {
+                    if (s.charAt(startPos) >= 'a' && s.charAt(startPos) <= 'z') {
+                        firstOptions.add(String.valueOf(s.charAt(startPos)));
+                    }
+                    startPos++;
+                }
+                Collections.sort(firstOptions);
+            }
+            return startPos + 1;
         }
     }
 }
