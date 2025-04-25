@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class Day887 {
+    
     // https://leetcode.com/problems/count-complete-subarrays-in-an-array/description/?envType=daily-question&envId=2025-04-24
     static class Solution1 {
         public int countCompleteSubarrays(int[] nums) {
