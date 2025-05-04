@@ -14,4 +14,17 @@ public class Day897 {
             return ret;
         }
     }
+
+    // https://leetcode.com/problems/factorial-trailing-zeroes/description/
+    static class Solution2 {
+        public int trailingZeroes(int n) {
+            int zeroCount = 0;        
+            long currentMultiple = 5;
+            while (n >= currentMultiple) {
+                zeroCount += (n / currentMultiple);
+                currentMultiple *= 5;
+            }
+            return zeroCount;
+        }
+    }
 }
