@@ -144,4 +144,43 @@ public class Day898 {
             return maxlength;
         }
     }
+
+    static class Solution6 {
+        int MOD = 1_000_000_007;
+        long[][] SQ_MATRIX = {
+            {1, 1, 2},
+            {1, 0, 0},
+            {0, 1, 1},
+        };
+        int SIZE = 3;
+
+        long[][] matrixProduct(long[][] m1, long[][] m2) {
+            long[][] ans = new long[SIZE][SIZE];
+            for (int row = 0; row < SIZE; ++row) {
+                for (int col = 0; col < SIZE; ++col) {
+                    long curSum = 0;
+                    for (int k = 0; k < SIZE; ++k) {
+                        curSum = (curSum + m1[row][k] * m2[k][col]) % MOD;
+                    }
+                    ans[row][col] = curSum;
+                }
+            }
+            return ans;
+        }
+
+        int matrixExpo(int n) {
+            long[][] cur = SQ_MATRIX;
+            for (int i = 1; i < n; i++) {
+                cur = matrixProduct(cur, SQ_MATRIX);
+            }
+            return (int) ((cur[0][0] * 2 + cur[0][1] * 1 + cur[0][2] * 1) % MOD);
+        }
+
+        public int numTilings(int n) {
+            if (n <= 2) {
+                return n;
+            }
+            return matrixExpo(n - 2);
+        }
+    }
 }
