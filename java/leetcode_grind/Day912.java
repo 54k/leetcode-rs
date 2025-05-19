@@ -3,6 +3,7 @@ package leetcode_grind;
 import java.util.Arrays;
 
 public class Day912 {
+    // https://leetcode.com/problems/type-of-triangle/description/?envType=daily-question&envId=2025-05-19
     static class Solution1 {
         public String triangleType(int[] nums) {
             Arrays.sort(nums);
