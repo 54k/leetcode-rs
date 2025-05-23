@@ -47,4 +47,60 @@ public class Day916 {
         }
     }
 
+    static class Solution3 {
+        public long maximumValueSum(int[] nums, int k, int[][] edges) {
+            int n = nums.length;
+            int[] netChange = new int[n];
+            long nodeSum = 0;
+
+            for (int i = 0; i < n; i++) {
+                netChange[i] = (nums[i] ^ k) - nums[i];
+                nodeSum += nums[i];
+            }
+
+            Arrays.sort(netChange);
+            for (int i = 0; i < n / 2; i++) {
+                int temp = netChange[i];
+                netChange[i] = netChange[n - 1 - i];
+                netChange[n - 1 - i] = temp;
+            }
+
+            for (int i = 0; i < n; i += 2) {
+                if (i + 1 == n) {
+                    break;
+                }
+                long pairSum = netChange[i] + netChange[i + 1];
+                if (pairSum > 0) {
+                    nodeSum += pairSum;
+                }
+            }
+            return nodeSum;
+        }
+    }
+
+    static class Solution4 {
+        public long maximumValueSum(int[] nums, int k, int[][] edges) {
+            long sum = 0;
+            int count = 0, positiveMinimum = (1 << 30), negativeMaximum = -1 * (1 << 30);
+
+            for (int nodeValue : nums) {
+                int operatedNodeValue = nodeValue ^ k;
+                sum += nodeValue;
+                int netChange = operatedNodeValue - nodeValue;
+                if (netChange > 0) {
+                    positiveMinimum = Math.min(positiveMinimum, netChange);
+                    sum += netChange;
+                    count++;
+                } else {
+                    negativeMaximum = Math.max(negativeMaximum, netChange);
+                }
+            }
+
+            if (count % 2 == 0) {
+                return sum;
+            }
+
+            return Math.max(sum - positiveMinimum, sum + negativeMaximum);
+        }
+    }
 }
