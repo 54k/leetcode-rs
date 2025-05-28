@@ -2,6 +2,7 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Day921 {
     // https://leetcode.com/problems/maximize-the-number-of-target-nodes-after-connecting-trees-i/description/?envType=daily-question&envId=2025-05-28
@@ -55,6 +56,53 @@ public class Day921 {
                 res += dfs(child, node, children, k - 1);
             }
             return res;
+        }
+    }
+
+    static class Solution2 {
+        List<String> combinations = new ArrayList<>();
+        Map<Character, String> letters = Map.of(
+                '2',
+                "abc",
+                '3',
+                "def",
+                '4',
+                "ghi",
+                '5',
+                "jkl",
+                '6',
+                "mno",
+                '7',
+                "pqrs",
+                '8',
+                "tuv",
+                '9',
+                "wxyz");
+
+        String phoneDigits;
+
+        public List<String> letterCombinations(String digits) {
+            if (digits.length() == 0) {
+                return combinations;
+            }
+
+            phoneDigits = digits;
+            backtrack(0, new StringBuilder());
+            return combinations;
+        }
+
+        void backtrack(int index, StringBuilder path) {
+            if (path.length() == phoneDigits.length()) {
+                combinations.add(path.toString());
+                return;
+            }
+
+            String possibleLetters = letters.get(phoneDigits.charAt(index));
+            for (char letter : possibleLetters.toCharArray()) {
+                path.append(letter);
+                backtrack(index + 1, path);
+                path.deleteCharAt(path.length() - 1);
+            }
         }
     }
 
