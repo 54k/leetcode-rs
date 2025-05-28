@@ -1,6 +1,8 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +105,155 @@ public class Day921 {
                 backtrack(index + 1, path);
                 path.deleteCharAt(path.length() - 1);
             }
+        }
+    }
+
+    // https://leetcode.com/problems/permutations/description/
+    static class Solution3 {
+        public List<List<Integer>> permute(int[] nums) {
+            List<List<Integer>> ans = new ArrayList<>();
+            backtrack(new ArrayList<>(), ans, nums);
+            return ans;
+        }
+
+        void backtrack(List<Integer> curr, List<List<Integer>> ans, int[] nums) {
+            if (curr.size() == nums.length) {
+                ans.add(new ArrayList<>(curr));
+                return;
+            }
+
+            for (int num : nums) {
+                if (!curr.contains(num)) {
+                    curr.add(num);
+                    backtrack(curr, ans, nums);
+                    curr.remove(curr.size() - 1);
+                }
+            }
+        }
+    }
+
+    // https://leetcode.com/problems/combinations/description/
+    static class Solution4 {
+        int n;
+        int k;
+
+        public List<List<Integer>> combine(int n, int k) {
+            this.n = n;
+            this.k = k;
+
+            List<List<Integer>> ans = new ArrayList<>();
+            backtrack(new ArrayList<>(), 1, ans);
+            return ans;
+        }
+
+        void backtrack(List<Integer> curr, int firstNum, List<List<Integer>> ans) {
+            if (curr.size() == k) {
+                ans.add(new ArrayList<>(curr));
+                return;
+            }
+
+            int need = k - curr.size();
+            int remain = n - firstNum + 1;
+            int available = remain - need;
+
+            for (int num = firstNum; num <= firstNum + available; num++) {
+                curr.add(num);
+                backtrack(curr, num + 1, ans);
+                curr.remove(curr.size() - 1);
+            }
+        }
+    }
+
+    // https://leetcode.com/problems/lru-cache/description/
+    static class LRUCache1 {
+        int capacity;
+        LinkedHashMap<Integer, Integer> dic;
+
+        public LRUCache1(int capacity) {
+            this.capacity = capacity;
+            dic = new LinkedHashMap<>(5, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(
+                        Map.Entry<Integer, Integer> eldest) {
+                    return size() > capacity;
+                }
+            };
+        }
+
+        public int get(int key) {
+            return dic.getOrDefault(key, -1);
+        }
+
+        public void put(int key, int value) {
+            dic.put(key, value);
+        }
+    }
+
+    static class ListNode {
+        int key;
+        int val;
+        ListNode next;
+        ListNode prev;
+
+        ListNode(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
+    static class LRUCache2 {
+        int capacity;
+        Map<Integer, ListNode> dic;
+        ListNode head;
+        ListNode tail;
+
+        public LRUCache2(int capacity) {
+            this.capacity = capacity;
+            dic = new HashMap<>();
+            head = new ListNode(-1, -1);
+            tail = new ListNode(-1, -1);
+            head.next = tail;
+            tail.prev = head;
+        }
+
+        public int get(int key) {
+            if (!dic.containsKey(key)) {
+                return -1;
+            }
+            ListNode node = dic.get(key);
+            remove(node);
+            add(node);
+            return node.val;
+        }
+
+        public void put(int key, int value) {
+            if (dic.containsKey(key)) {
+                ListNode oldNode = dic.get(key);
+                remove(oldNode);
+            }
+
+            ListNode node = new ListNode(key, value);
+            dic.put(key, node);
+            add(node);
+
+            if (dic.size() > capacity) {
+                ListNode nodeToDelete = head.next;
+                remove(nodeToDelete);
+                dic.remove(nodeToDelete.key);
+            }
+        }
+
+        void add(ListNode node) {
+            ListNode previousEnd = tail.prev;
+            previousEnd.next = node;
+            node.prev = previousEnd;
+            node.next = tail;
+            tail.prev = node;
+        }
+
+        void remove(ListNode node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
         }
     }
 
