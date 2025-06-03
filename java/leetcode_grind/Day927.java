@@ -1,6 +1,8 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Day927 {
@@ -54,6 +56,59 @@ public class Day927 {
             }
 
             return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/
+    static class Solution2 {
+        public boolean hasGroupsSizeX(int[] deck) {
+            int N = deck.length;
+            int[] count = new int[10000];
+            for (int c : deck) {
+                count[c]++;
+            }
+            List<Integer> values = new ArrayList<>();
+            for (int i = 0; i < 10000; i++) {
+                if (count[i] > 0) {
+                    values.add(count[i]);
+                }
+            }
+            search: for (int X = 2; X <= N; ++X) {
+                if (N % X == 0) {
+                    for (int v : values) {
+                        if (v % X != 0) {
+                            continue search;
+                        }
+                    }
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    static class Solution3 {
+        public boolean hasGroupsSizeX(int[] deck) {
+            int[] count = new int[10000];
+            for (int c : deck) {
+                count[c]++;
+            }
+            int g = -1;
+            for (int i = 0; i < 10000; i++) {
+                if (count[i] > 0) {
+                    if (g == -1) {
+                        g = count[i];
+                    } else {
+                        g = gcd(g, count[i]);
+                    }
+                }
+            }
+            return g >= 2;
+        }
+
+        int gcd(int x, int y) {
+            return x == 0 ? y : gcd(y % x, x);
         }
     }
 }
