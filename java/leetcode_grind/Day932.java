@@ -2,6 +2,7 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class Day932 {
     // https://leetcode.com/problems/lexicographical-numbers/description/?envType=daily-question&envId=2025-06-08
@@ -45,6 +46,24 @@ public class Day932 {
             }
 
             return lexicographicalNumbers;
+        }
+    }
+
+    // https://leetcode.com/problems/verify-preorder-sequence-in-binary-search-tree/description/?envType=weekly-question&envId=2025-06-08
+    static class Solution3 {
+        public boolean verifyPreorder(int[] preorder) {
+            int minLimit = Integer.MIN_VALUE;
+            Stack<Integer> stack = new Stack<>();
+            for (int num : preorder) {
+                while (!stack.isEmpty() && stack.peek() < num) {
+                    minLimit = stack.pop();
+                }
+                if (num <= minLimit) {
+                    return false;
+                }
+                stack.push(num);
+            }
+            return true;
         }
     }
 }
