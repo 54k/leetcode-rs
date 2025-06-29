@@ -21,4 +21,80 @@ public class Day952 {
             return res;
         }
     }
+
+    static class Solution2 {
+        public int numSubseq(int[] nums, int target) {
+            int n = nums.length;
+            int mod = 1_000_000_007;
+            Arrays.sort(nums);
+
+            int[] power = new int[n];
+            power[0] = 1;
+            for (int i = 1; i < n; i++) {
+                power[i] = (power[i - 1] * 2) % mod;
+            }
+
+            int answer = 0;
+            int left = 0, right = n - 1;
+
+            while (left <= right) {
+                if (nums[left] + nums[right] <= target) {
+                    answer += power[right - left];
+                    answer %= mod;
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+
+            return answer;
+        }
+    }
+
+    static class Node {
+        public int val;
+        public Node left;
+        public Node right;
+
+        public Node() {
+        }
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, Node _left, Node _right) {
+            val = _val;
+            left = _left;
+            right = _right;
+        }
+    };
+
+    static class Solution3 {
+        Node first = null;
+        Node last = null;
+
+        void helper(Node node) {
+            if (node != null) {
+                helper(node.left);
+                if (last != null) {
+                    last.right = node;
+                    node.left = last;
+                } else {
+                    first = node;
+                }
+                last = node;
+                helper(node.right);
+            }
+        }
+
+        public Node treeToDoublyList(Node root) {
+            if (root == null)
+                return null;
+            helper(root);
+            last.right = first;
+            first.left = last;
+            return first;
+        }
+    }
 }
