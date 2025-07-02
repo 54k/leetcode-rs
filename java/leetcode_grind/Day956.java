@@ -1,5 +1,9 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Day956 {
     // https://leetcode.com/problems/find-the-original-typed-string-ii/description/?envType=daily-question&envId=2025-07-02
     static class Solution1 {
