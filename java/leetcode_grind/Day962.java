@@ -123,4 +123,19 @@ public class Day962 {
             this.inorderCase2(node.right, p);
         }
     }
+
+    static class Solution4 {
+        public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+            TreeNode successor = null;
+            while (root != null) {
+                if (p.val >= root.val) {
+                    root = root.right;
+                } else {
+                    successor = root;
+                    root = root.left;
+                }
+            }
+            return successor;
+        }
+    }
 }
