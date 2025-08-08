@@ -69,4 +69,38 @@ public class Day993 {
             return result;
         }
     }
+
+    // https://leetcode.com/problems/find-smallest-common-element-in-all-rows/description/?envType=weekly-question&envId=2025-08-08
+    static class Solution3 {
+        public int smallestCommonElement(int[][] mat) {
+            int count[] = new int[10001];
+            int n = mat.length, m = mat[0].length;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    ++count[mat[i][j]];
+                }
+            }
+            for (int k = 1; k <= 10000; k++) {
+                if (count[k] == n) {
+                    return k;
+                }
+            }
+            return -1;
+        }
+    }
+
+    static class Solution4 {
+        public int smallestCommonElement(int[][] mat) {
+            int count[] = new int[10001];
+            int n = mat.length, m = mat[0].length;
+            for (int j = 0; j < m; j++) {
+                for (int i = 0; i < n; i++) {
+                    if (++count[mat[i][j]] == n) {
+                        return mat[i][j];
+                    }
+                }
+            }
+            return -1;
+        }
+    }
 }
