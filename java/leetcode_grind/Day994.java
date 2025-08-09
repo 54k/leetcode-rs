@@ -9,4 +9,4 @@ public class Day994 {
             return (n & (n - 1)) == 0;
         }
     }
-
+}
