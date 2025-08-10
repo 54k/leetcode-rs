@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Day995 {
     // https://leetcode.com/problems/reordered-power-of-2/description/?envType=daily-question&envId=2025-08-10
@@ -66,6 +67,46 @@ public class Day995 {
                 N /= 10;
             }
             return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/sequence-reconstruction/description/
+    static class Solution3 {
+        public boolean sequenceReconstruction(int[] nums, List<List<Integer>> sequences) {
+            if (sequences == null || sequences.isEmpty()) {
+                return false;
+            }
+
+            int numsLen = nums.length;
+            int[] idx = new int[numsLen + 1];
+            boolean[] pairs = new boolean[numsLen];
+
+            for (int i = 0; i < numsLen; i++) {
+                idx[nums[i]] = i;
+            }
+
+            for (List<Integer> seq : sequences) {
+                for (int i = 0; i < seq.size(); i++) {
+                    if (seq.get(i) > numsLen || seq.get(i) < 0) {
+                        return false;
+                    }
+
+                    if (i > 0 && idx[seq.get(i - 1)] >= idx[seq.get(i)]) {
+                        return false;
+                    }
+
+                    if (i > 0 && idx[seq.get(i - 1)] + 1 == idx[seq.get(i)]) {
+                        pairs[idx[seq.get(i - 1)]] = true;
+                    }
+                }
+            }
+
+            for (int i = 0; i < numsLen - 1; i++) {
+                if (!pairs[i]) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
