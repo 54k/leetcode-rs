@@ -65,4 +65,57 @@ public class Day998 {
             return new String(result);
         }
     }
+
+    static class Solution5 {
+        public String decodeString(String s) {
+            Stack<Integer> countStack = new Stack<>();
+            Stack<StringBuilder> stringStack = new Stack<>();
+            StringBuilder currentString = new StringBuilder();
+            int k = 0;
+            for (char ch : s.toCharArray()) {
+                if (Character.isDigit(ch)) {
+                    k = k * 10 + ch - '0';
+                } else if (ch == '[') {
+                    countStack.push(k);
+                    stringStack.push(currentString);
+                    currentString = new StringBuilder();
+                    k = 0;
+                } else if (ch == ']') {
+                    StringBuilder decodedString = stringStack.pop();
+                    for (int currentK = countStack.pop(); currentK > 0; currentK--) {
+                        decodedString.append(currentString);
+                    }
+                    currentString = decodedString;
+                } else {
+                    currentString.append(ch);
+                }
+            }
+            return currentString.toString();
+        }
+    }
+
+    static class Solution6 {
+        int index = 0;
+
+        public String decodeString(String s) {
+            StringBuilder result = new StringBuilder();
+            while (index < s.length() && s.charAt(index) != ']') {
+                if (!Character.isDigit(s.charAt(index))) {
+                    result.append(s.charAt(index++));
+                } else {
+                    int k = 0;
+                    while (index < s.length() && Character.isDigit(s.charAt(index))) {
+                        k = k * 10 + s.charAt(index++) - '0';
+                    }
+                    index++;
+                    String decodedString = decodeString(s);
+                    index++;
+                    while (k-- > 0) {
+                        result.append(decodedString);
+                    }
+                }
+            }
+            return new String(result);
+        }
+    }
 }
