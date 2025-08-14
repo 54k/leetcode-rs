@@ -161,8 +161,24 @@ public class Day999 {
         }
     }
 
-    // https://leetcode.com/problems/evaluate-division/description/
     static class Solution4 {
+        public int maximumScore(int[] nums, int[] multipliers) {
+            int n = nums.length;
+            int m = multipliers.length;
+            int[] dp = new int[m + 1];
+
+            for (int op = m - 1; op >= 0; op--) {
+                for (int left = 0; left <= op; left++) {
+                    dp[left] = Math.max(multipliers[op] * nums[left] + dp[left + 1],
+                            multipliers[op] * nums[n - 1 - (op - left)] + dp[left]);
+                }
+            }
+            return dp[0];
+        }
+    }
+
+    // https://leetcode.com/problems/evaluate-division/description/
+    static class Solution5 {
         public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
             Map<String, Map<String, Double>> graph = new HashMap<>();
             for (int i = 0; i < equations.size(); i++) {
