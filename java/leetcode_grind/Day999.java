@@ -3,6 +3,10 @@ package leetcode_grind;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class Day999 {
@@ -154,6 +158,67 @@ public class Day999 {
                 }
             }
             return dp[0][0];
+        }
+    }
+
+    // https://leetcode.com/problems/evaluate-division/description/
+    static class Solution4 {
+        public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+            Map<String, Map<String, Double>> graph = new HashMap<>();
+            for (int i = 0; i < equations.size(); i++) {
+                List<String> equation = equations.get(i);
+                String dividend = equation.get(0), divisor = equation.get(1);
+                double quotient = values[i];
+
+                if (!graph.containsKey(dividend)) {
+                    graph.put(dividend, new HashMap<String, Double>());
+                }
+                if (!graph.containsKey(divisor)) {
+                    graph.put(divisor, new HashMap<String, Double>());
+                }
+
+                graph.get(dividend).put(divisor, quotient);
+                graph.get(divisor).put(dividend, 1. / quotient);
+            }
+
+            double[] results = new double[queries.size()];
+            for (int i = 0; i < queries.size(); i++) {
+                List<String> query = queries.get(i);
+                String dividend = query.get(0), divisor = query.get(1);
+
+                if (!graph.containsKey(dividend) || !graph.containsKey(divisor)) {
+                    results[i] = -1.0;
+                } else if (dividend == divisor) {
+                    results[i] = 1.0;
+                } else {
+                    Set<String> visited = new HashSet<>();
+                    results[i] = backtrackEvaluate(graph, dividend, divisor, 1, visited);
+                }
+            }
+            return results;
+        }
+
+        double backtrackEvaluate(Map<String, Map<String, Double>> graph, String currNode, String targetNode,
+                double accProduct, Set<String> visited) {
+            visited.add(currNode);
+            double ret = -1.0;
+            Map<String, Double> neighbors = graph.get(currNode);
+            if (neighbors.containsKey(targetNode)) {
+                ret = accProduct * neighbors.get(targetNode);
+            } else {
+                for (Map.Entry<String, Double> pair : neighbors.entrySet()) {
+                    String nextNode = pair.getKey();
+                    if (visited.contains(nextNode)) {
+                        continue;
+                    }
+                    ret = backtrackEvaluate(graph, nextNode, targetNode, accProduct * pair.getValue(), visited);
+                    if (ret != -1.0) {
+                        break;
+                    }
+                }
+            }
+            visited.remove(currNode);
+            return ret;
         }
     }
 }
