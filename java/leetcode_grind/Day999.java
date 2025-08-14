@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeMap;
 
@@ -109,6 +110,50 @@ public class Day999 {
 
         T1 getValue() {
             return value;
+        }
+    }
+
+    // https://leetcode.com/problems/maximum-score-from-performing-multiplication-operations/description/
+    static class Solution2 {
+
+        int dp(Integer[][] memo, int[] nums, int[] multipliers, int op, int left) {
+            int n = nums.length;
+            if (op == multipliers.length) {
+                return 0;
+            }
+
+            if (memo[op][left] != null) {
+                return memo[op][left];
+            }
+
+            int l = nums[left] * multipliers[op] + dp(memo, nums, multipliers, op + 1, left + 1);
+            int r = nums[(n - 1) - (op - left)] * multipliers[op] + dp(memo, nums, multipliers, op + 1, left);
+
+            return memo[op][left] = Math.max(l, r);
+        }
+
+        public int maximumScore(int[] nums, int[] multipliers) {
+            Integer[][] memo = new Integer[multipliers.length + 1][multipliers.length + 1];
+            return dp(memo, nums, multipliers, 0, 0);
+        }
+    }
+
+    static class Solution3 {
+        public int maximumScore(int[] nums, int[] multipliers) {
+            int n = nums.length;
+            int m = multipliers.length;
+            int[][] dp = new int[m + 1][n + 1];
+            for (int i = 0; i <= m; i++) {
+                Arrays.fill(dp[i], 0);
+            }
+            for (int op = m - 1; op >= 0; op--) {
+                for (int left = op; left >= 0; left--) {
+                    dp[op][left] = Math.max(multipliers[op] * nums[left] + dp[op + 1][left + 1],
+                            multipliers[op] * nums[n - 1 - (op - left)] + dp[op + 1][left]);
+
+                }
+            }
+            return dp[0][0];
         }
     }
 }
