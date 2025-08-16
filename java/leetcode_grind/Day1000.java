@@ -41,10 +41,63 @@ public class Day1000 {
         }
     }
 
-    /**
-     * Your FileSystem object will be instantiated and called as such:
-     * FileSystem obj = new FileSystem();
-     * boolean param_1 = obj.createPath(path,value);
-     * int param_2 = obj.get(path);
-     */
+    static class FileSystem2 {
+        static class TrieNode {
+            String name;
+            int val = -1;
+            Map<String, TrieNode> map = new HashMap<>();
+
+            TrieNode(String name) {
+                this.name = name;
+            }
+        }
+
+        TrieNode root;
+
+        public FileSystem2() {
+            this.root = new TrieNode("");
+        }
+
+        public boolean createPath(String path, int value) {
+            String[] components = path.split("/");
+            TrieNode cur = root;
+
+            for (int i = 1; i < components.length; i++) {
+                String currentComponent = components[i];
+
+                if (cur.map.containsKey(currentComponent) == false) {
+                    if (i == components.length - 1) {
+                        cur.map.put(currentComponent, new TrieNode(currentComponent));
+                    } else {
+                        return false;
+                    }
+                }
+
+                cur = cur.map.get(currentComponent);
+            }
+
+            if (cur.val != -1) {
+                return false;
+            }
+            cur.val = value;
+            return true;
+        }
+
+        public int get(String path) {
+            String[] components = path.split("/");
+            TrieNode cur = root;
+
+            for (int i = 1; i < components.length; i++) {
+                String currentComponent = components[i];
+
+                if (cur.map.containsKey(currentComponent) == false) {
+                    return -1;
+                }
+
+                cur = cur.map.get(currentComponent);
+            }
+
+            return cur.val;
+        }
+    }
 }
