@@ -1,6 +1,7 @@
 package leetcode_grind;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 public class Day1005 {
     // https://leetcode.com/problems/count-square-submatrices-with-all-ones/description/?envType=daily-question&envId=2025-08-20
@@ -117,6 +118,45 @@ public class Day1005 {
             boolean swap = flipEquiv(root1.left, root2.right) &&
                     flipEquiv(root1.right, root2.left);
             return noSwap || swap;
+        }
+    }
+
+    static class Solution5 {
+        boolean checkNodesValues(TreeNode node1, TreeNode node2) {
+            if (node1 == null && node2 == null)
+                return true;
+            if (node1 != null && node2 != null && node1.val == node2.val)
+                return true;
+            return false;
+        }
+
+        public boolean flipEquiv(TreeNode root1, TreeNode root2) {
+            Stack<TreeNode[]> nodePairStack = new Stack<>();
+            nodePairStack.push(new TreeNode[] { root1, root2 });
+
+            while (!nodePairStack.isEmpty()) {
+                TreeNode[] current = nodePairStack.pop();
+                TreeNode node1 = current[0];
+                TreeNode node2 = current[1];
+
+                if (node1 == null && node2 == null)
+                    continue;
+                if (node1 == null || node2 == null)
+                    return false;
+                if (node1.val != node2.val)
+                    return false;
+
+                if (checkNodesValues(node1.left, node2.left) && checkNodesValues(node1.right, node2.right)) {
+                    nodePairStack.push(new TreeNode[] { node1.left, node2.left });
+                    nodePairStack.push(new TreeNode[] { node1.right, node2.right });
+                } else if (checkNodesValues(node1.left, node2.right) && checkNodesValues(node1.right, node2.left)) {
+                    nodePairStack.push(new TreeNode[] { node1.left, node2.right });
+                    nodePairStack.push(new TreeNode[] { node1.right, node2.left });
+                } else {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
