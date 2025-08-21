@@ -1,5 +1,10 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class Day1006 {
@@ -63,4 +68,58 @@ public class Day1006 {
         }
     }
 
+    // https://leetcode.com/problems/word-squares/description/
+    static class Solution3 {
+        int N = 0;
+        String[] words = null;
+        Map<String, List<String>> prefixHashTable = null;
+
+        public List<List<String>> wordSquares(String[] words) {
+            this.words = words;
+            this.N = words[0].length();
+
+            List<List<String>> results = new ArrayList<>();
+            buildPrefixHashTable(words);
+
+            for (String word : words) {
+                LinkedList<String> wordSquares = new LinkedList<>();
+                wordSquares.addLast(word);
+                backtracking(1, wordSquares, results);
+            }
+            return results;
+        }
+
+        void backtracking(int step, LinkedList<String> wordSquares, List<List<String>> results) {
+            if (step == N) {
+                results.add((List<String>) wordSquares.clone());
+                return;
+            }
+
+            StringBuilder prefix = new StringBuilder();
+            for (String word : wordSquares) {
+                prefix.append(word.charAt(step));
+            }
+
+            for (String candidate : getWordWithPrefix(prefix.toString())) {
+                wordSquares.addLast(candidate);
+                backtracking(step + 1, wordSquares, results);
+                wordSquares.removeLast();
+            }
+        }
+
+        void buildPrefixHashTable(String[] words) {
+            prefixHashTable = new HashMap<>();
+            for (String word : words) {
+                for (int i = 1; i <= N; i++) {
+                    String prefix = word.substring(0, i);
+                    prefixHashTable.computeIfAbsent(prefix, $ -> new ArrayList<>()).add(word);
+                }
+            }
+        }
+
+        List<String> getWordWithPrefix(String prefix) {
+            List<String> wordList = this.prefixHashTable.get(prefix);
+            return (wordList != null ? wordList : new ArrayList<>());
+        }
+    }
 }
