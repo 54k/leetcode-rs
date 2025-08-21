@@ -122,4 +122,81 @@ public class Day1006 {
             return (wordList != null ? wordList : new ArrayList<>());
         }
     }
+
+    static class Solution4 {
+        static class TrieNode {
+            Map<Character, TrieNode> children = new HashMap<>();
+            List<Integer> wordList = new ArrayList<>();
+        }
+
+        int N = 0;
+        String[] words = null;
+        TrieNode trie = null;
+
+        public List<List<String>> wordSquares(String[] words) {
+            this.words = words;
+            this.N = words[0].length();
+
+            List<List<String>> results = new ArrayList<>();
+            this.buildTrie(words);
+
+            for (String word : words) {
+                LinkedList<String> wordSquares = new LinkedList<>();
+                wordSquares.addLast(word);
+                this.backtracking(1, wordSquares, results);
+            }
+            return results;
+        }
+
+        void backtracking(int step, LinkedList<String> wordSquares, List<List<String>> results) {
+            if (step == N) {
+                results.add((List<String>) wordSquares.clone());
+                return;
+            }
+
+            StringBuilder prefix = new StringBuilder();
+            for (String word : wordSquares) {
+                prefix.append(word.charAt(step));
+            }
+
+            for (Integer wordIndex : this.getWordsWithPrefix(prefix.toString())) {
+                wordSquares.addLast(this.words[wordIndex]);
+                this.backtracking(step + 1, wordSquares, results);
+                wordSquares.removeLast();
+            }
+        }
+
+        void buildTrie(String[] words) {
+            this.trie = new TrieNode();
+
+            for (int wordIndex = 0; wordIndex < words.length; ++wordIndex) {
+                String word = words[wordIndex];
+
+                TrieNode node = this.trie;
+
+                for (Character letter : word.toCharArray()) {
+                    if (node.children.containsKey(letter)) {
+                        node = node.children.get(letter);
+                    } else {
+                        TrieNode newNode = new TrieNode();
+                        node.children.put(letter, newNode);
+                        node = newNode;
+                    }
+                    node.wordList.add(wordIndex);
+                }
+            }
+        }
+
+        List<Integer> getWordsWithPrefix(String prefix) {
+            TrieNode node = this.trie;
+            for (Character letter : prefix.toCharArray()) {
+                if (node.children.containsKey(letter)) {
+                    node = node.children.get(letter);
+                } else {
+                    return new ArrayList<>();
+                }
+            }
+            return node.wordList;
+        }
+    }
 }
