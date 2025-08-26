@@ -23,4 +23,20 @@ public class Day1011 {
             return maxArea;
         }
     }
+
+    // https://leetcode.com/problems/squirrel-simulation/description/
+    static class Solution2 {
+        public int minDistance(int height, int width, int[] tree, int[] squirrel, int[][] nuts) {
+            int tot_dist = 0, d = Integer.MIN_VALUE;        
+            for (int[] nut : nuts) {
+                tot_dist += (distance(nut, tree) * 2);
+                d = Math.max(d, distance(nut, tree) - distance(nut, squirrel));
+            }
+            return tot_dist - d;
+        }
+
+        int distance(int[] a, int[] b) {
+            return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
+        }
+    }
 }
