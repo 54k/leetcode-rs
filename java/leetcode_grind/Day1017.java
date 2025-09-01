@@ -1,7 +1,9 @@
 package leetcode_grind;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 public class Day1017 {
     // https://leetcode.com/problems/maximum-average-pass-ratio/description/?envType=daily-question&envId=2025-09-01
@@ -156,6 +158,57 @@ public class Day1017 {
         public int assignBikes(int[][] workers, int[][] bikes) {
             Arrays.fill(memo, Integer.MAX_VALUE);
             return minimumDistanceSum(workers, bikes);
+        }
+    }
+
+    static class Solution5 {
+        int findDistance(int[] worker, int[] bike) {
+            return Math.abs(worker[0] - bike[0]) + Math.abs(worker[1] - bike[1]);
+        }
+
+        int countNumOfOnes(int mask) {
+            int count = 0;
+            while (mask != 0) {
+                mask &= (mask - 1);
+                count++;
+            }
+            return count;
+        }
+
+        public int assignBikes(int[][] workers, int[][] bikes) {
+            int numOfBikes = bikes.length, numOfWorkers = workers.length;
+            PriorityQueue<int[]> priorityQueue = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+            priorityQueue.add(new int[] { 0, 0 });
+            Set<Integer> visited = new HashSet<>();
+
+            while (!priorityQueue.isEmpty()) {
+                int currentDistanceSum = priorityQueue.peek()[0];
+                int currentMask = priorityQueue.peek()[1];
+                priorityQueue.remove();
+
+                if (visited.contains(currentMask)) {
+                    continue;
+                }
+
+                visited.add(currentMask);
+                int workerIndex = countNumOfOnes(currentMask);
+
+                if (workerIndex == numOfWorkers) {
+                    return currentDistanceSum;
+                }
+
+                for (int bikeIndex = 0; bikeIndex < numOfBikes; bikeIndex++) {
+                    if ((currentMask & (1 << bikeIndex)) == 0) {
+                        int nextStateDistanceSum = currentDistanceSum
+                                + findDistance(workers[workerIndex], bikes[bikeIndex]);
+
+                        int nextStateMask = currentMask | (1 << bikeIndex);
+                        priorityQueue.add(new int[] { nextStateDistanceSum, nextStateMask });
+                    }
+                }
+            }
+
+            return -1;
         }
     }
 }
