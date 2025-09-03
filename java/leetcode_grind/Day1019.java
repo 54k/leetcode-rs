@@ -186,4 +186,41 @@ public class Day1019 {
         }
     }
 
+    // https://leetcode.com/problems/generate-parentheses/description/
+    static class Solution4 {
+        boolean isValid(String pString) {
+            int leftCount = 0;
+            for (char p : pString.toCharArray()) {
+                if (p == '(') {
+                    leftCount++;
+                } else {
+                    leftCount--;
+                }
+
+                if (leftCount < 0) {
+                    return false;
+                }
+            }
+            return leftCount == 0;
+        }
+
+        public List<String> generateParenthesis(int n) {
+            List<String> answer = new ArrayList<>();
+            Queue<String> queue = new LinkedList<>(Arrays.asList(""));
+
+            while (!queue.isEmpty()) {
+                String curString = queue.poll();
+                if (curString.length() == 2 * n) {
+                    if (isValid(curString)) {
+                        answer.add(curString);
+                    }
+                    continue;
+                }
+                queue.offer(curString + ")");
+                queue.offer(curString + "(");
+            }
+
+            return answer;
+        }
+    }
 }
