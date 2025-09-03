@@ -1,6 +1,12 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class Day1019 {
     // https://leetcode.com/problems/find-the-number-of-ways-to-place-people-ii/description/?envType=daily-question&envId=2025-09-03
@@ -138,6 +144,45 @@ public class Day1019 {
             }
 
             return ans;
+        }
+    }
+
+    // https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/
+    static class Solution3 {
+        private List<String> combinations = new ArrayList<>();
+        private Map<Character, String> letters = Map.of(
+                '2', "abc",
+                '3', "def",
+                '4', "ghi",
+                '5', "jkl",
+                '6', "mno",
+                '7', "pqrs",
+                '8', "tuv",
+                '9', "wxyz");
+        private String phoneDigits;
+
+        public List<String> letterCombinations(String digits) {
+            if (digits.length() == 0) {
+                return combinations;
+            }
+
+            phoneDigits = digits;
+            backtrack(0, new StringBuilder());
+            return combinations;
+        }
+
+        void backtrack(int index, StringBuilder path) {
+            if (path.length() == phoneDigits.length()) {
+                combinations.add(path.toString());
+                return;
+            }
+
+            String possibleLetters = letters.get(phoneDigits.charAt(index));
+            for (char letter : possibleLetters.toCharArray()) {
+                path.append(letter);
+                backtrack(index + 1, path);
+                path.deleteCharAt(path.length() - 1);
+            }
         }
     }
 
