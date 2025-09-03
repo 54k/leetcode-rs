@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 
 public class Day1019 {
     // https://leetcode.com/problems/find-the-number-of-ways-to-place-people-ii/description/?envType=daily-question&envId=2025-09-03
@@ -221,6 +223,38 @@ public class Day1019 {
             }
 
             return answer;
+        }
+    }
+
+    static class Solution5 {
+        public List<String> generateParenthesis(int n) {
+            List<String> answer = new ArrayList<>();
+            backtracking(answer, new StringBuilder(), 0, 0, n);
+            return answer;
+        }
+
+        void backtracking(
+                List<String> answer,
+                StringBuilder curString,
+                int leftCount,
+                int rightCount,
+                int n) {
+            if (curString.length() == 2 * n) {
+                answer.add(curString.toString());
+                return;
+            }
+
+            if (leftCount < n) {
+                curString.append("(");
+                backtracking(answer, curString, leftCount + 1, rightCount, n);
+                curString.deleteCharAt(curString.length() - 1);
+            }
+
+            if (leftCount > rightCount) {
+                curString.append(")");
+                backtracking(answer, curString, leftCount, rightCount + 1, n);
+                curString.deleteCharAt(curString.length() - 1);
+            }
         }
     }
 }
