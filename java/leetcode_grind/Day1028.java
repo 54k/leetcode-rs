@@ -55,4 +55,35 @@ public class Day1028 {
         }
     }
 
+    static class Solution3 {
+        public boolean isLongPressedName(String name, String typed) {
+            int np = 0, tp = 0;
+            char[] name_chars = name.toCharArray();
+            char[] typed_chars = typed.toCharArray();
+
+            while (np < name_chars.length && tp < typed_chars.length) {
+                if (name_chars[np] == typed_chars[tp]) {
+                    np += 1;
+                    tp += 1;
+                } else if (tp >= 1 && typed_chars[tp] == typed_chars[tp - 1]) {
+                    tp += 1;
+                } else {
+                    return false;
+                }
+            }
+
+            if (np != name_chars.length) {
+                return false;
+            } else {
+                while (tp < typed_chars.length) {
+                    if (typed_chars[tp] != typed_chars[tp - 1]) {
+                        return false;
+                    }
+                    tp += 1;
+                }
+            }
+
+            return true;
+        }
+    }
 }
