@@ -20,26 +20,60 @@ public class Day1039 {
         }
     }
 
-    class Solution {
-    public String longestPalindrome(String s) {
-        int n = s.length();        
-        var dp = new boolean[n][n];
+    // https://leetcode.com/problems/longest-palindromic-substring/description/
+    static class Solution2 {
+        public String longestPalindrome(String s) {
+            int n = s.length();
+            var dp = new boolean[n][n];
 
-        int start = 0;
-        int end = 0;
+            int start = 0;
+            int end = 0;
 
-        for (int i = n - 1; i >= 0; i--) {
-            for (int j = i + 1; j < n; j++) {
-                dp[i][j] = s.charAt(i) == s.charAt(j) && (j - i <= 2 || dp[i + 1][j - 1]);
-                if (dp[i][j] && j - i > end - start) {
-                    start = i;
-                    end = j;
+            for (int i = n - 1; i >= 0; i--) {
+                for (int j = i + 1; j < n; j++) {
+                    dp[i][j] = s.charAt(i) == s.charAt(j) && (j - i <= 2 || dp[i + 1][j - 1]);
+                    if (dp[i][j] && j - i > end - start) {
+                        start = i;
+                        end = j;
+                    }
                 }
             }
+
+            return s.substring(start, end + 1);
         }
-
-        return s.substring(start, end + 1);
     }
-}
 
+    static class Solution3 {
+        public String longestPalindrome(String s) {
+            int n = s.length();
+            boolean[][] dp = new boolean[n][n];
+            int[] ans = new int[] { 0, 0 };
+
+            for (int i = 0; i < n; i++) {
+                dp[i][i] = true;
+            }
+
+            for (int i = 0; i < n - 1; i++) {
+                if (s.charAt(i) == s.charAt(i + 1)) {
+                    dp[i][i + 1] = true;
+                    ans[0] = i;
+                    ans[1] = i + 1;
+                }
+            }
+
+            for (int diff = 2; diff < n; diff++) {
+                for (int i = 0; i < n - diff; i++) {
+                    int j = i + diff;
+
+                    if (s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1]) {
+                        dp[i][j] = true;
+                        ans[0] = i;
+                        ans[1] = j;
+                    }
+                }
+            }
+
+            return s.substring(ans[0], ans[1] + 1);
+        }
+    }
 }
