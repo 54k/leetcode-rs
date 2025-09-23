@@ -76,4 +76,34 @@ public class Day1039 {
             return s.substring(ans[0], ans[1] + 1);
         }
     }
+
+    static class Solution4 {
+        public String longestPalindrome(String s) {
+            int n = s.length();
+            int start = 0;
+            int end = 0;
+
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j <= 1; j++) {
+                    int left = i;
+                    int right = i + j;
+
+                    while (left >= 0 && right <= n - 1 && s.charAt(left) == s.charAt(right)) {
+                        --left;
+                        ++right;
+                    }
+
+                    ++left;
+                    --right;
+
+                    if (right - left > end - start) {
+                        start = left;
+                        end = right;
+                    }
+                }
+            }
+
+            return s.substring(start, end + 1);
+        }
+    }
 }
