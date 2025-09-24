@@ -42,4 +42,41 @@ public class Day1040 {
         }
     }
 
+    static class Solution2 {
+        int[] numsArray;
+
+        public int maxSubArray(int[] nums) {
+            numsArray = nums;
+            return findBestSubarray(0, numsArray.length - 1);
+        }
+
+        int findBestSubarray(int left, int right) {
+            if (left > right) {
+                return Integer.MIN_VALUE;
+            }
+
+            int mid = Math.floorDiv(left + right, 2);
+            int curr = 0;
+            int bestLeftSum = 0;
+            int bestRightSum = 0;
+
+            for (int i = mid - 1; i >= left; i--) {
+                curr += numsArray[i];
+                bestLeftSum = Math.max(bestLeftSum, curr);
+            }
+
+            curr = 0;
+            for (int i = mid + 1; i <= right; i++) {
+                curr += numsArray[i];
+                bestRightSum = Math.max(bestRightSum, curr);
+            }
+
+            int bestCombinedSum = numsArray[mid] + bestLeftSum + bestRightSum;
+
+            int leftHalf = findBestSubarray(left, mid - 1);
+            int rightHalf = findBestSubarray(mid + 1, right);
+
+            return Math.max(bestCombinedSum, Math.max(leftHalf, rightHalf));
+        }
+    }
 }
