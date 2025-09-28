@@ -34,4 +34,35 @@ public class Day1044 {
             return dp[amount] == (amount + 1) ? -1 : dp[amount];
         }
     }
+
+    // https://leetcode.com/problems/divide-chocolate/description/
+    static class Solution3 {
+        public int maximizeSweetness(int[] sweetness, int k) {
+            int numberOfPeople = k + 1;
+            int left = Arrays.stream(sweetness).min().getAsInt();
+            int right = Arrays.stream(sweetness).sum() / numberOfPeople;
+
+            while (left < right) {
+                int mid = (left + right + 1) / 2;
+                int curSweetness = 0;
+                int peopleWithChocolate = 0;
+
+                for (int s : sweetness) {
+                    curSweetness += s;
+                    if (curSweetness >= mid) {
+                        peopleWithChocolate += 1;
+                        curSweetness = 0;
+                    }
+                }
+
+                if (peopleWithChocolate >= numberOfPeople) {
+                    left = mid;
+                } else {
+                    right = mid - 1;
+                }
+            }
+
+            return left;
+        }
+    }
 }
