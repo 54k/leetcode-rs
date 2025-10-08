@@ -1,6 +1,8 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -116,6 +118,20 @@ public class Day1054 {
                 used += (int) ((stations[i + 1] - stations[i]) / D);
             }
             return used <= K;
+        }
+    }
+
+    // https://leetcode.com/problems/find-k-closest-elements/description/?envType=company&envId=yandex&favoriteSlug=yandex-all
+    static class Solution5 {
+        public List<Integer> findClosestElements(int[] arr, int k, int x) {
+            List<Integer> sortedArr = new ArrayList<>();
+            for (int num : arr) {
+                sortedArr.add(num);
+            }
+            Collections.sort(sortedArr, (num1, num2) -> Math.abs(num1 - x) - Math.abs(num2 - x));
+            sortedArr = sortedArr.subList(0, k);
+            Collections.sort(sortedArr);
+            return sortedArr;
         }
     }
 
