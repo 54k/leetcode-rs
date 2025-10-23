@@ -1,8 +1,10 @@
 package leetcode_grind;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class Day1069 {
@@ -88,6 +90,24 @@ public class Day1069 {
             }
 
             return true;
+        }
+    }
+
+    // https://leetcode.com/problems/jewels-and-stones/description/
+    class Solution {
+        public int numJewelsInStones(String J, String S) {
+            Set<Character> Jset = new HashSet<>();
+            for (char j : J.toCharArray()) {
+                Jset.add(j);
+            }
+
+            int ans = 0;
+            for (char s : S.toCharArray()) {
+                if (Jset.contains(s)) {
+                    ans++;
+                }
+            }
+            return ans;
         }
     }
 }
