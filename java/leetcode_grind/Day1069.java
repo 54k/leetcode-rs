@@ -2,6 +2,8 @@ package leetcode_grind;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Day1069 {
     // https://leetcode.com/problems/check-if-digits-are-equal-in-string-after-operations-i/description/?envType=daily-question&envId=2025-10-23
@@ -56,4 +58,36 @@ public class Day1069 {
         }
     }
 
+    static class MyCalendarTwo2 {
+        TreeMap<Integer, Integer> bookingCount;
+        int maxOverlappedBooking;
+
+        public MyCalendarTwo2() {
+            bookingCount = new TreeMap<>();
+            maxOverlappedBooking = 2;
+        }
+
+        public boolean book(int start, int end) {
+            bookingCount.put(start, bookingCount.getOrDefault(start, 0) + 1);
+            bookingCount.put(end, bookingCount.getOrDefault(end, 0) - 1);
+
+            int overlappedBooking = 0;
+
+            for (Map.Entry<Integer, Integer> entry : bookingCount.entrySet()) {
+                overlappedBooking += entry.getValue();
+
+                if (overlappedBooking > maxOverlappedBooking) {
+                    bookingCount.put(start, bookingCount.get(start) - 1);
+                    bookingCount.put(end, bookingCount.get(end) + 1);
+                    if (bookingCount.get(start) == 0) {
+                        bookingCount.remove(start);
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
 }
