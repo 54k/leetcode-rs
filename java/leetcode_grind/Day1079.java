@@ -1,5 +1,9 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class Day1079 {
     // https://leetcode.com/problems/count-unguarded-cells-in-the-grid/description/?envType=daily-question&envId=2025-11-02
     static class Solution1 {
@@ -57,6 +61,25 @@ public class Day1079 {
                 }
             }
             return count;
+        }
+    }
+
+    // https://leetcode.com/problems/maximum-number-of-ones/description/?envType=weekly-question&envId=2025-11-01
+    static class Solution2 {
+        public int maximumNumberOfOnes(int width, int height, int sideLength, int maxOnes) {
+            List<Integer> count = new ArrayList<>();
+            for (int r = 0; r < sideLength; ++r) {
+                for (int c = 0; c < sideLength; c++) {
+                    count.add((1 + (width - 1 - c) / sideLength) * (1 + (height - 1 - r) / sideLength));
+                }
+            }
+
+            count.sort(Comparator.reverseOrder());
+            int answer = 0;
+            for (int i = 0; i < maxOnes; i++) {
+                answer += count.get(i);
+            }
+            return answer;
         }
     }
 
