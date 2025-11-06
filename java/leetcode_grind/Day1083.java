@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 public class Day1083 {
     // https://leetcode.com/problems/power-grid-maintenance/description/?envType=daily-question&envId=2025-11-06
