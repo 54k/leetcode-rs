@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.Arrays;
+
 public class Day1084 {
     // https://leetcode.com/problems/maximize-the-minimum-powered-city/description/?envType=daily-question&envId=2025-11-07
     static class Solution1 {
