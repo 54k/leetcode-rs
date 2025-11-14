@@ -1,6 +1,6 @@
 package leetcode_grind;
 
-public class Dayy1090 {
+public class Day1090 {
     // https://leetcode.com/problems/maximum-number-of-operations-to-move-ones-to-the-end/description/?envType=daily-question&envId=2025-11-13
     static class Solution1 {
         public int maxOperations(String s) {
