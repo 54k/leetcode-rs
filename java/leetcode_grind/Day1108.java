@@ -1,6 +1,12 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Day1108 {
     // https://leetcode.com/problems/maximum-running-time-of-n-computers/description/?envType=daily-question&envId=2025-12-01
@@ -101,4 +107,48 @@ public class Day1108 {
             return dfs(root1, root2, target);
         }
     }
+
+    // https://leetcode.com/problems/implement-magic-dictionary/description/
+    static class MagicDictionary {
+        Set<String> words;
+        Map<String, Integer> count;
+
+        public MagicDictionary() {
+            words = new HashSet<>();
+            count = new HashMap<>();
+        }
+
+        List<String> generalizeNeighbors(String word) {
+            List<String> ans = new ArrayList<>();
+            char[] ca = word.toCharArray();
+            for (int i = 0; i < word.length(); i++) {
+                char letter = ca[i];
+                ca[i] = '*';
+                String magic = new String(ca);
+                ans.add(magic);
+                ca[i] = letter;
+            }
+            return ans;
+        }
+
+        public void buildDict(String[] words) {
+            for (String word : words) {
+                this.words.add(word);
+                for (String nei : generalizeNeighbors(word)) {
+                    count.put(nei, count.getOrDefault(nei, 0) + 1);
+                }
+            }
+        }
+
+        public boolean search(String searchWord) {
+            for (String nei : generalizeNeighbors(searchWord)) {
+                int c = count.getOrDefault(nei, 0);
+                if (c > 1 || c == 1 && !words.contains(searchWord)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 }
