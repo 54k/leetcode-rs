@@ -19,4 +19,38 @@ public class Day1117 {
             return ans;
         }
     }
+
+    // https://leetcode.com/problems/minimize-product-sum-of-two-arrays/description/
+    static class Solution2 {
+        public int minProductSum(int[] nums1, int[] nums2) {
+            int[] counter1 = new int[101], counter2 = new int[101];
+            for (int num : nums1) {
+                counter1[num]++;
+            }
+            for (int num : nums2) {
+                counter2[num]++;
+            }
+
+            int p1 = 0, p2 = 100, ans = 0;
+            int occ;
+
+            while (p1 < 101 && p2 > 0) {
+                while (p1 < 101 && counter1[p1] == 0) {
+                    p1++;
+                }
+                while (p2 > 0 && counter2[p2] == 0) {
+                    p2--;
+                }
+                if (p1 == 101 || p2 == 0) {
+                    break;
+                }
+                occ = Math.min(counter1[p1], counter2[p2]);
+                ans += occ * p1 * p2;
+                counter1[p1] -= occ;
+                counter2[p2] -= occ;
+            }
+
+            return ans;
+        }
+    }
 }
