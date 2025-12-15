@@ -100,4 +100,58 @@ public class Day1122 {
             return count[0][0];
         }
     }
+
+    // https://leetcode.com/problems/detect-cycles-in-2d-grid/description/
+    static class Solution5 {
+        public boolean containsCycle(char[][] grid) {
+            int m = grid.length;
+            int n = grid[0].length;
+
+            int[][] DIRS = new int[][] { { 0, 1 }, { 0, -1 }, { -1, 0 }, { 1, 0 } };
+
+            var dfs = new Object() {
+                boolean[][] vis = new boolean[m][n];
+
+                boolean hasCycle(int r, int c, int pr, int pc) {
+                    if (vis[r][c]) {
+                        return true;
+                    }
+
+                    vis[r][c] = true;
+                    for (int[] dir : DIRS) {
+                        int nr = r + dir[0];
+                        int nc = c + dir[1];
+
+                        if (nc < 0 || nc >= n || nr < 0 || nr >= m) {
+                            continue;
+                        }
+
+                        if (nr == pr && nc == pc) {
+                            continue;
+                        }
+
+                        if (grid[nr][nc] == grid[r][c]) {
+                            if (hasCycle(nr, nc, r, c)) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+            };
+
+            for (int r = 0; r < m; r++) {
+                for (int c = 0; c < n; c++) {
+                    if (!dfs.vis[r][c]) {
+                        if (dfs.hasCycle(r, c, -1, -1)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
 }
