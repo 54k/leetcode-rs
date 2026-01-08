@@ -1,5 +1,8 @@
 package leetcode_grind;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class Day1146 {
     // https://leetcode.com/problems/max-dot-product-of-two-subsequences/description/?envType=daily-question&envId=2026-01-08
     static class Solution1 {
@@ -158,6 +161,46 @@ public class Day1146 {
             int n = maze[0].length;
             boolean[][] visit = new boolean[m][n];
             return dfs(m, n, maze, start, destination, visit);
+        }
+    }
+
+    static class Solution5 {
+        public boolean hasPath(int[][] maze, int[] start, int[] destination) {
+            int m = maze.length;
+            int n = maze[0].length;
+            boolean[][] visit = new boolean[m][n];
+            int[] dirX = { 0, 1, 0, -1 };
+            int[] dirY = { -1, 0, 1, 0 };
+
+            Queue<int[]> queue = new LinkedList<>();
+            queue.offer(start);
+            visit[start[0]][start[1]] = true;
+
+            while (!queue.isEmpty()) {
+                int[] curr = queue.poll();
+                if (curr[0] == destination[0] && curr[1] == destination[1]) {
+                    return true;
+                }
+
+                for (int i = 0; i < 4; i++) {
+                    int r = curr[0];
+                    int c = curr[1];
+
+                    while (r >= 0 && r < m && c >= 0 && c < n && maze[r][c] == 0) {
+                        r += dirX[i];
+                        c += dirY[i];
+                    }
+
+                    r -= dirX[i];
+                    c -= dirY[i];
+
+                    if (!visit[r][c]) {
+                        queue.offer(new int[] { r, c });
+                        visit[r][c] = true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
