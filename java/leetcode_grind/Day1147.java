@@ -1,8 +1,12 @@
 package leetcode_grind;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class Day1147 {
     public class TreeNode {
@@ -113,6 +117,53 @@ public class Day1147 {
 
         public void reset() {
             V.clear();
+            rem = nr * nc;
+        }
+    }
+
+    static class Solution4 {
+        int nr, nc, rem, b_size;
+        List<Set<Integer>> buckets = new ArrayList<>();
+        Random rand = new Random();
+
+        public Solution4(int m, int n) {
+            nr = m;
+            nc = n;
+            rem = nr * nc;
+            b_size = (int) Math.sqrt(nr * nc);
+            for (int i = 0; i < nr * nc; i += b_size) {
+                buckets.add(new HashSet<>());
+            }
+        }
+
+        public int[] flip() {
+            int c = 0;
+            int c0 = 0;
+            int k = rand.nextInt(rem);
+            for (Set<Integer> b1 : buckets) {
+                if (c0 + b_size - b1.size() > k) {
+                    while (true) {
+                        if (!b1.contains(c)) {
+                            if (c0 == k) {
+                                b1.add(c);
+                                rem--;
+                                return new int[] { c / nc, c % nc };
+                            }
+                            c0++;
+                        }
+                        c++;
+                    }
+                }
+                c += b_size;
+                c0 += b_size - b1.size();
+            }
+            return null;
+        }
+
+        public void reset() {
+            for (Set<Integer> b1 : buckets) {
+                b1.clear();
+            }
             rem = nr * nc;
         }
     }
