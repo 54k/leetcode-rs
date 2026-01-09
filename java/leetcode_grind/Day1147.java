@@ -2,6 +2,7 @@ package leetcode_grind;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Day1147 {
     public class TreeNode {
@@ -90,4 +91,30 @@ public class Day1147 {
             return dfs(root).node;
         }
     }
+
+    // https://leetcode.com/problems/random-flip-matrix/description/
+    static class Solution3 {
+        Map<Integer, Integer> V = new HashMap<>();
+        int nr, nc, rem;
+        Random rand = new Random();
+
+        public Solution3(int m, int n) {
+            nr = m;
+            nc = n;
+            rem = nr * nc;
+        }
+
+        public int[] flip() {
+            int r = rand.nextInt(rem--);
+            int x = V.getOrDefault(r, r);
+            V.put(r, V.getOrDefault(rem, rem));
+            return new int[] { x / nc, x % nc };
+        }
+
+        public void reset() {
+            V.clear();
+            rem = nr * nc;
+        }
+    }
+
 }
