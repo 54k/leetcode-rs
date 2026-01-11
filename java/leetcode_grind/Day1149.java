@@ -1,5 +1,7 @@
 package leetcode_grind;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 public class Day1149 {
@@ -62,6 +64,32 @@ public class Day1149 {
                 maxarea = Math.max(maxarea, leetcode84(dp));
             }
             return maxarea;
+        }
+    }
+
+    // https://leetcode.com/problems/largest-rectangle-in-histogram/description/
+    static class Solution3 {
+        public int largestRectangleArea(int[] heights) {
+            Deque<Integer> stack = new ArrayDeque<>();
+            stack.push(-1);
+            int length = heights.length;
+            int maxArea = 0;
+            for (int i = 0; i < length; i++) {
+                while (stack.peek() != -1 && heights[stack.peek()] >= heights[i]) {
+                    int currentHeight = heights[stack.pop()];
+                    int currentWidth = i - stack.peek() - 1;
+                    maxArea = Math.max(maxArea, currentHeight * currentWidth);
+                }
+                stack.push(i);
+            }
+
+            while (stack.peek() != -1) {
+                int currentHeight = heights[stack.pop()];
+                int currentWidth = length - stack.peek() - 1;
+                maxArea = Math.max(maxArea, currentHeight * currentWidth);
+            }
+
+            return maxArea;
         }
     }
 }
