@@ -235,7 +235,7 @@ public class Day1152 {
         }
     }
 
-    static class Solution44 {
+    static class Solution4 {
         static class Node {
             int start, end;
             Integer[] X;
@@ -331,4 +331,34 @@ public class Day1152 {
         }
     }
 
+    // https://leetcode.com/problems/maximum-number-of-visible-points/description/
+    static class Solution5 {
+        public int visiblePoints(List<List<Integer>> points, int angle, List<Integer> location) {
+            List<Double> angles = new ArrayList<>();
+            int count = 0;
+            for (List<Integer> p : points) {
+                int dx = p.get(0) - location.get(0);
+                int dy = p.get(1) - location.get(1);
+                if (dx == 0 && dy == 0) {
+                    count++;
+                    continue;
+                }
+                angles.add(Math.atan2(dy, dx) * (180 / Math.PI));
+            }
+
+            Collections.sort(angles);
+            List<Double> tmp = new ArrayList<>(angles);
+            for (double d : angles)
+                tmp.add(d + 360);
+
+            int res = count;
+            for (int i = 0, j = 0; i < tmp.size(); i++) {
+                while (tmp.get(i) - tmp.get(j) > angle) {
+                    j++;
+                }
+                res = Math.max(res, count + i - j + 1);
+            }
+            return res;
+        }
+    }
 }
